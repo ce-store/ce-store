@@ -1,5 +1,21 @@
-# README -- ce-store/CeStore
+# ITA Controlled English (CE)
 
-This CeStore project implements a basic HTTP REST wrapper for the core CeStore project, exposing all core functionality as a rich and consistent set of HTTP REST APIs.  These are documented (see "docs" folder and "help" link at the top of the CeEngineeringPanel) and are used extensively by the CeEngineeringPanel project which builds a sample user interface on top of these HTTP REST APIs.
+The CE Store contains everything you need to get started with the ITA Controlled English environment.
 
-Refer to the CONTRIBUTE.md file for details on how to get involved with this project.
+We are an IBM initiated open source organisation focused on providing an experimental research environment for the ITA Controlled English language.
+
+## Installation
+
+TODO: Describe installation/build process for Eclipse, Tomcat, Liberty.
+
+## Usage
+
+TODO: How tos & examples
+
+## Contributing
+
+Read about contributing [here](https://github.com/ce-store/ce-store/blob/master/CONTRIBUTE.md).
+
+## License
+
+Licensed under the [Apache License, Version 2.0](https://github.com/ce-store/ce-store/blob/master/LICENSE.md)
