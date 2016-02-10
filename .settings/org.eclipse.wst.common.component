@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
-    <wb-module deploy-name="CeStore">
+    <wb-module deploy-name="ce-store">
         <wb-resource deploy-path="/" source-path="/WebContent" tag="defaultRootSource"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
-        <property name="java-output-path" value="/CeStore/bin"/>
-        <property name="context-root" value="CeStore"/>
+        <property name="java-output-path" value="/ce-store/bin"/>
+        <property name="context-root" value="ce-store"/>
     </wb-module>
 </project-modules>
