@@ -1,0 +1,43 @@
+-- --------------------------------------------------------------------------
+-- (C) Copyright IBM Corporation  2011, 2015
+-- All Rights Reserved
+--
+-- (C) Copyright IBM Corporation  2011, 2015 All Rights Reserved.
+--
+-- US Government Users Restricted Rights - Use, duplication or
+-- disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+-- --------------------------------------------------------------------------
+
+
+
+Model: Deprecated Model Syntax Example
+
+
+
+conceptualise a ~ type-1 ~ T1.
+
+conceptualise a ~ concept-2 ~ C2.
+conceptualise the concept-2 C2
+  ~ relates-to-concept ~ the concept-1 C1 and
+  ~ relates-to-value ~ the value V.
+
+-- incorrect :
+-- conceptualise the concept-3 C3.
+
+conceptualise the concept-4 C4
+  ~ relates-to-value ~ the value V1 and
+  has the value V2 as ~ value-attribute ~.
+
+-- incorrect :
+-- conceptualise the concept-5 C5
+--   has the value V as ~ value-attribute ~.
+  
+-- incorrect :
+-- conceptualise the concept-6 C6
+--   is a concept-1 and
+--   ~ relates-to-value ~ the value V.
+  
+-- incorrect :
+-- conceptualise the concept-7 C7
+--   ~ relates-to-value ~ the value V and
+--   is a concept-1.

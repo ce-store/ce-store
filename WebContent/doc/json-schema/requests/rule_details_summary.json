@@ -1,0 +1,7 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"title": "Rule details (summary)",
+	"description": "Used to return the summary details for a specific rule",
+	"type": "object",
+	"$ref": "./doc/json-schema/objects/rule_summary.json#definitions/rule"
+}

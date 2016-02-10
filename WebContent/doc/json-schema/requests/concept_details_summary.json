@@ -1,0 +1,7 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"title": "Concept details (summary)",
+	"description": "Used to return the summary details for a specific concept",
+	"type": "object",
+	"$ref": "./doc/json-schema/objects/concept_summary.json#definitions/concept"
+}

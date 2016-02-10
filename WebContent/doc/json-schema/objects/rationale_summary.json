@@ -1,0 +1,14 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "Rationale - summary details",
+    "definitions": {
+        "rationale": {
+            "title": "Summary rationale details",
+            "description": "Return the summary details of a rationale (tbc).",
+            "type": "object",
+            "additionalProperties": true,
+            "properties": {
+            }
+        }
+    }
+}

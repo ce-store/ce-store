@@ -1,0 +1,27 @@
+-- --------------------------------------------------------------------------
+-- (C) Copyright IBM Corporation  2011, 2015
+-- All Rights Reserved
+--
+-- (C) Copyright IBM Corporation  2011, 2015 All Rights Reserved.
+--
+-- US Government Users Restricted Rights - Use, duplication or
+-- disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+-- --------------------------------------------------------------------------
+
+
+
+Model: Model for Fact Syntax Example
+
+
+
+conceptualise a ~ some-concept ~ S.
+
+conceptualise a ~ my-concept ~ M that
+ ~ relates-to-some-concept ~ the some-concept SR and
+ ~ relates-to-value ~ the value VR and
+ has the some-concept SA as ~ some-concept-attribute ~ and
+ has the value VA as ~ value-attribute ~ and
+ has the value V as ~ value-attribute-from-my-concept ~.
+
+conceptualise a ~ my-additional-concept ~ A that
+ has the value V as ~ value-attribute-from-my-additional-concept ~.

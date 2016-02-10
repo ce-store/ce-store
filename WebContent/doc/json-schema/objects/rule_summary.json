@@ -1,0 +1,14 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "Rule - summary details",
+    "definitions": {
+        "rule": {
+            "title": "Summary rule details",
+            "description": "Return the summary details of a rule (tbc).",
+            "type": "object",
+            "additionalProperties": true,
+            "properties": {
+            }
+        }
+    }
+}

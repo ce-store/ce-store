@@ -1,0 +1,28 @@
+-- --------------------------------------------------------------------------
+-- (C) Copyright IBM Corporation  2011, 2015
+-- All Rights Reserved
+-- --------------------------------------------------------------------------
+
+perform reset store with starting uid '1'.
+
+-- Load the general model (core concepts)
+perform load sentences from url '/CeStore/ce/general/agents/agent_model.ce'.
+perform load sentences from url '/CeStore/ce/general/model/misc_model.ce'.
+perform load sentences from url '/CeStore/ce/general/model/spatial_model.ce'.
+perform load sentences from url '/CeStore/ce/general/model/temporal_model.ce'.
+
+-- Load the medical model
+perform load sentences from url '/CeStore/ce/medicine/model/med_model.ce'.
+perform load sentences from url '/CeStore/ce/medicine/model/med_rules.ce'.
+perform load sentences from url '/CeStore/ce/medicine/model/med_queries.ce'.
+
+-- Load the scenario and results
+perform load sentences from url '/CeStore/ce/general/facts/systemusers.ce'.
+perform load sentences from url '/CeStore/ce/general/facts/spatialviews.ce'.
+perform load sentences from url '/CeStore/ce/medicine/agents/med_agent_instances.ce'.
+perform load sentences from url '/CeStore/ce/medicine/facts/med_scenario.ce'.
+perform load sentences from url '/CeStore/ce/medicine/facts/med_locations.ce'.
+perform load sentences from url '/CeStore/ce/medicine/facts/med_visits.ce'.
+
+-- Run the rules
+perform run the rule executor agent named 'med_rules'.

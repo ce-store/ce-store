@@ -1,0 +1,11 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"title": "Concept list (full)",
+	"description": "Used to return a list of concepts (full details)",
+	"type": "array",
+	"items": {
+		"type": "object",
+		"$ref": "./doc/json-schema/objects/concept_full.json#definitions/concept",
+		"uniqueItems": true
+	}
+}

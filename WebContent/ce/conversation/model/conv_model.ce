@@ -1,0 +1,97 @@
+-- --------------------------------------------------------------------------
+-- (C) Copyright IBM Corporation  2011, 2015
+-- All Rights Reserved
+-- --------------------------------------------------------------------------
+
+Model:   Conversation
+Title:   Conversation model
+Version: 1.0
+Date:    21st December 2015
+Author:  Dave Braines
+
+conceptualise a ~ configuration concept ~ CC.
+conceptualise an ~ uninteresting property ~ UP.
+conceptualise an ~ interesting thing ~ I.
+
+conceptualise a ~ conversation sentence ~ S that is a sentence.
+
+conceptualise a ~ conv thing ~ CT that
+  is a configuration concept.
+
+conceptualise a ~ conv phrase ~ P that
+  is a conv thing and
+  has the value PT as ~ phrase text ~ and
+  has the conv sentence CS as ~ sentence ~.
+
+conceptualise a ~ conv assertion ~ A that is a conv phrase.
+conceptualise a ~ conv question ~ Q that is a conv phrase.
+conceptualise a ~ conv unknown ~ U that is a conv phrase.
+
+conceptualise a ~ conv sentence ~ S that
+  is a conv thing and
+  has the value ST as ~ sentence text ~ and
+  has the conv clause CC as ~ clause ~.
+
+conceptualise a ~ conv clause ~ C that
+  is a conv thing and
+  has the value CT as ~ clause text ~ and
+  has the conv word CW as ~ word ~.
+
+conceptualise a ~ conv word ~ W that
+  is a conv thing and
+  has the value WT as ~ word text ~ and
+  has the value WP as ~ word position ~ and
+  has the conv word NW as ~ next word ~ and
+  has the conv word PW as ~ previous word ~.
+
+conceptualise a ~ processed word ~ W that is a conv word.
+
+conceptualise the processed word W
+  ~ corresponds to concept ~ the entity concept MC and
+  ~ corresponds to relation ~ the relation concept MR and
+  ~ corresponds to instance ~ the thing MT and
+  ~ refers to concept ~ the entity concept RC and
+  ~ refers in plural to concept ~ the entity concept RCP and
+  ~ refers to relation ~ the relation concept RR and
+  ~ refers to instance ~ the thing RI and
+  ~ refers in plural to instance ~ the thing RIP and
+  ~ is linked to ~ the conv extracted item EI.
+
+conceptualise a ~ standard word ~ S that is a processed word.
+conceptualise a ~ common word ~ C that is a processed word.
+conceptualise a ~ question word ~ Q that is a processed word.
+conceptualise a ~ possible value word ~ V that is a processed word.
+conceptualise a ~ number word ~ N that is a processed word.
+conceptualise an ~ unmatched word ~ U that is a processed word.
+
+conceptualise a ~ conv extracted item ~ EI that
+  is a conv thing and
+  has the value IT as ~ item text ~ and
+  has the matched triple MT as ~ matched triple ~ and
+  has the processed word SW as ~ start word ~ and
+  has the processed word OW as ~ other word ~ and
+  has the processed word DW as ~ determiner word ~ and
+  has the entity concept CN as ~ identified concept ~ and
+  has the relation concept PN as ~ identified property ~ and
+  has the thing EIN as ~ identified existing instance ~ and
+  has the value NIN as ~ new instance name ~.
+
+conceptualise a ~ matched triple ~ MT that
+  is a conv thing and
+  has the entity concept SC as ~ subject concept ~ and
+  has the thing SI as ~ subject instance ~ and
+  has the relation concept PP as ~ predicate property ~ and
+  has the thing OEI as ~ object existing instance ~ and
+  has the value ONI as ~ object new instance id ~ and
+  has the value OV as ~ object value ~ and
+  has the entity concept OC as ~ object concept ~ and
+  has the value OD as ~ original description ~.
+
+conceptualise the matched triple M
+  ~ comes from ~ the conv extracted item CF.
+
+conceptualise a ~ matched object triple ~ MOT that is a matched triple.
+conceptualise a ~ matched datatype triple ~ MDT that is a matched triple.
+conceptualise a ~ direct matched triple ~ DMT that is a matched triple.
+conceptualise a ~ domain-matched triple ~ DMT that is a matched triple.
+conceptualise a ~ domain-unmatched triple ~ DUT that is a matched triple.

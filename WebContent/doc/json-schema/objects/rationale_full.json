@@ -1,0 +1,14 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "Rationale - full details",
+    "definitions": {
+        "rationale": {
+            "title": "Full rationale details",
+            "description": "Return the full details of a rationale (tbc).",
+            "type": "object",
+            "additionalProperties": true,
+            "properties": {
+            }
+        }
+    }
+}

@@ -1,0 +1,14 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "Query - summary details",
+    "definitions": {
+        "query": {
+            "title": "Summary query details",
+            "description": "Return the summary details of a query (tbc).",
+            "type": "object",
+            "additionalProperties": true,
+            "properties": {
+            }
+        }
+    }
+}

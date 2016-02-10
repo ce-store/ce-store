@@ -1,0 +1,10 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"title": "Store list (full)",
+	"description": "Used to return a list of stores (full details)",
+	"type": "array",
+	"items": {
+		"type": "object",
+		"$ref": "./doc/json-schema/objects/store_full.json#definitions/store"
+	}
+}

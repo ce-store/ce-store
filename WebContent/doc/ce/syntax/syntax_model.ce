@@ -1,0 +1,54 @@
+-- --------------------------------------------------------------------------
+-- (C) Copyright IBM Corporation  2011, 2015
+-- All Rights Reserved
+-- --------------------------------------------------------------------------
+
+
+
+Model: Model Syntax Example
+
+
+
+conceptualise a ~ concept-1 ~ C1.
+
+conceptualise a ~ concept-2 ~ C2 that
+  has the concept-1 C1 as ~ concept-1-attribute ~ and
+  has the value V as ~ value-attribute ~.
+
+conceptualise a ~ concept-3 ~ C3 that
+  ~ relates-to-concept ~ the concept-1 C1 and
+  ~ relates-to-value ~ the value V.
+
+conceptualise a ~ concept-4 ~ C4 that
+  has the value V1 as ~ value-attribute ~ and
+  ~ relates-to-value ~ the value V2.
+
+conceptualise a ~ concept-5 ~ C5 that
+  ~ relates-to-value ~ the value V1 and
+  has the value V2 as ~ value-attribute ~.
+
+conceptualise a ~ concept-6 ~ C6.
+conceptualise a ~ concept-6 ~ C6 that
+  has the value V as ~ value-attribute-1 ~.
+conceptualise a ~ concept-6 ~ C6 that
+  has the value V as ~ value-attribute-2 ~.
+conceptualise a ~ concept-6 ~ C6 that
+  ~ relates-to-value ~ the value V.
+
+conceptualise a ~ concept-7 ~ C7 that
+  has the concept-7 A as ~ concept-7-attribute ~ and
+  ~ relates-to-concept-7 ~ the concept-7 R.
+
+conceptualise a ~ concept-8 ~ C8 that
+  is a concept-1 and
+  is a concept-2.
+
+-- the fully-qualified name of the property defined in the following 
+-- sentence is concept-9:my-attribute:value.
+conceptualise a ~ concept-9 ~ C9 that
+  has the value V as ~ my-attribute ~.
+
+-- the fully-qualified name of the property defined in the following 
+-- sentence is concept-10:my-attribute:value.
+conceptualise a ~ concept-10 ~ C10 that
+  has the value V as ~ my-attribute ~.

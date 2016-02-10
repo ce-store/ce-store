@@ -1,0 +1,7 @@
+-- --------------------------------------------------------------------------
+-- (C) Copyright IBM Corporation  2011, 2015
+-- All Rights Reserved
+-- --------------------------------------------------------------------------
+
+perform load sentences from url '/CeStore/ce/conversation/ce-cards/model/cards_model.ce'.
+perform load sentences from url '/CeStore/ce/conversation/ce-cards/agents/cards_agent_instances.ce'.

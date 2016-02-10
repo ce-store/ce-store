@@ -1,0 +1,40 @@
+/*
+ * (C) Copyright IBM Corporation  2011, 2015
+ * All Rights Reserved
+
+ *
+ * (C) Copyright IBM Corporation  2011, 2015 All Rights Reserved.
+ *
+ * US Government Users Restricted Rights - Use, duplication or
+ * disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+ */
+
+body, html {
+	font-family:helvetica,arial,sans-serif; font-size:90%; width: 100%; height: 100%; margin: 0;
+}
+
+p, font, text.tbc {
+	color: black;
+}
+
+p.footnote {
+	font-family:helvetica,arial,sans-serif; font-size:80%; width: 100%; margin: 0;
+}
+
+table.doctable {
+	table-layout: fixed;
+	border-spacing: 1px;
+}
+
+table,th, td {
+	border: 1px solid black;
+}
+
+th {
+	color: black;
+	font-weight: bold;
+}
+
+td.url {
+	white-space: nowrap;
+}

@@ -1,0 +1,55 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"title": "Conceptual model - summary details",
+	"definitions": {
+		"model": {
+			"title": "Summary conceptual model details",
+			"description": "Return the summary details about a conceptual model",
+			"type": "object",
+			"required": [ "_type", "_style", "_id", "_created", "sentence_count", "source_ids" ],
+            "additionalProperties": false,
+			"properties": {
+				"_type": {
+					"description": "The type (always conceptual model)",
+					"type": "string",
+					"enum": [ "conceptual model" ]
+				},
+				"_style": {
+					"description": "The style (always summary)",
+					"type": "string",
+					"enum": [ "summary" ]
+				},
+				"_id": {
+					"description": "The unique identifier (model name) for a conceptual model",
+					"type": "string"
+				},
+				"_created": {
+					"description": "The (unix timestamp) date value on which this conceptual model was created",
+					"type": "integer",
+					"minimum": 0
+				},
+				"sentence_count": {
+					"description": "The total number of sentences defined in this conceptual model",
+					"type": "integer",
+					"minimum": 0
+				},
+				"source_ids": {
+					"description": "A list of source ids that define this conceptual model.",
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"uniqueItems": true
+				},
+				"concept_names": {
+					"description": "A list of the names of concepts that are defined this conceptual model.",
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"uniqueItems": true
+				}
+			}
+		}
+	}
+}

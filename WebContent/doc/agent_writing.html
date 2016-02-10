@@ -1,0 +1,654 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- 
+ * (C) Copyright IBM Corporation  2011, 2015
+ * All Rights Reserved
+ -->
+<html>
+
+<head>
+ <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+ <title>CE Store : Agent Writing Documentation</title>
+ <link rel="stylesheet" type="text/css" href="/CeStoreWeb/css/cestore_doc.css">
+</head>
+
+<body class="doc">
+
+<h2>How to create a CE Agent</h2>
+
+<p>
+ Note that throughout this document I refer to the "CE environment" by which I mean
+ the IBM Controlled Natural Language Processing Environment, or ICNLPE.
+ <br/>
+ This can be downloaded from the IBM developerWorks site for general evaluation and usage.
+</p>
+
+<h3>Pre-requisities</h3>
+
+<p>
+ You will require the following to be set up in order to follow this example and build
+ your own CE Agent:
+</p>
+
+<ol>
+ <li>
+  Download and install the IBM Controlled Natural Language Processing Environment from the
+  developerWorks site 
+ </li>
+ <li>
+  Extract the jar file named CeStore.jar from the CeStoreWeb.war file
+  <br/>
+  If you have dropped the war file into Tomcat the jar file should be available in the
+  expanded folder named CeStoreWeb in the Tomcat/webapps folder, in the WEB-INF/lib sub-folder.
+  Alternatively you can import the war file into Eclipse and find the CeStore.jar file that way.
+ </li>
+ <li>
+  Download and install a suitable Java development environment such as Eclipse
+ </li>
+ <li>
+  Create a new project within the Java development environment and specify the CeStore.jar
+  file as an import (or dependency) of your new project.
+ </li>
+</ol>
+
+<h3>Background</h3>
+<p>
+ This document gives a detailed explanation of how to create a Controlled English (CE) Agent,
+ hopefully demonstrating a good portion of the "CE4J" Java programming interface to the CE
+ environment. There are many more methods and interfaces available than are demonstrated in
+ this example, but hopefully you will get the basic idea from this and be able to explore out
+ into using other parts of the environment.
+</p>
+
+<p>
+ The current version of the CE environment is in alpha release and has little documentation or
+ JavaDoc available. This will be resolved in a future release along with refinements to the API
+ and available methods.
+</p>
+
+<p>
+ A CE Agent is Java code that is able to run in the CE environment and which can directly
+ interact (reading and writing) with the CE sentences and associated concepts and instances
+ within the CE environment. For the purposes of this example we will write a simple RDF
+ generation agent to convert the example person data within the medicine model into a FOAF
+ RDF/XML format. The agent goes through a number of iterations (from very simple through to
+ more complex) to demonstrate various features and techniques available in the CE environment.
+</p>
+
+<p>
+ The example FOAF RDF/XML fragment that we wish to generate is given below, although the number
+ and complexity of the "foaf:Person" element increases as the agent examples progress:
+</p>
+
+<blockquote>
+ &lt;rdf:RDF<br/>
+ &nbsp;&nbsp;&nbsp;xmlns:rdf=&quot;http://www.w3.org/1999/02/22-rdf-syntax-ns#&quot;<br/>
+ &nbsp;&nbsp;&nbsp;xmlns:rdfs=&quot;http://www.w3.org/2000/01/rdf-schema#&quot;<br/>
+ &nbsp;&nbsp;&nbsp;xmlns:foaf=&quot;http://xmlns.com/foaf/0.1/&quot;&gt;<br/>
+ <br/>
+ &nbsp;&nbsp;&nbsp;&lt;!-- One of these per person --&gt;<br/>
+ &nbsp;&nbsp;&nbsp;&lt;foaf:Person&gt;<br/>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;foaf:name&gt;Maggie&lt;/foaf:name&gt;<br/>
+ &nbsp;&nbsp;&nbsp;&lt;/foaf:Person&gt;<br/>
+ &lt;/rdf:RDF&gt;
+</blockquote>
+
+<h3>v1.0 - The simplest possible CE Agent</h3>
+
+<p>
+ The first agent that we will create is the simplest possible, and demonstrates the basic steps
+ to create any new agent within the CE environment.
+ <br/>
+ The following steps are required:
+</p>
+<ol>
+ <li>
+  Create a new Java class in your development environment, named "FoafGenerator", and specify
+  that this class extends the class com.ibm.ets.ita.ce.store.agent.CeAgent.
+ </li>
+ <li>
+  Make sure this new class is defined in a known package, e.g. com.ce.examples
+ </li>
+ <li>
+  You will notice that four methods are defined for you since these are required for all
+  CeAgent classes:
+  <ul>
+   <li>
+    <strong>getAgentName()</strong>
+    <br/>
+    This should return a unique name for this agent and is used for logging etc. It can be
+    any string.
+    <br/>
+    Specify "FOAF Generator" as the string to be returned.
+   </li>
+   <li>
+    <strong>getAgentVersion()</strong>
+    <br/>
+    This should return the version number for the agent. It can be any string.
+    <br/>
+    Specify "v1.0" as the string to be returned.
+   </li>
+   <li>
+    <strong>executeAgentProcessing()</strong>
+    <br/>
+    This is where the build of the agent execution code will be located.
+    <br/>
+    Nothing needs to be added here yet.
+   </li>
+   <li>
+    <strong>loadAgentParameters()</strong>
+    <br/>
+    This is where any agent specific parameters can be retrieved.
+    <br/>
+    Nothing needs to be added here yet.
+   </li>
+  </ul>
+ </li>
+</ol>
+
+<p>
+ Now the following code can be added to the executeAgentProcessing() method.
+</p>
+
+<blockquote>
+ String foafText = &#x201c;&#x2026;&#x201d; ;<br/>
+ String targetFilename = getActionContext().getCeConfig().getTempPath() + &quot;foafv1.rdf&quot;;<br/>
+ <br/>
+ StaticFunctionsFile.writeToFile(getActionContext(), foafText, targetFilename);<br/>
+ <br/>
+ reportWarning(&quot;FOAF file generated at '&quot; + targetFilename + &quot;'&quot;);
+</blockquote>
+
+<p>
+ The code here is extremely simple; it creates a string containing the FOAF text,
+ creates a file name using the CE environment temporary folder, and then simply writes
+ the hardcoded text to the specified file name.
+ <br/>
+ Save this method and export the class in a jar file and ensure the jar is accessible
+ by the running CeStoreWeb application within Tomcat .
+ <br/>
+ The CE Agent is now ready to be run, but first we must define this agent using CE
+ sentences. For simplicity these sentences will be added to existing CE files in the
+ "medicine" folder within the CeResourcesWeb war file, but you can easily create a new
+ folder and copy the medicine sentences across if you prefer.
+ <br/>
+ First the agent itself needs to be defined as a concept. This requires a new file to
+ be created, so create a new file named CeResourcesWeb/ce/medicine/agents/med_agent_model.ce
+ and write the CE sentence that defines this new agent:
+</p>
+
+<blockquote>
+conceptualise a ~ foaf generator agent ~ A that<br/>
+&nbsp;&nbsp;is a CE agent.
+</blockquote>
+
+<p>
+ Save the file, and now we must edit the CE command file that loads the medicine sentences
+ so that it load this newly created file. Edit the file named
+ CeResourcesWeb/ce/medicine/cmd/med_load.cecmd and add a new line just before the
+ "perform build store schema" line to load the new agent model file:
+</p>
+
+<blockquote>
+-- Load the agent model<br/>
+perform load sentences from url
+'http://localhost:8080/CeResourcesWeb/ce/medicine/agents/med_agent_model.ce'.
+</blockquote>
+
+<p>
+ Next we must define an instance of this new agent so that it can be run.
+ Edit the file named CeResourcesWeb/ce/medicine/agents/med_agent_instances.ce and add the
+ following CE sentence at the bottom of the file. If you chose a different package name in
+ the earlier step when you created your java class ensure that the correct package name is
+ specified in this CE:
+</p>
+
+<blockquote>
+there is a foaf generator agent named 'foafgen 1' that<br/>
+&nbsp;&nbsp;has 'com.ce.examples.FoafGenerator' as class name.
+</blockquote>
+
+<p>
+ Save this file. You are now in a position to run your agent as you have created the agent
+ concept and instance in CE and created a java class to carry out the work and made sure
+ it is available to the CE environment running in Tomcat.
+ <br/>
+ You can run the class in one of two ways, both of which require a CE command sentence to
+ run the agent:
+</p>
+
+<blockquote>
+perform run the foaf generator agent named 'foafgen 1'.
+</blockquote>
+
+<p>
+ This CE sentence can either be pasted into the existing CE command file which is used to
+ load the medicine model (in which case it will be executed every time the medicine model
+ is loaded, by clicking on the "medicine" link in the "Actions" pane in the browser interface),
+ or if can be pasted into the "Add CE" text field in the browser interface in which case it
+ will only be run when the "Submit CE sentence(s)" link is clicked in the browser. Use one
+ of these methods to run the new agent, You should see a warning reported (at the bottom pane
+ of the browser interface) saying that the FOAF has been generated, and you can check the
+ temp folder for the CE environment to see the foaf.rdf file and check the contents.
+</p>
+
+<p>
+ Something may not have worked, so here are some likely problems and their resolution:
+</p>
+
+<ul>
+ <li>
+  <strong>Errors in parsing the CE sentences.</strong>
+  <br/>
+  Check that you spelled everything correctly and that the sentences have full stops at the end.
+ </li>
+ <li>
+  <strong>The sentence defining the "foafgen 1" instance was not able to be parsed.</strong>
+  <br/>
+  Did you remember to add the line to the CE command file to load the new medicine agent model
+  file? Without the definition of the concept the fact sentence cannot be parsed.
+ </li>
+ <li>
+  <strong>The agent was not run and no errors were reported.</strong>
+  <br/>
+  Did you remember to add the line to the end of the CE command file to run the FOAF generator
+  agent? (or if you ran it from the "Add CE" box, did you click on submit?)
+ </li>
+ <li>
+  <strong>The agent class could not be found.</strong>
+  <br/>
+  This error appears with a message starting "Unhandled ClassNotFoundException in
+  StoreActions:runAgent()".
+  <br/>
+  Check that the package and class name you specified in the java code matches the package and
+  class name specified in the CE that defines the "foafgen 1" instance. If they are both the same
+  then this means that the java code cannot be located. Have you exported the jar file and located
+  where the CeStoreWeb application can load it?
+ </li>
+</ul>
+
+<p>
+ Assuming you have got this to work we can now move on to more advanced versions of the agent that
+ make more use of the CE Store capabilities.
+</p>
+
+<h3>v2.0 - templates and dynamic substitution</h3>
+
+<p>
+ In this version of the agent we will iterate through every person in the medicine model and generate
+ a foaf element for them.
+ <br/>
+ First, lets change the getAgentVersion() string to return "v2.0".
+ <br/>
+ Now, lets add some new properties to the "foaf generator agent" concept in CE. Edit the
+ med_agent_model.ce file and replace the existing foaf generator agent concept with the one below:
+</p>
+
+<blockquote>
+conceptualise a ~ foaf generator agent ~ A that<br/>
+&nbsp;&nbsp;is a CE agent and<br/>
+&nbsp;&nbsp;has the value RT as ~ rdf document template ~ and<br/>
+&nbsp;&nbsp;has the value FT as ~ foaf element template ~ and<br/>
+&nbsp;&nbsp;has the value FN as ~ output filename ~.
+</blockquote>
+
+Now edit the med_agent_instances.ce file and replace the existing "foafgen 1" sentence with the following:
+
+<blockquote>
+there is a foaf generator agent named 'foafgen 1' that<br/>
+&nbsp;&nbsp;has 'com.ce.examples.FoafGenerator' as class name and<br/>
+&nbsp;&nbsp;has '&lt;rdf:RDF<br/>
+&nbsp;&nbsp;&nbsp;xmlns:rdf=&quot;http://www.w3.org/1999/02/22-rdf-syntax-ns#&quot;<br/>
+&nbsp;&nbsp;&nbsp;xmlns:rdfs=&quot;http://www.w3.org/2000/01/rdf-schema#&quot;<br/>
+&nbsp;&nbsp;&nbsp;xmlns:foaf=&quot;http://xmlns.com/foaf/0.1/&quot;&gt;<br/>
+<br/>
+&nbsp;&nbsp;&nbsp;&lt;!-- One of these per person --&gt;<br/>
+%FOAF%<br/>
+<br/>
+&lt;/rdf:RDF&gt;' as rdf document template and<br/>
+&nbsp;&nbsp;has '   &lt;foaf:Person&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;foaf:name&gt;%NAME%&lt;/foaf:name&gt;<br/>
+&nbsp;&nbsp;&nbsp;&lt;/foaf:Person&gt;' as foaf element template and<br/>
+&nbsp;&nbsp;has 'foafv2.rdf' as output filename.
+</blockquote>
+
+<p>
+ Note that the contents of properties can be spread across multiple lines, and that any internal quote
+ characters (single or double) or backslash characters must be escaped using a preceding backslash
+ character if they are the same as the quote character used in CE to delimit the value (usually a
+ single quote).
+ <br/>
+ Now that the CE has been extended to define these three properties and their values we can alter the
+ Java code to take advantage of these.
+ <br/>
+ In your existing java class add some code to the loadAgentParameters() method to take the values of
+ each of the three new properties and store them in class instance variables (as Strings), e.g.
+</p>
+
+<blockquote>
+this.rdfDocTemplate = getConfigSingleValueNamed(&quot;rdf document template&quot;);<br/>
+this.foafElemTemplate = getConfigSingleValueNamed(&quot;foaf element template&quot;);<br/>
+this.outputFilename = getConfigSingleValueNamed(&quot;output filename&quot;);
+</blockquote>
+
+<p>
+ These three string values are then available in your executeAgentProcessing() method which can be
+ changed to the following:
+</p>
+
+<blockquote>
+String targetFilename = getActionContext().getCeConfig().getTempPath() +<br/>
+&nbsp;&nbsp;&nbsp;this.outputFilename;<br/>
+<br/>
+String foafText = &quot;&quot;;<br/>
+<br/>
+//Iterate through all person instances, building up the foaf text<br/>
+for (CeInstance thisPerson : getAllInstancesForConceptNamed(&quot;person&quot;)) {<br/>
+&nbsp;&nbsp;&nbsp;//Substitute the instance name over the %NAME% token<br/>
+&nbsp;&nbsp;&nbsp;String thisFoaf = this.foafElemTemplate.replace(&quot;%NAME%&quot;, thisPerson.getInstanceName());<br/>
+<br/>
+&nbsp;&nbsp;&nbsp;foafText += thisFoaf + &quot;\n\n&quot;;<br/>
+}<br/>
+<br/>
+//Substitute the foaf list into the %FOAF% token in the rdf doc template<br/>
+String rdfDoc = this.rdfDocTemplate.replace(&quot;%FOAF%&quot;, foafText);<br/>
+<br/>
+StaticFunctionsFile.writeToFile(getActionContext(), rdfDoc, targetFilename);<br/>
+<br/>
+reportWarning(&quot;FOAF file generated at '&quot; + targetFilename + &quot;'&quot;);
+</blockquote>
+
+<p>
+ This is fairly simple code that makes use of the two properties that contain the RDF and FOAF
+ templates, and simply iterates through every instance of person and generates a foaf element
+ with the person instance name accordingly.
+ <br/>
+ Ensure that the CE changes are saved, and export the updated Java code and run the agent to see
+ the updated result.
+ <br/>
+ Note – there are a number of parent properties that you can use on CE Agent.  One of these is
+ "source concept".  If you edit your CE sentence that defines the "foafgen 1" instance you can
+ add a clause that says:
+
+<blockquote>
+ has 'person' as source concept.
+</blockquote>
+
+<p>
+ You can then use the following line to iterate across all instances of the source concept instead
+ of the hardcoded ‘person’ in the earlier example:
+</p>
+
+<blockquote>
+for (CeInstance thisPerson :<br/>getAllInstancesForConceptNamed(getSourceConceptName())) {<br/>
+</blockquote>
+
+<p>
+ another simplified alternative is:
+</p>
+
+<blockquote>
+for (CeInstance thisPerson :<br/>getAllInstancesForConcept(getSourceConcept())) {<br/>
+</blockquote>
+
+<p>
+ and an even more simplified alternative is:
+</p>
+
+<blockquote>
+for (CeInstance thisPerson : getAllInstancesForSourceConcept()) {<br/>
+</blockquote>
+
+<p>
+ All of the above alternatives give exactly the same results, but are increasingly more
+ convenient.
+ <br/>
+ In the next example we will start to navigate the CE model and populate some social
+ relationships into the foaf.
+</p>
+
+
+<h3>v3.0 - navigating relationships and properties</h3>
+
+<p>
+ In this version of the agent we will use some of the properties and relationships defined
+ within the medicine example data to generate a slightly richer foaf output.
+ <br/>
+ For the purposes of this example we are going to pretend that the "social security number"
+ CE property is the "mbox" foaf property (used to uniquely identify a foaf instance), and
+ that the "age" CE property is the "phone" foaf property. Further more the CE "is closely
+ related to" property will be mapped to the foaf "knows" property.
+ <br/>
+ In order to capture these extra properties we need to edit the template, so lets edit the
+ CE sentence that defines "foafgen 1".
+</p>
+
+<blockquote>
+there is a foaf generator agent named 'foafgen 1' that<br/>
+&nbsp;&nbsp;has 'com.ce.examples.FoafGenerator' as class name and<br/>
+&nbsp;&nbsp;has '&lt;rdf:RDF<br/>
+&nbsp;&nbsp;&nbsp;xmlns:rdf=&quot;http://www.w3.org/1999/02/22-rdf-syntax-ns#&quot;<br/>
+&nbsp;&nbsp;&nbsp;xmlns:rdfs=&quot;http://www.w3.org/2000/01/rdf-schema#&quot;<br/>
+&nbsp;&nbsp;&nbsp;xmlns:foaf=&quot;http://xmlns.com/foaf/0.1/&quot;&gt;<br/>
+<br/>
+&nbsp;&nbsp;&nbsp;&lt;!-- One of these per person --&gt;<br/>
+%FOAF%<br/>
+&nbsp;&nbsp;<br/>&lt;/rdf:RDF&gt;' as rdf document template and<br/>
+&nbsp;&nbsp;has '   &lt;foaf:Person rdf:ID=&quot;%ID%&quot;&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;foaf:name&gt;%NAME%&lt;/foaf:name&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;foaf:mbox rdf:resource=&quot;%MBOX%&quot;/&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;foaf:phone&gt;%PHONE%&lt;/foaf:phone&gt;<br/>
+%KNOWS%<br/>
+&nbsp;&nbsp;&nbsp;&lt;/foaf:Person&gt;' as foaf element template and<br/>
+&nbsp;&nbsp;has '      &lt;foaf:knows rdf:resource=&quot;#%ID%&quot;/&gt;' as knows element template and<br/>
+&nbsp;&nbsp;has 'foafv3.rdf' as output filename and<br/>
+&nbsp;&nbsp;has 'person' as source concept.
+</blockquote>
+
+<p>
+ The CE sentence that defines the "foaf generator agent" concept must also be edited to add
+ the new "knows element template" property.
+</p>
+
+<blockquote>
+...<br/>
+&nbsp;&nbsp;has the value KT as ~ knows element template ~<br/>
+...
+</blockquote>
+
+<p>
+ The java code can be updated to get the new "knows element template" property, at which
+ point we can focus on how the four new properties (%MBOX%, %PHONE%, %ID%, %KNOWS%) can
+ be programmatically populated.
+ <br/>
+ The code to retrieve %MBOX% and %PHONE% is the same, but with a different property, so
+ the following lines can be added inside the loop:
+</p>
+
+<blockquote>
+thisFoaf = thisFoaf.replace(&quot;%MBOX%&quot;, thisPerson.getSingleValueFromPropertyNamed(&quot;social security number&quot;));<br/>
+thisFoaf = thisFoaf.replace(&quot;%PHONE%&quot;, thisPerson.getSingleValueFromPropertyNamed(&quot;age&quot;));
+</blockquote>
+
+<p>
+ For the %ID% property we will just use the instance name (since that is unique with
+ the CE environment anyway), so we can use this line:
+</p>
+
+<blockquote>
+thisFoaf = thisFoaf.replace(&quot;%ID%&quot;, thisPerson.getInstanceName());
+</blockquote>
+
+<p>
+ There is a function within the CE environment to generate a new unique ID for the
+ current instantiation of the environment. An example is shown below, but since the
+ linkage between the person instance and the generated unique id is not persisted in
+ the CE environment (because we have not written any code to do so) this is not used
+ for this very simple agent example, but the code example is included as a useful
+ reference. Note that the single String parameter is an optional prefix that will be
+ prepended to the generated id if specified.
+</p>
+
+<blockquote>
+//thisFoaf = thisFoaf.replace(&quot;%ID%&quot;, getNextUid(&quot;&quot;));
+</blockquote>
+
+<p>
+ Finally we need to generate the %KNOWS% values.  There may be 0, 1 or many of these,
+ so lets write a separate method to do this:
+</p>
+
+<blockquote>
+thisFoaf = thisFoaf.replace(&quot;%KNOWS%&quot;, generateKnowsFor(thisPerson));
+</blockquote>
+
+<p>
+ The method itself gets all unique values for the "is closely related to" property
+ and generates the knows fragment for those:
+</p>
+
+<blockquote>
+private String generateKnowsFor(CeInstance pPerson) {<br/>
+&nbsp;&nbsp;String result = &quot;&quot;;<br/>
+<br/>
+&nbsp;&nbsp;CePropertyInstance thisPi = pPerson.getPropertyInstanceNamed(<br/>&quot;is closely related to&quot;);<br/>
+<br/>
+&nbsp;&nbsp;for (String thisVal : thisPi.getUniqueValueList()) {<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;result += this.knowsElemTemplate.replace(&quot;%ID%&quot;, thisVal);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;result += &quot;\n&quot;;<br/>
+&nbsp;&nbsp;}<br/>
+<br/>
+&nbsp;&nbsp;return result;<br/>
+}
+</blockquote>
+
+<p>
+ This generates the more complex FOAF output but we can see that this is not a very
+ scalable approach once the number of elements and nested structures starts to grow.
+ In the next version we take a completely different approach to the current templated
+ approach and take advantage of the CE meta-model.
+</p>
+
+
+
+<h3>v4.0 - Using the meta-model</h3>
+
+<p>
+ As an alternative to the approach outlined so far we can instead make new CE assertions
+ against the existing medicine concepts and properties that define to the CE environment
+ how the medicine properties can be rendered in the foaf RDF vocabulary.
+ <br/>
+ So, the approach for this agent is to simply state the RDF element names for certain CE
+ concepts and properties in the medicine model and provide a general XML generation
+ capability that will convert any CE property to RDF element name combination. Whilst this
+ is much more powerful than the original template based implementation it is still not a
+ fully functional CE to RDF converter, but is a good starting point.
+ <br/>
+ First, to explain the meta-model.  For each concept, property and relationship that is
+ specified via conceptualise sentences there is a corresponding meta-model sentence that
+ is generated.  For example the conceptualise sentences below:
+</p>
+
+<blockquote>
+conceptualise the person P<br/>
+&nbsp;&nbsp;~ is closely related to ~ the person P1.<br/>
+<br/>
+conceptualise a ~ person ~ P that<br/>
+&nbsp;&nbsp;has the value S as ~ social security number ~.
+</blockquote>
+
+...generate the following meta-model sentences:
+
+<blockquote>
+there is an entity concept named 'person'.<br/>
+<br/>
+there is a binary relation concept named 'person:is closely related to:person' that<br/>
+&nbsp;&nbsp;has 'is closely related to ' as concept name and<br/>
+&nbsp;&nbsp;has the entity concept 'person' as domain and<br/>
+&nbsp;&nbsp;has the entity concept 'person' as range.<br/>
+<br/>
+there is an attribute concept named 'person:social security number:constant' that<br/>
+&nbsp;&nbsp;has 'social security number ' as concept name and<br/>
+&nbsp;&nbsp;has the entity concept 'person' as domain and<br/>
+&nbsp;&nbsp;has the entity concept 'data constant' as range.
+</blockquote>
+
+<p>
+ These meta-model sentences can be found in the source named "populateMetaModel", and
+ there are more relationships generated than those shown above. These meta-model sentences
+ are complteley standard CE sentences using the core meta-model concepts, and are
+ automatically generated by the CE environment after conceptualise sentences are stated.
+ <br/>
+ To take advantage of this in our agent we can either directly extend these core concepts
+ with the required RDF or foaf element names, or we can create new concepts that contain
+ this information and link to the meta-model concepts in question. For this exercise we
+ will do the latter, so lets create a new concept which can capture the link between a
+ concept, attribute or relationship  and the corresponding RDF element name.
+ <br/>
+ Add these model sentences to the med_model.ce file (note that the concept "concept" is
+ the parent of "entity concept", "attribute concept" and "binary relation concept" from
+ the earlier examples):
+</p>
+
+<blockquote>
+conceptualise a ~ concept to element linker ~ CL that<br/>
+&nbsp;&nbsp;has the concept C as ~ source concept ~ and<br/>
+&nbsp;&nbsp;has the value V as ~ rdf element name ~.
+</blockquote>
+
+<p>
+ ...and these fact sentences to the med_extensions.ce file to define the relationships we need:
+</p>
+
+<blockquote>
+there is a concept to element linker named 'cel_001' that<br/>
+&nbsp;&nbsp;has the entity concept 'person' as source concept and<br/>
+&nbsp;&nbsp;has 'foaf:Person' as rdf element name.<br/>
+<br/>
+there is a concept to element linker named 'cel_002' that<br/>
+&nbsp;&nbsp;has the attribute concept 'person:social security number:constant' as source concept and<br/>
+&nbsp;&nbsp;has 'foaf:mbox' as rdf element name.<br/>
+<br/>
+there is a concept to element linker named 'cel_003' that<br/>
+&nbsp;&nbsp;has the attribute concept 'person:age:constant' as source concept and<br/>
+&nbsp;&nbsp;has 'foaf:phone' as rdf element name.<br/>
+<br/>
+there is a concept to element linker named 'cel_004' that<br/>
+&nbsp;&nbsp;has the binary relation concept 'person:is closely related to:person' as source concept and<br/>
+&nbsp;&nbsp;has 'foaf:knows' as rdf element name.<br/>
+<br/>
+there is a concept to element linker named 'cel_005' that<br/>
+&nbsp;&nbsp;has the attribute concept 'person:name:constant' as source concept and<br/>
+&nbsp;&nbsp;has 'foaf:name' as rdf element name.
+</blockquote>
+
+<p>
+ Now the FOAF generator agent can be modified to take this information from the CE Store and
+ generate the output using a much more generic template. At this point we might consider
+ renaming the agent from foaf generator since we can generate more than just foaf now, but
+ for this exercise we won’t bother.
+</p>
+
+<p>
+ The key iterator in the java code now looks like this:
+</p>
+
+<p>
+ This agent is not yet completed...
+</p>
+
+
+<h3>v5.0 – updating the CE environment from the agent</h3>
+
+<p>
+ The final evolution of the agent is to demonstrate that new CE can easily be generated
+ and inserted into the CE environment. This is not a core capability for this agent since
+ its primary purpose is to generate the FOAF output file, however we can use this technique
+ to record which instances have been processed.  Other example agents may consume external
+ data (not CE) and convert it into CE, or in some cases (like the generic rule executor agent)
+ they both consume and produce CE sentences.
+ <br/>
+ This agent is not yet completed…
+</p>
+
+</body>
+</html>

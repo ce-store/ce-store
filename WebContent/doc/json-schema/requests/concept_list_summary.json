@@ -1,0 +1,10 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"title": "Concept list (summary)",
+	"description": "Used to return a list of concepts (summary details)",
+	"type": "array",
+	"items": {
+		"type": "object",
+		"$ref": "./doc/json-schema/objects/concept_summary.json#definitions/concept"
+	}
+}

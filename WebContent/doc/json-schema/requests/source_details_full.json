@@ -1,0 +1,7 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"title": "Source details (full)",
+	"description": "Used to return the full details for a specific source",
+	"type": "object",
+	"$ref": "./doc/json-schema/objects/source_full.json#definitions/source"
+}

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+ * (C) Copyright IBM Corporation  2011, 2015
+ * All Rights Reserved
+ -->
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" version="3.0">
+  <display-name>CeStore</display-name>
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+  </welcome-file-list>
+  <servlet>
+    <description></description>
+    <display-name>RestHandler</display-name>
+    <servlet-name>RestHandler</servlet-name>
+    <servlet-class>com.ibm.ets.ita.ce.store.client.web.RestHandler</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>RestHandler</servlet-name>
+    <url-pattern>/stores/*</url-pattern>
+    <url-pattern>/sources/*</url-pattern>
+    <url-pattern>/sentences/*</url-pattern>
+    <url-pattern>/models/*</url-pattern>
+    <url-pattern>/concepts/*</url-pattern>
+    <url-pattern>/properties/*</url-pattern>
+    <url-pattern>/instances/*</url-pattern>
+    <url-pattern>/queries/*</url-pattern>
+    <url-pattern>/rules/*</url-pattern>
+    <url-pattern>/special/*</url-pattern>
+  </servlet-mapping>
+</web-app>

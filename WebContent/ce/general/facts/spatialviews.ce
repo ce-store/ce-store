@@ -1,0 +1,19 @@
+-- --------------------------------------------------------------------------
+-- (C) Copyright IBM Corporation  2011, 2015
+-- All Rights Reserved
+-- --------------------------------------------------------------------------
+
+there is a spatial view named 'Hampshire area' that
+  has '50.89457370' as latitude and
+  has '-1.39453191' as longitude and
+  has '10' as zoom factor.
+
+there is a spatial view named 'London area' that
+  has '51.46190772' as latitude and
+  has '-0.00613469' as longitude and
+  has '10' as zoom factor.
+
+there is a spatial view named 'Hursley area' that
+  has '51.01683251' as latitude and
+  has '-1.40298910' as longitude and
+  has '13' as zoom factor.

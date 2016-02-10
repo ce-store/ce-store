@@ -1,0 +1,41 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- 
+ * (C) Copyright IBM Corporation  2011, 2015
+ * All Rights Reserved
+ -->
+<html>
+
+<head>
+ <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+ <title>CE Store - Documentation</title>
+ <link rel="stylesheet" type="text/css" href="/CeStoreWeb/css/cestore_doc.css">
+</head>
+
+<body class="doc">
+
+<h2>How to set up CE Store from war files</h2>
+
+<strong>Pre-requisite: install Tomcat (any recent version) and ensure that it is started</strong>
+
+<ol>
+ <li>
+  Drop war files into your existing {tomcat}/webapps folder:
+  <ul>
+   <li>CeStoreWeb.war</li>
+   <li>CeEngineeringPanel.war</li>
+   <li>CeResourcesWeb.war</li>
+  </ul>
+ </li>
+ <li>Navigate in a browser (Chrome or Firefox) to: http://localhost:8080/CeEngineeringPanel (for Tomcat)</li>
+ <li>In the Engineering Panel (in your browser) in the actions pane (on the left) click on the correct model to load it for your exploration</li>
+</ol>
+
+Note:
+<ul>
+  <li>A similar approach can be taken with <strong>WebSphere Application Server</strong> and <strong>WebSphere Liberty Application Server</strong>.</li>
+  <li>The default ports for these servers may be different.</li>
+  <li>For example, for WebSphere Liberty Application Server, place the wars in wlp/users/servers/{your-server}/dropins and use port 9080.</li>
+</ul>
+
+</body>
+</html>

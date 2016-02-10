@@ -1,0 +1,63 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"title": "Store - summary details",
+	"definitions": {
+		"store": {
+			"title": "Summary store details",
+			"description": "Return the summary details about a CE Store",
+			"type": "object",
+			"required": [ "_type", "_style", "_id", "_created", "sentence_count", "model_count", "concept_count", "instance_count", "server_time", "store_version" ],
+            "additionalProperties": false,
+			"properties": {
+				"_type": {
+					"description": "The type (always store)",
+					"type": "string",
+					"enum": [ "store" ]
+				},
+				"_style": {
+					"description": "The style (always summary)",
+					"type": "string",
+					"enum": [ "summary" ]
+				},
+				"_id": {
+					"description": "The unique identifier (name) for this store",
+					"type": "string"
+				},
+				"_created": {
+					"description": "The (unix timestamp) date value on which this store was created",
+					"type": "integer",
+					"minimum": 0
+				},
+				"sentence_count": {
+					"description": "The total number of sentences defined in this store",
+					"type": "integer",
+					"minimum": 0
+				},
+				"model_count": {
+					"description": "The total number of conceptual models defined in this store",
+					"type": "integer",
+					"minimum": 0
+				},
+				"concept_count": {
+					"description": "The total number of concepts defined in this store",
+					"type": "integer",
+					"minimum": 0
+				},
+				"instance_count": {
+					"description": "The total number of instances defined in this store",
+					"type": "integer",
+					"minimum": 0
+				},
+                "server_time": {
+                    "description":  "The current (unix timestamp) date value on the server on which this store is located",
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "store_version": {
+                    "description":  "The version string for this store.",
+                    "type": "string"
+                }
+			}
+		}
+	}
+}

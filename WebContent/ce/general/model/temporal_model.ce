@@ -1,0 +1,36 @@
+-- --------------------------------------------------------------------------
+-- (C) Copyright IBM Corporation  2011, 2015
+-- All Rights Reserved
+-- --------------------------------------------------------------------------
+
+Model:   Temporal
+Title:   Temporal model
+Version: 1.0
+Date:    21st December 2015
+Author:  Dave Braines
+
+conceptualise a ~ temporal property ~ TP.
+
+conceptualise a ~ timestamp ~ T.
+
+conceptualise a ~ temporal thing ~ T that
+  has at most one timestamp TST as ~ timestamp ~ and
+  has at most one value TSV as ~ timestamp ~ and
+  has at most one value DS as ~ date string ~ and
+  has at most one value Y as ~ year ~ and
+  has at most one value M as ~ month ~ and
+  has at most one value D as ~ day ~ and
+  has at most one value H as ~ hour ~ and
+  has at most one value M as ~ minute ~ and
+  has at most one value S as ~ second ~ and
+  has at most one value MS as ~ millisecond ~.
+
+conceptualise a ~ spatio-temporal thing ~ S that
+  is a spatial thing and
+  is a temporal thing.
+Note: This requires the spatial thing concept from the spatial model.
+  
+conceptualise a ~ directed spatio-temporal thing ~ S that
+  is a directed spatial thing and
+  is a temporal thing.
+Note: This requires the spatial thing concept from the spatial model.

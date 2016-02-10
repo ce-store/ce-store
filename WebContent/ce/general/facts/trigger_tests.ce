@@ -1,0 +1,23 @@
+-- --------------------------------------------------------------------------
+-- (C) Copyright IBM Corporation  2011, 2015
+-- All Rights Reserved
+-- --------------------------------------------------------------------------
+
+-- Create a test query to allow matching on the trigger events below
+[ test query ]
+for which D is it true that
+  (the document D has the value 'test' as body)
+.
+
+there is a CE triggered event named 'trig_001' that
+  has 'com.ibm.ets.ita.ce.store.agent.ExampleNotifyHandler' as class to notify and
+  has 'document' as concept name.
+
+there is a CE triggered event named 'trig_002' that
+  has 'com.ibm.ets.ita.ce.store.agent.ExampleNotifyHandler' as class to notify and
+  has 'document' as concept name and
+  has 'body' as property name.
+  
+there is a CE triggered event named 'trig_003' that
+  has 'com.ibm.ets.ita.ce.store.agent.ExampleNotifyHandler' as class to notify and
+  has 'test query' as affected query name.

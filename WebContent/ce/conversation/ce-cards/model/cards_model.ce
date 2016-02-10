@@ -1,0 +1,145 @@
+-- --------------------------------------------------------------------------
+-- (C) Copyright IBM Corporation  2011, 2015
+-- All Rights Reserved
+-- --------------------------------------------------------------------------
+
+Model:   Cards
+Title:   CE-cards model
+Version: 1.0
+Date:    21st Decemeber 2015
+Author:  Dave Braines
+
+
+-- Cards
+
+conceptualise a ~ card ~ C that
+  is a spatio-temporal thing and
+  has the value PC as ~ content ~ and
+  has the value SC as ~ secondary content ~ and
+  has the resource R as ~ resource ~ and
+  has the spatial thing ST as ~ location ~.
+Note: ~ resource ~ relates the card to some linked object by means of a standard Web URI, for example an associated image, video or audio stream.
+Note: ~ content ~ the payload of this card.
+
+conceptualise the card C
+  ~ is from ~ the agent I and
+  ~ is to ~ the agent A and
+  ~ is in reply to ~ the card Q and
+  ~ is about ~ the thing T.
+Note: ~ is from ~ relates a card to its sender.
+Note: ~ is to ~ relates a card to its intended recipient(s).
+Note: ~ is in reply to ~ relates a card to a previously sent card.
+
+conceptualise a ~ CE card ~ C that
+  is a card.
+Note: A card that contains Controlled English (CE) content.
+
+conceptualise a ~ gist card ~ C that
+  is a card.
+Note: A card that contains template-based CE content, so named because they are intended to provide the "gist" of CE sentences.
+Note: ~ content ~ the payload (gist content) of this card.
+
+conceptualise a ~ gist-confirm card ~ C that
+  is a gist card and
+  is a confirm card.
+
+conceptualise an ~ NL card ~ C that
+  is a card.
+Note: A card that contains Natural Language (NL) content.
+NL cards are not classified into "ask" and "tell" variants because their content is ambiguous. Without confirmation, it is not
+possible to determine for certain whether they represent a query or statement. Once the corresponding CE content is confirmed
+(via a confirm CE card) an ask or tell CE card is issued.
+Note: ~ content ~ the payload (NL content) of this card.
+
+conceptualise an ~ ask card ~ C that is a CE card.
+Note: Used to communicate a CE query.
+
+conceptualise a ~ confirm card ~ C that is a CE card.
+Note: Contains CE content derived from the content of a preceeding NL card (allowing a human user to confirm that their NL
+content has been correctly processed into CE).
+The confirm card is interesting: one could argue it's a card that implicitly contains another card. That is, if I issue the
+NL card containing "there is a person named John" the response should actually be: confirm: (tell: "there is a person named
+p1234 that is known as John"). Note the difference: the response is actually saying "Did you mean you're TELLing me there's
+a person named John?". However, in this case I'm relying on the software mediating the conversation on the (presumably human)
+agent's side to add the ASK or TELL depending on whether the confirmed CE is a query or set of facts. I think this is reasonable
+because (a) it's entirely deterministic whether the content is a query or set of facts, (b) the software needs to parse the
+expression anyway so there's no overhead in it it doing this classification, and (c) it avoids introducing a special case of
+"meta-cards" that contain cards, and thus keeps the framework simpler.
+
+conceptualise a ~ expand card ~ C that is a CE card.
+Note: Used to request the formal CE form of the content of a preceeding "ask" or "tell" card.
+Explain cards mark a transition from gist content to full CE; I envisage the content of an expand card being able
+to specify CE entities that the sender wishes the expansion to focus on.
+Example: gist: "the red SUV is a threat" -> expand: "red SUV" -> tell: "there is a vehicle named v12345 that has ‘red SUV’ as
+description and has XYZ456 as registration and..." (here, the user doesn't want an expansion of 'threat', just the details of
+the SUV).
+
+conceptualise a ~ tell card ~ C that is a CE card.
+Note: Used to communicate CE statements (but not queries).
+
+conceptualise a ~ why card ~ C that is a CE card.
+Note: Used to request an explanation (in the form of CE rationale) for the content of a preceeding "ask" or "tell" card.
+Why cards mark a transition from CE facts to CE rationale; again, I envisage the content of a why card being able to specify
+CE entities that the sender wishes the explanation to focus on.
+Example: tell: "there is a vehicle named v12345 that is a threat and is located at central junction and..." ->
+why: "v12345 is a threat" -> tell: "v12345 is owned by HVT John Smith and..." (here, the user wants an explanation of the
+threat, as opposed to say, the vehicle's location).
+
+
+conceptualise a ~ country ~ C.
+
+conceptualise an ~ agent ~ A that
+  has the country C as ~ affiliation ~.
+
+conceptualise an ~ individual ~ I that is an agent.
+conceptualise an ~ organisation ~ O that is an agent.
+
+conceptualise a ~ person ~ P that is an individual.
+Note: A human agent.
+
+conceptualise a ~ service ~ S that is an individual.
+Note: A software service.
+
+conceptualise a ~ team ~ T that is an organisation.
+
+conceptualise a ~ resource ~ R.
+Note: An external resource (e.g. images or documents).
+
+conceptualise a ~ conversation triggered event ~ CTE that
+  is a CE triggered event and
+  has the value FC as ~ from concept ~ and
+  has the value FI as ~ from instance ~ and
+  has the value MD as ~ milliseconds delay ~ and
+  has the value CN as ~ check nationalities ~ and
+  has the value GC as ~ generate conversation ce ~.
+
+conceptualise a ~ conversation card triggered event ~ CC that
+  is a conversation triggered event.
+
+conceptualise a ~ conversation notify triggered event ~ CN that
+  is a conversation triggered event and
+  has the value IC as ~ ignore concept name ~ and
+  has the value TC as ~ to concept ~ and
+  has the value TI as ~ to instance ~.
+
+conceptualise a ~ summarisable thing ~ S.
+
+conceptualise a ~ custom summarisable thing ~ S that is a summarisable thing.
+conceptualise a ~ graphical summarisable thing ~ S that is a summarisable thing.
+
+conceptualise a ~ score ~ S that
+  has the value SV as ~ score value ~ and
+  has the value SE as ~ score explanation ~.
+
+conceptualise the score S
+  ~ is obtained from ~ the card C.
+
+[ card - lat lon from location ]
+if
+  ( the card C has the spatial thing ST as location ) and
+  ( the spatial thing ST has the value LAT as latitude ) and
+  ( the spatial thing ST has the value LON as longitude )
+then
+  ( the card C has the value LAT as latitude ) and
+  ( the card C has the value LON as longitude )
+.

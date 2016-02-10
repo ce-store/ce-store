@@ -1,0 +1,80 @@
+-- --------------------------------------------------------------------------
+-- (C) Copyright IBM Corporation  2011, 2015
+-- All Rights Reserved
+--
+-- (C) Copyright IBM Corporation  2011, 2015 All Rights Reserved.
+--
+-- US Government Users Restricted Rights - Use, duplication or
+-- disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+-- --------------------------------------------------------------------------
+
+
+
+Model: Fact Syntax Example
+
+
+
+-- some plain instances.
+
+there is a my-concept named 'my instance'.
+there is a some-concept named 'some instance'.
+
+
+-- forms that start with "there is a my-concept named 'my instance' that ..."
+
+there is a my-concept named 'my instance' that has the some-concept 'some instance' as some-concept-attribute.
+there is a my-concept named 'my instance' that has the value 'my value' as value-attribute.
+there is a my-concept named 'my instance' that relates-to-some-concept the some-concept 'some instance'.
+there is a my-concept named 'my instance' that relates-to-value the value 'my value'.
+
+
+-- forms that start with "the my-concept 'my instance' ..."
+
+the my-concept 'my instance' has the some-concept 'some instance' as some-concept-attribute.
+the my-concept 'my instance' has the value 'my value' as value-attribute.
+the my-concept 'my instance' relates-to-some-concept the some-concept 'some instance'.
+the my-concept 'my instance' relates-to-value the value 'my value'.
+
+
+-- using " ... and ..."
+
+there is a my-concept named 'my instance' that
+ has the some-concept 'some instance' as some-concept-attribute and
+ has the value 'my value' as value-attribute and
+ relates-to-some-concept the some-concept 'some instance' and
+ relates-to-value the value 'my value'.
+
+
+-- adding concepts to an instance.
+
+there is a my-concept named 'my instance'.
+the my-concept 'my instance' is a my-additional-concept.
+there is a my-additional-concept named 'my instance'.
+the my-additional-concept 'my instance' has the value 'dummy' as value-attribute-from-my-additional-concept.
+
+
+-- setting a property when an instance is associated with multiple concepts.
+
+there is a my-concept named 'my instance'.
+the my-concept 'my instance' is a my-additional-concept.
+the my-concept 'my-instance'
+  has the value 'my value' as value-attribute-from-my-concept.
+
+
+-- setting a property when an instance is associated with multiple concepts.
+-- incorrect :
+-- the my-concept 'my instance' has the value 'my value' as
+--   value-attribute-from-my-additional-concept.
+
+
+-- setting an additional concept for an instance and setting a property.
+the my-concept 'my instance'
+  is a my-additional-concept and
+  has the value 'my value' as value-attribute-from-my-concept.
+
+
+-- setting an additional concept for an instance and setting a property.
+-- incorrect :
+-- the my-concept 'my instance'
+--   is a my-additional-concept and
+--   has the value 'my value' as value-attribute-from-my-additional-concept.

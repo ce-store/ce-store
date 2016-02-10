@@ -1,0 +1,62 @@
+-- --------------------------------------------------------------------------
+-- (C) Copyright IBM Corporation  2011, 2015
+-- All Rights Reserved
+-- --------------------------------------------------------------------------
+
+
+the formatted property 'event:date string:value'
+  is a temporal property and
+  has 'dd/mm/yyyy' as data format.
+
+the formatted property 'check up:date string:value'
+  is a temporal property and
+  has 'dd/mm/yyyy' as data format.
+
+the formatted property 'consultation:date string:value'
+  is a temporal property and
+  has ‘dd/mm/yyyy’ as data format.
+
+the formatted property 'operation:date string:value'
+  is a temporal property and
+  has 'dd/mm/yyyy' as data format.
+
+
+there is a check up named 'visit_001' that
+  has '12/02/2013' as date string and
+  occurred at the hospital 'Royal Hampshire County Hospital'.
+
+there is a check up named 'visit_002' that
+  has '14/07/2013' as date string and
+  occurred at the hospital 'Royal Hampshire County Hospital'.
+
+there is a consultation named 'visit_003' that
+  has '09/11/2013' as date string and
+  occurred at the hospital 'Andover War Memorial Hospital'.
+
+there is a check up named 'visit_004' that
+  has '02/02/2014' as date string and
+  occurred at the hospital 'Royal Hampshire County Hospital'.
+
+there is a check up named 'visit_005' that
+  has '18/04/2014' as date string and
+  occurred at the hospital 'Royal Hampshire County Hospital'. 
+
+there is an operation named 'visit_006' that
+  has '30/05/2014' as date string and
+  occurred at the hospital 'Basingstoke and North Hampshire Hospital'. 
+
+there is a consultation named 'visit_007' that
+  has '21/09/2014' as date string and
+  occurred at the hospital 'Andover War Memorial Hospital'. 
+
+there is a consultation named 'visit_008' that
+  has '10/10/2014' as date string and
+  occurred at the hospital 'Andover War Memorial Hospital'. 
+
+there is an operation named 'visit_009' that
+  has '07/01/2015' as date string and
+  occurred at the hospital 'Basingstoke and North Hampshire Hospital'. 
+
+there is a check up named 'visit_010' that
+  has '09/03/2015' as date string and
+  occurred at the hospital 'Royal Hampshire County Hospital'. 

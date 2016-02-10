@@ -1,0 +1,65 @@
+-- --------------------------------------------------------------------------
+-- (C) Copyright IBM Corporation  2011, 2015
+-- All Rights Reserved
+-- --------------------------------------------------------------------------
+
+Model:   Medicine
+Title:   Medicine model
+Version: 1.0
+Date:    21st December 2015
+Author:  Dave Braines
+
+
+conceptualise a ~ person ~ P that
+  has the value V as ~ age ~ and
+  has the value S as ~ social security number ~ and
+  has the sequence MH as ~ medical procedures ~ and
+  ~ is the sibling of ~ the person P1 and
+  ~ is the parent of ~ the person P2 and
+  ~ is the child of ~ the person P3 and
+  ~ is the uncle of ~ the person P4 and
+  ~ is the aunt of ~ the person P5 and
+  ~ is the brother of ~ the person P6 and
+  ~ is closely related to ~ the person P7.
+
+conceptualise a ~ man ~ M that is a person.
+conceptualise a ~ woman ~ F that is a person. 
+
+conceptualise a ~ patient ~ P that is a person.
+
+
+conceptualise a ~ disease ~ D.
+
+conceptualise the person PA
+  ~ suffers from ~ the disease D.
+
+conceptualise a ~ symptom ~ S.
+
+conceptualise a ~ lump ~ L that
+  is a symptom.
+
+conceptualise the person PA
+  ~ presents with ~ the symptom S.
+
+conceptualise a ~ cancer ~ C that
+  is a disease.
+
+conceptualise a ~ diagnostic test ~ D.
+
+conceptualise a ~ cancer scan ~ BS that
+  is a diagnostic test.
+
+conceptualise the diagnostic test D
+  ~ is recommended for ~ the patient P.
+
+conceptualise a ~ medical procedure ~ M.
+
+conceptualise a ~ hospital ~ H that is a place.
+
+conceptualise a ~ event ~ E that
+  is a temporal thing and
+  ~ occurred at ~ the place P.
+
+conceptualise a ~ check up ~ C that is an event.
+conceptualise a ~ consultation ~ C that is an event.
+conceptualise an ~ operation ~ O that is an event.

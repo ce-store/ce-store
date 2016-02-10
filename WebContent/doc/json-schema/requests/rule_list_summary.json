@@ -1,0 +1,10 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"title": "Rule list (summary)",
+	"description": "Used to return a list of rules (summary details)",
+	"type": "array",
+	"items": {
+		"type": "object",
+		"$ref": "./doc/json-schema/objects/rule_summary.json#definitions/rule"
+	}
+}

@@ -1,0 +1,20 @@
+-- --------------------------------------------------------------------------
+-- (C) Copyright IBM Corporation  2011, 2015
+-- All Rights Reserved
+-- --------------------------------------------------------------------------
+
+there is a rule executor agent named 'med_rules' that
+  has 'com.ibm.ets.ita.ce.agent.general.RuleExecutor' as class name and
+--  has 'true' as save CE to file and
+  has 'true' as execute all rules and
+  has 'true' as iterate and
+  has '10' as maximum iterations and
+  has 'aunt' as rule name and
+  has 'uncle' as rule name and
+  has 'closeRelationInverse' as rule name and
+  has 'closeRelationAunt' as rule name and
+  has 'closeRelationParent' as rule name and
+  has 'closeRelationUncle' as rule name and
+  has 'sibling' as rule name and
+  has 'recommendScan' as rule name and
+  has 'rules_med' as target source.

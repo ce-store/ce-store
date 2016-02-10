@@ -1,0 +1,10 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"title": "Pattern list (full)",
+	"description": "Used to return a list of patterns, i.e. rules and queries (full details)",
+	"type": "array",
+	"items": {
+		"type": "object",
+		"$ref": "./doc/json-schema/objects/pattern_full.json#definitions/pattern"
+	}
+}

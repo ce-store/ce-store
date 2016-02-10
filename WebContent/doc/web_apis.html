@@ -1,0 +1,3043 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!-- 
+ * (C) Copyright IBM Corporation  2011, 2015
+ * All Rights Reserved
+
+ *
+ * (C) Copyright IBM Corporation  2011, 2015 All Rights Reserved.
+ *
+ * US Government Users Restricted Rights - Use, duplication or
+ * disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+ -->
+<html>
+
+<head>
+ <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+ <title>CE Store : General and Web API Documenatation</title>
+ <link rel="stylesheet" type="text/css" href="/CeStoreWeb/css/cestore_doc.css">
+</head>
+
+<body class="doc">
+
+ <div class="std">
+  <h2>Headers and parameters</h2>
+  
+  <h3>Standard URL parameters</h3>
+  <ul>
+   <li>
+    <a id="style">style</a><br/>
+    <font>(details needed)</font><br/>
+    Valid values:
+    <ul>
+     <li>full</li>
+     <li>summary</li>
+     <li>normalised</li>
+    </ul>
+   </li>
+   <li>
+    <a id="property">property</a><br/>
+    <font>Defines the property used to sort instances by date/time</font><br/>
+    Valid values:
+    <ul>
+     <li>timestamp (default)</li>
+     <li>any property instance name</li>
+    </ul>
+   </li>
+   <li>
+    <a id="buckets">buckets</a><br/>
+    <font>Defines the number of buckets to sort instances into</font><br/>
+    Valid values:
+    <ul>
+     <li>10 (default)</li>
+     <li>any number > 0</li>
+    </ul>
+   </li>
+   <li>
+    <a id="ceText">ceText</a><br/>
+    <font>(details needed)</font>
+   </li>
+   <li>
+    <a id="action">action</a><br/>
+    <font>(details needed)</font><br/>
+    Valid values:
+    <ul>
+     <li>save</li>
+     <li>validate</li>
+     <li>parse</li>
+     <li>execute</li>
+    </ul>
+   </li>
+   <li>
+    <a id="setName">setName</a><br/>
+    <font>(details needed)</font>
+   </li>
+   <li>
+    <a id="size">size</a><br/>
+    <font>(details needed)</font>
+   </li>
+   <li>
+    <a id="page">page</a><br/>
+    <font>(details needed)</font>
+   </li>
+   <li>
+    <a id="searchTerms">searchTerms</a><br/>
+    <font>(details needed)</font>
+   </li>
+  </ul>
+
+  <h3>HTTP request parameters</h3>
+  <font>(details needed)</font>
+
+  <h3>HTTP response values</h3>
+  <font>(details needed)</font>
+
+ </div>
+
+<!-- SOURCES -->  
+ <div class="std">
+  <h2>Sources</h2>
+  <a id="sources"></a>
+  <p>(description of sources is needed here)</p>
+  
+  <table class="doctable">
+   <tr>
+    <th rowspan="2">URL</th>
+    <th rowspan="2">Method</th>
+    <th rowspan="2">Description</th>
+    <th rowspan="2">Parameters</th>
+    <th colspan="2">HTTP request 'Accept' header</th>
+   </tr>
+   <tr>
+    <th>application/json</th>
+    <th>text/plain</th>
+   </tr>
+
+<!-- GET /sources -->
+   <tr>
+    <td class="url" rowspan="2">
+     /sources
+    </td>
+    <td rowspan="2">
+     <a href="/CeStoreWeb/sources" target="_blank">GET</a>
+    </td>
+    <td rowspan="2">
+     List all sources
+    </td>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=summary
+       <br/>
+       (default)
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/source_list_summary.json" target="_blank">list of sources</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/source_summary.json" target="_blank">summary form</a>.
+    </td>
+    <td rowspan="2">
+     A plain text list of all CE sentences for every source plus the meta-model CE sentences for each of these sources
+    </td>
+   </tr>
+   <tr>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=full
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/source_list_full.json" target="_blank">list of sources</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/source_full.json" target="_blank">full form</a>.
+    </td>
+   </tr>
+
+<!-- GET /sources/{id} -->
+   <tr>
+    <td class="url" rowspan="3">
+     /sources/<em>{id}</em>
+    </td>
+    <td rowspan="2">
+     <a href="/CeStoreWeb/sources/src_001" target="_blank">GET</a>
+    </td>
+    <td rowspan="2">
+     Get details for the source identified by <em>{id}</em>
+    </td>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=full
+       <br/>
+       (default)
+      </li>
+     </ul>
+    </td>
+    <td>
+     The JSON <a href="/CeStoreWeb/doc/json-schema/requests/source_details_full.json" target="_blank">details</a> for <a href="/CeStoreWeb/doc/json-schema/objects/source_full.json" target="_blank">full form</a> for the source.
+    </td>
+    <td rowspan="2">
+     A plain text list of all CE sentences for the source plus the meta-model CE sentences for each of these sources
+    </td>
+   </tr>
+   <tr>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=summary
+      </li>
+     </ul>
+    </td>
+    <td>
+     The JSON <a href="/CeStoreWeb/doc/json-schema/requests/source_details_summary.json" target="_blank">details</a> for <a href="/CeStoreWeb/doc/json-schema/objects/source_summary.json" target="_blank">summary form</a> for the source.
+    </td>
+   </tr>
+
+<!-- DELETE /sources/{id} -->
+   <tr>
+    <td>
+     DELETE
+    </td>
+    <td>
+     Delete the source identified by <em>{id}</em><br/>
+     This is a cascade delete.  All sentences within the source will be deleted, plus any entities created from those sentences, including:
+     <ul>
+      <li>Models</li>
+      <li>Concepts</li>
+      <li>Properties</li>
+      <li>Instances</li>
+      <li>Rules</li>
+      <li>Queries</li>
+     </ul>
+     The deletion of the entity occurs if the deletion of the sentence(s) results in no remaining sentence referencing the entity in question.
+    </td>
+    <td>
+    </td>
+    <td>
+     <font>tbc</font>
+    </td>
+    <td>
+     A plain text description indicating that the source has been deleted
+    </td>
+   </tr>
+
+<!-- GET /sources/{id}/sentences -->
+   <tr>
+    <td class="url" rowspan="2">
+     /sources/<em>{id}</em>/sentences
+    </td>
+    <td rowspan="2">
+     <a href="/CeStoreWeb/sources/src_001/sentences" target="_blank">GET</a>
+    </td>
+    <td rowspan="2">
+     List all sentences for the source identified by <em>{id}</em>
+    </td>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=summary
+       <br/>
+       (default)
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/sentence_list_summary.json" target="_blank">list of sentences</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/sentence_summary.json" target="_blank">summary form</a>.
+    </td>
+    <td rowspan="2">
+     A plain text list of all CE sentences for the source
+    </td>
+   </tr>
+   <tr>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=full
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/sentence_list_full.json" target="_blank">list of sentences</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/sentence_full.json" target="_blank">full form</a>.
+    </td>
+   </tr>
+  </table>
+ </div>
+
+<!-- SENTENCES -->
+ <div class="std">
+  <h2>Sentences</h2>
+  <a id="sentences"></a>
+  <p>(description of sentences is needed here)</p>
+
+  <table class="doc_table">
+   <tr>
+    <th rowspan="2">URL</th>
+    <th rowspan="2">Method</th>
+    <th rowspan="2">Description</th>
+    <th rowspan="2">Parameters</th>
+    <th colspan="2">HTTP request 'Accept' header</th>
+   </tr>
+   <tr>
+    <th>application/json</th>
+    <th>text/plain</th>
+   </tr>
+
+<!-- GET /sentences -->
+   <tr>
+    <td class="url" rowspan="3">
+     /sentences
+    </td>
+    <td rowspan="2">
+     <a href="/CeStoreWeb/sentences" target="_blank">GET</a>
+    </td>
+    <td rowspan="2">
+     List all sentences.<br/>
+     Optionally specify one or more type and validity parameters which will act as filters
+     <ul>
+      <li>Sentence type:
+       <ul>
+        <li>
+         <a href="/CeStoreWeb/sentences/?type=model" target="_blank">Model</a>
+        </li>
+        <li>
+         <a href="/CeStoreWeb/sentences/?type=fact" target="_blank">Fact (all)</a>
+        </li>
+        <li>
+         <a href="/CeStoreWeb/sentences/?type=fact-normal" target="_blank">Fact (normal)</a>
+        </li>
+        <li>
+         <a href="/CeStoreWeb/sentences/?type=fact-qualified" target="_blank">Fact (qualified)</a>
+        </li>
+        <li>
+         <a href="/CeStoreWeb/sentences/?type=pattern" target="_blank">Pattern (rule or query)</a>
+        </li>
+        <li>
+         <a href="/CeStoreWeb/sentences/?type=rule" target="_blank">Rule</a>
+        </li>
+        <li>
+         <a href="/CeStoreWeb/sentences/?type=query" target="_blank">Query</a>
+        </li>
+        <li>
+         <a href="/CeStoreWeb/sentences/?type=annotation" target="_blank">Annotation</a>
+        </li>
+        <li>
+         <a href="/CeStoreWeb/sentences/?type=command" target="_blank">Command</a>
+        </li>
+       </ul>
+      </li>
+      <li>Sentence validity:
+       <ul>
+        <li>
+         <a href="/CeStoreWeb/sentences/?validity=valid" target="_blank">Valid</a>
+        </li>
+        <li>
+         <a href="/CeStoreWeb/sentences/?validity=invalid" target="_blank">Invalid</a>
+        </li>
+       </ul>
+      </li>
+     </ul>
+     If multiple type and/or validity parameters are supplied, sentences are listed after the combination
+     of filters have been applied.
+     <a href="/CeStoreWeb/sentences?type=model&?validity=valid" target="_blank">This is an example</a>
+     of combining filters to retrieve valid model sentences.
+    </td>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=summary
+       <br/>
+       (default)
+      </li>
+      <li>
+       type=model | fact | fact-normal | fact-qualified | pattern | rule | query | annotation | command
+      </li>
+      <li>
+       validity=valid | invalid
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/sentence_list_summary.json" target="_blank">list of sentences</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/sentence_summary.json" target="_blank">summary form</a>.
+    </td>
+    <td rowspan="2">
+     A plain text list of all CE sentences
+    </td>
+   </tr>
+   <tr>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=full
+      </li>
+      <li>
+       type=model | fact | fact-normal | fact-qualified | pattern | rule | query | annotation | command
+      </li>
+      <li>
+       validity=valid | invalid
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/sentence_list_full.json" target="_blank">list of sentences</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/sentence_full.json" target="_blank">full form</a>.
+    </td>
+   </tr>
+
+<!-- POST /sentences -->
+   <tr>
+    <td>
+     POST
+    </td>
+    <td>
+     Save the specified CE sentences in the CE Store, and by parsing them generate all derived entities
+    </td>
+    <td>
+     <ul>
+      <li>
+       <a href="#ceText">ceText</a>={text}
+       <br/>
+       The CE sentences to be processed
+      </li>
+      <li>
+       <a href="#action">action</a>={val}
+       <br/>
+       The action to be taken when processing the sentence<br/>
+       default {val}=save
+      </li>
+      <li>
+       <a href="#setName">setName</a>={val}
+       <br/>
+       The optional name for this set of sentences (used when creating the source)<br/>
+       default {val}=<em>null</em>
+      </li>
+     </ul>
+    </td>
+    <td>
+     <font>tbc</font>
+    </td>
+    <td>
+     A plain text summary of the CE sentences that were processed and saved
+    </td>
+   </tr>
+
+<!-- GET /sentences/{id} -->
+   <tr>
+    <td class="url" rowspan="3">
+     /sentences/<em>{id}</em>
+    </td>
+    <td rowspan="2">
+     <a href="/CeStoreWeb/sentences/sen_001" target="_blank">GET</a>
+    </td>
+    <td rowspan="2">
+     Get details for the sentence identified by <em>{id}</em>
+    </td>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=full
+       <br/>
+       (default)
+      </li>
+     </ul>
+    </td>
+    <td>
+     The JSON <a href="/CeStoreWeb/doc/json-schema/requests/sentence_details_full.json" target="_blank">details</a> for <a href="/CeStoreWeb/doc/json-schema/objects/sentence_full.json" target="_blank">full form</a> for the sentence.
+    </td>
+    <td rowspan="2">
+     The plain text for the specified CE sentence
+    </td>
+   </tr>
+   <tr>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=summary
+      </li>
+     </ul>
+    </td>
+    <td>
+     The JSON <a href="/CeStoreWeb/doc/json-schema/requests/sentence_details_summary.json" target="_blank">details</a> for <a href="/CeStoreWeb/doc/json-schema/objects/sentences_summary.json" target="_blank">summary form</a> for the sentence.
+    </td>
+   </tr>
+   
+<!-- DELETE /sentences/{id} -->
+   <tr>
+    <td>
+     DELETE
+    </td>
+    <td>
+     Delete the sentence identified by <em>{id}</em><br/>
+     This is a cascade delete.  The sentence will be deleted, plus any entities created from it, including:
+     <ul>
+      <li>Concepts</li>
+      <li>Properties</li>
+      <li>Instances</li>
+      <li>Rules</li>
+      <li>Queries</li>
+     </ul>
+     The deletion of the entity occurs if the deletion of the sentence results in no remaining sentence referencing the entity in question.
+    </td>
+    <td>
+    </td>
+    <td>
+     <font>tbc</font>
+    </td>
+    <td>
+     A plain text description indicating that the sentence has been deleted
+    </td>
+   </tr>
+
+<!-- GET /sentences/{id}/rationale -->
+   <tr>
+    <td class="url" rowspan="2">
+     /sentences/<em>{id}</em>/rationale
+    </td>
+    <td rowspan="2">
+     <a href="/CeStoreWeb/sentences/sen_001/rationale" target="_blank">GET</a>
+    </td>
+    <td rowspan="2">
+     <font>description needed</font>
+    </td>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=summary
+       <br/>
+       (default)
+      </li>
+     </ul>
+    </td>
+    <td>
+     <font>tbc</font>
+    </td>
+    <td rowspan="2">
+    <font>tbc</font>
+    </td>
+   </tr>
+   <tr>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=full
+      </li>
+     </ul>
+    </td>
+    <td>
+     <font>tbc</font>
+    </td>
+   </tr>
+   
+  </table>
+ </div>
+
+<!-- MODELS -->
+ <div class="std">
+  <h2>Models</h2>
+  <a id="models"></a>
+  <p>(description of models is needed here)</p>
+  
+  <table class="doctable">
+   <tr>
+    <th rowspan="2">URL</th>
+    <th rowspan="2">Method</th>
+    <th rowspan="2">Description</th>
+    <th rowspan="2">Parameters</th>
+    <th colspan="2">HTTP request 'Accept' header</th>
+   </tr>
+   <tr>
+    <th>application/json</th>
+    <th>text/plain</th>
+   </tr>
+
+<!-- GET /models -->
+   <tr>
+    <td class="url" rowspan="2">
+     /models
+    </td>
+    <td rowspan="2">
+     <a href="/CeStoreWeb/models" target="_blank">GET</a>
+    </td>
+    <td rowspan="2">
+     List all models
+    </td>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=summary
+       <br/>
+       (default)
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/model_list_summary.json" target="_blank">list of models</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/model_summary.json" target="_blank">summary form</a>.
+    </td>
+    <td rowspan="2">
+     A plain text list of all CE sentences for every model plus the meta-model CE sentences for for each of these models
+    </td>
+   </tr>
+   <tr>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=full
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/model_list_full.json" target="_blank">list of models</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/model_full.json" target="_blank">full form</a>.
+    </td>
+   </tr>
+
+<!-- GET /models/{name} -->
+   <tr>
+    <td class="url" rowspan="3">
+     /models/<em>{name}</em>
+    </td>
+    <td rowspan="2">
+     <a href="/CeStoreWeb/models/Medicine" target="_blank">GET</a>
+    </td>
+    <td rowspan="2">
+     Get details for the model identified by <em>{name}</em>
+    </td>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=full
+       <br/>
+       (default)
+      </li>
+     </ul>
+    </td>
+    <td>
+     The JSON <a href="/CeStoreWeb/doc/json-schema/requests/model_details_full.json" target="_blank">details</a> for <a href="/CeStoreWeb/doc/json-schema/objects/model_full.json" target="_blank">full form</a> for the model.
+    </td>
+    <td rowspan="2">
+     A plain text list of all CE sentences for the model plus the meta-model CE sentences for each of these models
+    </td>
+   </tr>
+   <tr>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=summary
+      </li>
+     </ul>
+    </td>
+    <td>
+     The JSON <a href="/CeStoreWeb/doc/json-schema/requests/model_details_summary.json" target="_blank">details</a> for <a href="/CeStoreWeb/doc/json-schema/objects/model_summary.json" target="_blank">summary form</a> for the model.
+    </td>
+   </tr>
+
+<!-- DELETE /models/{name} -->
+   <tr>
+    <td>
+     DELETE
+    </td>
+    <td>
+     Delete the model identified by <em>{name}</em><br/>
+     This is a cascade delete.  All sentences within the model will be deleted, plus any entities created from those sentences, including:
+     <ul>
+      <li>Models</li>
+      <li>Concepts</li>
+      <li>Properties</li>
+      <li>Instances</li>
+      <li>Rules</li>
+      <li>Queries</li>
+     </ul>
+     The deletion of the entity occurs if the deletion of the sentence(s) results in no remaining sentence referencing the entity in question.
+    </td>
+    <td>
+    </td>
+    <td>
+     <font>tbc</font>
+    </td>
+    <td>
+     A plain text description indicating that the model has been deleted
+    </td>
+   </tr>
+
+<!-- GET /models/{name}/sources -->
+   <tr>
+    <td class="url" rowspan="2">
+     /models/<em>{name}</em>/sources
+    </td>
+    <td rowspan="2">
+     <a href="/CeStoreWeb/models/Medicine/sources" target="_blank">GET</a>
+    </td>
+    <td rowspan="2">
+     List all sources that define the model identified by <em>{name}</em>
+    </td>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=summary
+       <br/>
+       (default)
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/source_list_summary.json" target="_blank">list of sources</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/source_summary.json" target="_blank">summary form</a>.
+    </td>
+    <td rowspan="2">
+     A plain text list of all CE sentences for each of the sources that define this model
+    </td>
+   </tr>
+   <tr>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=full
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/sentence_list_full.json" target="_blank">list of sentences</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/sentence_full.json" target="_blank">full form</a>.
+    </td>
+   </tr>
+
+<!-- GET /models/{name}/sentences -->
+   <tr>
+    <td class="url" rowspan="2">
+     /models/<em>{name}</em>/sentences
+    </td>
+    <td rowspan="2">
+     <a href="/CeStoreWeb/models/Medicine/sentences" target="_blank">GET</a>
+    </td>
+    <td rowspan="2">
+     List all sentences for the model identified by <em>{name}</em>
+    </td>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=summary
+       <br/>
+       (default)
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/sentence_list_summary.json" target="_blank">list of sentences</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/sentence_summary.json" target="_blank">summary form</a>.
+    </td>
+    <td rowspan="2">
+     A plain text list of all CE sentences for the model
+    </td>
+   </tr>
+   <tr>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=full
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/sentence_list_full.json" target="_blank">list of sentences</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/sentence_full.json" target="_blank">full form</a>.
+    </td>
+   </tr>
+
+<!-- GET /models/{name}/concepts -->
+   <tr>
+    <td class="url" rowspan="2">
+     /models/<em>{name}</em>/concepts
+    </td>
+    <td rowspan="2">
+     <a href="/CeStoreWeb/models/Medicine/concepts" target="_blank">GET</a>
+    </td>
+    <td rowspan="2">
+     List all concepts that are defined in the model identified by <em>{name}</em>
+    </td>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=summary
+       <br/>
+       (default)
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/concept_list_summary.json" target="_blank">list of concepts</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/concept_summary.json" target="_blank">summary form</a>.
+    </td>
+    <td rowspan="2">
+     A plain text list of all CE sentences for each of the concepts defined in this model
+    </td>
+   </tr>
+   <tr>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=full
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/concept_list_full.json" target="_blank">list of concepts</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/concept_full.json" target="_blank">full form</a>.
+    </td>
+   </tr>
+
+<!-- GET /models/{name}/properties -->
+   <tr>
+    <td class="url" rowspan="2">
+     /models/<em>{name}</em>/properties
+    </td>
+    <td rowspan="2">
+     <a href="/CeStoreWeb/models/Medicine/properties" target="_blank">GET</a>
+    </td>
+    <td rowspan="2">
+     List all properties that are defined in the model identified by <em>{name}</em>
+    </td>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=summary
+       <br/>
+       (default)
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/property_list_summary.json" target="_blank">list of properties</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/property_summary.json" target="_blank">summary form</a>.
+    </td>
+    <td rowspan="2">
+     A plain text list of all CE sentences for each of the properties defined in this model
+    </td>
+   </tr>
+   <tr>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=full
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/property_list_full.json" target="_blank">list of properties</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/property_full.json" target="_blank">full form</a>.
+    </td>
+   </tr>
+
+  </table>
+ </div>
+
+<!-- CONCEPTS -->
+ <div class="std">
+  <h2>Concepts</h2>
+  <a id="concepts"></a>
+  <p>(description of concepts is needed here)</p>
+  
+  <table class="doctable">
+   <tr>
+    <th rowspan="2">URL</th>
+    <th rowspan="2">Method</th>
+    <th rowspan="2">Description</th>
+    <th rowspan="2">Parameters</th>
+    <th colspan="2">HTTP request 'Accept' header</th>
+   </tr>
+   <tr>
+    <th>application/json</th>
+    <th>text/plain</th>
+   </tr>
+
+<!-- GET /concepts -->
+   <tr>
+    <td class="url" rowspan="2">
+     /concepts
+    </td>
+    <td rowspan="2">
+     <a href="/CeStoreWeb/concepts" target="_blank">GET</a>
+    </td>
+    <td rowspan="2">
+     List all concepts
+    </td>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=summary
+       <br/>
+       (default)
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/concept_list_summary.json" target="_blank">list of concepts</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/concept_summary.json" target="_blank">summary form</a>.
+    </td>
+    <td rowspan="2">
+     A plain text list of all CE sentences for every concept plus the meta-model CE sentences for for each of these concepts
+    </td>
+   </tr>
+   <tr>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=full
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/concept_list_full.json" target="_blank">list of concepts</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/concept_full.json" target="_blank">full form</a>.
+    </td>
+   </tr>
+
+<!-- GET /concepts/{name} -->
+   <tr>
+    <td class="url" rowspan="3">
+     /concepts/<em>{name}</em>
+    </td>
+    <td rowspan="2">
+     <a href="/CeStoreWeb/concepts/person" target="_blank">GET</a>
+    </td>
+    <td rowspan="2">
+     Get details for the concept identified by <em>{name}</em>
+    </td>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=full
+       <br/>
+       (default)
+      </li>
+     </ul>
+    </td>
+    <td>
+     The JSON <a href="/CeStoreWeb/doc/json-schema/requests/concept_details_full.json" target="_blank">details</a> for <a href="/CeStoreWeb/doc/json-schema/objects/concept_full.json" target="_blank">full form</a> for the concept.
+    </td>
+    <td rowspan="2">
+     A plain text list of all CE sentences for the concept plus the meta-model CE sentences for each of these concepts
+    </td>
+   </tr>
+   <tr>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=summary
+      </li>
+     </ul>
+    </td>
+    <td>
+     The JSON <a href="/CeStoreWeb/doc/json-schema/requests/concept_details_summary.json" target="_blank">details</a> for <a href="/CeStoreWeb/doc/json-schema/objects/concept_summary.json" target="_blank">summary form</a> for the concept.
+    </td>
+   </tr>
+
+<!-- DELETE /concepts/{name} -->
+   <tr>
+    <td>
+     DELETE
+    </td>
+    <td>
+     Delete the concept identified by <em>{name}</em><br/>
+     This is a cascade delete.  All sentences within the concept will be deleted, plus any entities created from those sentences, including:
+     <ul>
+      <li>Models</li>
+      <li>Concepts</li>
+      <li>Properties</li>
+      <li>Instances</li>
+      <li>Rules</li>
+      <li>Queries</li>
+     </ul>
+     The deletion of the entity occurs if the deletion of the sentence(s) results in no remaining sentence referencing the entity in question.
+    </td>
+    <td>
+    </td>
+    <td>
+     <font>tbc</font>
+    </td>
+    <td>
+     A plain text description indicating that the concept has been deleted
+    </td>
+   </tr>
+
+<!-- GET /concepts/{name}/children -->
+   <tr>
+    <td class="url" rowspan="2">
+     /concepts/<em>{name}</em>/children
+    </td>
+    <td rowspan="2">
+     <a href="/CeStoreWeb/concepts/person/children" target="_blank">GET</a>
+    </td>
+    <td rowspan="2">
+     List all child concepts for the concept identified by <em>{name}</em>
+    </td>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=summary
+       <br/>
+       (default)
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/concept_list_summary.json" target="_blank">list of concepts</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/concept_summary.json" target="_blank">summary form</a>.
+    </td>
+    <td rowspan="2">
+     A plain text list of all CE sentences for all child concepts of this concept
+    </td>
+   </tr>
+   <tr>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=full
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/concept_list_full.json" target="_blank">list of concepts</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/concept_full.json" target="_blank">full form</a>.
+    </td>
+   </tr>
+
+<!-- GET /concepts/{name}/children/direct -->
+   <tr>
+    <td class="url" rowspan="2">
+     /concepts/<em>{name}</em>/children/direct
+    </td>
+    <td rowspan="2">
+     <a href="/CeStoreWeb/concepts/person/children/direct" target="_blank">GET</a>
+    </td>
+    <td rowspan="2">
+     List direct child concepts for the concept identified by <em>{name}</em>
+    </td>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=summary
+       <br/>
+       (default)
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/concept_list_summary.json" target="_blank">list of concepts</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/concept_summary.json" target="_blank">summary form</a>.
+    </td>
+    <td rowspan="2">
+     A plain text list of all CE sentences for the direct child concepts of this concept
+    </td>
+   </tr>
+   <tr>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=full
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/concept_list_full.json" target="_blank">list of concepts</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/concept_full.json" target="_blank">full form</a>.
+    </td>
+   </tr>
+
+<!-- GET /concepts/{name}/parents -->
+   <tr>
+    <td class="url" rowspan="2">
+     /concepts/<em>{name}</em>/parents
+    </td>
+    <td rowspan="2">
+     <a href="/CeStoreWeb/concepts/person/parents" target="_blank">GET</a>
+    </td>
+    <td rowspan="2">
+     List all parent concepts for the concept identified by <em>{name}</em>
+    </td>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=summary
+       <br/>
+       (default)
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/concept_list_summary.json" target="_blank">list of concepts</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/concept_summary.json" target="_blank">summary form</a>.
+    </td>
+    <td rowspan="2">
+     A plain text list of all CE sentences for all parent concepts of this concept
+    </td>
+   </tr>
+   <tr>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=full
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/concept_list_full.json" target="_blank">list of concepts</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/concept_full.json" target="_blank">full form</a>.
+    </td>
+   </tr>
+
+<!-- GET /concepts/{name}/parents/direct -->
+   <tr>
+    <td class="url" rowspan="2">
+     /concepts/<em>{name}</em>/parents/direct
+    </td>
+    <td rowspan="2">
+     <a href="/CeStoreWeb/concepts/person/parents/direct" target="_blank">GET</a>
+    </td>
+    <td rowspan="2">
+     List direct parent concepts for the concept identified by <em>{name}</em>
+    </td>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=summary
+       <br/>
+       (default)
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/concept_list_summary.json" target="_blank">list of concepts</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/concept_summary.json" target="_blank">summary form</a>.
+    </td>
+    <td rowspan="2">
+     A plain text list of all CE sentences for the direct parent concepts of this concept
+    </td>
+   </tr>
+   <tr>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=full
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/concept_list_full.json" target="_blank">list of concepts</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/concept_full.json" target="_blank">full form</a>.
+    </td>
+   </tr>
+
+<!-- GET /concepts/{name}/properties -->
+   <tr>
+    <td class="url" rowspan="2">
+     /concepts/<em>{name}</em>/properties
+    </td>
+    <td rowspan="2">
+     <a href="/CeStoreWeb/concepts/person/properties" target="_blank">GET</a>
+    </td>
+    <td rowspan="2">
+     List all properties for the concept identified by <em>{name}</em>
+    </td>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=summary
+       <br/>
+       (default)
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/property_list_summary.json" target="_blank">list of properties</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/property_summary.json" target="_blank">summary form</a>.
+    </td>
+    <td rowspan="2">
+     A plain text list of all CE sentences for all properties of this concept
+    </td>
+   </tr>
+   <tr>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=full
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/property_list_full.json" target="_blank">list of properties</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/property_full.json" target="_blank">full form</a>.
+    </td>
+   </tr>
+
+<!-- GET /concepts/{name}/properties/datatype -->
+   <tr>
+    <td class="url" rowspan="2">
+     /concepts/<em>{name}</em>/properties/datatype
+    </td>
+    <td rowspan="2">
+     <a href="/CeStoreWeb/concepts/person/properties/datatype" target="_blank">GET</a>
+    </td>
+    <td rowspan="2">
+     List all datatype properties for the concept identified by <em>{name}</em>
+    </td>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=summary
+       <br/>
+       (default)
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/property_list_summary.json" target="_blank">list of properties</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/property_summary.json" target="_blank">summary form</a>.
+    </td>
+    <td rowspan="2">
+     A plain text list of all CE sentences for all datatype properties of this concept
+    </td>
+   </tr>
+   <tr>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=full
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/property_list_full.json" target="_blank">list of properties</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/property_full.json" target="_blank">full form</a>.
+    </td>
+   </tr>
+
+<!-- GET /concepts/{name}/properties/object -->
+   <tr>
+    <td class="url" rowspan="2">
+     /concepts/<em>{name}</em>/properties/object
+    </td>
+    <td rowspan="2">
+     <a href="/CeStoreWeb/concepts/person/properties/object" target="_blank">GET</a>
+    </td>
+    <td rowspan="2">
+     List all object properties for the concept identified by <em>{name}</em>
+    </td>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=summary
+       <br/>
+       (default)
+      </li>
+      <li>
+       <a href="#range">range</a>={text}<br/>
+       If specified this will restrict the result to only those properties that have the specified range
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/property_list_summary.json" target="_blank">list of properties</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/property_summary.json" target="_blank">summary form</a>.
+    </td>
+    <td rowspan="2">
+     A plain text list of all CE sentences for all object properties of this concept
+    </td>
+   </tr>
+   <tr>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=full
+      </li>
+      <li>
+       <a href="#range">range</a>={text}<br/>
+       If specified this will restrict the result to only those properties that have the specified range
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/property_list_full.json" target="_blank">list of properties</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/property_full.json" target="_blank">full form</a>.
+    </td>
+   </tr>
+
+<!-- GET /concepts/{name}/instances -->
+   <tr>
+    <td class="url" rowspan="3">
+     /concepts/<em>{name}</em>/instances
+    </td>
+    <td rowspan="2">
+     <a href="/CeStoreWeb/concepts/person/instances" target="_blank">GET</a>
+    </td>
+    <td rowspan="2">
+     List all instances for the concept identified by <em>{name}</em>
+    </td>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=summary
+       <br/>
+       (default)
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/instance_list_summary.json" target="_blank">list of instances</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/instance_summary.json" target="_blank">summary form</a>.
+    </td>
+    <td rowspan="2">
+     A plain text list of all CE sentences for all instances of this concept
+    </td>
+   </tr>
+   <tr>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=full
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/instance_list_full.json" target="_blank">list of instances</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/instance_full.json" target="_blank">full form</a>.
+    </td>
+   </tr>
+
+<!-- DELETE /concepts/{name}/instances -->
+   <tr>
+    <td>
+     DELETE
+    </td>
+    <td>
+     Delete all instances for the concept identified by <em>{name}</em>
+    </td>
+    <td>
+    </td>
+    <td>
+     <font>tbc</font>
+    </td>
+    <td>
+     A plain text description indicating that the instances have been deleted
+    </td>
+   </tr>
+
+<!-- GET /concepts/{name}/instances/frequency -->
+   <tr>
+    <td class="url">
+     /concepts/<em>{name}</em>/instances/frequency
+    </td>
+    <td>
+     <a href="/CeStoreWeb/concepts/temporal%20thing/instances/frequency" target="_blank">GET</a>
+    </td>
+    <td>
+     Return the frequency of all instances for the concept identified by <em>{name}</em> sorted into buckets by time.
+    </td>
+    <td>
+     <ul>
+      <li>
+       <a href="#property">property</a>=timestamp
+       <br/>
+       (default)
+      </li>
+      <li>
+       <a href="#buckets">buckets</a>=10
+       <br/>
+       (default)
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON array containing the frequency of instances per time range.
+    </td>
+    <td>
+     tbc
+    </td>
+   </tr>
+
+<!-- GET /concepts/{name}/instances/count -->
+   <tr>
+    <td class="url">
+     /concepts/<em>{name}</em>/instances/count
+    </td>
+    <td>
+     <a href="/CeStoreWeb/concepts/person/instances/count" target="_blank">GET</a>
+    </td>
+    <td>
+     Count all instances for the concept identified by <em>{name}</em>
+    </td>
+    <td>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/special_singlevalue.json" target="_blank">special single value</a> containing the number of instances.
+    </td>
+    <td>
+     A plain text number that is the count of the instances for this concept
+    </td>
+   </tr>
+
+<!-- GET /concepts/{name}/instances/exact -->
+   <tr>
+    <td class="url" rowspan="3">
+     /concepts/<em>{name}</em>/instances/exact
+    </td>
+    <td rowspan="2">
+     <a href="/CeStoreWeb/concepts/person/instances/exact" target="_blank">GET</a>
+    </td>
+    <td rowspan="2">
+     List all exact instances for the concept identified by <em>{name}</em>, i.e. those instance directly asserted to be of this concept rather than any inferred instances from children
+    </td>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=summary
+       <br/>
+       (default)
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/instance_list_summary.json" target="_blank">list of instances</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/instance_summary.json" target="_blank">summary form</a>.
+    </td>
+    <td rowspan="2">
+     A plain text list of all CE sentences for all exact instances of this concept
+    </td>
+   </tr>
+   <tr>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=full
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/instance_list_full.json" target="_blank">list of instances</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/instance_full.json" target="_blank">full form</a>.
+    </td>
+   </tr>
+
+<!-- DELETE /concepts/{name}/instances/exact -->
+   <tr>
+    <td>
+     DELETE
+    </td>
+    <td>
+     Delete exact instances for the concept identified by <em>{name}</em>
+    </td>
+    <td>
+    </td>
+    <td>
+     <font>tbc</font>
+    </td>
+    <td>
+     A plain text description indicating that the instances have been deleted
+    </td>
+   </tr>
+
+<!-- GET /concepts/{name}/sentences -->
+   <tr>
+    <td class="url" rowspan="2">
+     /concepts/<em>{name}</em>/sentences
+    </td>
+    <td rowspan="2">
+     <a href="/CeStoreWeb/concepts/person/sentences" target="_blank">GET</a>
+    </td>
+    <td rowspan="2">
+     List all sentences for the concept identified by <em>{name}</em>
+    </td>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=summary
+       <br/>
+       (default)
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/sentence_list_summary.json" target="_blank">list of sentences</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/sentence_summary.json" target="_blank">summary form</a>.
+    </td>
+    <td rowspan="2">
+     A plain text list of all CE sentences for the concept
+    </td>
+   </tr>
+   <tr>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=full
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/sentence_list_full.json" target="_blank">list of sentences</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/sentence_full.json" target="_blank">full form</a>.
+    </td>
+   </tr>
+
+<!-- GET /concepts/{name}/sentences/primary -->
+   <tr>
+    <td class="url" rowspan="2">
+     /concepts/<em>{name}</em>/sentences/primary
+    </td>
+    <td rowspan="2">
+     <a href="/CeStoreWeb/concepts/person/sentences/primary" target="_blank">GET</a>
+    </td>
+    <td rowspan="2">
+     List all primary sentences for the concept identified by <em>{name}</em>
+    </td>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=summary
+       <br/>
+       (default)
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/sentence_list_summary.json" target="_blank">list of sentences</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/sentence_summary.json" target="_blank">summary form</a>.
+    </td>
+    <td rowspan="2">
+     A plain text list of all primary CE sentences for the concept
+    </td>
+   </tr>
+   <tr>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=full
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/sentence_list_full.json" target="_blank">list of sentences</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/sentence_full.json" target="_blank">full form</a>.
+    </td>
+   </tr>
+
+<!-- GET /concepts/{name}/sentences/secondary -->
+   <tr>
+    <td class="url" rowspan="2">
+     /concepts/<em>{name}</em>/sentences/secondary
+    </td>
+    <td rowspan="2">
+     <a href="/CeStoreWeb/concepts/person/sentences/secondary" target="_blank">GET</a>
+    </td>
+    <td rowspan="2">
+     List all secondary sentences for the concept identified by <em>{name}</em>
+    </td>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=summary
+       <br/>
+       (default)
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/sentence_list_summary.json" target="_blank">list of sentences</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/sentence_summary.json" target="_blank">summary form</a>.
+    </td>
+    <td rowspan="2">
+     A plain text list of all secondary CE sentences for the concept
+    </td>
+   </tr>
+   <tr>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=full
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/sentence_list_full.json" target="_blank">list of sentences</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/sentence_full.json" target="_blank">full form</a>.
+    </td>
+   </tr>
+
+<!-- GET /concepts/{name}/rationale -->
+   <tr>
+    <td class="url" rowspan="2">
+     /concepts/<em>{name}</em>/rationale
+    </td>
+    <td rowspan="2">
+     <a href="/CeStoreWeb/concepts/person/rationale" target="_blank">GET</a>
+    </td>
+    <td rowspan="2">
+     <font>description needed</font>
+    </td>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=summary
+       <br/>
+       (default)
+      </li>
+     </ul>
+    </td>
+    <td>
+     <font>tbc</font>
+    </td>
+    <td rowspan="2">
+    <font>tbc</font>
+    </td>
+   </tr>
+   <tr>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=full
+      </li>
+     </ul>
+    </td>
+    <td>
+     <font>tbc</font>
+    </td>
+   </tr>
+
+  </table>
+ </div>
+
+<!-- PROPERTIES -->
+ <div class="std">
+  <h2>Properties</h2>
+  <a id="properties"></a>
+  <p>(description of properties is needed here)</p>
+  
+  <table class="doctable">
+   <tr>
+    <th rowspan="2">URL</th>
+    <th rowspan="2">Method</th>
+    <th rowspan="2">Description</th>
+    <th rowspan="2">Parameters</th>
+    <th colspan="2">HTTP request 'Accept' header</th>
+   </tr>
+   <tr>
+    <th>application/json</th>
+    <th>text/plain</th>
+   </tr>
+
+<!-- GET /properties -->
+   <tr>
+    <td class="url" rowspan="2">
+     /properties
+    </td>
+    <td rowspan="2">
+     <a href="/CeStoreWeb/properties" target="_blank">GET</a>
+    </td>
+    <td rowspan="2">
+     List all properties
+    </td>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=summary
+       <br/>
+       (default)
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/property_list_summary.json" target="_blank">list of properties</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/property_summary.json" target="_blank">summary form</a>.
+    </td>
+    <td rowspan="2">
+     A plain text list of all CE sentences for every property plus the meta-model CE sentences for each of these properties
+    </td>
+   </tr>
+   <tr>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=full
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/property_list_full.json" target="_blank">list of properties</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/property_full.json" target="_blank">full form</a>.
+    </td>
+   </tr>
+
+<!-- GET /properties/datatype -->
+   <tr>
+    <td class="url" rowspan="2">
+     /properties/datatype
+    </td>
+    <td rowspan="2">
+     <a href="/CeStoreWeb/properties/datatype" target="_blank">GET</a>
+    </td>
+    <td rowspan="2">
+     List all datatype properties
+    </td>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=summary
+       <br/>
+       (default)
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/property_list_summary.json" target="_blank">list of properties</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/property_summary.json" target="_blank">summary form</a>.
+    </td>
+    <td rowspan="2">
+     A plain text list of all CE sentences for every datatype property plus the meta-model CE sentences for each of these datatype properties
+    </td>
+   </tr>
+   <tr>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=full
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/property_list_full.json" target="_blank">list of properties</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/property_full.json" target="_blank">full form</a>.
+    </td>
+   </tr>
+
+<!-- GET /properties/object -->
+   <tr>
+    <td class="url" rowspan="2">
+     /properties/object
+    </td>
+    <td rowspan="2">
+     <a href="/CeStoreWeb/properties/object" target="_blank">GET</a>
+    </td>
+    <td rowspan="2">
+     List all object properties
+    </td>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=summary
+       <br/>
+       (default)
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/property_list_summary.json" target="_blank">list of properties</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/property_summary.json" target="_blank">summary form</a>.
+    </td>
+    <td rowspan="2">
+     A plain text list of all CE sentences for every object property plus the meta-model CE sentences for each of these object properties
+    </td>
+   </tr>
+   <tr>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=full
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/property_list_full.json" target="_blank">list of properties</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/property_full.json" target="_blank">full form</a>.
+    </td>
+   </tr>
+
+<!-- GET /properties/object/{range} -->
+   <tr>
+    <td class="url" rowspan="2">
+     /properties/object/<em>{range}</em>
+    </td>
+    <td rowspan="2">
+     <a href="/CeStoreWeb/properties/datatype/person" target="_blank">GET</a>
+    </td>
+    <td rowspan="2">
+     List all object properties with the range <em>{range}</em>
+    </td>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=summary
+       <br/>
+       (default)
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/property_list_summary.json" target="_blank">list of properties</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/property_summary.json" target="_blank">summary form</a>.
+    </td>
+    <td rowspan="2">
+     A plain text list of all CE sentences for every object property with the specified range, plus the meta-model CE sentences for each of these properties
+    </td>
+   </tr>
+   <tr>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=full
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/property_list_full.json" target="_blank">list of properties</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/property_full.json" target="_blank">full form</a>.
+    </td>
+   </tr>
+
+<!-- GET /properties/{name} -->
+   <tr>
+    <td class="url" rowspan="2">
+     /properties/<em>{name}</em>
+    </td>
+    <td rowspan="2">
+     <a href="/CeStoreWeb/properties/is married to" target="_blank">GET</a>
+    </td>
+    <td rowspan="2">
+     Get details for the property identified by <em>{name}</em>
+    </td>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=full
+       <br/>
+       (default)
+      </li>
+     </ul>
+    </td>
+    <td>
+     The JSON <a href="/CeStoreWeb/doc/json-schema/requests/property_details_full.json" target="_blank">details</a> for <a href="/CeStoreWeb/doc/json-schema/objects/property_full.json" target="_blank">full form</a> for the property.
+    </td>
+    <td rowspan="2">
+     A plain text list of all CE sentences for the property plus the meta-model CE sentences for each of these properties
+    </td>
+   </tr>
+   <tr>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=summary
+      </li>
+     </ul>
+    </td>
+    <td>
+     The JSON <a href="/CeStoreWeb/doc/json-schema/requests/property_details_summary.json" target="_blank">details</a> for <a href="/CeStoreWeb/doc/json-schema/objects/property_summary.json" target="_blank">summary form</a> for the property.
+    </td>
+   </tr>
+
+<!-- GET /properties/{name}/sentences -->
+   <tr>
+    <td class="url" rowspan="2">
+     /properties/<em>{name}</em>/sentences
+    </td>
+    <td rowspan="2">
+     <a href="/CeStoreWeb/properties/is married to/sentences" target="_blank">GET</a>
+    </td>
+    <td rowspan="2">
+     List all sentences for the property identified by <em>{name}</em>
+    </td>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=summary
+       <br/>
+       (default)
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/sentence_list_summary.json" target="_blank">list of sentences</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/sentence_summary.json" target="_blank">summary form</a>.
+    </td>
+    <td rowspan="2">
+     A plain text list of all CE sentences for the property
+    </td>
+   </tr>
+   <tr>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=full
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/sentence_list_full.json" target="_blank">list of sentences</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/sentence_full.json" target="_blank">full form</a>.
+    </td>
+   </tr>
+
+<!-- GET /properties/{name}/sentences/primary -->
+   <tr>
+    <td class="url" rowspan="2">
+     /properties/<em>{name}</em>/sentences/primary
+    </td>
+    <td rowspan="2">
+     <a href="/CeStoreWeb/properties/is married to/sentences/primary" target="_blank">GET</a>
+    </td>
+    <td rowspan="2">
+     List all primary sentences for the property identified by <em>{name}</em>
+    </td>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=summary
+       <br/>
+       (default)
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/sentence_list_summary.json" target="_blank">list of sentences</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/sentence_summary.json" target="_blank">summary form</a>.
+    </td>
+    <td rowspan="2">
+     A plain text list of all primary CE sentences for the property
+    </td>
+   </tr>
+   <tr>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=full
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/sentence_list_full.json" target="_blank">list of sentences</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/sentence_full.json" target="_blank">full form</a>.
+    </td>
+   </tr>
+
+<!-- GET /properties/{name}/sentences/secondary -->
+   <tr>
+    <td class="url" rowspan="2">
+     /properties/<em>{name}</em>/sentences/secondary
+    </td>
+    <td rowspan="2">
+     <a href="/CeStoreWeb/properties/is married to/sentences/secondary" target="_blank">GET</a>
+    </td>
+    <td rowspan="2">
+     List all secondary sentences for the property identified by <em>{name}</em>
+    </td>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=summary
+       <br/>
+       (default)
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/sentence_list_summary.json" target="_blank">list of sentences</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/sentence_summary.json" target="_blank">summary form</a>.
+    </td>
+    <td rowspan="2">
+     A plain text list of all secondary CE sentences for the property
+    </td>
+   </tr>
+   <tr>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=full
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/sentence_list_full.json" target="_blank">list of sentences</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/sentence_full.json" target="_blank">full form</a>.
+    </td>
+   </tr>
+
+<!-- GET /properties/{name}/rationale -->
+   <tr>
+    <td class="url" rowspan="2">
+     /properties/<em>{name}</em>/rationale
+    </td>
+    <td rowspan="2">
+     <a href="/CeStoreWeb/properties/is married to/rationale" target="_blank">GET</a>
+    </td>
+    <td rowspan="2">
+     <font>description needed</font>
+    </td>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=summary
+       <br/>
+       (default)
+      </li>
+     </ul>
+    </td>
+    <td>
+     <font>tbc</font>
+    </td>
+    <td rowspan="2">
+    <font>tbc</font>
+    </td>
+   </tr>
+   <tr>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=full
+      </li>
+     </ul>
+    </td>
+    <td>
+     <font>tbc</font>
+    </td>
+   </tr>
+
+<!-- GET /properties/{name}/common -->
+   <tr>
+    <td class="url" rowspan="2">
+     /properties/<em>{name}</em>/common
+    </td>
+    <td rowspan="2">
+     <a href="/CeStoreWeb/properties/is married to/common" target="_blank">GET</a>
+    </td>
+    <td rowspan="2">
+     <font>description needed</font>
+    </td>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=summary
+       <br/>
+       (default)
+      </li>
+     </ul>
+    </td>
+    <td>
+     <font>tbc</font>
+    </td>
+    <td rowspan="2">
+    <font>tbc</font>
+    </td>
+   </tr>
+   <tr>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=full
+      </li>
+     </ul>
+    </td>
+    <td>
+     <font>tbc</font>
+    </td>
+   </tr>
+
+  </table>
+ </div>
+
+<!-- INSTANCES -->
+ <div class="std">
+  <h2>Instances</h2>
+  <a id="instances"></a>
+  <p>(description of instances is needed here)</p>
+  
+  <table class="doctable">
+   <tr>
+    <th rowspan="2">URL</th>
+    <th rowspan="2">Method</th>
+    <th rowspan="2">Description</th>
+    <th rowspan="2">Parameters</th>
+    <th colspan="2">HTTP request 'Accept' header</th>
+   </tr>
+   <tr>
+    <th>application/json</th>
+    <th>text/plain</th>
+   </tr>
+
+<!-- GET /instances -->
+   <tr>
+    <td class="url" rowspan="3">
+     /instances
+    </td>
+    <td rowspan="2">
+     <a href="/CeStoreWeb/instances" target="_blank">GET</a>
+    </td>
+    <td rowspan="2">
+     List all instances
+    </td>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=summary
+       <br/>
+       (default)
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/instance_list_summary.json" target="_blank">list of instances</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/instance_summary.json" target="_blank">summary form</a>.
+    </td>
+    <td rowspan="2">
+     A plain text list of all CE sentences for every instance
+    </td>
+   </tr>
+   <tr>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=full
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/instance_list_full.json" target="_blank">list of instances</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/instance_full.json" target="_blank">full form</a>.
+    </td>
+   </tr>
+
+<!-- DELETE /instances -->
+   <tr>
+    <td>
+     DELETE
+    </td>
+    <td>
+     Delete all instances
+    </td>
+    <td>
+    </td>
+    <td>
+    </td>
+    <td>
+     A plain text description indicating that all instances have been deleted
+    </td>
+   </tr>
+
+<!-- GET /instances/{name} -->
+   <tr>
+    <td class="url" rowspan="3">
+     /instances/<em>{name}</em>
+    </td>
+    <td rowspan="2">
+     <a href="/CeStoreWeb/instances/Fred" target="_blank">GET</a>
+    </td>
+    <td rowspan="2">
+     Get details for the instance identified by <em>{name}</em>
+    </td>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=full
+       <br/>
+       (default)
+      </li>
+     </ul>
+    </td>
+    <td>
+     The JSON <a href="/CeStoreWeb/doc/json-schema/requests/instance_details_full.json" target="_blank">details</a> for <a href="/CeStoreWeb/doc/json-schema/objects/instance_full.json" target="_blank">full form</a> for the instance.
+    </td>
+    <td rowspan="2">
+     A plain text list of all CE sentences for the specified instance
+    </td>
+   </tr>
+   <tr>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=summary
+      </li>
+     </ul>
+    </td>
+    <td>
+     The JSON <a href="/CeStoreWeb/doc/json-schema/requests/instance_details_summary.json" target="_blank">details</a> for <a href="/CeStoreWeb/doc/json-schema/objects/instance_summary.json" target="_blank">summary form</a> for the instance.
+    </td>
+   </tr>
+
+<!-- DELETE /instances/{name} -->
+   <tr>
+    <td>
+     DELETE
+    </td>
+    <td>
+	 <font>tbc</font>
+    </td>
+    <td>
+    </td>
+    <td>
+     <font>tbc</font>
+    </td>
+    <td>
+     A plain text description indicating that the instance has been deleted
+    </td>
+   </tr>
+
+<!-- GET /instances/{name}/references -->
+   <tr>
+    <td class="url" rowspan="2">
+     /instances/<em>{name}</em>/references
+    </td>
+    <td rowspan="2">
+     <a href="/CeStoreWeb/instances/Fred/references" target="_blank">GET</a>
+    </td>
+    <td rowspan="2">
+     List all the instances that refer to the specified instance, and the property in which they refer to it
+    </td>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=summary
+       <br/>
+       (default)
+      </li>
+     </ul>
+    </td>
+    <td>
+     A special JSON <a href="/CeStoreWeb/doc/json-schema/requests/special_referencelist_summary.json" target="_blank">list of instances</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/instance_summary.json" target="_blank">summary form</a>.
+    </td>
+    <td rowspan="2">
+     A plain text list of all CE sentences that refer to the specified instance
+    </td>
+   </tr>
+   <tr>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=full
+      </li>
+     </ul>
+    </td>
+    <td>
+     A special JSON <a href="/CeStoreWeb/doc/json-schema/requests/special_referencelist_full.json" target="_blank">list of instances</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/instance_full.json" target="_blank">full form</a>.
+    </td>
+   </tr>
+
+<!-- GET /instances/{name}/sentences -->
+   <tr>
+    <td class="url" rowspan="2">
+     /instances/<em>{name}</em>/sentences
+    </td>
+    <td rowspan="2">
+     <a href="/CeStoreWeb/instances/Fred/sentences" target="_blank">GET</a>
+    </td>
+    <td rowspan="2">
+     List all sentences for the instance identified by <em>{name}</em>
+    </td>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=summary
+       <br/>
+       (default)
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/sentence_list_summary.json" target="_blank">list of sentences</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/sentence_summary.json" target="_blank">summary form</a>.
+    </td>
+    <td rowspan="2">
+     A plain text list of all CE sentences for the specified instance
+    </td>
+   </tr>
+   <tr>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=full
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/sentence_list_full.json" target="_blank">list of sentences</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/sentence_full.json" target="_blank">full form</a>.
+    </td>
+   </tr>
+
+<!-- GET /instances/{name}/sentences/primary -->
+   <tr>
+    <td class="url" rowspan="2">
+     /instances/<em>{name}</em>/sentences/primary
+    </td>
+    <td rowspan="2">
+     <a href="/CeStoreWeb/instances/Fred/sentences/primary" target="_blank">GET</a>
+    </td>
+    <td rowspan="2">
+     List all primary sentences for the instance identified by <em>{name}</em>
+    </td>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=summary
+       <br/>
+       (default)
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/sentence_list_summary.json" target="_blank">list of sentences</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/sentence_summary.json" target="_blank">summary form</a>.
+    </td>
+    <td rowspan="2">
+     A plain text list of all primary CE sentences for the specified instance
+    </td>
+   </tr>
+   <tr>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=full
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/sentence_list_full.json" target="_blank">list of sentences</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/sentence_full.json" target="_blank">full form</a>.
+    </td>
+   </tr>
+
+<!-- GET /instances/{name}/sentences/secondary -->
+   <tr>
+    <td class="url" rowspan="2">
+     /instances/<em>{name}</em>/sentences/secondary
+    </td>
+    <td rowspan="2">
+     <a href="/CeStoreWeb/instances/Fred/sentences/secondary" target="_blank">GET</a>
+    </td>
+    <td rowspan="2">
+     List all secondary sentences for the instance identified by <em>{name}</em>
+    </td>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=summary
+       <br/>
+       (default)
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/sentence_list_summary.json" target="_blank">list of sentences</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/sentence_summary.json" target="_blank">summary form</a>.
+    </td>
+    <td rowspan="2">
+     A plain text list of all secondary CE sentences for the specified instance
+    </td>
+   </tr>
+   <tr>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=full
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/sentence_list_full.json" target="_blank">list of sentences</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/sentence_full.json" target="_blank">full form</a>.
+    </td>
+   </tr>
+
+<!-- GET /instances/{name}/rationale -->
+   <tr>
+    <td class="url" rowspan="2">
+     /instances/<em>{name}</em>/rationale
+    </td>
+    <td rowspan="2">
+     <a href="/CeStoreWeb/instances/Fred/rationale" target="_blank">GET</a>
+    </td>
+    <td rowspan="2">
+     <font>description needed</font>
+    </td>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=summary
+       <br/>
+       (default)
+      </li>
+     </ul>
+    </td>
+    <td>
+     <font>tbc</font>
+    </td>
+    <td rowspan="2">
+    <font>tbc</font>
+    </td>
+   </tr>
+   <tr>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=full
+      </li>
+     </ul>
+    </td>
+    <td>
+     <font>tbc</font>
+    </td>
+   </tr>
+   
+  </table>
+ </div>
+
+<!-- QUERIES -->
+ <div class="std">
+  <h2>Queries</h2>
+  <a id="queries"></a>
+  <p>(description of queries is needed here)</p>
+  
+  <table class="doctable">
+   <tr>
+    <th rowspan="2">URL</th>
+    <th rowspan="2">Method</th>
+    <th rowspan="2">Description</th>
+    <th rowspan="2">Parameters</th>
+    <th colspan="2">HTTP request 'Accept' header</th>
+   </tr>
+   <tr>
+    <th>application/json</th>
+    <th>text/plain</th>
+   </tr>
+
+<!-- GET /queries -->
+   <tr>
+    <td class="url" rowspan="2">
+     /queries
+    </td>
+    <td rowspan="2">
+     <a href="/CeStoreWeb/queries" target="_blank">GET</a>
+    </td>
+    <td rowspan="2">
+     List all queries
+    </td>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=summary
+       <br/>
+       (default)
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/query_list_summary.json" target="_blank">list of queries</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/query_summary.json" target="_blank">summary form</a>.
+    </td>
+    <td rowspan="2">
+     A plain text list of all CE sentences for every query plus the meta-model CE sentences for for each of these queries
+    </td>
+   </tr>
+   <tr>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=full
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/query_list_full.json" target="_blank">list of queries</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/query_full.json" target="_blank">full form</a>.
+    </td>
+   </tr>
+
+<!-- GET /queries/{name} -->
+   <tr>
+    <td class="url" rowspan="3">
+     /queries/<em>{name}</em>
+    </td>
+    <td rowspan="2">
+     <a href="/CeStoreWeb/queries/brother of" target="_blank">GET</a>
+    </td>
+    <td rowspan="2">
+     Get details for the query identified by <em>{name}</em>
+    </td>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=full
+       <br/>
+       (default)
+      </li>
+     </ul>
+    </td>
+    <td>
+     The JSON <a href="/CeStoreWeb/doc/json-schema/requests/query_details_full.json" target="_blank">details</a> for <a href="/CeStoreWeb/doc/json-schema/objects/query_full.json" target="_blank">full form</a> for the query.
+    </td>
+    <td rowspan="2">
+     A plain text list of all CE sentences for the query plus the meta-model CE sentences the query
+    </td>
+   </tr>
+   <tr>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=summary
+      </li>
+     </ul>
+    </td>
+    <td>
+     The JSON <a href="/CeStoreWeb/doc/json-schema/requests/query_details_summary.json" target="_blank">details</a> for <a href="/CeStoreWeb/doc/json-schema/objects/query_summary.json" target="_blank">summary form</a> for the query.
+    </td>
+   </tr>
+
+<!-- DELETE /queries/{name} -->
+   <tr>
+    <td>
+     DELETE
+    </td>
+    <td>
+     <font>tbc</font>
+    </td>
+    <td>
+    </td>
+    <td>
+     <font>tbc</font>
+    </td>
+    <td>
+     A plain text description indicating that the query has been deleted
+    </td>
+   </tr>
+
+<!-- GET /queries/{name}/execute -->
+   <tr>
+    <td class="url" rowspan="2">
+     /queries/<em>{name}</em>/execute
+    </td>
+    <td>
+     <a href="/CeStoreWeb/queries/brother of/execute" target="_blank">GET</a>
+    </td>
+    <td>
+     Show the results of executing the query identified by <em>{name}</em>
+    </td>
+    <td>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/query_result.json" target="_blank">query result</a> from executing the query.
+    </td>
+    <td rowspan="2">
+     A plain text list of the CE sentences returned by executing the query
+    </td>
+   </tr>
+
+  </table>
+ </div>
+
+<!-- RULES -->
+ <div class="std">
+  <h2>Rules</h2>
+  <a id="rules"></a>
+  <p>(description of rules is needed here)</p>
+  
+  <table class="doctable">
+   <tr>
+    <th rowspan="2">URL</th>
+    <th rowspan="2">Method</th>
+    <th rowspan="2">Description</th>
+    <th rowspan="2">Parameters</th>
+    <th colspan="2">HTTP request 'Accept' header</th>
+   </tr>
+   <tr>
+    <th>application/json</th>
+    <th>text/plain</th>
+   </tr>
+
+<!-- GET /rules -->
+   <tr>
+    <td class="url" rowspan="2">
+     /rules
+    </td>
+    <td rowspan="2">
+     <a href="/CeStoreWeb/rules" target="_blank">GET</a>
+    </td>
+    <td rowspan="2">
+     List all rules
+    </td>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=summary
+       <br/>
+       (default)
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/rule_list_summary.json" target="_blank">list of rules</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/rule_summary.json" target="_blank">summary form</a>.
+    </td>
+    <td rowspan="2">
+     A plain text list of all CE sentences for every rule plus the meta-model CE sentences for for each of these rules
+    </td>
+   </tr>
+   <tr>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=full
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/rule_list_full.json" target="_blank">list of rules</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/rule_full.json" target="_blank">full form</a>.
+    </td>
+   </tr>
+
+<!-- GET /rules/{name} -->
+   <tr>
+    <td class="url" rowspan="3">
+     /rules/<em>{name}</em>
+    </td>
+    <td rowspan="2">
+     <a href="/CeStoreWeb/rules/aunt" target="_blank">GET</a>
+    </td>
+    <td rowspan="2">
+     Get details for the rule identified by <em>{name}</em>
+    </td>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=full
+       <br/>
+       (default)
+      </li>
+     </ul>
+    </td>
+    <td>
+     The JSON <a href="/CeStoreWeb/doc/json-schema/requests/rule_details_full.json" target="_blank">details</a> for <a href="/CeStoreWeb/doc/json-schema/objects/rule_full.json" target="_blank">full form</a> for the rule.
+    </td>
+    <td rowspan="2">
+     A plain text list of all CE sentences for the rule plus the meta-model CE sentences for the rule
+    </td>
+   </tr>
+   <tr>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=summary
+      </li>
+     </ul>
+    </td>
+    <td>
+     The JSON <a href="/CeStoreWeb/doc/json-schema/requests/rule_details_summary.json" target="_blank">details</a> for <a href="/CeStoreWeb/doc/json-schema/objects/rule_summary.json" target="_blank">summary form</a> for the rule.
+    </td>
+   </tr>
+
+<!-- DELETE /rules/{name} -->
+   <tr>
+    <td>
+     DELETE
+    </td>
+    <td>
+     <font>tbc</font>
+    </td>
+    <td>
+    </td>
+    <td>
+     <font>tbc</font>
+    </td>
+    <td>
+     A plain text description indicating that the rule has been deleted
+    </td>
+   </tr>
+
+<!-- GET /rules/{name}/execute -->
+   <tr>
+    <td class="url" rowspan="2">
+     /rules/<em>{name}</em>/execute
+    </td>
+    <td>
+     <a href="/CeStoreWeb/rules/aunt/execute" target="_blank">GET</a>
+    </td>
+    <td>
+     Show the results of evaluating the rule identified by <em>{name}</em> by executing it as a query
+    </td>
+    <td>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/query_result.json" target="_blank">query result</a> from executing the rule as a query.
+    </td>
+    <td>
+     A plain text list of the CE sentences returned by executing the rule as a query
+    </td>
+   </tr>
+
+<!-- POST /rules/{name}/execute -->
+   <tr>
+    <td>
+     POST
+    </td>
+    <td>
+     Show the results of executing the rule identified by <em>{name}</em>
+    </td>
+    <td>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/query_result.json" target="_blank">query result</a> from executing the rule.
+    </td>
+    <td>
+     A plain text list of the CE sentences created by executing the rule
+    </td>
+   </tr>
+
+<!-- GET /rules/{name}/rationale -->
+   <tr>
+    <td class="url">
+     /rules/<em>{name}</em>/rationale
+    </td>
+    <td>
+     <a href="/CeStoreWeb/rules/aunt/rationale" target="_blank">GET</a>
+    </td>
+    <td>
+     Show the rationale related to the rule identified by <em>{name}</em>
+    </td>
+    <td>
+    </td>
+    <td>
+     <font>tbc</font> 
+    </td>
+    <td>
+     <font>tbc</font> 
+    </td>
+   </tr>
+
+  </table>
+ </div>
+
+<!-- SPECIAL -->
+ <div class="std">
+  <h2>Special requests</h2>
+  <a id="special"></a>
+  <p>(description of special requests is needed here)</p>
+  
+  <table class="doctable">
+   <tr>
+    <th rowspan="2">URL</th>
+    <th rowspan="2">Method</th>
+    <th rowspan="2">Description</th>
+    <th rowspan="2">Parameters</th>
+    <th colspan="2">HTTP request 'Accept' header</th>
+   </tr>
+   <tr>
+    <th>application/json</th>
+    <th>text/plain</th>
+   </tr>
+
+<!-- GET /special/statistics -->
+   <tr>
+    <td class="url" rowspan="2">
+     /special/statistics
+    </td>
+    <td>
+     <a href="/CeStoreWeb/special/statistics" target="_blank">GET</a>
+    </td>
+    <td>
+     Show various statistics about the CE Store
+    </td>
+    <td>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/special_statistics.json" target="_blank">list of statistics</a>.
+    </td>
+    <td>
+     A plain text summary of the CE Store statistics
+    </td>
+   </tr>
+
+<!-- POST /special/statistics -->
+   <tr>
+    <td>
+     POST
+    </td>
+    <td>
+     Run garbage collection and then show various statistics about the CE Store
+    </td>
+    <td>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/special_statistics.json" target="_blank">list of statistics</a>.
+    </td>
+    <td>
+     A plain text summary of the CE Store statistics
+    </td>
+   </tr>
+
+<!-- GET /special/patterns -->
+   <tr>
+    <td class="url" rowspan="2">
+     /special/patterns
+    </td>
+    <td rowspan="2">
+     <a href="/CeStoreWeb/special/patterns" target="_blank">GET</a>
+    </td>
+    <td rowspan="2">
+     List all patterns (queries or rules)
+    </td>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=summary
+       <br/>
+       (default)
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/pattern_list_summary.json" target="_blank">list of patterns</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/pattern_summary.json" target="_blank">summary form</a>.
+    </td>
+    <td rowspan="2">
+     A plain text list of all CE sentences for every pattern (query or rule) plus the meta-model CE sentences for for each of these patterns
+    </td>
+   </tr>
+   <tr>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=full
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/pattern_list_full.json" target="_blank">list of patterns</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/pattern_full.json" target="_blank">full form</a>.
+    </td>
+   </tr>
+
+<!-- GET /special/rationale -->
+   <tr>
+    <td class="url" rowspan="2">
+     /special/rationale
+    </td>
+    <td rowspan="2">
+     <a href="/CeStoreWeb/special/rationale" target="_blank">GET</a>
+    </td>
+    <td rowspan="2">
+     List all rationale details
+    </td>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=summary
+       <br/>
+       (default)
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/rationale_list_summary.json" target="_blank">list of rationale details</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/rationale_summary.json" target="_blank">summary form</a>.
+    </td>
+    <td rowspan="2">
+     A plain text list of all CE sentences for all rationale
+    </td>
+   </tr>
+   <tr>
+    <td>
+     <ul>
+      <li>
+       <a href="#style">style</a>=full
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/rationale_list_full.json" target="_blank">list of rationale details</a> in their <a href="/CeStoreWeb/doc/json-schema/objects/rationale_full.json" target="_blank">full form</a>.
+    </td>
+   </tr>
+
+<!-- GET /special/config -->
+   <tr>
+    <td class="url">
+     /special/config
+    </td>
+    <td>
+     <a href="/CeStoreWeb/special/config" target="_blank">GET</a>
+    </td>
+    <td>
+     Show all the configuration details for the CE Store
+    </td>
+    <td>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/special_configlist.json" target="_blank">list of config values</a> for the CE Store.
+    </td>
+    <td>
+     A plain text list of the config values for the CE Store
+    </td>
+   </tr>
+
+<!-- GET /special/config/{key} -->
+   <tr>
+    <td class="url" rowspan="2">
+     /special/config/<em>{key}</em>
+    </td>
+    <td>
+     <a href="/CeStoreWeb/special/config/tbc" target="_blank">GET</a>
+    </td>
+    <td>
+     Show the value for the configuration setting specified by <em>{key}</em>
+    </td>
+    <td>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/special_configvalue.json" target="_blank">value</a> for the specified configuration setting.
+    </td>
+    <td>
+     A plain text value for the specified configuration setting
+    </td>
+   </tr>
+
+<!-- PUT /special/config/{key} -->
+   <tr>
+    <td>
+     PUT
+    </td>
+    <td>
+     Update the value for the configuration setting specified by <em>{key}</em>
+    </td>
+    <td>
+     <ul>
+      <li>
+       value={text}<br/>
+       The value to update the specified configuration value with
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/special_configvalue.json" target="_blank">value</a> for the updated configuration setting.
+    </td>
+    <td>
+     A plain text value for the updated configuration setting
+    </td>
+   </tr>
+
+<!-- GET /special/uid -->
+   <tr>
+    <td class="url" rowspan="2">
+     /special/uid
+    </td>
+    <td>
+     <a href="/CeStoreWeb/special/uid" target="_blank">GET</a>
+    </td>
+    <td>
+     Show the current unique id, i.e. the one that was last used, in the CE Store
+    </td>
+    <td>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/special_singlevalue.json" target="_blank">single value</a> showing the unique id.
+    </td>
+    <td>
+     A plain text single value that is the current unique id
+    </td>
+   </tr>
+
+<!-- POST /special/uid -->
+   <tr>
+    <td>
+     POST
+    </td>
+    <td>
+     Generate and return the next unique id from the CE Store
+    </td>
+    <td>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/special_singlevalue.json" target="_blank">single value</a> showing the unique id.
+    </td>
+    <td>
+     A plain text single value that is the new unique id
+    </td>
+   </tr>
+
+<!-- POST /special/uid/batch -->
+   <tr>
+    <td class="url">
+     /special/uid/batch
+    </td>
+    <td>
+     POST
+    </td>
+    <td>
+     Generate a new batch of UIDs from the CE Store based on the specified size
+    </td>
+    <td>
+     <ul>
+      <li>
+       size={number}<br/>
+       The number of unique ids to return in the batch
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/special_uidbatch.json" target="_blank">batch</a> of unique ids.
+    </td>
+    <td>
+     A plain text description of the unique id batch
+    </td>
+   </tr>
+
+<!-- GET /special/keyword-search -->
+   <tr>
+    <td class="url">
+     /special/keyword-search
+    </td>
+    <td>
+     <a href="/CeStoreWeb/special/keyword-search" target="_blank">GET</a>
+    </td>
+    <td>
+     Search the whole CE Store for the specified keywords
+    </td>
+    <td>
+     <ul>
+      <li>
+       keywords={text}<br/>
+       The keywords to search
+      </li>
+     </ul>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/special_search.json" target="_blank">list</a> of the search results.
+    </td>
+    <td>
+     A plain text summary of the CE sentences that match the search keywords
+    </td>
+   </tr>
+
+<!-- GET /special/shadow-concepts -->
+   <tr>
+    <td class="url">
+     /special/shadow-concepts
+    </td>
+    <td>
+     <a href="/CeStoreWeb/special/shadow-concepts" target="_blank">GET</a>
+    </td>
+    <td>
+     Show all shadow concepts (concepts that are referenced but not defined)
+    </td>
+    <td>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/special_shadowconcepts.json" target="_blank">list of shadow concept</a> details.
+    </td>
+    <td>
+     A plain text list of all CE sentences that refer to each of the shadow concepts
+    </td>
+   </tr>
+
+<!-- GET /special/shadow-instances -->
+   <tr>
+    <td class="url">
+     /special/shadow-instances
+    </td>
+    <td>
+     <a href="/CeStoreWeb/special/shadow-instances" target="_blank">GET</a>
+    </td>
+    <td>
+     Show all shadow instances (instances that are referenced but not defined)
+    </td>
+    <td>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/special_shadowinstances.json" target="_blank">list of shadow instance</a> details.
+    </td>
+    <td>
+     A plain text list of all CE sentences that refer to each of the shadow instances
+    </td>
+   </tr>
+
+<!-- GET /special/diverse-concept-instances -->
+   <tr>
+    <td class="url">
+     /special/diverse-concept-instances
+    </td>
+    <td>
+     <a href="/CeStoreWeb/special/diverse-concept-instances" target="_blank">GET</a>
+    </td>
+    <td>
+     Show all diverse concept instances (instances that are stated as being concepts which do not have a common non-thing parent)
+    </td>
+    <td>
+    </td>
+    <td>
+     A JSON <a href="/CeStoreWeb/doc/json-schema/requests/special_diverseconceptinstances.json" target="_blank">list of diverse concept instance</a> details.
+    </td>
+    <td>
+     A plain text list of all CE sentences that define each of the diverse concept instances
+    </td>
+   </tr>
+
+  </table>
+ </div>
+ 
+ <div>
+  <h2>Questions</h2>
+  <ul>
+   <li>Should /rules/{name}/execute be implemented as action=execute parameter instead?</li>
+  </ul>
+
+  <h2>Items not yet complete</h2>
+  <ul>
+   <li>Source:
+    <ul>
+     <li>Implement meta-model</li>
+    </ul>
+   </li>
+   <li>Sentence:
+    <ul>
+     <li>Implement rationale list</li>
+     <li>Implement 'parse' mode when saving</li>
+     <li>Text rendering of result set in 'execute mode' (for CE query)</li>
+     <li>Unable to specify startTimestamp and endTimestamp values via API tester (execute mode)</li>
+    </ul>
+   </li>
+   <li>General:
+    <ul>
+     <li>Need to return errors/warnings/debugs for all 'action' request</li>
+     <li>Remove deprecated (old) Web APIs and code</li>
+    </ul>
+   </li>
+  </ul>
+ </div>
+
+</body>
+</html>

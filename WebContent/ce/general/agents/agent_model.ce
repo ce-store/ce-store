@@ -1,0 +1,44 @@
+-- --------------------------------------------------------------------------
+-- (C) Copyright IBM Corporation  2011, 2015
+-- All Rights Reserved
+-- --------------------------------------------------------------------------
+
+Model:   CE agents
+Title:   General agents model
+Version: 1.0
+Date:    21st December 2015
+Author:  Dave Braines
+
+conceptualise a ~ CE agent ~ A that
+  has at most one value CN as ~ class name ~ and
+  has at most one value D as ~ debug ~ and
+  has at most one value G as ~ generate rationale ~ and
+  has at most one value DR as ~ double rationale sentences ~ and
+  has at most one value NC as ~ does not generate CE ~ and
+  has at most one value CS as ~ send CE to store ~ and
+  has at most one value CF as ~ save CE to file ~ and
+  has at most one value CI as ~ save CE individually ~ and
+  has at most one value RE as ~ restate existing sentences ~ and
+  has at most one value FN as ~ CE filename ~ and
+  has at most one value MS as ~ maximum CE sentences ~ and
+  has at most one value MI as ~ maximum iterations ~ and
+  has at most one value SC as ~ source concept ~ and
+  has at most one value SP as ~ source property ~ and
+  has at most one value SR as ~ source range ~ and
+  has at most one value TC as ~ target concept ~ and
+  has at most one value TP as ~ target property ~ and
+  has at most one value TR as ~ target range ~ and
+  has at most one value TS as ~ target source ~.
+
+conceptualise a ~ CE triggered event ~ T that
+  has at most one value NC as ~ class to notify ~ and
+  has the value CN as ~ concept name ~ and
+  has the value PN as ~ property name ~ and
+  has the value AQ as ~ affected query name ~ and
+  has the value AR as ~ affected rule name ~.
+
+conceptualise a ~ rule executor agent ~ A that
+  is a CE agent and
+  has the value RN as ~ rule name ~ and
+  has the value AR as ~ execute all rules ~ and
+  has the value IT as ~ iterate ~.

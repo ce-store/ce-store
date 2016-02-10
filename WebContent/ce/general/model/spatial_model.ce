@@ -1,0 +1,58 @@
+-- --------------------------------------------------------------------------
+-- (C) Copyright IBM Corporation  2011, 2015
+-- All Rights Reserved
+-- --------------------------------------------------------------------------
+
+Model:   Spatial
+Title:   Spatial model
+Version: 1.0
+Date:    21st December 2015
+Author:  Dave Braines
+
+conceptualise a ~ spatial thing ~ S that
+  has the value LAT as ~ latitude ~ and
+  has the value LON as ~ longitude ~ and
+  has the value ZF as ~ zoom factor ~ and
+  has the value M as ~ mgrs raw ~ and
+  has at most one value G as ~ mgrs grid ~ and
+  has at most one value SQ as ~ mgrs square ~ and
+  has at most one value ME as ~ mgrs easting ~ and
+  has at most one value MN as ~ mgrs northing ~ and
+  has at most one value MP as ~ mgrs precision ~ and
+  has at most one value O as ~ os reference ~ and 
+  has at most one value E as ~ easting ~ and 
+  has at most one value N as ~ northing ~ and
+  has at most one value AL as ~ altitude ~ and
+  has at most one value AZ as ~ azimuth ~ and
+  has at most one value E as ~ elevation ~.
+
+conceptualise a ~ directed spatial thing ~ D that
+  has at most one value BN as ~ bearing name ~ and
+  has at most one value BA as ~ bearing angle ~ and
+  has at most one value V as ~ velocity ~ and
+  is a spatial thing.
+
+conceptualise a ~ place ~ P that 
+  is a spatial thing and
+  has the value C as ~ coordinates ~ and
+  ~ is located near ~ the place P2 and 
+  ~ is located north of ~ the place P3 and
+  ~ is located south of ~ the place P4.
+
+conceptualise
+  the thing P ~ is located in ~ the place PL1.
+
+conceptualise a ~ region ~ R that
+  is a spatial thing and
+  ~ is in ~ the region R2.
+
+conceptualise a ~ country ~ C that
+  is a region and
+  has the value CC as ~ country code ~.
+
+conceptualise a ~ state ~ S that
+  is a region and
+  has the value AB as ~ abbreviation ~.
+
+conceptualise a ~ county ~ C that is a region.
+conceptualise a ~ city ~ C that is a region.

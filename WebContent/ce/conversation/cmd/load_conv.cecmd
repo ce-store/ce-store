@@ -1,0 +1,7 @@
+-- --------------------------------------------------------------------------
+-- (C) Copyright IBM Corporation  2011, 2015
+-- All Rights Reserved
+-- --------------------------------------------------------------------------
+
+perform load sentences from url '/CeStore/ce/conversation/model/conv_model.ce'.
+perform load sentences from url '/CeStore/ce/conversation/model/conv_metamodel.ce'.

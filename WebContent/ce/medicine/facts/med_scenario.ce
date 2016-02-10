@@ -1,0 +1,83 @@
+-- --------------------------------------------------------------------------
+-- (C) Copyright IBM Corporation  2011, 2015
+-- All Rights Reserved
+-- --------------------------------------------------------------------------
+
+
+-- The people
+
+there is a man named John that
+  has '53' as age and
+  has 'abc123' as social security number.
+
+there is a man named James that
+  has '49' as age and
+  has 'def456' as social security number.
+
+there is a woman named Jean that
+  has '21' as age and
+  has 'ghi789' as social security number.
+
+there is a man named David that
+  has '17' as age and
+  has 'jkl012' as social security number.
+
+the person John
+  is the sibling of the person James and
+  is the parent of the person Jean.
+
+the person David
+  is the sibling of the person Jean and
+  is the parent of the person Max and
+  is the parent of the person Nellie.
+
+the person Maggie
+  is the parent of the person John and
+  has '77' as age and
+  has 'mno345' as social security number.
+
+the person Bill
+  is the parent of the person John and
+  has '80' as age and
+  has 'pqr678' as social security number.
+
+the person Fred
+  is the brother of the person John and
+  has '45' as age and
+  has 'stu901' as social security number.
+
+the person James is the brother of the person John.
+the person John is the brother of the person Fred.
+
+the person Fred is the uncle of the person Jean.
+the person Jean is the aunt of the person Nellie.
+the person Jean is the aunt of the person Max.
+
+the person Nellie
+  has '7' as age and
+  has 'vwx234' as social security number.
+
+the person Max
+  has '4' as age and
+  has 'yza567' as social security number.
+
+the person Bill is closely related to the person Maggie.
+the person Maggie is closely related to the person Bill.
+
+
+-- The patient
+
+the person Jean
+  is a patient and
+  presents with the lump l1.
+
+the person James suffers from the cancer c1.
+
+
+-- Available diagnostic tests
+
+there is a cancer scan named scan1.
+
+the person James
+  has the sequence (the medical procedure 'cat scan', the medical procedure chemotherapy, the medical procedure 'barium meal') as medical procedures and
+  is the brother of the person David.
