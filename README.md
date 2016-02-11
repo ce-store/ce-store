@@ -102,7 +102,14 @@ To open the Engineering Panel go to `<SERVER>/ce-store/ui`. It should look like 
 
 ![Engineering Panel](http://ce-store.github.io/i/ui.png)
 
-TODO: How tos & examples
+The engineering panel has four main areas:
+
+  * [Left] Model operations: CE models can be loaded and modified.
+  * [Right] Object pane: Contents of a CE store can be viewed.
+  * [Bottom] Messages: Errors will be reported here
+  * [Centre] Working area: Interactions with the model.
+
+The CE Store comes with a sample model about medical data. The wiki includes a tutorial for using the [Medicine model](https://github.com/ce-store/ce-store/wiki/Introducing-the-Medicine-Model).
 
 ## Contributing
 
