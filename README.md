@@ -109,7 +109,7 @@ The engineering panel has four main areas:
   * [Bottom] Messages: Errors will be reported here
   * [Centre] Working area: Interactions with the model.
 
-The CE Store comes with a sample model about medical data. The wiki includes a tutorial for using the [Medicine model](https://github.com/ce-store/ce-store/wiki/Introducing-the-Medicine-Model).
+The CE Store comes with a sample set of CE sentences to build a model about medical data. The wiki includes a tutorial for using the [Medicine model](https://github.com/ce-store/ce-store/wiki/Introducing-the-Medicine-Model).
 
 ## Contributing
 
