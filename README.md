@@ -94,6 +94,14 @@ Run the server
 
 ## Usage
 
+### Engineering Panel
+
+The Engineering Panel provides a simple web interface to the CE Store, enabling the user view the contents of the CE Store, to load new CE sentences, run queries agains the store, and more.
+
+To open the Engineering Panel go to `<SERVER>/ce-store/ui`. It should look like this:
+
+![Engineering Panel](http://ce-store.github.io/i/ui.png)
+
 TODO: How tos & examples
 
 ## Contributing
