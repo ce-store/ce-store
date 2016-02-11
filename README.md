@@ -46,7 +46,7 @@ Set up Liberty server
   2. Click `Next`
   3. Under `IBM` select `WebSphere Application Server Liberty`
   4. Click `Next`
-  5. Select `Install from an archive or a repository` (If you already have the Liberty Runtime installed select the runtime and skip to step 10)
+  5. Select `Install from an archive or a repository` (If you already have the Liberty Runtime installed select the runtime and skip to step 12)
   6. Click `Next`
   7. Select `Download and install a new runtime environment from ibm.com`
   8. Select `WAS Liberty V8.5.* Runtime`
@@ -60,13 +60,37 @@ Set up Liberty server
 Run the server
 
   1. In the Server view right click the Liberty server and click `Start`
-  2. Access the CE Store at [http://localhost:9080/ce-store/](http://localhost:9080/ce-store/)
+  2. Access the CE Store at [http://localhost:9080/ce-store](http://localhost:9080/ce-store)
 
 ### Tomcat
 
 Install Tomcat
 
   1. Go to the [Tomcat website](http://tomcat.apache.org/) and download Tomcat 7 (minimum required version).
+
+Add Tomcat to Eclispe
+
+  1. In Eclipse open `Eclipse`, `Preferences`, `Server`, `Runtime Environments`
+  2. Click `Add...`
+  3. Under the New Server Runtime dialog select your runtime under Apache (minimum Tomcat 7)
+  4. Click `Next`
+  5. Fill in the Tomcat installation directory
+  6. Ensure the selected JRE is a full JDK and is a version that will satisfy Apache Tomcat. If necessary, you can click on Installed JREs... to add JDKs to Eclipse
+  7. Click `Finish`
+
+Set up Tomcat server
+
+  1. Set up a new server by clicking `File`, `New`, `Other...`, `Server`, `Server`
+  2. Click `Next`
+  3. Under `Apache` select `Tomcat`
+  4. Name your server and click `Next`
+  5. Add `ce-store` to configure on the server
+  6. Click `Finish`
+
+Run the server
+
+  1. In the Server view right click the Tomcat server and click `Start`
+  2. Access the CE Store at [http://localhost:8080/ce-store](http://localhost:8080/ce-store)
 
 ## Usage
 
