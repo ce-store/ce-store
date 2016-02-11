@@ -44,7 +44,7 @@ function PaneCurrentProjects() {
 			basic: {
 				title: 'Basic sentence sets',
 				links: [
-					{ url: 'CeStore/ce/medicine/cmd/med_load.cecmd', name: 'Medicine' }
+					{ url: 'ce-store/ce/medicine/cmd/med_load.cecmd', name: 'Medicine' }
 					]
 			}
 		};

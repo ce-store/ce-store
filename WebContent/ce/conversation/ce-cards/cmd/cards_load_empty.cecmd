@@ -6,9 +6,9 @@
 perform reset store with starting uid '1'.
 
 -- Load the general model (core concepts)
-perform load sentences from url '/CeStore/ce/general/agents/agent_model.ce'.
-perform load sentences from url '/CeStore/ce/general/model/misc_model.ce'.
-perform load sentences from url '/CeStore/ce/general/model/spatial_model.ce'.
-perform load sentences from url '/CeStore/ce/general/model/temporal_model.ce'.
+perform load sentences from url '/ce-store/ce/general/agents/agent_model.ce'.
+perform load sentences from url '/ce-store/ce/general/model/misc_model.ce'.
+perform load sentences from url '/ce-store/ce/general/model/spatial_model.ce'.
+perform load sentences from url '/ce-store/ce/general/model/temporal_model.ce'.
 
-perform load sentences from url '/CeStore/ce/conversation/ce-cards/cmd/fragments/load_all_models.cecmd'.
+perform load sentences from url '/ce-store/ce/conversation/ce-cards/cmd/fragments/load_all_models.cecmd'.

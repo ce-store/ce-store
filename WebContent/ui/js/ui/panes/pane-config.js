@@ -75,7 +75,7 @@ function PaneConfig() {
 		html += '  </tr>';
 		html += '  <tr>';
 		html += '   <td>';
-		html += '    App name: <input value="CeStore/">';
+		html += '    App name: <input value="ce-store/">';
 		html += '   </td>';
 		html += '  </tr>';
 		html += '  <tr>';

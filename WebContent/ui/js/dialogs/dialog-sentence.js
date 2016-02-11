@@ -6,7 +6,7 @@
 gEp.dlg.sentence = new DialogSentence();
 
 function DialogSentence() {
-	var DEFAULT_CMDURL = 'CeStore/ce/medicine/cmd/med_load.cecmd';
+	var DEFAULT_CMDURL = 'ce-store/ce/medicine/cmd/med_load.cecmd';
 
 	var iLastUserCmdUrl = null;
 

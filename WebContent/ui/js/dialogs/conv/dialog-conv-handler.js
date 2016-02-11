@@ -48,7 +48,7 @@ function DialogConvHandler() {
 	var HTML_CONV_PREAMBLE = '<table border="0" width="100%">';
 	var HTML_CONV_POSTAMBLE = '</table>';
 	var HTML_MSG = '<tr><td align="%ALIGN%"><a id="%ANCHOR%"/><font style="font-size:10px"><b>%NAME%:</b></font><table><tr><td align="right">%TYPE%%SCORE%</td><td><table border="1" cellpadding="2" cellspacing="2"><tr><td bgcolor="%COLOUR%" style="max-width:' + MSG_WIDTH + '; word-wrap:break-word;"><font color="%FONT_COLOUR%">%MESSAGE%</font></td></tr></table><td>%REPLY%</td></tr></table>%DATE%</td></tr>';
-	var HTML_IRT_LINK = '<a href="#%IRT%" title="is in reply to %IRT%"><img src="/CeStore/EngineeringPanel/icons/link.png" width="10" height="10"></a>';
+	var HTML_IRT_LINK = '<a href="#%IRT%" title="is in reply to %IRT%"><img src="/ce-store/EngineeringPanel/icons/link.png" width="10" height="10"></a>';
 	var HTML_MSG_LINK = '<a href="javascript:gEp.handler.instances.getInstanceDetails(\'%ID%\');" title="%TYPE% %ID%">%TYPE%</a>';
 	var HTML_MSG_SCORE = '<font color="%SCORE_COLOUR%"><BR/><a title="%SCORE_EXP%">*%SCORE_VAL% pts*</a></font>';
 

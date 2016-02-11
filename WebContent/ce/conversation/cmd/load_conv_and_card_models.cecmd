@@ -3,5 +3,5 @@
 -- All Rights Reserved
 -- --------------------------------------------------------------------------
 
-perform load sentences from url '/CeStore/ce/conversation/cmd/load_conv.cecmd'.
-perform load sentences from url '/CeStore/ce/conversation/ce-cards/cmd/fragments/load_all_models.cecmd'.
+perform load sentences from url '/ce-store/ce/conversation/cmd/load_conv.cecmd'.
+perform load sentences from url '/ce-store/ce/conversation/ce-cards/cmd/fragments/load_all_models.cecmd'.

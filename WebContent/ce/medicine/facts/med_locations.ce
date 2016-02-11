@@ -3,7 +3,7 @@
 -- All Rights Reserved
 -- --------------------------------------------------------------------------
 
-the renderable thing 'hospital' has '/CeStore/icons/medicine/hospital.png' as icon file name.
+the renderable thing 'hospital' has '/ce-store/icons/medicine/hospital.png' as icon file name.
 
 
 the hospital 'Basingstoke and North Hampshire Hospital'

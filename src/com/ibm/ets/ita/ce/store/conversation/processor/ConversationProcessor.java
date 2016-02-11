@@ -47,7 +47,7 @@ public class ConversationProcessor {
 	private static final String CMD_EXPAND = "expand";
 	private static final String CMD_EXPLAIN = "explain";
 
-	private static final String URL_CONV_INITIALISE = "/CeStore/ce/conversation/cmd/load_conv.cecmd";
+	private static final String URL_CONV_INITIALISE = "/ce-store/ce/conversation/cmd/load_conv.cecmd";
 	private static final String FORM_CONVINIT = "Conversation initialisation";
 
 	private ActionContext ac = null;
