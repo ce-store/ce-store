@@ -10,20 +10,20 @@ var gEp = new EngineeringPanel();
 
 if (typeof dojo !== 'undefined') {
 	var extraLibs = {
-		dialog_extra_01: { url:'/ce-store/EngineeringPanel/js/dialogs/map/dialog-map.js', loaded: false },
-		dialog_extra_02: { url:'/ce-store/EngineeringPanel/js/dialogs/map/dialog-map-actions.js', loaded: false },
-		dialog_extra_03: { url:'/ce-store/EngineeringPanel/js/dialogs/map/dialog-map-links.js', loaded: false },
-		dialog_extra_04: { url:'/ce-store/EngineeringPanel/js/dialogs/map/dialog-map-projections.js', loaded: false },
+		dialog_extra_01: { url:'/ce-store/ui/js/dialogs/map/dialog-map.js', loaded: false },
+		dialog_extra_02: { url:'/ce-store/ui/js/dialogs/map/dialog-map-actions.js', loaded: false },
+		dialog_extra_03: { url:'/ce-store/ui/js/dialogs/map/dialog-map-links.js', loaded: false },
+		dialog_extra_04: { url:'/ce-store/ui/js/dialogs/map/dialog-map-projections.js', loaded: false },
 
-		dialog_extra_12: { url:'/ce-store/EngineeringPanel/js/dialogs/network/dialog-nw.js', loaded: false },
-		dialog_extra_13: { url:'/ce-store/EngineeringPanel/js/dialogs/network/dialog-nw-actions.js', loaded: false },
-		dialog_extra_14: { url:'/ce-store/EngineeringPanel/js/dialogs/network/dialog-nw-links.js', loaded: false },
+		dialog_extra_12: { url:'/ce-store/ui/js/dialogs/network/dialog-nw.js', loaded: false },
+		dialog_extra_13: { url:'/ce-store/ui/js/dialogs/network/dialog-nw-actions.js', loaded: false },
+		dialog_extra_14: { url:'/ce-store/ui/js/dialogs/network/dialog-nw-links.js', loaded: false },
 
-		ui_extra_02: { url:'/ce-store/EngineeringPanel/js/ui/panes/pane-map.js', loaded: false },
-		ui_extra_03: { url:'/ce-store/EngineeringPanel/js/ui/panes/pane-network.js', loaded: false },
-		ui_extra_04: { url:'/ce-store/EngineeringPanel/js/ui/panes/pane-currentprojects.js', loaded: false },
+		ui_extra_02: { url:'/ce-store/ui/js/ui/panes/pane-map.js', loaded: false },
+		ui_extra_03: { url:'/ce-store/ui/js/ui/panes/pane-network.js', loaded: false },
+		ui_extra_04: { url:'/ce-store/ui/js/ui/panes/pane-currentprojects.js', loaded: false },
 
-		ui_extra_05: { url:'/ce-store/EngineeringPanel/js/ui/forms/form-maplayers.js', loaded: false }
+		ui_extra_05: { url:'/ce-store/ui/js/ui/forms/form-maplayers.js', loaded: false }
 	};
 
 	var extraActs = {
