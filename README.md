@@ -4,6 +4,14 @@ The CE Store contains everything you need to get started with the ITA Controlled
 
 We are an IBM initiated open source organisation focused on providing an experimental research environment for the ITA Controlled English language.
 
+## Quick Guide
+
+* [Tutorials (See wiki)](https://github.com/ce-store/ce-store/wiki)
+* [Installation and Setup](https://github.com/ce-store/ce-store#installation-and-setup)
+* [Usage](https://github.com/ce-store/ce-store#usage)
+* [Contributing](https://github.com/ce-store/ce-store#contributing)
+* [License](https://github.com/ce-store/ce-store#license)
+
 ## Installation and Setup
 
 Clone the code
