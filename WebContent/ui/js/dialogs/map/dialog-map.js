@@ -130,9 +130,10 @@ function DialogMap() {
 				gEp.dlg.map.map = new OpenLayers.Map('mapDetails');		//Default projection is used
 				iBaseLayer = new OpenLayers.Layer.OSM();
 				gEp.dlg.map.map.addLayer(iBaseLayer);
-
-				gEp.dlg.map.map.addControl(new OpenLayers.Control.LayerSwitcher());
-				gEp.dlg.map.map.addControl(new OpenLayers.Control.MousePosition());
+//DSB 12/02/2016 - Temporarily removed as not compatible with latest OpenLayers
+//Needs to be resurrected
+//				gEp.dlg.map.map.addControl(new OpenLayers.Control.LayerSwitcher());
+//				gEp.dlg.map.map.addControl(new OpenLayers.Control.MousePosition());
 
 				if (gEp.dlg.map.isGoogleMapsLoaded()) {
 					var layerGoogleSat = new OpenLayers.Layer.Google(
