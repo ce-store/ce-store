@@ -96,7 +96,8 @@ function DialogCeqb() {
 		domTabContainer.watch('selectedChildWidget', function() { gEp.dlg.ceqb.drawing.calculatePosOffsets(); });
 
 		//Connect the calculatePosOffsets function to the splitter resize (on mouse up)
-		var domSplitter = dijit.byId('outerContainer').getSplitter('left');
+//		var domSplitter = dijit.byId('outerContainer').getSplitter('left');
+		var domSplitter = dijit.byId('outerContainer');
 		dojo.connect(domSplitter.domNode, 'onmouseup', function() { gEp.dlg.ceqb.drawing.calculatePosOffsets();}); 
 
 		//Create the GFX container and surface

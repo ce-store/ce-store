@@ -136,6 +136,8 @@ function EngineeringPanel() {
 			dialog_10: { url:'/ce-store/ui/js/dialogs/ceqb/dialog-ceqb-render.js', loaded: false },
 			dialog_11: { url:'/ce-store/ui/js/dialogs/ceqb/dialog-ceqb-response.js', loaded: false },
 
+			dialog_12: { url:'/ce-store/ui/js/dialogs/dnd/dialog-dnd.js', loaded: false },
+
 			dialog_15: { url:'/ce-store/ui/js/dialogs/conv/dialog-conv.js', loaded: false },
 			dialog_16: { url:'/ce-store/ui/js/dialogs/conv/dialog-conv-actions.js', loaded: false },
 			dialog_17: { url:'/ce-store/ui/js/dialogs/conv/dialog-conv-handler.js', loaded: false },
