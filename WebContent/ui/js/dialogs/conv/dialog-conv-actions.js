@@ -24,7 +24,12 @@ function DialogConvActions() {
 			gCe.msg.alert('The CE Store is empty.  Please load a sentence set before enabling the conversation pane.');
 		} else {
 			var senUrl = 'ce-store/ce/conversation/cmd/load_conv_and_card_models.cecmd';
-			gEp.handler.actions.processCommandsRelative(senUrl, 'conversation pane');
+			var cbf = function(pResponseObject, pUserParms) { 
+							gEp.handler.sentences.reportLoadResultsAndRefresh(pResponseObject, pUserParms);
+							gEp.dlg.conv.actions.updateAfterLoad(true);
+						};
+
+			gEp.handler.actions.processCommandsRelative(senUrl, 'conversation pane', cbf);
 		}
 	};
 
@@ -80,9 +85,8 @@ function DialogConvActions() {
 		gEp.dlg.conv.appendToConversationField('[' + pMsgId + ']\n');
 	};
 
-	this.updateAfterLoad = function() {
-		this.updateConceptListWithPrimaries(pResponseObject);
-		this.showOrHideConversationDetails();
+	this.updateAfterLoad = function(pOverride) {
+		gEp.dlg.conv.showOrHideConversationDetails(pOverride);
 	};
 
 }

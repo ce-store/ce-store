@@ -13,6 +13,15 @@ conceptualise a ~ configuration concept ~ CC.
 conceptualise an ~ uninteresting property ~ UP.
 conceptualise an ~ interesting thing ~ I.
 
+conceptualise a ~ linguistic thing ~ L that
+  is a configuration concept and
+  has the value PF as ~ plural form ~ and
+  has the value DD as ~ default determiner ~ and
+  ~ is expressed by ~ the value V.
+
+conceptualise an ~ attributional thing ~ A.
+Note: These are things like colours, sizes, weights and measures.
+
 conceptualise a ~ conversation sentence ~ S that is a sentence.
 
 conceptualise a ~ conv thing ~ CT that
@@ -30,6 +39,7 @@ conceptualise a ~ conv unknown ~ U that is a conv phrase.
 conceptualise a ~ conv sentence ~ S that
   is a conv thing and
   has the value ST as ~ sentence text ~ and
+  has the value AT as ~ analysis text ~ and
   has the conv clause CC as ~ clause ~.
 
 conceptualise a ~ conv clause ~ C that

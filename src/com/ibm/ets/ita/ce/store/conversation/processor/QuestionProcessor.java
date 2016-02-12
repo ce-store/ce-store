@@ -123,25 +123,33 @@ public class QuestionProcessor {
 	public ResultOfAnalysis processQuestion() {
 		ResultOfAnalysis result = null;
 		CeInstance fromUser = this.cardInstance.getSingleInstanceFromPropertyNamed(this.ac, PROP_ISFROM);
+		String fromName = null;
+
+		if (fromUser == null) {
+			fromName = "(none)";
+		} else {
+			fromName = fromUser.getInstanceName();
+		}
+
 		generateQuestionAnalysis();
 		
 		if (isStandardQuestion()) {
 			if (ConversationProcessor.isAuthorisedForAsk(fromUser)) {
 				answerStandardQuestion();
 			} else {
-				result = ResultOfAnalysis.msgActNotAuthorised(fromUser.getInstanceName(), "ask");
+				result = ResultOfAnalysis.msgActNotAuthorised(fromName, "ask");
 			}
 		} else if (isWhyQuestion()) {
 			if (ConversationProcessor.isAuthorisedForWhy(fromUser)) {
 				answerWhyQuestion();
 			} else {
-				result = ResultOfAnalysis.msgActNotAuthorised(fromUser.getInstanceName(), "why");
+				result = ResultOfAnalysis.msgActNotAuthorised(fromName, "why");
 			}
 		} else if (isAggregationQuestion()) {
 			if (ConversationProcessor.isAuthorisedForAsk(fromUser)) {
 				answerAggregationQuestion();
 			} else {
-				result = ResultOfAnalysis.msgActNotAuthorised(fromUser.getInstanceName(), "ask");
+				result = ResultOfAnalysis.msgActNotAuthorised(fromName, "ask");
 			}
 		} else {
 			reportError("Unexpected question type: " + extractQuestionPhrase(), this.ac);

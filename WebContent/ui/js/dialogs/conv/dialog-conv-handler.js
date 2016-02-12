@@ -649,10 +649,15 @@ function DialogConvHandler() {
 
 	this.renderConversation = function() {
 		var myName = gCe.utils.getLoggedInUserId();
-		var lcMyName = myName.toLowerCase();
+		var lcMyName = null;
 		var htmlText = '';
 		var lastMessage = null;
 
+		if (myName == null) {
+			myName = '';
+		}
+		
+		lcMyName = myName.toLowerCase();
 		this.totalActScore = 0;
 		this.totalPotScore = 0;
 		

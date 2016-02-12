@@ -73,6 +73,10 @@ function DialogUser() {
 			for (var key in pUserList){
 				var thisUser = pUserList[key];
 
+				if (typeof thisUser.screenName == 'undefined') {
+					thisUser.screenName = thisUser.userName;
+				}
+
 				if (thisUser.userName === selUserName) {
 					gCe.utils.setLoggedInUser(thisUser.userName, thisUser.screenName);
 					this.setUserName(thisUser.userName, thisUser.screenName);

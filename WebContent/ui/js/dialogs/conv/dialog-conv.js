@@ -45,7 +45,7 @@ function DialogConv() {
 		gEp.handler.sentences.autoValidateCe(DOM_CONVTEXT, '<font color="red">Will be submitted as valid Controlled English...</font>', '', cbf);
 	};
 
-	this.showOrHideConversationDetails = function() {
+	this.showOrHideConversationDetails = function(pOverride) {
 		var domConvEnable1 = document.getElementById(DOM_CONVENABLE1);
 		var domConvBc1 = document.getElementById(DOM_CONVBC1);
 
@@ -54,7 +54,7 @@ function DialogConv() {
 			domConvEnable1.style.display = 'block';
 			domConvBc1.style.display = 'none';
 		} else {
-			if (this.handler.isConversationModelLoaded()) {
+			if (this.handler.isConversationModelLoaded() || pOverride) {
 				//The conversation model is already loaded
 				domConvEnable1.style.display = 'none';
 				domConvBc1.style.display = 'block';
