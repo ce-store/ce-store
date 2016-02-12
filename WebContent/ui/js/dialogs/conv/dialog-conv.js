@@ -11,8 +11,6 @@ function DialogConv() {
 	var DOM_LOCNAME = 'locName';
 	var DOM_CONVBC1 = 'convBc';
 	var DOM_CONVENABLE1 = 'convEnable';
-	var DOM_CONVBC2 = 'convDebugBc';
-	var DOM_CONVENABLE2 = 'convDebugEnable';
 
 	var INTERVAL_AUTOUPDATE = 5000;
 
@@ -50,39 +48,26 @@ function DialogConv() {
 	this.showOrHideConversationDetails = function() {
 		var domConvEnable1 = document.getElementById(DOM_CONVENABLE1);
 		var domConvBc1 = document.getElementById(DOM_CONVBC1);
-		var domConvEnable2 = document.getElementById(DOM_CONVENABLE2);
-		var domConvBc2 = document.getElementById(DOM_CONVBC2);
 
 		if (gEp.isCeStoreEmpty()) {
 			//The CE Store is empty
 			domConvEnable1.style.display = 'block';
-			domConvEnable2.style.display = 'block';
 			domConvBc1.style.display = 'none';
-			domConvBc2.style.display = 'none';
 		} else {
 			if (this.handler.isConversationModelLoaded()) {
 				//The conversation model is already loaded
 				domConvEnable1.style.display = 'none';
-				domConvEnable2.style.display = 'none';
 				domConvBc1.style.display = 'block';
-				domConvBc2.style.display = 'block';
 			} else {
 				//The conversation model is not loaded
 				domConvEnable1.style.display = 'block';
-				domConvEnable2.style.display = 'block';
 				domConvBc1.style.display = 'none';
-				domConvBc2.style.display = 'none';
 			}
 		}
 
 		var bc1 = dijit.byId(DOM_CONVBC1);
 		if (bc1 != null) {
 			bc1.resize();
-		}
-
-		var bc2 = dijit.byId(DOM_CONVBC2);
-		if (bc2 != null) {
-			bc2.resize();
 		}
 	};
 
