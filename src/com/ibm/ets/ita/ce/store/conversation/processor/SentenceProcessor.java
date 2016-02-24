@@ -55,10 +55,10 @@ public class SentenceProcessor {
 	private ArrayList<ProcessedWord> ungroundedWords = new ArrayList<ProcessedWord>();
 
 	private ArrayList<MatchedTriple> matchedTriples = new ArrayList<MatchedTriple>();
-	
+
 	private ExtractedItem lastExtItem = null;
 	private boolean useDefaultScoring = false;
-	
+
 	public ProcessedWord getSubjectWord() {
 		return this.subjectWord;
 	}
@@ -78,7 +78,7 @@ public class SentenceProcessor {
 	public ArrayList<MatchedTriple> getMatchedTriples() {
 		return this.matchedTriples;
 	}
-	
+
 	public MatchedTriple getFirstMatchedTriple() {
 		MatchedTriple result = null;
 
@@ -165,7 +165,7 @@ public class SentenceProcessor {
 		//TODO: Abstract these values
 		for (CeInstance prevInst : this.ac.getModelBuilder().getAllInstancesForConceptNamed(this.ac, "NL card")) {
 			CeInstance prevFrom = prevInst.getSingleInstanceFromPropertyNamed(this.ac, "is from");
-			
+
 			if (prevFrom != null) {
 				if (prevFrom.equals(currFrom)) {
 					String lcContent = prevInst.getSingleValueFromPropertyNamed("content").toLowerCase().trim();
@@ -219,15 +219,15 @@ public class SentenceProcessor {
 
 	private boolean hasBeenConfirmed(CeInstance pCardInst) {
 		boolean result = false;
-		
+
 		//TODO: Abstract these values
-		
+
 		//There should be a confirm card is reply to the matched card (sent by moira)
 		CePropertyInstance pi = pCardInst.getReferringPropertyInstanceNamed("is in reply to");
-		
+
 		if (pi != null) {
 			CeInstance confCard = pi.getRelatedInstance();
-			
+
 			if (confCard.isConceptNamed(this.ac, "confirm card")) {
 				//It is a confirm card - if this has a tell card in response then this passed card has been confirmed
 				CePropertyInstance npi = confCard.getReferringPropertyInstanceNamed("is in reply to");
@@ -277,7 +277,7 @@ public class SentenceProcessor {
 		//Seek others
 		seekOthers();
 	}
-	
+
 	private ResultOfAnalysis doAssertionPostProcessing() {
 		ResultOfAnalysis result = null;
 
@@ -302,7 +302,7 @@ public class SentenceProcessor {
 			reportDebug("No subject word found for sentence: " + getSentenceText(), this.ac);
 		}
 	}
-	
+
 	private ProcessedWord seekSubjectWord() {
 		ProcessedWord foundWord = null;
 
@@ -350,10 +350,10 @@ public class SentenceProcessor {
 			this.subjectWord.addConnectedWordsTo(this.lastExtItem);
 		}
 	}
-	
+
 	private CeConcept retrieveSingleConceptFrom(ArrayList<CeConcept> pCons, ProcessedWord pWord, String pContext) {
 		CeConcept result = null;
-		
+
 		if (pCons.isEmpty()) {
 			reportError("No grounded concept found for " + pContext + " word: " + pWord.toString(), this.ac);
 		} else if (pCons.size() > 1) {
@@ -361,7 +361,7 @@ public class SentenceProcessor {
 		} else {
 			result = pCons.get(0);
 		}
-		
+
 		return result;
 	}
 
@@ -378,7 +378,7 @@ public class SentenceProcessor {
 //				for (CeConcept thisCon : conList) {
 //					for (CeProperty thisProp : pProps) {
 //						CeConcept domCon = thisProp.getDomainConcept();
-//						
+//
 //						if (domCon.equalsOrHasParent(thisCon)) {
 //							return thisProp;
 //						}
@@ -392,7 +392,7 @@ public class SentenceProcessor {
 
 	private CeInstance retrieveSingleInstanceFrom(ArrayList<CeInstance> pInsts, ProcessedWord pWord, String pContext) {
 		CeInstance result = null;
-		
+
 		if (pInsts.isEmpty()) {
 			reportError("No grounded instance found for " + pContext + " word: " + pWord.toString(), this.ac);
 		} else if (pInsts.size() > 1) {
@@ -401,7 +401,7 @@ public class SentenceProcessor {
 		} else {
 			result = pInsts.get(0);
 		}
-		
+
 		return result;
 	}
 
@@ -449,7 +449,7 @@ public class SentenceProcessor {
 				} else if (thisWord.isGroundedOnProperty()) {
 					if (!thisWord.isLaterPartOfPartial()) {
 //						CeProperty tgtProp = retrieveSinglePropertyFrom(thisWord.listGroundedProperties(), thisWord, "object");
-	
+
 						ArrayList<CeProperty> propList = thisWord.listGroundedProperties();
 						if (!propList.isEmpty()) {
 //							reportDebug("I got an object property (" + tgtProp.formattedFullPropertyName()  + "), from word: " + thisWord.toString());
@@ -459,7 +459,7 @@ public class SentenceProcessor {
 							}
 							thisWord.addConnectedWordsTo(extProp);
 							this.otherProperties.add(extProp);
-	
+
 							this.lastExtItem = extProp;
 						} else {
 							reportWarning("No object property found for word: " + thisWord.toString(), this.ac);
@@ -502,13 +502,13 @@ public class SentenceProcessor {
 
 		ArrayList<CeInstance> cwls = this.ac.getModelBuilder().getAllInstancesForConceptNamed(this.ac, CON_CWL);
 		ArrayList<CeInstance> nwls = this.ac.getModelBuilder().getAllInstancesForConceptNamed(this.ac, CON_NWL);
-		
+
 		//Then classify the processed words
 		for (ProcessedWord thisWord : this.allProcessedWords) {
-			thisWord.classify(this.ac, cwls, nwls);
+			thisWord.classify(this.ac, cwls, nwls, this.cardInstance);
 		}
 	}
-	
+
 	public CeInstance getLocationInstance() {
 		CeInstance locInst = null;
 
@@ -555,7 +555,7 @@ public class SentenceProcessor {
 			calculateSpecialScore(pResult);
 		}
 	}
-	
+
 	private void calculateDefaultScore(ResultOfAnalysis pResult) {
 		long score = 0;
 		String scoreExplanation = "";
@@ -576,20 +576,20 @@ public class SentenceProcessor {
 		if (!this.matchedTriples.isEmpty()) {
 			long numProps = this.matchedTriples.size();
 			score += numProps;
-			
+
 			String propWord = null;
 			if (numProps == 1) {
 				propWord = "property";
 			} else {
 				propWord = "properties";
 			}
-			
+
 			String propList = " (";
 			String sepText = "";
 			for (MatchedTriple thisMt : this.matchedTriples) {
 				propList += sepText + thisMt.getPredicateProperty().getPropertyName();
 				sepText = ", ";
-				
+
 				String objId = thisMt.getObjectInstanceId();
 				if ((objId != null) && (!objId.isEmpty())) {
 					if (this.ac.getModelBuilder().getInstanceNamed(this.ac, objId) != null) {
@@ -617,7 +617,7 @@ public class SentenceProcessor {
 			//A new instance
 			int scoreVal = extractScoreValueFor(this.subjectConcept, PROP_NEWINSTSCORE);
 			score += scoreVal;
-			
+
 			for (ExtractedItem otherCon : this.otherConcepts) {
 				scoreVal = extractScoreValueFor(otherCon.getConcept(), PROP_NEWINSTSCORE);
 				score += scoreVal;
@@ -653,7 +653,7 @@ public class SentenceProcessor {
 			} else {
 				propWord = "properties";
 			}
-			
+
 			String propList = " (";
 			String sepText = "";
 			for (MatchedTriple thisMt : filteredMts) {
@@ -673,7 +673,7 @@ public class SentenceProcessor {
 	private int extractScoreValueFor(CeConcept pCon, String pPropName) {
 		int score = 0;
 		CeInstance mm = pCon.retrieveMetadataInstance(this.ac);
-		
+
 		if (mm != null) {
 			if (mm.hasPropertyInstanceForPropertyNamed(pPropName)) {
 				int scoreVal = new Integer(mm.getSingleValueFromPropertyNamed(pPropName)).intValue();
@@ -682,7 +682,7 @@ public class SentenceProcessor {
 				//Check parents
 				for (CeConcept parCon : pCon.getDirectParents()) {
 					score = extractScoreValueFor(parCon, pPropName);
-					
+
 					if (score > 0) {
 						break;
 					}
@@ -722,17 +722,17 @@ public class SentenceProcessor {
 				if (!processedInstIds.contains(thisInst.getInstanceName())) {
 					unprocessedInsts.add(extInst);
 				}
-			} 
+			}
 		}
 
 		processRemainingInstances(unprocessedInsts);
-		
+
 		return true;
 	}
 
 	private HashSet<String> processProperties() {
 		HashSet<String> result = new HashSet<String>();
-		
+
 		HashSet<ExtractedItem> matchSet = new HashSet<ExtractedItem>();
 		HashSet<ExtractedItem> unmatchSet = null;
 
@@ -750,9 +750,9 @@ public class SentenceProcessor {
 				reportWarning("Unexpected extracted item type when creating unmatched list: " + extProp.toString(), this.ac);
 			}
 		}
-		
+
 		unmatchSet.removeAll(matchSet);
-		
+
 		for (ExtractedItem matchedProp : matchSet) {
 			result.addAll(createMatchedTripleFor(this.subjectConcept, matchedProp, MatchedTriple.CON_DOM_MATCHED));
 		}
@@ -761,15 +761,15 @@ public class SentenceProcessor {
 			reportDebug("Unmatched property - using domain of property itself " + ump.getFirstProperty().formattedFullPropertyName(), this.ac);
 			result.addAll(createMatchedTripleFor(ump.getFirstProperty().getDomainConcept(), ump, MatchedTriple.CON_DOM_UNMATCHED));
 		}
-		
+
 		return result;
 	}
-	
+
 	private void processRemainingInstances(HashSet<ExtractedItem> pExtInsts) {
 		for (ExtractedItem extInst : pExtInsts) {
 			if (extInst.isDominantInterpretation()) {
 				CeInstance tgtInst = extInst.getInstance();
-				
+
 				for (CeConcept dirCon : tgtInst.getDirectConcepts()) {
 					for (CeProperty possProp : this.subjectConcept.calculateAllProperties().values()) {
 						if (possProp.isObjectProperty()) {
@@ -796,14 +796,14 @@ public class SentenceProcessor {
 
 	private static String conceptNameMatching(CeInstance pInst, CeConcept pTgtCon) {
 		String result = null;
-		
+
 		for (CeConcept possCon : pInst.getAllLeafConcepts()) {
 			if (possCon.equalsOrHasParent(pTgtCon)) {
 				result = possCon.getConceptName();
 				break;
 			}
 		}
-		
+
 		return result;
 	}
 
@@ -857,7 +857,7 @@ public class SentenceProcessor {
 					if (instEi.isDominantInterpretation()) {
 						String objConName = null;
 						CeInstance matchedInst = instEi.getInstance();
-						objConName = conceptNameMatching(matchedInst, rangeCon);					
+						objConName = conceptNameMatching(matchedInst, rangeCon);
 						if (objConName != null) {
 							reportDebug("Instance '" + matchedInst.getInstanceName() + "' matches range '" + rangeCon.getConceptName() + "'", this.ac);
 							MatchedTriple mt = MatchedTriple.createOpTriple(this.ac, pEiProp, tgtProp.getDomainConcept(), tgtProp, matchedInst.getInstanceName(), objConName, pEiProp.getOriginalDescriptionForNextItem(), pContext, false, this.subjectInstance);
@@ -893,10 +893,10 @@ public class SentenceProcessor {
 
 	private void seekPropertyMatchesFor(CeConcept pCon, String pContext, HashSet<ExtractedItem> pMatchSet) {
 		ArrayList<CeProperty> allProps = pCon.calculateAllDirectProperties(false);
-		
+
 		for (CeProperty thisProp : allProps) {
 			reportDebug("Possible property (" + pContext + "): " + thisProp.formattedFullPropertyName(), this.ac);
-			
+
 			for (ExtractedItem extProp : this.otherProperties) {
 				for (CeProperty tgtProp : extProp.getPropertyList()) {
 					if (thisProp.equals(tgtProp)) {
@@ -904,17 +904,17 @@ public class SentenceProcessor {
 					}
 				}
 			}
-		}		
+		}
 	}
-	
+
 	private boolean makeSenseOfPropertyLedSentence() {
 		//TODO: Improve this.  For now simply provide a suitable subject concept and then carry out the rest of the processing
 		CeConcept tgtCon = this.ac.getModelBuilder().getConceptNamed(this.ac, this.subjectProperty.getDomainConcept().getConceptName());
 		this.subjectConcept = tgtCon;
-		
+
 		if ((this.allProcessedWords != null) && (!this.allProcessedWords.isEmpty())) {
 			ProcessedWord firstWord = this.allProcessedWords.get(0);
-			
+
 			if (firstWord.isUnmatchedWord()) {
 				CeInstance tgtInst = null;
 				ExtractedItem instEi = new ExtractedItem(firstWord, tgtInst);
@@ -930,7 +930,7 @@ public class SentenceProcessor {
 		CeConcept conExc = this.ac.getModelBuilder().getConceptNamed(this.ac, CON_ATTTHING);
 		CeConcept tgtCon = this.subjectInstance.getFirstLeafConceptExcludingConcept(conExc);
 		this.subjectConcept = tgtCon;
-		
+
 		return makeSenseOfConceptLedSentence();
 	}
 
