@@ -27,32 +27,41 @@ Install Eclipse
   1. Download and install [Eclipse IDE for Java EE Developers](http://www.eclipse.org/downloads/packages/eclipse-ide-java-ee-developers/mars1).
   2. Open Eclipse and set up your workspace.
 
+Set the Eclipse Text encoding
+  1. In Eclipse open `Window`, `Preferences`, `General`, `Workspace`
+  2. Set the Text file encoding to UTF-8, Click on `OK`
+
 Import the project into Eclipse
 
   1. In Eclipse select `File` then `Import`
   2. Under the `Import` window select `Git` then `Projects from Git`
   3. Select `Existing local repository`
-  4. If `ce-store` is not listed click `Add...` and locate folder
-  5. Click `Finish`
+  4. Select the git repository that contains the ce-store code and click `Next`. If this repository is not listed click `Add...` and locate the folder
+  5. Select `Import existing Eclipse projects` and click `Next`
+  6. Select the `ce-store` project on the Import Projects pane and click `Next` 
+  7. Click `Finish`
 
-The project should now appear in your Package Explorer.
+The project should now appear in your Package Explorer. 
 
+You may find that you get a number of servlet-based compilation errors due to the runtime setup. These will be resolved by configuring a web server in the following section.
+
+### Web Server
 Add the project to your favourite server and run. Tomcat and Liberty examples are described below.
 
-### Tomcat
+**Tomcat**
 
 Install Tomcat
 
   1. Go to the [Tomcat website](http://tomcat.apache.org/) and download Tomcat 7 (minimum required version).
 
-Add Tomcat to Eclispe
+Add Tomcat to Eclipse
 
-  1. In Eclipse open `Eclipse`, `Preferences`, `Server`, `Runtime Environments`
+  1. In Eclipse open `Window`, `Preferences`, `Server`, `Runtime Environments`
   2. Click `Add...`
   3. Under the New Server Runtime dialog select your runtime under Apache (minimum Tomcat 7)
   4. Click `Next`
   5. Fill in the Tomcat installation directory
-  6. Ensure the selected JRE is a full JDK and is a version that will satisfy Apache Tomcat. If necessary, you can click on Installed JREs... to add JDKs to Eclipse
+  6. In `Window`, `Preferences`, `Java`, `Installed JREs`, ensure the selected JRE is a full JDK and is a version that will satisfy Apache Tomcat. If necessary, you can add a compatible JDK to Eclipse
   7. Click `Finish`
 
 Set up Tomcat server
@@ -69,7 +78,7 @@ Run the server
   1. In the Server view right click the Tomcat server and click `Start`
   2. Access the CE Store at [http://localhost:8080/ce-store](http://localhost:8080/ce-store)
 
-### Liberty
+**Liberty**
 
 Install Liberty
 
@@ -85,12 +94,21 @@ Set up Liberty server
   6. Click `Next`
   7. Select `Download and install a new runtime environment from ibm.com`
   8. Select `WAS Liberty V8.5.* Runtime`
-  9. Enter a destination path for the installation
+  9. Enter a destination path for the installation (.\Servers\Liberty under the workspace is a good location) 
   10. Click `Next`, then `Next` again
   11. Accept the T&Cs
   12. Name your server and click `Next`
-  13. Add `ce-store` to configure on the server
+  13. Add `ce-store` to configure on the server (right click on the Liberty server in the Servers view, select `Add and Remove` and add the ce-store)
   14. Click `Finish`
+
+Change the project build path
+  1. In the Project Explorer view, right click on the ce-store project, select `Build Path`, `Configure Build Path...`
+  2. In the Libraries tab, click on `Add Library`
+  3. Select `Server Runtime` and click `Next`
+  4. Select the WebSphere Application Server Liberty Profile, click `Finish`
+  5. Click `Ok`. 
+  The ce-store should now build with no compilation errors, using the Liberty profile.
+
 
 Run the server
 
