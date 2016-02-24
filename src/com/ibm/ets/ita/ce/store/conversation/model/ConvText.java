@@ -9,10 +9,10 @@ import java.util.ArrayList;
 
 import com.ibm.ets.ita.ce.store.ActionContext;
 
-public class ConvPhrase extends ConvItem {
+public class ConvText extends ConvItem {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
 
-	private static final String CON_NAME = "conv phrase";
+	private static final String CON_NAME = "conv text";
 
 	private static final String CON_ASSERTION = "conv assertion";
 	private static final String CON_QUESTION = "conv question";
@@ -20,24 +20,24 @@ public class ConvPhrase extends ConvItem {
 	private static final int TYPE_ASSERTION = 1;
 	private static final int TYPE_QUESTION = 2;
 
-	private int phraseType = TYPE_ASSERTION;
+	private int textType = TYPE_ASSERTION;
 
 	private ArrayList<ConvWord> allWords = null;
 	private ArrayList<ConvSentence> childSentences = new ArrayList<ConvSentence>();
-	
+
 	private String[] qsmList = null;	//Question start markers
 	private String[] qemList = null;	//Question end markers
 
-	public static ConvPhrase createNewPhrase(ActionContext pAc, String pPhraseText) {
-		ConvPhrase result = new ConvPhrase(pAc, pPhraseText);
+	public static ConvText createNewText(ActionContext pAc, String pText) {
+		ConvText result = new ConvText(pAc, pText);
 		result.initialise();
 		result.parse(pAc);
 
 		return result;
 	}
 
-	private ConvPhrase(ActionContext pAc, String pPhraseText) {
-		super(pAc, CON_NAME, pPhraseText);
+	private ConvText(ActionContext pAc, String pText) {
+		super(pAc, CON_NAME, pText);
 	}
 
 	public String getConceptName() {
@@ -52,7 +52,7 @@ public class ConvPhrase extends ConvItem {
 		return result;
 	}
 
-	public String getPhraseText() {
+	public String getText() {
 		return this.itemText;
 	}
 
@@ -75,7 +75,7 @@ public class ConvPhrase extends ConvItem {
 	@Override
 	protected void initialise() {
 		this.allWords = new ArrayList<ConvWord>();
-		
+
 		initialiseDelimiterList();
 		initialiseQuestionStartMarkers();
 		initialiseQuestionEndMarkers();
@@ -111,16 +111,16 @@ public class ConvPhrase extends ConvItem {
 	}
 
 	public boolean isAssertion() {
-		return this.phraseType == TYPE_ASSERTION;
+		return this.textType == TYPE_ASSERTION;
 	}
 
 	public boolean isQuestion() {
-		return (this.phraseType == TYPE_QUESTION) || this.firstWordIsQuestion();
+		return (this.textType == TYPE_QUESTION) || this.firstWordIsQuestion();
 	}
 
 	public ProcessedWord getFirstProcessedWord() {
 		ProcessedWord result = null;
-		
+
 		if ((this.allWords != null) && (this.allWords.isEmpty())) {
 			result = this.allWords.get(0).getProcessedWord();
 		}
@@ -141,40 +141,40 @@ public class ConvPhrase extends ConvItem {
 
 	@Override
 	protected void parse(ActionContext pAc) {
-		ArrayList<String> splitPhrases = new ArrayList<String>();
+		ArrayList<String> splitText = new ArrayList<String>();
 
-		if (!getPhraseText().isEmpty()) {
-			splitPhrases.add(getPhraseText());
+		if (!getText().isEmpty()) {
+			splitText.add(getText());
 		}
 
-		//TODO: Make the splitting of phrases configurable via the agent.
-		//For now it is disabled to prevent issues with phrases like "Capt. Scarlett likes apples"
+		//TODO: Make the splitting of sentences configurable via the agent.
+		//For now it is disabled to prevent issues with sentences like "Capt. Scarlett likes apples"
 //		for (String thisDelim : this.delimiterList) {
-//			splitPhrases = splitUsing(thisDelim, splitPhrases);
+//			splitText = splitUsing(thisDelim, splitText);
 //		}
 
-		for (String thisSen : splitPhrases) {
+		for (String thisSen : splitText) {
 			ConvSentence.createNewSentence(pAc, thisSen, this);
 		}
 
-		classifyPhrase();
+		classifyText();
 	}
 
-	private void classifyPhrase() {
-		String lcPt = getPhraseText().toLowerCase();
+	private void classifyText() {
+		String lcPt = getText().toLowerCase();
 
-		this.phraseType = TYPE_ASSERTION;
+		this.textType = TYPE_ASSERTION;
 
 		for (String qem : this.qemList) {
 			if (lcPt.endsWith(qem)) {
-				this.phraseType = TYPE_QUESTION;
+				this.textType = TYPE_QUESTION;
 				break;
 			}
 		}
 
 		for (String qsm : this.qsmList) {
 			if (lcPt.startsWith(qsm)) {
-				this.phraseType = TYPE_QUESTION;
+				this.textType = TYPE_QUESTION;
 				break;
 			}
 		}

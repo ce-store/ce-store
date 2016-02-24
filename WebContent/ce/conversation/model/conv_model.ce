@@ -27,14 +27,14 @@ conceptualise a ~ conversation sentence ~ S that is a sentence.
 conceptualise a ~ conv thing ~ CT that
   is a configuration concept.
 
-conceptualise a ~ conv phrase ~ P that
+conceptualise a ~ conv text ~ T that
   is a conv thing and
-  has the value PT as ~ phrase text ~ and
+  has the value T as ~ text ~ and
   has the conv sentence CS as ~ sentence ~.
 
-conceptualise a ~ conv assertion ~ A that is a conv phrase.
-conceptualise a ~ conv question ~ Q that is a conv phrase.
-conceptualise a ~ conv unknown ~ U that is a conv phrase.
+conceptualise a ~ conv assertion ~ A that is a conv text.
+conceptualise a ~ conv question ~ Q that is a conv text.
+conceptualise a ~ conv unknown ~ U that is a conv text.
 
 conceptualise a ~ conv sentence ~ S that
   is a conv thing and

@@ -65,6 +65,8 @@ public class ProcessedWord extends GeneralItem {
 	private TreeMap<String, CeProperty> matchingRelations = null;
 	private CeInstance matchingInstance = null;
 
+	private ArrayList<CeInstance> maybeMatchingInstances = null;
+
 	//Referred (indirectly
 	private TreeMap<String, CeConcept> referredExactConcepts = null;
 	private TreeMap<String, CeProperty> referredExactRelations = null;
@@ -381,13 +383,12 @@ public class ProcessedWord extends GeneralItem {
 				} else if (matchingInstances.size() > 1) {
 					// if more than one match, ask confirm card
 					this.confirmRequired = true;
+					maybeMatchingInstances = matchingInstances;
 				}
 
 				// get previous card
 				prevCard = prevCard.getSingleInstanceFromPropertyNamed(pAc, PROP_REPLY);
 			}
-
-
 		}
 	}
 

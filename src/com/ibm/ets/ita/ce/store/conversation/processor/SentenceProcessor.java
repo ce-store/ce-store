@@ -16,8 +16,8 @@ import com.ibm.ets.ita.ce.store.ActionContext;
 import com.ibm.ets.ita.ce.store.conversation.generator.ConvCeGenerator;
 import com.ibm.ets.ita.ce.store.conversation.generator.DomainCeGenerator;
 import com.ibm.ets.ita.ce.store.conversation.generator.GistGenerator;
-import com.ibm.ets.ita.ce.store.conversation.model.ConvPhrase;
 import com.ibm.ets.ita.ce.store.conversation.model.ConvSentence;
+import com.ibm.ets.ita.ce.store.conversation.model.ConvText;
 import com.ibm.ets.ita.ce.store.conversation.model.ConvWord;
 import com.ibm.ets.ita.ce.store.conversation.model.ExtractedItem;
 import com.ibm.ets.ita.ce.store.conversation.model.MatchedTriple;
@@ -934,7 +934,7 @@ public class SentenceProcessor {
 		return makeSenseOfConceptLedSentence();
 	}
 
-	public void generateConvCe(StringBuilder pSb, ConvPhrase pCp) {
+	public void generateConvCe(StringBuilder pSb, ConvText pCp) {
 		ConvCeGenerator.generateConvCeFor(this.ac, this, pCp, pSb);
 	}
 

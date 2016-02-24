@@ -14,12 +14,12 @@ public class ConvSentence extends ConvItem {
 
 	private static final String CON_NAME = "conv sentence";
 
-	private ConvPhrase parentPhrase = null;
+	private ConvText parentPhrase = null;
 	private ArrayList<ConvClause> childClauses = null;
 	private ArrayList<ConvWord> allWords = null;
 	private String analysisText = null;
 
-	public static ConvSentence createNewSentence(ActionContext pAc, String pSentenceText, ConvPhrase pParent) {
+	public static ConvSentence createNewSentence(ActionContext pAc, String pSentenceText, ConvText pParent) {
 		ConvSentence result = new ConvSentence(pAc, pSentenceText, pParent);
 		result.initialise();
 		result.parse(pAc);
@@ -27,7 +27,7 @@ public class ConvSentence extends ConvItem {
 		return result;
 	}
 
-	private ConvSentence(ActionContext pAc, String pSentenceText, ConvPhrase pParent) {
+	private ConvSentence(ActionContext pAc, String pSentenceText, ConvText pParent) {
 		super(pAc, CON_NAME, pSentenceText);
 
 		this.parentPhrase = pParent;
@@ -61,7 +61,7 @@ public class ConvSentence extends ConvItem {
 		return this.itemText;
 	}
 
-	public ConvPhrase getParentPhrase() {
+	public ConvText getParentPhrase() {
 		return this.parentPhrase;
 	}
 
