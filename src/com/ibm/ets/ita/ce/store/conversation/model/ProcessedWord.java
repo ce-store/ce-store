@@ -30,6 +30,7 @@ public class ProcessedWord extends GeneralItem {
 	private static final String CON_LINGTHING = "linguistic thing";
 	private static final String CON_MAN = "man";
 	private static final String CON_WOMAN = "woman";
+	private static final String CON_PERSON = "person";
 	private static final String PROP_PROPNAME = "property name";
 	private static final String PROP_PLURAL = "plural form";
 	private static final String PROP_EXPBY = "is expressed by";
@@ -369,6 +370,12 @@ public class ProcessedWord extends GeneralItem {
 						matchingInstances.add(prevCardAbout);
 					} else if (strippedWord.equals(AR_SHE) && prevCardAbout.isConceptNamed(pAc, CON_WOMAN)) {
 						// word == "she" and last talked about instance was a woman
+						matchingInstances.add(prevCardAbout);
+					} else if (strippedWord.equals(AR_THEY) && prevCardAbout.isConceptNamed(pAc, CON_PERSON)) {
+						// word == "they" and last talked about instance was a person
+						matchingInstances.add(prevCardAbout);
+					} else if (strippedWord.equals(AR_IT)) {
+						// word == "it" and last talked about instance was anything
 						matchingInstances.add(prevCardAbout);
 					}
 				}

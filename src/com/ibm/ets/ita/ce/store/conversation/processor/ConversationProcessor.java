@@ -388,11 +388,9 @@ public class ConversationProcessor {
 					if (result.hasGistText()) {
 						//This is a GIST confirm result
 						result.markAsGistConfirmResponse();
-					} else {
+					} else if (result.hasCeText()) {
 						//This is a normal confirm response
-						if (result.hasCeText()) {
-							result.markAsConfirmResponse();
-						}
+						result.markAsConfirmResponse();
 					}
 				}
 			} else {
