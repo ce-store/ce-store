@@ -286,20 +286,17 @@ public class ConversationProcessor {
 		} else {
 			if (isConfirmation(convText)) {
 				processCeConfirm(pConvInst);
-			} else {
-				if (isExpansion(convText)) {
-					processCeExpand(pConvInst);
-				} else {
-					if (!convText.isEmpty()) {
-						//Process the specified text
-						RawLexicalProcessor rlh = new RawLexicalProcessor(this.ac, pConvInst, this.triggerHandler.isGeneratingConvCe(), this.triggerHandler.isUsingDefaultScoring());
+			} else if (isExpansion(convText)) {
+				processCeExpand(pConvInst);
+			} else if (!convText.isEmpty()) {
+				//Process the specified text
+				RawLexicalProcessor rlh = new RawLexicalProcessor(this.ac, pConvInst, this.triggerHandler.isGeneratingConvCe(), this.triggerHandler.isUsingDefaultScoring());
+				ResultOfAnalysis roa = rlh.processConversationText(convText);
 
-						dealWithConversationResult(pConvInst, rlh.processConversationText(convText));
-					} else {
-						//Report empty text
-						generateCeConversationCard(pConvInst, ResultOfAnalysis.msgEmptyText());
-					}
-				}
+				dealWithConversationResult(pConvInst, roa);
+			} else {
+				//Report empty text
+				generateCeConversationCard(pConvInst, ResultOfAnalysis.msgEmptyText());
 			}
 		}
 	}

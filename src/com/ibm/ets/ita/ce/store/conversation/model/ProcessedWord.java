@@ -80,8 +80,7 @@ public class ProcessedWord extends GeneralItem {
 	private boolean isValueWord = false;
 	private boolean isNumberWord = false;
 	private boolean isQuestionWord = false;
-	private boolean isAnaphoricReference = false;
-	private boolean confirmRequired = false;
+	private boolean optionRequired = false;
 
 	private boolean partialStartWord = false;
 	private boolean partialConceptReference = false;
@@ -305,7 +304,7 @@ public class ProcessedWord extends GeneralItem {
 	}
 
 	public boolean confirmRequired() {
-		return this.confirmRequired;
+		return this.optionRequired;
 	}
 
 	public boolean isDeterminer() {
@@ -355,12 +354,11 @@ public class ProcessedWord extends GeneralItem {
 				|| strippedWord.equals(AR_SHE)
 				|| strippedWord.equals(AR_THEY)
 				|| strippedWord.equals(AR_IT)) {
-			isAnaphoricReference = true;
 
 			CeInstance prevCard = pCardInstance.getSingleInstanceFromPropertyNamed(pAc, PROP_REPLY);
 
 			// arbitrary limit of 10 cards deep
-			for (int i = 0; i < 10 && this.matchingInstance == null && prevCard != null && this.confirmRequired == false; ++i) {
+			for (int i = 0; i < 10 && this.matchingInstance == null && prevCard != null && this.optionRequired == false; ++i) {
 				ArrayList<CeInstance> prevCardAbouts = prevCard.getInstanceListFromPropertyNamed(pAc, PROP_ABOUT);
 
 				// try and match all instances that previous card is about
@@ -373,17 +371,18 @@ public class ProcessedWord extends GeneralItem {
 						// word == "she" and last talked about instance was a woman
 						matchingInstances.add(prevCardAbout);
 					}
-
 				}
-
 
 				if (matchingInstances.size() == 1) {
 					// if only one match in previous card, assume correct
 					this.matchingInstance = matchingInstances.get(0);
+					addReferredExactInstance(matchingInstances.get(0));
 				} else if (matchingInstances.size() > 1) {
-					// if more than one match, ask confirm card
-					this.confirmRequired = true;
-					maybeMatchingInstances = matchingInstances;
+					// if more than one match, show option card
+					this.optionRequired = true;
+					for (CeInstance inst : matchingInstances) {
+						addReferredExactInstance(inst);
+					}
 				}
 
 				// get previous card

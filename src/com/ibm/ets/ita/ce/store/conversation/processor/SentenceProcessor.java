@@ -336,11 +336,18 @@ public class SentenceProcessor {
 		} else if (this.subjectWord.isGroundedOnInstance()) {
 			//Instance
 			ArrayList<CeInstance> subInsts = this.subjectWord.listGroundedInstances();
-			this.subjectInstance = retrieveSingleInstanceFrom(subInsts, this.subjectWord, "subject");
-			if (this.subjectInstance != null) {
-				this.subjectWord.setChosenInstance(this.subjectInstance);
+			boolean confirmRequired = this.subjectWord.confirmRequired();
+			if (confirmRequired) {
+				for (CeInstance subInst : subInsts) {
+					this.lastExtItem = new ExtractedItem(this.subjectWord, subInst);
+				}
+			} else {
+				this.subjectInstance = retrieveSingleInstanceFrom(subInsts, this.subjectWord, "subject");
+				if (this.subjectInstance != null) {
+					this.subjectWord.setChosenInstance(this.subjectInstance);
+				}
+				this.lastExtItem = new ExtractedItem(this.subjectWord, this.subjectInstance);
 			}
-			this.lastExtItem = new ExtractedItem(this.subjectWord, this.subjectInstance);
 		} else {
 			//Unknown
 			reportWarning("Unable to detect grounding type for subject word: " + this.subjectWord.toString(), this.ac);
@@ -534,7 +541,7 @@ public class SentenceProcessor {
 				(thisPw.getLcWordText().equals("count"))) {
 				thisPw.markAsQuestionWord();
 			}
-			}
+		}
 	}
 
 	private ResultOfAnalysis generateCeForMatchedTriples() {

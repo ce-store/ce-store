@@ -16,6 +16,7 @@ public class ResultOfAnalysis {
 
 	private static final String CON_NLCARD = "NL card";
 	private static final String CON_CONFCARD = "confirm card";
+	private static final String CON_OPTCARD = "option card";
 	private static final String CON_GISTCONFCARD = "gist-confirm card";
 	private static final String CON_GISTCARD = "gist card";
 	private static final String CON_TELLCARD = "tell card";
@@ -29,6 +30,7 @@ public class ResultOfAnalysis {
 	private String responseCardType = null;
 	private String infoMessage = null;
 	private boolean isQuestionResult = false;
+	private boolean isOptionResult = false;
 	private ArrayList<ResultOfAnalysis> childResults = new ArrayList<ResultOfAnalysis>();
 	private TreeMap<String, CeInstance> matchedInstances = new TreeMap<String, CeInstance>();
 	private ArrayList<String> referencedIds = new ArrayList<String>();
@@ -68,7 +70,7 @@ public class ResultOfAnalysis {
 
 		return result;
 	}
-	
+
 	public static ResultOfAnalysis createQuestionResponseWithGistAndCe(String pGistText, String pCeText) {
 		ResultOfAnalysis result = new ResultOfAnalysis();
 
@@ -80,14 +82,28 @@ public class ResultOfAnalysis {
 		return result;
 	}
 
+	public static ResultOfAnalysis createOptionResponse(String optText) {
+		ResultOfAnalysis result = new ResultOfAnalysis();
+
+		result.gistText = optText;
+		result.isOptionResult = true;
+		result.responseCardType = CON_OPTCARD;
+
+		return result;
+	}
+
 	public boolean isQuestionResult() {
 		return this.isQuestionResult;
+	}
+
+	public boolean isOptionResult() {
+		return isOptionResult;
 	}
 
 	public TreeMap<String, CeInstance> getMatchedInstances() {
 		return this.matchedInstances;
 	}
-	
+
 	public void addMatchedInstance(CeInstance pInst) {
 		this.matchedInstances.put(pInst.getInstanceName(), pInst);
 	}
@@ -95,7 +111,7 @@ public class ResultOfAnalysis {
 	public ArrayList<String> getReferencedIds() {
 		return this.referencedIds;
 	}
-	
+
 	public void addReferencedId(String pId) {
 		this.referencedIds.add(pId);
 	}
@@ -106,14 +122,14 @@ public class ResultOfAnalysis {
 
 	public static ResultOfAnalysis msgThankyouForCe(CeInstance pScoreInst) {
 		ResultOfAnalysis result =  ResultOfAnalysis.createWithInfoMessage("I have saved that to the knowledge base");
-		
+
 		if (pScoreInst != null) {
 			long scoreVal = new Long(pScoreInst.getSingleValueFromPropertyNamed("score value")).longValue();
 			String scoreExp = pScoreInst.getSingleValueFromPropertyNamed("score explanation");
 
 			result.addScoreDetails(scoreVal, scoreExp, "actual");
 		}
-		
+
 		return result;
 	}
 
@@ -290,14 +306,14 @@ public class ResultOfAnalysis {
 	public boolean isInfoMessage() {
 		return this.infoMessage != null;
 	}
-	
+
 	public boolean hasResponseCardType() {
 		return (this.responseCardType != null) && (!this.responseCardType.isEmpty());
 	}
-	
+
 	public boolean isConfirmCard() {
 		boolean result = false;
-		
+
 		if (this.responseCardType != null) {
 			result = this.responseCardType.equals(CON_CONFCARD);
 		}
@@ -307,7 +323,7 @@ public class ResultOfAnalysis {
 
 	public boolean isTellCard() {
 		boolean result = false;
-		
+
 		if (this.responseCardType != null) {
 			result = this.responseCardType.equals(CON_TELLCARD);
 		}
@@ -332,7 +348,7 @@ public class ResultOfAnalysis {
 		this.isQuestionResult = pChildRoa.isQuestionResult();
 		appendReferencedIdsFrom(pChildRoa);
 	}
-	
+
 	private void transferResponseCardTypeFrom(ResultOfAnalysis pChildRoa) {
 		if (pChildRoa.hasResponseCardType()) {
 			//TODO: Add test and warning for mismatch here
@@ -380,12 +396,12 @@ public class ResultOfAnalysis {
 				result += sepChar + "ceText=" + this.ceText;
 				sepChar = "\n";
 			}
-	
+
 			if (hasGistText()) {
 				result += sepChar + "gistText=" + this.gistText;
 				sepChar = "\n";
 			}
-	
+
 			if (this.scoreVal != 0) {
 				result += sepChar + "score=" + new Long(this.scoreVal).toString();
 				result += " (" + this.scoreExplanation + ")";
