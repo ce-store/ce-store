@@ -34,6 +34,8 @@ public class QuestionProcessor {
 	private static final String CON_SPATIAL = "spatial thing";
 	private static final String CON_CONVTHING = "conv thing";
 	private static final String CON_AGENT = "agent";
+	private static final String CON_MAN = "man";
+	private static final String CON_WOMAN = "woman";
 	private static final String CON_UNINTPROP = "uninteresting property";
 	private static final String PROP_SINGQUAL = "single qualifier";
 	private static final String PROP_IRT = "is in reply to";
@@ -162,7 +164,7 @@ public class QuestionProcessor {
 		}
 
 		generateQuestionAnalysis();
-		
+
 		if (isStandardQuestion()) {
 			if (ConversationProcessor.isAuthorisedForAsk(fromUser)) {
 				answerStandardQuestion();
@@ -934,7 +936,13 @@ public class QuestionProcessor {
 
 		if ((qualifier == null) || (qualifier.isEmpty())) {
 			if (isWhoQuestion()) {
-				qualifier = "he or she";
+				if (pTgtInst.isConceptNamed(ac, CON_MAN)) {
+					qualifier = "he";
+				} else if (pTgtInst.isConceptNamed(ac, CON_WOMAN)) {
+					qualifier = "she";
+				} else {
+					qualifier = "he or she";
+				}
 			} else {
 				qualifier = "it";
 			}
