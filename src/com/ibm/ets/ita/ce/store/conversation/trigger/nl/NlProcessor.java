@@ -49,17 +49,14 @@ public class NlProcessor extends GeneralProcessor {
     private String findHumanAgent(CeInstance cardInst) {
         System.out.println("\nLook for human agent...");
         CeInstance prevCard = cardInst.getSingleInstanceFromPropertyNamed(ac, Property.IN_REPLY_TO.toString());
-        System.out.println(prevCard);
 
-        int i = 0;
-        while (fromTellService(prevCard) || fromNLService(prevCard) && i < 3) {
+        while (fromTellService(prevCard) || fromNLService(prevCard)) {
             prevCard = prevCard.getSingleInstanceFromPropertyNamed(ac, Property.IN_REPLY_TO.toString());
             System.out.println(prevCard);
 
             if (prevCard == null) {
                 return null;
             }
-            i++;
         }
 
         String humanAgent = prevCard.getSingleValueFromPropertyNamed(Property.IS_FROM.toString());
