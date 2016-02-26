@@ -11,17 +11,6 @@ public abstract class GeneralTriggerHandler extends CeNotifyHandler {
 
     protected static final String TYPE_PROP = "PROPERTY";
 
-    private static final String CON_SERVICE = "service";
-    protected static final String CON_NL_CARD = "nl card";
-    protected static final String CON_TELL_CARD = "tell card";
-
-    private static final String PROP_IRT = "is in reply to";
-    private static final String PROP_FROM = "is from";
-    private static final String PROP_TO = "is to";
-    private static final String PROP_FROM_CON = "from concept";
-    private static final String PROP_FROM_INST = "from instance";
-    private static final String PROP_TELL_SERV = "tell service";
-
     protected ActionContext ac = null;
     protected CeInstance trigInst = null;
     protected CeInstance fromInst = null;
@@ -38,20 +27,17 @@ public abstract class GeneralTriggerHandler extends CeNotifyHandler {
         trigInst = ac.getModelBuilder().getInstanceNamed(ac, triggerName);
 
         if (this.trigInst != null) {
-            fromConName = trigInst.getSingleValueFromPropertyNamed(PROP_FROM_CON);
-            fromInst = trigInst.getSingleInstanceFromPropertyNamed(ac, PROP_FROM_INST);
-            tellService = trigInst.getSingleValueFromPropertyNamed(PROP_TELL_SERV);
+            fromConName = trigInst.getSingleValueFromPropertyNamed(Property.FROM_CONCEPT.toString());
+            fromInst = trigInst.getSingleInstanceFromPropertyNamed(ac, Property.FROM_INSTANCE.toString());
+            tellService = trigInst.getSingleValueFromPropertyNamed(Property.TELL_SERVICE.toString());
 
             if (fromConName != null) {
-                fromConName = CON_SERVICE;
+                fromConName = Concept.SERVICE.toString();
             }
 
             if (fromInst != null) {
                 fromInstName = fromInst.getInstanceName();
             }
-
-            System.out.println("From: " + fromInstName);
-            System.out.println("Tell Service: " + tellService);
         } else {
             reportError("Unable to get trigger details for: " + triggerName, ac);
         }
@@ -67,10 +53,10 @@ public abstract class GeneralTriggerHandler extends CeNotifyHandler {
         // in reply to it.
         boolean result = false;
 
-        CePropertyInstance irtPI = cardInst.getReferringPropertyInstanceNamed(PROP_IRT);
+        CePropertyInstance irtPI = cardInst.getReferringPropertyInstanceNamed(Property.IN_REPLY_TO.toString());
 
         if (irtPI != null) {
-            CeInstance replier = irtPI.getRelatedInstance().getSingleInstanceFromPropertyNamed(ac, PROP_FROM);
+            CeInstance replier = irtPI.getRelatedInstance().getSingleInstanceFromPropertyNamed(ac, Property.IS_FROM.toString());
 
             if (replier != null) {
                 result = replier.equals(fromInst);
@@ -83,7 +69,7 @@ public abstract class GeneralTriggerHandler extends CeNotifyHandler {
     protected boolean isThisCardForMe(CeInstance cardInst) {
         //This card is for "me" (this agent) if the card has the name of this
         //agent in the "is to" property.
-        CePropertyInstance tgtPI = cardInst.getPropertyInstanceNamed(PROP_TO);
+        CePropertyInstance tgtPI = cardInst.getPropertyInstanceNamed(Property.IS_TO.toString());
         boolean result = false;
 
         if (tgtPI != null) {

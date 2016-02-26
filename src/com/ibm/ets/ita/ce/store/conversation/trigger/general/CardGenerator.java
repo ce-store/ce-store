@@ -6,59 +6,91 @@ import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.substituteCePa
 import java.util.TreeMap;
 
 import com.ibm.ets.ita.ce.store.ActionContext;
-import com.ibm.ets.ita.ce.store.StoreActions;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
-import com.ibm.ets.ita.ce.store.model.CeSource;
 
 public class CardGenerator {
 
-	private static final String CARD_TELL = "tell card";
+    private CeGenerator ce;
 
-	private static final String UID_PREFIX = "msg_";
-	private static final String SRC_PREFIX = "conv_";
+    public CardGenerator(ActionContext ac) {
+        ce = new CeGenerator(ac);
+    }
 
-	private ActionContext ac;
+    // Tell cards are used to add valid CE to the store
+    public void generateTellCard(CeInstance cardInst, String convText, String fromService, String toService) {
+        System.out.println("\nGenerate tell card:");
+        StringBuilder sb = new StringBuilder();
+        TreeMap<String, String> ceParms = new TreeMap<String, String>();
 
-	// Tell cards are used to add valid CE to the store
-	public CardGenerator(ActionContext ac) {
-		this.ac = ac;
-	}
+        appendToSb(sb, "there is a %CARD_TYPE% named '%CARD_NAME%' that");
+        appendToSb(sb, "  has the timestamp '{now}' as timestamp and");
+        appendToSb(sb, "  has '%CONV_TEXT%' as content and");
+        appendToSb(sb, "  is from the service '%FROM_SERV%' and");
+        appendToSb(sb, "  is to the service '%TO_SERV%' and");
+        appendToSb(sb, "  is in reply to the card '%PREV_CARD%'.");
 
-	public void generateTellCard(CeInstance cardInst, String convText, String fromService, String toService) {
-		System.out.println("\nGenerate tell card:");
-		StringBuilder sb = new StringBuilder();
-		TreeMap<String, String> ceParms = new TreeMap<String, String>();
+        ceParms.put("%CARD_TYPE%", Card.TELL.toString());
+        ceParms.put("%CARD_NAME%", ce.generateNewUid());
+        ceParms.put("%CONV_TEXT%", convText);
+        ceParms.put("%FROM_SERV%", fromService);
+        ceParms.put("%TO_SERV%", toService);
+        ceParms.put("%PREV_CARD%", cardInst.getInstanceName());
 
-		appendToSb(sb, "there is a %CARD_TYPE% named '%CARD_NAME%' that");
-		appendToSb(sb, "  has the timestamp '{now}' as timestamp and");
-		appendToSb(sb, "  has '%CONV_TEXT%' as content and");
-		appendToSb(sb, "  is from the service '%FROM_SERV%' and");
-		appendToSb(sb, "  is to the service '%TO_SERV%'.");
+        String ceSentence = substituteCeParameters(sb.toString(), ceParms);
+        String source = ce.generateSrcName(fromService);
+        System.out.println(ceSentence);
+        ce.save(ceSentence, source);
+    }
 
-		ceParms.put("%CARD_TYPE%", CARD_TELL);
-		ceParms.put("%CARD_NAME%", generateNewUid());
-		ceParms.put("%CONV_TEXT%", convText);
-		ceParms.put("%FROM_SERV%", fromService);
-		ceParms.put("%TO_SERV%", toService);
+    // Reply to service that sent the Tell card if its card has been accepted or not
+    public void generateTellReplyCard(CeInstance cardInst, String tellText, String fromService,
+            String toService) {
+        System.out.println("\nGenerate reply tell card:");
+        StringBuilder sb = new StringBuilder();
+        TreeMap<String, String> ceParms = new TreeMap<String, String>();
 
-		String ceSentence = substituteCeParameters(sb.toString(), ceParms);
-		String source = generateSrcName(fromService);
-		System.out.println(ceSentence);
-		saveCeCardText(ceSentence, source);
-	}
+        appendToSb(sb, "there is a %CARD_TYPE% named '%CARD_NAME%' that");
+        appendToSb(sb, "  has the timestamp '{now}' as timestamp and");
+        appendToSb(sb, "  has '%CONV_TEXT%' as content and");
+        appendToSb(sb, "  is from the service '%FROM_SERV%' and");
+        appendToSb(sb, "  is to the service '%TO_SERV%' and");
+        appendToSb(sb, "  is in reply to the card '%PREV_CARD%'.");
 
-	private void saveCeCardText(String ceSentence, String source) {
-		StoreActions sa = StoreActions.createUsingDefaultConfig(ac);
+        ceParms.put("%CARD_TYPE%", Card.NL.toString());
+        ceParms.put("%CARD_NAME%", ce.generateNewUid());
+        ceParms.put("%CONV_TEXT%", Reply.SAVED.toString());
+        ceParms.put("%FROM_SERV%", fromService);
+        ceParms.put("%TO_SERV%", toService);
+        ceParms.put("%PREV_CARD%", cardInst.getInstanceName());
 
-		CeSource tgtSrc = CeSource.createNewFormSource(ac, source, source);
-		sa.saveCeText(ceSentence, tgtSrc);
-	}
+        String ceSentence = substituteCeParameters(sb.toString(), ceParms);
+        String source = ce.generateSrcName(fromService);
+        System.out.println(ceSentence);
+        ce.save(ceSentence, source);
+    }
 
-	private String generateNewUid() {
-		return ac.getModelBuilder().getNextUid(ac, UID_PREFIX);
-	}
+    public void generateNLCard(CeInstance cardInst, String convText, String fromService, String toService) {
+        System.out.println("\nGenerate reply tell card:");
+        StringBuilder sb = new StringBuilder();
+        TreeMap<String, String> ceParms = new TreeMap<String, String>();
 
-	private String generateSrcName(String sender) {
-		return SRC_PREFIX + sender;
-	}
+        appendToSb(sb, "there is a %CARD_TYPE% named '%CARD_NAME%' that");
+        appendToSb(sb, "  has the timestamp '{now}' as timestamp and");
+        appendToSb(sb, "  has '%CONV_TEXT%' as content and");
+        appendToSb(sb, "  is from the service '%FROM_SERV%' and");
+        appendToSb(sb, "  is to the service '%TO_SERV%' and");
+        appendToSb(sb, "  is in reply to the card '%PREV_CARD%'.");
+
+        ceParms.put("%CARD_TYPE%", Card.NL.toString());
+        ceParms.put("%CARD_NAME%", ce.generateNewUid());
+        ceParms.put("%CONV_TEXT%", convText);
+        ceParms.put("%FROM_SERV%", fromService);
+        ceParms.put("%TO_SERV%", toService);
+        ceParms.put("%PREV_CARD%", cardInst.getInstanceName());
+
+        String ceSentence = substituteCeParameters(sb.toString(), ceParms);
+        String source = ce.generateSrcName(fromService);
+        System.out.println(ceSentence);
+        ce.save(ceSentence, source);
+    }
 }
