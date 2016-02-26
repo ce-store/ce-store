@@ -4,12 +4,27 @@
 -- --------------------------------------------------------------------------
 
 -- Triggers
-there is a conversation card triggered event named 'trig_conv' that
-  has 'com.ibm.ets.ita.ce.store.conversation.handler.ConversationTriggerHandler' as class to notify and
+--there is a conversation card triggered event named 'trig_conv' that
+--  has 'com.ibm.ets.ita.ce.store.conversation.handler.ConversationTriggerHandler' as class to notify and
 --  has '100' as milliseconds delay and
-  has 'card' as concept name and
+--  has 'card' as concept name and
+--  has 'content' as property name and
+--  has 'service' as from concept and
+--  has 'Moira' as from instance and
+--  has 'false' as check nationalities and
+--  has 'true' as generate conversation ce.
+
+there is a nl card trigger named 'nl trigger' that
+  has 'com.ibm.ets.ita.ce.store.conversation.trigger.nl.NlTriggerHandler' as class to notify and
+  has 'nl card' as concept name and
   has 'content' as property name and
   has 'service' as from concept and
   has 'Moira' as from instance and
-  has 'false' as check nationalities and
-  has 'true' as generate conversation ce.
+  has 'Tell' as tell service.
+
+there is a card trigger named 'tell trigger' that
+  has 'com.ibm.ets.ita.ce.store.conversation.trigger.tell.TellTriggerHandler' as class to notify and
+  has 'tell card' as concept name and
+  has 'content' as property name and
+  has 'service' as from concept and
+  has 'Tell' as from instance.

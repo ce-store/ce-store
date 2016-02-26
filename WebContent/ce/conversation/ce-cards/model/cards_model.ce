@@ -108,6 +108,15 @@ conceptualise a ~ team ~ T that is an organisation.
 conceptualise a ~ resource ~ R.
 Note: An external resource (e.g. images or documents).
 
+conceptualise a ~ card trigger ~ CT that
+  is a CE triggered event and
+  has the value FC as ~ from concept ~ and
+  has the value FI as ~ from instance ~.
+
+conceptualise a ~ nl card trigger ~ NCT that
+  is a card trigger and
+  has the value TT as ~ tell service ~.
+
 conceptualise a ~ conversation triggered event ~ CTE that
   is a CE triggered event and
   has the value FC as ~ from concept ~ and
