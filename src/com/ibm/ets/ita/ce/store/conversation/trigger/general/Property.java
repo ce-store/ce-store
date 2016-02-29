@@ -7,7 +7,8 @@ public enum Property {
     FROM_CONCEPT("from concept"),
     FROM_INSTANCE("from instance"),
     TELL_SERVICE("tell service"),
-    CONTENT("content");
+    CONTENT("content"),
+    SINGLE_QUAL("single qualifier");
     private String name;
 
     private Property(String name) {
