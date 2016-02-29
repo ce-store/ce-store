@@ -1,8 +1,10 @@
 package com.ibm.ets.ita.ce.store.conversation.trigger.general;
 
 import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.appendToSb;
+import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.appendToSbNoNl;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.substituteCeParameters;
 
+import java.util.ArrayList;
 import java.util.TreeMap;
 
 import com.ibm.ets.ita.ce.store.ActionContext;
@@ -69,8 +71,9 @@ public class CardGenerator {
         ce.save(ceSentence, source);
     }
 
-    public void generateNLCard(CeInstance cardInst, String convText, String fromService, String toService) {
+    public void generateNLCard(CeInstance cardInst, String convText, String fromService, String toService, ArrayList<String> referencedInsts) {
         System.out.println("\nGenerate reply tell card:");
+        System.out.println("Matched instances: " + referencedInsts);
         StringBuilder sb = new StringBuilder();
         TreeMap<String, String> ceParms = new TreeMap<String, String>();
 
@@ -79,7 +82,30 @@ public class CardGenerator {
         appendToSb(sb, "  has '%CONV_TEXT%' as content and");
         appendToSb(sb, "  is from the service '%FROM_SERV%' and");
         appendToSb(sb, "  is to the service '%TO_SERV%' and");
-        appendToSb(sb, "  is in reply to the card '%PREV_CARD%'.");
+
+        if (referencedInsts != null) {
+            int numReferences = referencedInsts.size();
+
+            if (numReferences > 0) {
+                appendToSb(sb, "  is in reply to the card '%PREV_CARD%' and");
+
+                for (int i = 0; i < numReferences; ++i) {
+                    String inst = referencedInsts.get(i);
+                    appendToSbNoNl(sb, "  is about the thing '");
+                    appendToSbNoNl(sb, inst);
+
+                    if (i < numReferences - 1) {
+                        appendToSb(sb, "' and");
+                    } else {
+                        appendToSbNoNl(sb, "'.");
+                    }
+                }
+            } else {
+                appendToSb(sb, "  is in reply to the card '%PREV_CARD%'.");
+            }
+        } else {
+            appendToSb(sb, "  is in reply to the card '%PREV_CARD%'.");
+        }
 
         ceParms.put("%CARD_TYPE%", Card.NL.toString());
         ceParms.put("%CARD_NAME%", ce.generateNewUid());

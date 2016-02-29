@@ -79,7 +79,7 @@ public abstract class GeneralTriggerHandler extends CeNotifyHandler {
         return result;
     }
 
-    public String getFromInstName() {
+    public String getTriggerName() {
         return fromInstName;
     }
 

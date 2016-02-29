@@ -28,9 +28,9 @@ public class TellProcessor extends GeneralProcessor {
         if (isValidCe(tellText)) {
             // Valid CE - accept and add to store
             System.out.println("Save valid CE");
-            String source = ce.generateSrcName(th.getFromInstName());
+            String source = ce.generateSrcName(th.getTriggerName());
             ce.save(tellText, source);
-            cg.generateTellReplyCard(cardInst, tellText, th.getFromInstName(), fromService);
+            cg.generateTellReplyCard(cardInst, tellText, th.getTriggerName(), fromService);
         } else {
             // Not valid CE - reject card
             System.out.println("Not valid CE");
