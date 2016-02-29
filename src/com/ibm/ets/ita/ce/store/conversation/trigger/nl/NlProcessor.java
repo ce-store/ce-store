@@ -8,6 +8,7 @@ import com.ibm.ets.ita.ce.store.conversation.model.ConvText;
 import com.ibm.ets.ita.ce.store.conversation.model.ExtractedItem;
 import com.ibm.ets.ita.ce.store.conversation.model.FinalItem;
 import com.ibm.ets.ita.ce.store.conversation.model.ProcessedWord;
+import com.ibm.ets.ita.ce.store.conversation.processor.InterestingThingsProcessor;
 import com.ibm.ets.ita.ce.store.conversation.trigger.general.CardGenerator;
 import com.ibm.ets.ita.ce.store.conversation.trigger.general.CeGenerator;
 import com.ibm.ets.ita.ce.store.conversation.trigger.general.GeneralProcessor;
@@ -107,6 +108,8 @@ public class NlProcessor extends GeneralProcessor {
         }
 
         ArrayList<String> referencedItems = new ArrayList<String>();
+        ArrayList<CeInstance> referencedInsts = new ArrayList<CeInstance>();
+
         for (FinalItem item : allFinalItems) {
             ArrayList<ExtractedItem> extractedItems = item.getExtractedItems();
 
@@ -114,6 +117,10 @@ public class NlProcessor extends GeneralProcessor {
                 referencedItems.add(extractedItem.getInstance().getInstanceName());
             }
         }
+
+        InterestingThingsProcessor interestingThings = new InterestingThingsProcessor(ac);
+        String interestingAnswer = interestingThings.generate(referencedInsts);
+        System.out.println("Interesting things: " + interestingAnswer);
 
         // Generate NL Card with reply
         String humanAgent = findHumanAgent(cardInst);
