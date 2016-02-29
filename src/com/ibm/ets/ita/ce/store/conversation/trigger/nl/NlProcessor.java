@@ -116,7 +116,8 @@ public class NlProcessor extends GeneralProcessor {
         }
 
         // Generate NL Card with reply
-        cg.generateNLCard(cardInst, sb.toString(), th.getTriggerName(), th.getTellServiceName(), referencedItems);
+        String humanAgent = findHumanAgent(cardInst);
+        cg.generateNLCard(cardInst, sb.toString(), th.getTriggerName(), humanAgent, referencedItems);
     }
 
     // Pass on Tell agent's message to human agent
@@ -131,15 +132,14 @@ public class NlProcessor extends GeneralProcessor {
     // Find the last spoke to human agent from earlier in the conversation
     private String findHumanAgent(CeInstance cardInst) {
         System.out.println("\nLook for human agent...");
-        CeInstance prevCard = cardInst.getSingleInstanceFromPropertyNamed(ac, Property.IN_REPLY_TO.toString());
+        CeInstance prevCard = cardInst;
 
         while (fromTellService(prevCard) || fromNLService(prevCard)) {
-            prevCard = prevCard.getSingleInstanceFromPropertyNamed(ac, Property.IN_REPLY_TO.toString());
-            System.out.println(prevCard);
-
             if (prevCard == null) {
                 return null;
             }
+
+            prevCard = prevCard.getSingleInstanceFromPropertyNamed(ac, Property.IN_REPLY_TO.toString());
         }
 
         String humanAgent = prevCard.getSingleValueFromPropertyNamed(Property.IS_FROM.toString());
