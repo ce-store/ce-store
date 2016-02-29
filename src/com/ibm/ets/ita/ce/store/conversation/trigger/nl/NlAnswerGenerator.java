@@ -31,13 +31,21 @@ public class NlAnswerGenerator {
         StringBuilder sb = new StringBuilder();
 
         if (!finalItems.isEmpty()) {
-            for (FinalItem item : finalItems) {
+            int numFinalItems = finalItems.size();
+
+            for (int i = 0; i < numFinalItems; ++i) {
+                FinalItem item = finalItems.get(i);
+
                 if (item.isConceptItem()) {
                     sb.append(conceptAnswer(item));
                 } else if (item.isInstanceItem()) {
                     sb.append(instanceAnswer(item, questionType));
                 } else if (item.isPropertyItem()) {
                     sb.append(propertyAnswer(item));
+                }
+
+                if (i < numFinalItems - 1) {
+                    sb.append("\n\n");
                 }
             }
         }
@@ -132,25 +140,63 @@ public class NlAnswerGenerator {
         return sb.toString();
     }
 
-    // Generate reply detailing a property
+    // Generate reply detailing top matching properties
     private String propertyAnswer(FinalItem item) {
         StringBuilder sb = new StringBuilder();
         ExtractedItem extractedItem = item.getFirstExtractedItem();
-        CeProperty property = extractedItem.getFirstProperty();
 
-        appendToSbNoNl(sb, property.getPropertyName());
+        ArrayList<CeProperty> properties = extractedItem.getPropertyList();
+        ArrayList<CeProperty> topLevelProperties = new ArrayList<CeProperty>();
 
-        if (property.isObjectProperty()) {
-            appendToSb(sb, " is a relationship.");
-            appendToSbNoNl(sb, "It links ");
-            appendToSbNoNl(sb, property.getDomainConcept().getConceptName());
-            appendToSbNoNl(sb, " to ");
-            appendToSbNoNl(sb, property.getRangeConceptName());
-            appendToSb(sb, ".");
-        } else {
-            appendToSbNoNl(sb, " is an attribute on ");
-            appendToSbNoNl(sb, property.getDomainConcept().getConceptName());
-            appendToSb(sb, ".");
+        // Find top level property
+        for (CeProperty prop : properties) {
+            boolean addNewProp = false;
+            ArrayList<CeProperty> propertiesToRemove = new ArrayList<CeProperty>();
+
+            if (topLevelProperties.isEmpty()) {
+                addNewProp = true;
+            } else {
+                for (CeProperty topLevelProp : topLevelProperties) {
+                    CeConcept topDomainConcept = topLevelProp.getDomainConcept();
+                    CeConcept propDomainConcept = prop.getDomainConcept();
+
+                    if (propDomainConcept.isParentOf(topDomainConcept)) {
+                        // New prop is parent of current top property
+                        addNewProp = true;
+                        propertiesToRemove.add(topLevelProp);
+                    } else if (!propDomainConcept.hasParent(topDomainConcept)) {
+                        // New prop is not a child of current top property
+                        addNewProp = true;
+                    }
+                }
+            }
+
+            if (addNewProp) {
+                topLevelProperties.add(prop);
+                for (CeProperty removeProp : propertiesToRemove) {
+                    topLevelProperties.remove(removeProp);
+                }
+            }
+        }
+
+        for (CeProperty property : topLevelProperties) {
+
+            appendToSbNoNl(sb, "'");
+            appendToSbNoNl(sb, property.getPropertyName());
+            appendToSbNoNl(sb, "'");
+
+            if (property.isObjectProperty()) {
+                appendToSb(sb, " is a relationship.");
+                appendToSbNoNl(sb, "It links ");
+                appendToSbNoNl(sb, property.getDomainConcept().getConceptName());
+                appendToSbNoNl(sb, " to ");
+                appendToSbNoNl(sb, property.getRangeConceptName());
+                appendToSb(sb, ".");
+            } else {
+                appendToSbNoNl(sb, " is an attribute on ");
+                appendToSbNoNl(sb, property.getDomainConcept().getConceptName());
+                appendToSb(sb, ".");
+            }
         }
 
         return sb.toString();

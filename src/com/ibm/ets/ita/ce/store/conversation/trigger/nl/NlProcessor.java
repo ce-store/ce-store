@@ -42,10 +42,8 @@ public class NlProcessor extends GeneralProcessor {
             // NL
             System.out.println("Not valid CE");
             if (fromTellService(cardInst)) {
-                // Process Tell response
                 processTellResponse(cardInst, nlText);
             } else {
-                // Process NL response
                 processNLResponse(cardInst, modNlText);
             }
         }
@@ -109,7 +107,11 @@ public class NlProcessor extends GeneralProcessor {
             ArrayList<ExtractedItem> extractedItems = item.getExtractedItems();
 
             for (ExtractedItem extractedItem : extractedItems) {
-                referencedItems.add(extractedItem.getInstance().getInstanceName());
+                if (extractedItem.isInstanceItem()) {
+                    referencedItems.add(extractedItem.getInstance().getInstanceName());
+                } else {
+                    // TODO: do something with concepts and properties
+                }
             }
         }
 
