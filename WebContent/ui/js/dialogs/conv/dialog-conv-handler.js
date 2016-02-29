@@ -285,9 +285,7 @@ function DialogConvHandler() {
   };
 
   this.confirmMessage = function(pCardInst) {
-//		console.log(pCardInst);
     var respText = '[' + pCardInst._id + ']\nconfirm';
-//		console.log(respText);
 
     this.sendConversationCe(respText, true, true);
   };
@@ -616,7 +614,7 @@ function DialogConvHandler() {
             addConvMessage(pCeStoreName, ceCard);
             setLastRequestTime(pCeStoreName, ceCard._created);
 
-            if (!messageIsFromMe(ceCard) && !isNlCard(ceCard)) {
+            if (!messageIsFromMe(ceCard)) {
               setLastMessageReceived(pCeStoreName, ceCard);
             }
           }
