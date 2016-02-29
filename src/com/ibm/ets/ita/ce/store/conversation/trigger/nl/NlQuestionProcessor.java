@@ -8,16 +8,7 @@ import com.ibm.ets.ita.ce.store.conversation.model.ProcessedWord;
 
 public class NlQuestionProcessor {
 
-//    private ActionContext ac = null;
-//    private CeInstance cardInstance = null;
-//    private NlAnswerGenerator ag = null;
-
-    public NlQuestionProcessor() {
-//        this.ac = ac;
-//        this.cardInstance = cardInst;
-//        ag = new NlAnswerGenerator(ac);
-    }
-
+    // Create list of final items from extracted items
     public ArrayList<FinalItem> getFinalItems(ArrayList<ProcessedWord> words) {
         System.out.println("\nGet final items...");
         ArrayList<ExtractedItem> finalExtractedItems = computeFinalExtractedItems(words);
@@ -31,6 +22,7 @@ public class NlQuestionProcessor {
         return finalItems;
     }
 
+    // Create list of optional items from extracted items
     public ArrayList<FinalItem> getOptionItems(ArrayList<ProcessedWord> words) {
         System.out.println("\nGet option items...");
         ArrayList<ExtractedItem> optionExtractedItems = computeOptionExtractedItems(words);
@@ -44,31 +36,7 @@ public class NlQuestionProcessor {
         return optionalFinalItems;
     }
 
-//    public ArrayList<FinalItem> process(ArrayList<ProcessedWord> words) {
-//        ArrayList<ExtractedItem> finalExtractedItems = computeFinalExtractedItems(words);
-//        ArrayList<ExtractedItem> optionExtractedItems = computeOptionExtractedItems(words);
-//
-//        if (finalExtractedItems != null) {
-//            System.out.println("Final results available: " + finalExtractedItems);
-//            ArrayList<FinalItem> finalItems = initialiseFinalItems(finalExtractedItems);
-//
-//            if (isWhoQuestion(words)) {
-//                ag.answerStandardQuestion(finalItems, Word.WHO);
-//            } else {
-//                ag.answerStandardQuestion(finalItems, null);
-//            }
-//
-//            return finalItems;
-//        } else if (optionExtractedItems != null) {
-//            System.out.println("Options available: " + optionExtractedItems);
-//            ArrayList<FinalItem> optionalFinalItems = initialiseOptionItems(optionExtractedItems);
-//
-//            return optionalFinalItems;
-//        } else {
-//            return null;
-//        }
-//    }
-
+    // Check extracted items aren't repeated and are the dominant interpretation before adding to list
     private ArrayList<ExtractedItem> computeFinalExtractedItems(ArrayList<ProcessedWord> words) {
         ArrayList<ExtractedItem> items = new ArrayList<ExtractedItem>();
 
@@ -89,6 +57,7 @@ public class NlQuestionProcessor {
         return items;
     }
 
+    // Check extracted items aren't repeated and are optional before adding to list
     private ArrayList<ExtractedItem> computeOptionExtractedItems(ArrayList<ProcessedWord> words) {
         ArrayList<ExtractedItem> items = new ArrayList<ExtractedItem>();
 
@@ -109,6 +78,7 @@ public class NlQuestionProcessor {
         return items;
     }
 
+    // Create FinalItems list of final items
     private ArrayList<FinalItem> initialiseFinalItems(ArrayList<ExtractedItem> extractedItems) {
         FinalItem finalItem = null;
         ArrayList<FinalItem> finalItems = new ArrayList<FinalItem>();
@@ -135,6 +105,7 @@ public class NlQuestionProcessor {
         return finalItems;
     }
 
+    // Create FinalItems list of option items
     private ArrayList<FinalItem> initialiseOptionItems(ArrayList<ExtractedItem> extractedItems) {
         FinalItem finalItem = null;
         ArrayList<FinalItem> optionItems = new ArrayList<FinalItem>();
@@ -161,12 +132,14 @@ public class NlQuestionProcessor {
         return optionItems;
     }
 
+    // Does question start with 'who'?
     public boolean isWhoQuestion(ArrayList<ProcessedWord> words) {
         ProcessedWord word = getFirstQuestionWord(words);
 
         return (word != null) && word.isWho();
     }
 
+    // Get first question word
     private ProcessedWord getFirstQuestionWord(ArrayList<ProcessedWord> words) {
         ProcessedWord result = null;
 

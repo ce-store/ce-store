@@ -30,17 +30,9 @@ public class NlSentenceProcessor {
     // Process words in sentence to decipher meaning
     public ArrayList<ProcessedWord> process(ConvSentence sentence) {
         System.out.println("\nProcess sentence");
+
         ArrayList<ProcessedWord> words = prepareWords(sentence);
         classify(words);
-
-//        if (sentence.getParentPhrase().isQuestion()) {
-//            // Question sentence
-//            extractMatchingEntities(sentence, words);
-//            return words;
-//        } else {
-//            // TODO: Something else
-//
-//        }
 
         return words;
     }

@@ -10,7 +10,6 @@ import com.ibm.ets.ita.ce.store.conversation.model.FinalItem;
 import com.ibm.ets.ita.ce.store.conversation.model.ProcessedWord;
 import com.ibm.ets.ita.ce.store.conversation.processor.InterestingThingsProcessor;
 import com.ibm.ets.ita.ce.store.conversation.trigger.general.CardGenerator;
-import com.ibm.ets.ita.ce.store.conversation.trigger.general.CeGenerator;
 import com.ibm.ets.ita.ce.store.conversation.trigger.general.GeneralProcessor;
 import com.ibm.ets.ita.ce.store.conversation.trigger.general.Property;
 import com.ibm.ets.ita.ce.store.conversation.trigger.general.Reply;
@@ -19,17 +18,13 @@ import com.ibm.ets.ita.ce.store.model.CeInstance;
 
 public class NlProcessor extends GeneralProcessor {
 
-    private static final String SRC_CONVDEBUG = "conv_debug";
-
     private ConvText convText;
     private NlTriggerHandler th;
-    private CeGenerator ce;
 
     public NlProcessor(ActionContext ac, NlTriggerHandler th) {
         this.ac = ac;
         this.th = th;
         cg = new CardGenerator(ac);
-        ce = new CeGenerator(ac);
     }
 
     // Process NL card
@@ -97,8 +92,7 @@ public class NlProcessor extends GeneralProcessor {
                 }
 
             } else {
-                // TODO: Something else
-
+                // TODO: Something else - what would these be?
             }
         }
 
@@ -107,6 +101,7 @@ public class NlProcessor extends GeneralProcessor {
             sb.append(ag.nothingtUnderstood());
         }
 
+        // Extract referenced items to send to InterestingThingsProcessor and to set 'about' property in card
         ArrayList<String> referencedItems = new ArrayList<String>();
         ArrayList<CeInstance> referencedInsts = new ArrayList<CeInstance>();
 

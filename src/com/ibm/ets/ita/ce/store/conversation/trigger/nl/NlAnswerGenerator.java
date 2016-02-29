@@ -40,8 +40,6 @@ public class NlAnswerGenerator {
                     sb.append(propertyAnswer(item));
                 }
             }
-        } else {
-//            this.ag.msgNothingUnderstood();
         }
 
         return sb.toString();
@@ -82,8 +80,6 @@ public class NlAnswerGenerator {
                     // TODO
                 }
             }
-        } else {
-//            this.ag.msgNothingUnderstood();
         }
 
         return sb.toString();
