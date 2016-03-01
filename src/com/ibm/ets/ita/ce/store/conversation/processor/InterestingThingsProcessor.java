@@ -126,7 +126,7 @@ public class InterestingThingsProcessor {
     }
 
     public String calculateInterestingContentFor(Collection<CeInstance> pInstances, Collection<CeInstance> pSuppressedInstances) {
-        System.out.println("Looking for interesting content...");
+        System.out.println("\nLooking for interesting content...");
         String result = null;
 
         for (CeInstance thisInst : pInstances) {

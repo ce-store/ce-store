@@ -15,7 +15,6 @@ public class NlQuestionProcessor {
         ArrayList<FinalItem> finalItems = null;
 
         if (finalExtractedItems != null) {
-            System.out.println("Final results available: " + finalExtractedItems);
             finalItems = initialiseFinalItems(finalExtractedItems);
         }
 
@@ -46,9 +45,10 @@ public class NlQuestionProcessor {
             if (wordItems != null) {
                 for (ExtractedItem item : wordItems) {
                     if (!items.contains(item)) {
-                        if (item.isDominantInterpretation()) {
+//						  TODO: Look into this - it doesn't work! eg. 'what is address davos snu' vs 'what is davos snu address'
+//                        if (item.isDominantInterpretation()) {
                             items.add(item);
-                        }
+//                        }
                     }
                 }
             }
@@ -80,26 +80,13 @@ public class NlQuestionProcessor {
 
     // Create FinalItems list of final items
     private ArrayList<FinalItem> initialiseFinalItems(ArrayList<ExtractedItem> extractedItems) {
-        FinalItem finalItem = null;
         ArrayList<FinalItem> finalItems = new ArrayList<FinalItem>();
 
         for (ExtractedItem item : extractedItems) {
-            if (item.isInstanceItem()) {
-                if (finalItem != null) {
-                    if (finalItem.isInstanceItem()) {
-                        finalItem.addExtractedItem(item);
-                    } else {
-                        finalItem = null;
-                    }
-                }
-            } else {
-                finalItem = null;
-            }
+            System.out.println("Extracted item: " + item);
 
-            if (finalItem == null) {
-                finalItem = new FinalItem(item);
-                finalItems.add(finalItem);
-            }
+            FinalItem finalItem = new FinalItem(item);
+            finalItems.add(finalItem);
         }
 
         return finalItems;

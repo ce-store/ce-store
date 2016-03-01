@@ -13,7 +13,6 @@ import com.ibm.ets.ita.ce.store.conversation.trigger.general.CardGenerator;
 import com.ibm.ets.ita.ce.store.conversation.trigger.general.GeneralProcessor;
 import com.ibm.ets.ita.ce.store.conversation.trigger.general.Property;
 import com.ibm.ets.ita.ce.store.conversation.trigger.general.Reply;
-import com.ibm.ets.ita.ce.store.conversation.trigger.general.Word;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
 
 public class NlProcessor extends GeneralProcessor {
@@ -66,7 +65,7 @@ public class NlProcessor extends GeneralProcessor {
         for (ConvSentence sentence : convText.getChildSentences()) {
             ArrayList<ProcessedWord> words = sp.process(sentence);
 
-            // TODO: Shouldn't this be if sentence is question?
+            // TODO: Shouldn't this be if sentence is question? - Text currently isn't being split into sentences
             if (convText.isQuestion()) {
                 sp.extractMatchingEntities(sentence, words);
 
@@ -77,11 +76,11 @@ public class NlProcessor extends GeneralProcessor {
                     allFinalItems.addAll(finalItems);
 
                     // TODO: Compute who/what/where answers differently
-//                    if (qp.isWhoQuestion(words)) {
-                        sb.append(ag.answerStandardQuestion(finalItems, Word.WHO));
-//                    } else {
-//
-//                    }
+                    if (qp.isWhoQuestion(words)) {
+                        sb.append(ag.answerStandardQuestion(finalItems));
+                    } else {
+                        sb.append(ag.answerStandardQuestion(finalItems));
+                    }
                 }
 
                 if (optionItems != null) {
@@ -96,7 +95,7 @@ public class NlProcessor extends GeneralProcessor {
 
         // If string builder is empty, then nothing has been understood
         if (sb.toString().isEmpty()) {
-            sb.append(ag.nothingtUnderstood());
+            sb.append(ag.nothingUnderstood());
         }
 
         // Extract referenced items to send to InterestingThingsProcessor and to set 'about' property in card
@@ -126,7 +125,7 @@ public class NlProcessor extends GeneralProcessor {
 
     // Pass on Tell agent's message to human agent
     private void processTellResponse(CeInstance cardInst, String convText) {
-        if (convText.equals(Reply.SAVED.toString())) {
+        if (convText.equals(Reply.SAVED.message())) {
             System.out.println("Is saved response");
             String humanAgent = findHumanAgent(cardInst);
             cg.generateNLCard(cardInst, convText, th.getTriggerName(), humanAgent, null);

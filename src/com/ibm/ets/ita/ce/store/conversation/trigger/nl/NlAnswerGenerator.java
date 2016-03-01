@@ -4,6 +4,8 @@ import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.appendToSb;
 import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.appendToSbNoNl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 
 import com.ibm.ets.ita.ce.store.ActionContext;
 import com.ibm.ets.ita.ce.store.conversation.model.ExtractedItem;
@@ -11,12 +13,13 @@ import com.ibm.ets.ita.ce.store.conversation.model.FinalItem;
 import com.ibm.ets.ita.ce.store.conversation.model.ProcessedWord;
 import com.ibm.ets.ita.ce.store.conversation.trigger.general.Concept;
 import com.ibm.ets.ita.ce.store.conversation.trigger.general.Property;
-import com.ibm.ets.ita.ce.store.conversation.trigger.general.Word;
+import com.ibm.ets.ita.ce.store.conversation.trigger.general.Reply;
 import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
 import com.ibm.ets.ita.ce.store.model.CeProperty;
 import com.ibm.ets.ita.ce.store.model.CePropertyInstance;
 import com.ibm.ets.ita.ce.store.model.CePropertyValue;
+import com.ibm.ets.ita.ce.store.utilities.Tuple;
 
 public class NlAnswerGenerator {
 
@@ -27,32 +30,65 @@ public class NlAnswerGenerator {
     }
 
     // Build answer for standard question
-    protected String answerStandardQuestion(ArrayList<FinalItem> finalItems, Word questionType) {
+    protected String answerStandardQuestion(ArrayList<FinalItem> finalItems) {
         StringBuilder sb = new StringBuilder();
 
         if (!finalItems.isEmpty()) {
+            ArrayList<FinalItem> processedItems = new ArrayList<FinalItem>();
             int numFinalItems = finalItems.size();
+            System.out.println(numFinalItems + " final items");
 
+            // Initial parse to look for connected instances and properties
+            for (FinalItem propertyItem : finalItems) {
+                if (propertyItem.isPropertyItem()) {
+                    for (FinalItem instanceItem : finalItems) {
+                        if (instanceItem.isInstanceItem() && !processedItems.contains(instanceItem) && !processedItems.contains(propertyItem)) {
+                            Tuple<CeInstance, CeProperty> matchingConceptProperty = instanceHasProperty(instanceItem, propertyItem);
+
+                            System.out.println("Check " + matchingConceptProperty);
+                            if (matchingConceptProperty != null) {
+                                // Instance has this property. Append results
+                                System.out.println("FOUND - Instance has property!");
+                                sb.append(instancePropertyAnswer(matchingConceptProperty));
+                                processedItems.add(propertyItem);
+                                processedItems.add(instanceItem);
+
+                                if (processedItems.size() < numFinalItems) {
+                                    appendToSb(sb, "\n");
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Remove processed items
+            for (FinalItem item : processedItems) {
+                finalItems.remove(item);
+            }
+
+            numFinalItems = finalItems.size();
+
+            // Append single answers
             for (int i = 0; i < numFinalItems; ++i) {
                 FinalItem item = finalItems.get(i);
 
                 if (item.isConceptItem()) {
                     sb.append(conceptAnswer(item));
                 } else if (item.isInstanceItem()) {
-                    sb.append(instanceAnswer(item, questionType));
+                    sb.append(instanceAnswer(item));
                 } else if (item.isPropertyItem()) {
                     sb.append(propertyAnswer(item));
                 }
 
                 if (i < numFinalItems - 1) {
-                    sb.append("\n\n");
+                    appendToSb(sb, "\n");
                 }
             }
         }
 
         return sb.toString();
     }
-
     // Build answer with options
     public Object answerOptionQuestion(ArrayList<FinalItem> optionItems) {
         StringBuilder sb = new StringBuilder();
@@ -103,13 +139,13 @@ public class NlAnswerGenerator {
         appendToSb(sb, " is a concept.");
         appendToSbNoNl(sb, "It has ");
         appendToSbNoNl(sb, new Integer(ac.getModelBuilder().countAllInstancesForConcept(concept)).toString());
-        appendToSb(sb, " instances.");
+        appendToSbNoNl(sb, " instances.");
 
         return sb.toString();
     }
 
     // Generate a reply detailing an instance
-    private String instanceAnswer(FinalItem item, Word questionType) {
+    private String instanceAnswer(FinalItem item) {
         StringBuilder sb = new StringBuilder();
         ArrayList<ExtractedItem> extractedItems = item.getExtractedItems();
 
@@ -133,7 +169,7 @@ public class NlAnswerGenerator {
             ArrayList<CeInstance> processedInsts = new ArrayList<CeInstance>();
 
             sb.append(instanceType(instance));
-            sb.append(instanceProperties(instance, processedInsts, questionType));
+            sb.append(instanceProperties(instance, processedInsts));
             sb.append(instanceReferences(instance, processedInsts));
         }
 
@@ -195,11 +231,90 @@ public class NlAnswerGenerator {
             } else {
                 appendToSbNoNl(sb, " is an attribute on ");
                 appendToSbNoNl(sb, property.getDomainConcept().getConceptName());
-                appendToSb(sb, ".");
+                appendToSbNoNl(sb, ".");
             }
         }
 
         return sb.toString();
+    }
+
+    private Object instancePropertyAnswer(Tuple<CeInstance, CeProperty> matchingConceptProperty) {
+        StringBuilder sb = new StringBuilder();
+
+        CeInstance instance = matchingConceptProperty.x;
+        CeProperty property = matchingConceptProperty.y;
+
+        String propertyName = property.getPropertyName();
+        CePropertyInstance propertyInstance = instance.getPropertyInstanceForProperty(property);
+
+        boolean allowConfigConcepts = allLeafConceptsAreConfigConcepts(instance);
+
+        if (propertyInstance != null) {
+            String value = propertyInstance.getFirstPropertyValue().getValue();
+
+            String qualifier = computeQualifierFor(instance, allowConfigConcepts);
+            appendToSbNoNl(sb, qualifier);
+            appendToSbNoNl(sb, " ");
+
+            if (property.isVerbSingular()) {
+                appendToSbNoNl(sb, propertyName);
+                appendToSbNoNl(sb, " ");
+                appendToSbNoNl(sb, value);
+            } else {
+                appendToSbNoNl(sb, "has");
+                appendToSbNoNl(sb, " ");
+                appendToSbNoNl(sb, value);
+                appendToSbNoNl(sb, " as ");
+                appendToSbNoNl(sb, propertyName);
+            }
+        } else {
+            String qualifier = computeQualifierFor(instance, true);
+            appendToSbNoNl(sb, qualifier);
+
+            if (property.isVerbSingular()) {
+                appendToSbNoNl(sb, " does not have this property");
+            } else {
+                appendToSbNoNl(sb, " does not have ");
+
+                HashSet<Character> vowels = new HashSet<Character>(Arrays.asList('a', 'e', 'i', 'o', 'u'));
+
+                if(vowels.contains(Character.toLowerCase(propertyName.charAt(0)))) {
+                    appendToSbNoNl(sb, "an ");
+                } else {
+                    appendToSbNoNl(sb, "a ");
+                }
+
+                appendToSbNoNl(sb, propertyName);
+            }
+        }
+
+        appendToSbNoNl(sb, ".");
+
+        return sb.toString();
+    }
+
+    private Tuple<CeInstance, CeProperty> instanceHasProperty(FinalItem instanceItem, FinalItem propertyItem) {
+        ExtractedItem extractedProperty = propertyItem.getFirstExtractedItem();
+        ArrayList<CeProperty> properties = extractedProperty.getPropertyList();
+
+        ExtractedItem extractedInstance = instanceItem.getFirstExtractedItem();
+        CeInstance instance = extractedInstance.getInstance();
+        CeConcept[] instanceConcepts = instance.getDirectConcepts();
+
+        Tuple<CeInstance, CeProperty> matchingConceptProperty = null;
+
+        for (CeProperty property : properties) {
+            CeConcept propertyConcept = property.getDomainConcept();
+
+            for (CeConcept instanceConcept : instanceConcepts) {
+                if (instanceConcept.equals(propertyConcept)) {
+                    matchingConceptProperty = new Tuple<CeInstance, CeProperty>(instance, property);
+                    break;
+                }
+            }
+        }
+
+        return matchingConceptProperty;
     }
 
     // Generate reply detailing type of instance
@@ -239,7 +354,7 @@ public class NlAnswerGenerator {
     }
 
     // Generate properties for instance
-    private String instanceProperties(CeInstance instance, ArrayList<CeInstance> processedInsts, Word questionType) {
+    private String instanceProperties(CeInstance instance, ArrayList<CeInstance> processedInsts) {
         StringBuilder sb = new StringBuilder();
         String CON_VALUE = "value";
 
@@ -270,7 +385,7 @@ public class NlAnswerGenerator {
                             }
 
                             if (!foundProp) {
-                                String qualifier = computeQualifierFor(instance, allowConfigConcepts, questionType);
+                                String qualifier = computeQualifierFor(instance, allowConfigConcepts);
                                 appendToSbNoNl(sb, qualifier);
                                 appendToSbNoNl(sb, " ");
                             } else {
@@ -382,7 +497,7 @@ public class NlAnswerGenerator {
     }
 
     // Compute qualifier for instance
-    public String computeQualifierFor(CeInstance instance, boolean allowConfigConcepts, Word questionType) {
+    public String computeQualifierFor(CeInstance instance, boolean allowConfigConcepts) {
         String qualifier = null;
 
         // First try each of the leaf concepts
@@ -469,7 +584,7 @@ public class NlAnswerGenerator {
         return result;
     }
 
-    public String nothingtUnderstood() {
-        return "I didn't manage to understand any of that, sorry";
+    public String nothingUnderstood() {
+        return Reply.NOT_UNDERSTOOD.message();
     }
 }

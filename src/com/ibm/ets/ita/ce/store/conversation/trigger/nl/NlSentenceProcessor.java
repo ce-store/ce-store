@@ -47,7 +47,6 @@ public class NlSentenceProcessor {
         for (ConvWord word : words) {
             ProcessedWord processedWord = new ProcessedWord(word);
             processedWords.add(processedWord);
-            System.out.println("Processed word: " + processedWord);
 
             markQuestionWord(processedWord);
         }
@@ -85,6 +84,7 @@ public class NlSentenceProcessor {
     public void extractMatchingEntities(ConvSentence sentence, ArrayList<ProcessedWord> words) {
         System.out.println("\nMatch entities...");
         ProcessedWord subject = seekSubject(sentence, words);
+        System.out.println("Subject: " + subject);
         seekOthers(sentence, words, subject);
     }
 
@@ -196,7 +196,7 @@ public class NlSentenceProcessor {
                     }
                 } else if (word.isGroundedOnProperty()) {
                     if (!word.isLaterPartOfPartial()) {
-//
+
                         ArrayList<CeProperty> propList = word.listGroundedProperties();
                         if (!propList.isEmpty()) {
                             ExtractedItem extProp = new ExtractedItem(word, propList);

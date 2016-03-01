@@ -60,7 +60,7 @@ public class CardGenerator {
 
         ceParms.put("%CARD_TYPE%", Card.NL.toString());
         ceParms.put("%CARD_NAME%", ce.generateNewUid());
-        ceParms.put("%CONV_TEXT%", Reply.SAVED.toString());
+        ceParms.put("%CONV_TEXT%", Reply.SAVED.message());
         ceParms.put("%FROM_SERV%", fromService);
         ceParms.put("%TO_SERV%", toService);
         ceParms.put("%PREV_CARD%", cardInst.getInstanceName());
