@@ -79,200 +79,113 @@ public class NlSentenceProcessor {
         }
     }
 
-    // Find entities matching words in sentence and create ExtractedItems for them
+    // Find entities matching words in sentence and create an ExtractedItem for each
     public void extractMatchingEntities(ConvSentence sentence, ArrayList<ProcessedWord> words) {
         System.out.println("\nMatch entities...");
-        ProcessedWord subject = seekSubject(sentence, words);
-        System.out.println("Subject: " + subject);
-        seekOthers(sentence, words, subject);
-    }
-
-    private ProcessedWord seekSubject(ConvSentence sentence, ArrayList<ProcessedWord> words) {
-        ProcessedWord subjectWord = seekSubjectWord(words);
-
-        if (subjectWord != null) {
-            seekSubjectEntity(subjectWord);
-        } else {
-            reportDebug("No subject word found for sentence: " + sentence.getSentenceText(), ac);
-        }
-
-        return subjectWord;
-    }
-
-    // Find subject word
-    private ProcessedWord seekSubjectWord(ArrayList<ProcessedWord> words) {
-        ProcessedWord foundWord = null;
-
-        // Now try everything
-        for (ProcessedWord word : words) {
-            if (foundWord == null) {
-                if (word.isGrounded()) {
-                    if (word.isValidSubjectWord(ac)) {
-                        foundWord = word;
-                    }
-                }
-            }
-        }
-
-        return foundWord;
-    }
-
-    // Find entity relating to subject word
-    private void seekSubjectEntity(ProcessedWord subjectWord) {
-        ExtractedItem lastExtracted = null;
-
-        if (subjectWord.isGroundedOnConcept()) {
-            // Concept
-            ArrayList<CeConcept> subCons = subjectWord.listGroundedConcepts();
-            CeConcept subjectConcept = retrieveSingleConceptFrom(subCons, subjectWord, "subject");
-            lastExtracted = new ExtractedItem(subjectWord, subjectConcept);
-        } else if (subjectWord.isGroundedOnProperty()) {
-            // Property
-            ArrayList<CeProperty> subProps = subjectWord.listGroundedProperties();
-            lastExtracted = new ExtractedItem(subjectWord, subProps);
-        } else if (subjectWord.isGroundedOnInstance()) {
-            // Instance
-            ArrayList<CeInstance> subInsts = subjectWord.listGroundedInstances();
-            boolean confirmRequired = subjectWord.confirmRequired();
-
-            if (confirmRequired) {
-                for (CeInstance subInst : subInsts) {
-                    ExtractedItem extInst = new ExtractedItem(subjectWord, subInst);
-
-                    if (lastExtracted != null) {
-                        extInst.setPreviousItem(lastExtracted);
-                    }
-
-                    lastExtracted = extInst;
-                }
-            } else {
-                CeInstance subjectInstance = retrieveSingleInstanceFrom(subInsts, subjectWord, "subject");
-
-                if (subjectInstance != null) {
-                    subjectWord.setChosenInstance(subjectInstance);
-                }
-
-                lastExtracted = new ExtractedItem(subjectWord, subjectInstance);
-            }
-        } else {
-            //Unknown
-            reportWarning("Unable to detect grounding type for subject word: " + subjectWord.toString(), ac);
-        }
-
-        if (lastExtracted != null) {
-            subjectWord.addConnectedWordsTo(lastExtracted);
-        }
-    }
-
-    // Find entities matching other words
-    private void seekOthers(ConvSentence sentence, ArrayList<ProcessedWord> words, ProcessedWord subject) {
         ExtractedItem lastExtracted = null;
 
         for (ProcessedWord word : words) {
-            if (word != subject) {
-                if (word.isGroundedOnConcept()) {
-                    if (!word.isLaterPartOfPartial()) {
-                        CeConcept tgtCon = retrieveSingleConceptFrom(word.listGroundedConcepts(), word, "object");
-
-                        if (tgtCon != null) {
-                            reportDebug("I got an object concept (" + tgtCon.getConceptName()  + "), from word: " + word.toString(), ac);
-                            ExtractedItem extCon = new ExtractedItem(word, tgtCon);
-
-                            if (lastExtracted != null) {
-                                extCon.setPreviousItem(lastExtracted);
-                            }
-
-                            word.addConnectedWordsTo(extCon);
-//                            this.otherConcepts.add(extCon);
-                            lastExtracted = extCon;
-                        } else {
-                            reportDebug("No object concept found for word: " + word.toString(), ac);
-                        }
-                    } else {
-                        reportDebug("Ignoring later partial for concept: " + word.getWordText(), ac);
-                    }
-                } else if (word.isGroundedOnProperty()) {
-                    if (!word.isLaterPartOfPartial()) {
-
-                        ArrayList<CeProperty> propList = word.listGroundedProperties();
-                        if (!propList.isEmpty()) {
-                            ExtractedItem extProp = new ExtractedItem(word, propList);
-                            if (lastExtracted != null) {
-                                extProp.setPreviousItem(lastExtracted);
-                            }
-                            word.addConnectedWordsTo(extProp);
-//                            this.otherProperties.add(extProp);
-
-                            lastExtracted = extProp;
-                        } else {
-                            reportWarning("No object property found for word: " + word.toString(), ac);
-                        }
-                    } else {
-                        reportDebug("Ignoring later partial for property: " + word.getWordText(), ac);
-                    }
-                } else if (word.isGroundedOnInstance()) {
-                    ArrayList<CeInstance> objInsts = word.listGroundedInstances();
-
-                    boolean confirmRequired = word.confirmRequired();
-
-                    if (confirmRequired) {
-                        for (CeInstance objInst : objInsts) {
-                            ExtractedItem extInst = new ExtractedItem(word, objInst);
-
-                            if (lastExtracted != null) {
-                                extInst.setPreviousItem(lastExtracted);
-                            }
-
-                            lastExtracted = extInst;
-                        }
-                    } else {
-                        CeInstance objectInst = retrieveSingleInstanceFrom(objInsts, word, "object");
-
-                        if (objectInst != null) {
-                            word.setChosenInstance(objectInst);
-                            reportDebug("I got an object instance (" + objectInst.getInstanceName()  + "), from word: " + word.toString(), ac);
-                            ExtractedItem extInst = new ExtractedItem(word, objectInst);
-
-                            if (lastExtracted != null) {
-                                extInst.setPreviousItem(lastExtracted);
-                            }
-
-                            word.addConnectedWordsTo(extInst);
-                            lastExtracted = extInst;
-                        }
-                    }
-
-                    // -----
-
-//                    if (objectInst != null) {
-//                        word.setChosenInstance(objectInst);
-//                        reportDebug("I got an object instance (" + objectInst.getInstanceName()  + "), from word: " + word.toString(), ac);
-//                        ExtractedItem extInst = new ExtractedItem(word, objectInst);
-//                        if (lastExtracted != null) {
-//                            extInst.setPreviousItem(lastExtracted);
-//                        }
-//                        word.addConnectedWordsTo(extInst);
-////                        this.otherInstances.add(extInst);
-//
-//                        lastExtracted = extInst;
-//                    } else {
-//                        reportWarning("No object instance found for word: " + word.toString(), ac);
-//                    }
+            if (word.isGroundedOnConcept()) {
+                if (!word.isLaterPartOfPartial()) {
+                    extractConcept(word, lastExtracted);
                 } else {
-//                    this.ungroundedWords.add(word);
+                    reportDebug("Ignoring later partial for concept: " + word.getWordText(), ac);
                 }
+            } else if (word.isGroundedOnProperty()) {
+                if (!word.isLaterPartOfPartial()) {
+                    extractProperty(word, lastExtracted);
+                } else {
+                    reportDebug("Ignoring later partial for property: " + word.getWordText(), ac);
+                }
+            } else if (word.isGroundedOnInstance()) {
+                extractInstance(word, lastExtracted);
+            } else {
+                reportDebug("Word is ungrounded: " + word.toString(), ac);
+            }
+        }
+    }
+
+    // Create ExtractedItem for matching concept
+    private void extractConcept(ProcessedWord word, ExtractedItem lastExtracted) {
+        CeConcept concept = retrieveSingleConceptFrom(word.listGroundedConcepts(), word);
+
+        if (concept != null) {
+            reportDebug("I got an object concept (" + concept.getConceptName()  + "), from word: " + word.toString(), ac);
+            ExtractedItem extractedConcept = new ExtractedItem(word, concept);
+
+            if (lastExtracted != null) {
+                extractedConcept.setPreviousItem(lastExtracted);
+            }
+
+            word.addConnectedWordsTo(extractedConcept);
+            lastExtracted = extractedConcept;
+        } else {
+            reportDebug("No object concept found for word: " + word.toString(), ac);
+        }
+    }
+
+    // Create ExtractedItem for matching property
+    private void extractProperty(ProcessedWord word, ExtractedItem lastExtracted) {
+        ArrayList<CeProperty> propertyList = word.listGroundedProperties();
+
+        if (!propertyList.isEmpty()) {
+            ExtractedItem extProp = new ExtractedItem(word, propertyList);
+
+            if (lastExtracted != null) {
+                extProp.setPreviousItem(lastExtracted);
+            }
+
+            word.addConnectedWordsTo(extProp);
+            lastExtracted = extProp;
+        } else {
+            reportWarning("No object property found for word: " + word.toString(), ac);
+        }
+    }
+
+    // Create ExtractedItem for each matching instance
+    private void extractInstance(ProcessedWord word, ExtractedItem lastExtracted) {
+        ArrayList<CeInstance> instances = word.listGroundedInstances();
+
+        boolean confirmRequired = word.confirmRequired();
+
+        if (confirmRequired) {
+            for (CeInstance instance : instances) {
+                ExtractedItem extractedInstance = new ExtractedItem(word, instance);
+
+                if (lastExtracted != null) {
+                    extractedInstance.setPreviousItem(lastExtracted);
+                }
+
+                lastExtracted = extractedInstance;
+            }
+        } else {
+            CeInstance instance = retrieveSingleInstanceFrom(instances, word);
+
+            if (instance != null) {
+                word.setChosenInstance(instance);
+                reportDebug("I got an object instance (" + instance.getInstanceName()  + "), from word: " + word.toString(), ac);
+                ExtractedItem extractedInstance = new ExtractedItem(word, instance);
+
+                if (lastExtracted != null) {
+                    extractedInstance.setPreviousItem(lastExtracted);
+                }
+
+                word.addConnectedWordsTo(extractedInstance);
+                lastExtracted = extractedInstance;
+            }  else {
+                 reportWarning("No object instance found for word: " + word.toString(), ac);
             }
         }
     }
 
     // Get most likely matching concept
-    private CeConcept retrieveSingleConceptFrom(ArrayList<CeConcept> concepts, ProcessedWord word, String context) {
+    private CeConcept retrieveSingleConceptFrom(ArrayList<CeConcept> concepts, ProcessedWord word) {
         CeConcept result = null;
 
         if (concepts.isEmpty()) {
-            reportError("No grounded concept found for " + context + " word: " + word.toString(), this.ac);
+            reportError("No grounded concept found for word: " + word.toString(), ac);
         } else if (concepts.size() > 1) {
-            reportError("Too many (" + concepts.size() + ") grounded concepts found for " + context + " word: "  + word.toString(), this.ac);
+            reportError("Too many (" + concepts.size() + ") grounded concepts found for word: "  + word.toString(), ac);
         } else {
             result = concepts.get(0);
         }
@@ -281,13 +194,13 @@ public class NlSentenceProcessor {
     }
 
     // Get most likely matching instance
-    private CeInstance retrieveSingleInstanceFrom(ArrayList<CeInstance> instances, ProcessedWord word, String context) {
+    private CeInstance retrieveSingleInstanceFrom(ArrayList<CeInstance> instances, ProcessedWord word) {
         CeInstance result = null;
 
         if (instances.isEmpty()) {
-            reportError("No grounded instance found for " + context + " word: " + word.toString(), this.ac);
+            reportError("No grounded instance found for word: " + word.toString(), ac);
         } else if (instances.size() > 1) {
-            reportDebug("Too many (" + instances.size() + ") grounded instances found for " + context + " word: "  + word.toString(), this.ac);
+            reportDebug("Too many (" + instances.size() + ") grounded instances found for word: "  + word.toString(), ac);
             result = chooseLongestNameFrom(instances);
         } else {
             result = instances.get(0);

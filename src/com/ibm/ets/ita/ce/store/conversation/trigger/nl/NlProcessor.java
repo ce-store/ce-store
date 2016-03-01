@@ -128,8 +128,6 @@ public class NlProcessor extends GeneralProcessor {
             ArrayList<ExtractedItem> extractedItems = item.getExtractedItems();
 
             if (item.isPropertyInstanceItem()) {
-                System.out.println("Is property instance item");
-
                 CeInstance instance = null;
                 CeProperty property = null;
                 ArrayList<CeProperty> properties = null;
@@ -163,18 +161,14 @@ public class NlProcessor extends GeneralProcessor {
 
                 if (propertyInstance != null) {
                     String value = propertyInstance.getFirstPropertyValue().getValue();
-                    System.out.println("Value: " + value);
                     referencedItems.add(value);
                 }
             } else {
-                System.out.println("Other item");
                 for (ExtractedItem extractedItem : extractedItems) {
                     if (extractedItem.isInstanceItem()) {
-                        System.out.println("Adding instance to reference");
                         System.out.println(extractedItem.getInstance().getInstanceName());
                         referencedItems.add(extractedItem.getInstance().getInstanceName());
                     } else {
-                        System.out.println("Other type of extracted item");
                         // TODO: do something with concepts and properties
                     }
                 }

@@ -1080,7 +1080,7 @@ public class ProcessedWord extends GeneralItem {
             result = pAc.getModelBuilder().getPropertiesNamed(pLcWordText);
         }
 
-        if ((result != null) && (!result.isEmpty()) && (result.size() > 0)) {
+        if ((result != null) && (!result.isEmpty()) && (result.size() > 1)) {
             this.partialRelationReference = true;
         }
 

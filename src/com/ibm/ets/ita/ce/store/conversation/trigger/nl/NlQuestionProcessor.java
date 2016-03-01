@@ -47,7 +47,6 @@ public class NlQuestionProcessor {
 
         for (ProcessedWord word : words) {
             ArrayList<ExtractedItem> wordItems = word.getExtractedItems();
-            System.out.println("Extracted items: " + wordItems);
 
             if (wordItems != null) {
                 for (ExtractedItem item : wordItems) {
