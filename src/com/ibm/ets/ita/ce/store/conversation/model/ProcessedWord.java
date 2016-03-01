@@ -16,6 +16,7 @@ import java.util.TreeMap;
 
 import com.ibm.ets.ita.ce.store.ActionContext;
 import com.ibm.ets.ita.ce.store.conversation.processor.SentenceProcessor;
+import com.ibm.ets.ita.ce.store.conversation.trigger.general.Anaphor;
 import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
 import com.ibm.ets.ita.ce.store.model.CeProperty;
@@ -52,10 +53,6 @@ public class ProcessedWord extends GeneralItem {
     private static final String Q_SUMM1 = "summarise";
     private static final String Q_SUMM2 = "summarize";
     private static final String Q_ALL = "all";
-    private static final String AR_HE = "he";
-    private static final String AR_SHE = "she";
-    private static final String AR_THEY = "they";
-    private static final String AR_IT = "it";
 
     private ConvWord convWord = null;
     private ArrayList<ExtractedItem> extractedItems = null;
@@ -366,13 +363,19 @@ public class ProcessedWord extends GeneralItem {
             !this.partialStartWord;
     }
 
+    private boolean isAnaphor(String word) {
+        return word.equals(Anaphor.HE.toString())
+            || word.equals(Anaphor.HIS.toString())
+            || word.equals(Anaphor.SHE.toString())
+            || word.equals(Anaphor.HER.toString())
+            || word.equals(Anaphor.THEY.toString())
+            || word.equals(Anaphor.IT.toString());
+    }
+
     private void checkForAnaphoricReference(ActionContext pAc, CeInstance pCardInstance) {
         String strippedWord = getDeclutteredText();
 
-        if (strippedWord.equals(AR_HE)
-                || strippedWord.equals(AR_SHE)
-                || strippedWord.equals(AR_THEY)
-                || strippedWord.equals(AR_IT)) {
+        if (isAnaphor(strippedWord)) {
 
             CeInstance prevCard = pCardInstance.getSingleInstanceFromPropertyNamed(pAc, PROP_REPLY);
 
@@ -383,16 +386,16 @@ public class ProcessedWord extends GeneralItem {
                 // try and match all instances that previous card is about
                 ArrayList<CeInstance> matchingInstances = new ArrayList<CeInstance>();
                 for (CeInstance prevCardAbout : prevCardAbouts) {
-                    if (strippedWord.equals(AR_HE) && prevCardAbout.isConceptNamed(pAc, CON_MAN)) {
+                    if ((strippedWord.equals(Anaphor.HE.toString()) || strippedWord.equals(Anaphor.HIS.toString())) && prevCardAbout.isConceptNamed(pAc, CON_MAN)) {
                         // word == "he" and last talked about instance was a man
                         matchingInstances.add(prevCardAbout);
-                    } else if (strippedWord.equals(AR_SHE) && prevCardAbout.isConceptNamed(pAc, CON_WOMAN)) {
+                    } else if ((strippedWord.equals(Anaphor.SHE.toString()) || strippedWord.equals(Anaphor.HER.toString())) && prevCardAbout.isConceptNamed(pAc, CON_WOMAN)) {
                         // word == "she" and last talked about instance was a woman
                         matchingInstances.add(prevCardAbout);
-                    } else if (strippedWord.equals(AR_THEY) && prevCardAbout.isConceptNamed(pAc, CON_PERSON)) {
+                    } else if (strippedWord.equals(Anaphor.THEY.toString()) && prevCardAbout.isConceptNamed(pAc, CON_PERSON)) {
                         // word == "they" and last talked about instance was a person
                         matchingInstances.add(prevCardAbout);
-                    } else if (strippedWord.equals(AR_IT)) {
+                    } else if (strippedWord.equals(Anaphor.IT.toString())) {
                         // word == "it" and last talked about instance was anything
                         matchingInstances.add(prevCardAbout);
                     }

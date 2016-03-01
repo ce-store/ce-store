@@ -411,15 +411,13 @@ public class NlAnswerGenerator {
         }
 
         if ((qualifier == null) || (qualifier.isEmpty())) {
-            // If Who question then set gender qualifier
-            if (questionType.equals(Word.WHO)) {
-                if (instance.isConceptNamed(ac, Concept.MAN.toString())) {
-                    qualifier = "He";
-                } else if (instance.isConceptNamed(ac, Concept.WOMAN.toString())) {
-                    qualifier = "She";
-                } else {
-                    qualifier = "He or she";
-                }
+            // TODO: Dynamically define gender concepts in CE
+            if (instance.isConceptNamed(ac, Concept.MAN.toString())) {
+                qualifier = "He";
+            } else if (instance.isConceptNamed(ac, Concept.WOMAN.toString())) {
+                qualifier = "She";
+            } else if (instance.isConceptNamed(ac, Concept.WOMAN.toString())) {
+                qualifier = "He or she";
             } else {
                 qualifier = "It";
             }
