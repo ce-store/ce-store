@@ -13,7 +13,10 @@ import com.ibm.ets.ita.ce.store.conversation.trigger.general.CardGenerator;
 import com.ibm.ets.ita.ce.store.conversation.trigger.general.GeneralProcessor;
 import com.ibm.ets.ita.ce.store.conversation.trigger.general.Property;
 import com.ibm.ets.ita.ce.store.conversation.trigger.general.Reply;
+import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
+import com.ibm.ets.ita.ce.store.model.CeProperty;
+import com.ibm.ets.ita.ce.store.model.CePropertyInstance;
 
 public class NlProcessor extends GeneralProcessor {
 
@@ -68,6 +71,12 @@ public class NlProcessor extends GeneralProcessor {
             // TODO: Shouldn't this be if sentence is question? - Text currently isn't being split into sentences
             if (convText.isQuestion()) {
                 sp.extractMatchingEntities(sentence, words);
+                System.out.println("\nDone matching");
+
+                for (ProcessedWord w : words) {
+                    System.out.println(w);
+                    System.out.println(w.getExtractedItems());
+                }
 
                 ArrayList<FinalItem> finalItems = qp.getFinalItems(words);
                 ArrayList<FinalItem> optionItems = qp.getOptionItems(words);
@@ -98,18 +107,63 @@ public class NlProcessor extends GeneralProcessor {
             sb.append(ag.nothingUnderstood());
         }
 
-        // Extract referenced items to send to InterestingThingsProcessor and to set 'about' property in card
         ArrayList<String> referencedItems = new ArrayList<String>();
         ArrayList<CeInstance> referencedInsts = new ArrayList<CeInstance>();
 
+        // Extract referenced items to set 'about' property in card
         for (FinalItem item : allFinalItems) {
             ArrayList<ExtractedItem> extractedItems = item.getExtractedItems();
 
-            for (ExtractedItem extractedItem : extractedItems) {
-                if (extractedItem.isInstanceItem()) {
-                    referencedItems.add(extractedItem.getInstance().getInstanceName());
-                } else {
-                    // TODO: do something with concepts and properties
+            if (item.isPropertyInstanceItem()) {
+                System.out.println("Is property instance item");
+
+                CeInstance instance = null;
+                CeProperty property = null;
+                ArrayList<CeProperty> properties = null;
+
+                // Extract instance and property
+                for (ExtractedItem extractedItem : extractedItems) {
+                    if (extractedItem.isInstanceItem()) {
+                        instance = extractedItem.getInstance();
+                        referencedItems.add(instance.getInstanceName());
+                    } else if (extractedItem.isPropertyItem()) {
+                        properties = extractedItem.getPropertyList();
+                    }
+                }
+
+                CeConcept[] instanceConcepts = instance.getDirectConcepts();
+
+                // Find property that matches instance
+                for (CeProperty prop : properties) {
+                    CeConcept propertyConcept = prop.getDomainConcept();
+
+                    for (CeConcept instanceConcept : instanceConcepts) {
+                        if (instanceConcept.equals(propertyConcept)) {
+                            property = prop;
+                            break;
+                        }
+                    }
+                }
+
+                // Add value from property instance
+                CePropertyInstance propertyInstance = instance.getPropertyInstanceForProperty(property);
+
+                if (propertyInstance != null) {
+                    String value = propertyInstance.getFirstPropertyValue().getValue();
+                    System.out.println("Value: " + value);
+                    referencedItems.add(value);
+                }
+            } else {
+                System.out.println("Other item");
+                for (ExtractedItem extractedItem : extractedItems) {
+                    if (extractedItem.isInstanceItem()) {
+                        System.out.println("Adding instance to reference");
+                        System.out.println(extractedItem.getInstance().getInstanceName());
+                        referencedItems.add(extractedItem.getInstance().getInstanceName());
+                    } else {
+                        System.out.println("Other type of extracted item");
+                        // TODO: do something with concepts and properties
+                    }
                 }
             }
         }

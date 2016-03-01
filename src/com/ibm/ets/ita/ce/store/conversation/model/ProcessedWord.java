@@ -366,6 +366,7 @@ public class ProcessedWord extends GeneralItem {
     private boolean isAnaphor(String word) {
         return word.equals(Anaphor.HE.toString())
             || word.equals(Anaphor.HIS.toString())
+            || word.equals(Anaphor.HIM.toString())
             || word.equals(Anaphor.SHE.toString())
             || word.equals(Anaphor.HER.toString())
             || word.equals(Anaphor.THEY.toString())
@@ -386,13 +387,19 @@ public class ProcessedWord extends GeneralItem {
                 // try and match all instances that previous card is about
                 ArrayList<CeInstance> matchingInstances = new ArrayList<CeInstance>();
                 for (CeInstance prevCardAbout : prevCardAbouts) {
-                    if ((strippedWord.equals(Anaphor.HE.toString()) || strippedWord.equals(Anaphor.HIS.toString())) && prevCardAbout.isConceptNamed(pAc, CON_MAN)) {
+                    if ((strippedWord.equals(Anaphor.HE.toString())
+                            || strippedWord.equals(Anaphor.HIS.toString())
+                            || strippedWord.equals(Anaphor.HIM.toString()))
+                            && prevCardAbout.isConceptNamed(pAc, CON_MAN)) {
                         // word == "he" and last talked about instance was a man
                         matchingInstances.add(prevCardAbout);
-                    } else if ((strippedWord.equals(Anaphor.SHE.toString()) || strippedWord.equals(Anaphor.HER.toString())) && prevCardAbout.isConceptNamed(pAc, CON_WOMAN)) {
+                    } else if ((strippedWord.equals(Anaphor.SHE.toString())
+                            || strippedWord.equals(Anaphor.HER.toString()))
+                            && prevCardAbout.isConceptNamed(pAc, CON_WOMAN)) {
                         // word == "she" and last talked about instance was a woman
                         matchingInstances.add(prevCardAbout);
-                    } else if (strippedWord.equals(Anaphor.THEY.toString()) && prevCardAbout.isConceptNamed(pAc, CON_PERSON)) {
+                    } else if (strippedWord.equals(Anaphor.THEY.toString())
+                            && prevCardAbout.isConceptNamed(pAc, CON_PERSON)) {
                         // word == "they" and last talked about instance was a person
                         matchingInstances.add(prevCardAbout);
                     } else if (strippedWord.equals(Anaphor.IT.toString())) {
@@ -1384,19 +1391,21 @@ public class ProcessedWord extends GeneralItem {
         if (this.partialStartWord) {
             ProcessedWord nw = getNextProcessedWord();
 
-            if ((nw != null) && (nw.partialConceptReference)) {
-                pExtItem.addOtherWord(nw);
-                nw.addConnectedWordsTo(pExtItem);
-            }
+            if (nw != null) {
+                if (this.isGroundedOnConcept() && nw.partialConceptReference) {
+                    pExtItem.addOtherWord(nw);
+                    nw.addConnectedWordsTo(pExtItem);
+                }
 
-            if ((nw != null) && (nw.partialRelationReference)) {
-                pExtItem.addOtherWord(nw);
-                nw.addConnectedWordsTo(pExtItem);
-            }
+                if (this.isGroundedOnProperty() && nw.partialRelationReference) {
+                    pExtItem.addOtherWord(nw);
+                    nw.addConnectedWordsTo(pExtItem);
+                }
 
-            if ((nw != null) && (nw.partialInstanceReference)) {
-                pExtItem.addOtherWord(nw);
-                nw.addConnectedWordsTo(pExtItem);
+                if (this.isGroundedOnInstance() && nw.partialInstanceReference) {
+                    pExtItem.addOtherWord(nw);
+                    nw.addConnectedWordsTo(pExtItem);
+                }
             }
         }
     }

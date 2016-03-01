@@ -47,7 +47,6 @@ public class NlSentenceProcessor {
         for (ConvWord word : words) {
             ProcessedWord processedWord = new ProcessedWord(word);
             processedWords.add(processedWord);
-
             markQuestionWord(processedWord);
         }
 
@@ -104,14 +103,12 @@ public class NlSentenceProcessor {
     private ProcessedWord seekSubjectWord(ArrayList<ProcessedWord> words) {
         ProcessedWord foundWord = null;
 
-        if (foundWord == null) {
-            // Now try everything
-            for (ProcessedWord word : words) {
-                if (foundWord == null) {
-                    if (word.isGrounded()) {
-                        if (word.isValidSubjectWord(ac)) {
-                            foundWord = word;
-                        }
+        // Now try everything
+        for (ProcessedWord word : words) {
+            if (foundWord == null) {
+                if (word.isGrounded()) {
+                    if (word.isValidSubjectWord(ac)) {
+                        foundWord = word;
                     }
                 }
             }

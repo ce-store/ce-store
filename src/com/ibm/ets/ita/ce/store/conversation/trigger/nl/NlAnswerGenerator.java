@@ -19,7 +19,6 @@ import com.ibm.ets.ita.ce.store.model.CeInstance;
 import com.ibm.ets.ita.ce.store.model.CeProperty;
 import com.ibm.ets.ita.ce.store.model.CePropertyInstance;
 import com.ibm.ets.ita.ce.store.model.CePropertyValue;
-import com.ibm.ets.ita.ce.store.utilities.Tuple;
 
 public class NlAnswerGenerator {
 
@@ -34,40 +33,7 @@ public class NlAnswerGenerator {
         StringBuilder sb = new StringBuilder();
 
         if (!finalItems.isEmpty()) {
-            ArrayList<FinalItem> processedItems = new ArrayList<FinalItem>();
             int numFinalItems = finalItems.size();
-            System.out.println(numFinalItems + " final items");
-
-            // Initial parse to look for connected instances and properties
-            for (FinalItem propertyItem : finalItems) {
-                if (propertyItem.isPropertyItem()) {
-                    for (FinalItem instanceItem : finalItems) {
-                        if (instanceItem.isInstanceItem() && !processedItems.contains(instanceItem) && !processedItems.contains(propertyItem)) {
-                            Tuple<CeInstance, CeProperty> matchingConceptProperty = instanceHasProperty(instanceItem, propertyItem);
-
-                            System.out.println("Check " + matchingConceptProperty);
-                            if (matchingConceptProperty != null) {
-                                // Instance has this property. Append results
-                                System.out.println("FOUND - Instance has property!");
-                                sb.append(instancePropertyAnswer(matchingConceptProperty));
-                                processedItems.add(propertyItem);
-                                processedItems.add(instanceItem);
-
-                                if (processedItems.size() < numFinalItems) {
-                                    appendToSb(sb, "\n");
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Remove processed items
-            for (FinalItem item : processedItems) {
-                finalItems.remove(item);
-            }
-
-            numFinalItems = finalItems.size();
 
             // Append single answers
             for (int i = 0; i < numFinalItems; ++i) {
@@ -75,6 +41,8 @@ public class NlAnswerGenerator {
 
                 if (item.isConceptItem()) {
                     sb.append(conceptAnswer(item));
+                } else if (item.isPropertyInstanceItem()) {
+                    sb.append(instancePropertyAnswer(item));
                 } else if (item.isInstanceItem()) {
                     sb.append(instanceAnswer(item));
                 } else if (item.isPropertyItem()) {
@@ -238,83 +206,91 @@ public class NlAnswerGenerator {
         return sb.toString();
     }
 
-    private Object instancePropertyAnswer(Tuple<CeInstance, CeProperty> matchingConceptProperty) {
+    private Object instancePropertyAnswer(FinalItem item) {
+        System.out.println("Create instance property answer");
         StringBuilder sb = new StringBuilder();
 
-        CeInstance instance = matchingConceptProperty.x;
-        CeProperty property = matchingConceptProperty.y;
+        ArrayList<ExtractedItem> extractedItems = item.getExtractedItems();
 
-        String propertyName = property.getPropertyName();
-        CePropertyInstance propertyInstance = instance.getPropertyInstanceForProperty(property);
+        CeInstance instance = null;
+        CeProperty property = null;
+        ArrayList<CeProperty> properties = null;
 
-        boolean allowConfigConcepts = allLeafConceptsAreConfigConcepts(instance);
-
-        if (propertyInstance != null) {
-            String value = propertyInstance.getFirstPropertyValue().getValue();
-
-            String qualifier = computeQualifierFor(instance, allowConfigConcepts);
-            appendToSbNoNl(sb, qualifier);
-            appendToSbNoNl(sb, " ");
-
-            if (property.isVerbSingular()) {
-                appendToSbNoNl(sb, propertyName);
-                appendToSbNoNl(sb, " ");
-                appendToSbNoNl(sb, value);
-            } else {
-                appendToSbNoNl(sb, "has");
-                appendToSbNoNl(sb, " ");
-                appendToSbNoNl(sb, value);
-                appendToSbNoNl(sb, " as ");
-                appendToSbNoNl(sb, propertyName);
-            }
-        } else {
-            String qualifier = computeQualifierFor(instance, true);
-            appendToSbNoNl(sb, qualifier);
-
-            if (property.isVerbSingular()) {
-                appendToSbNoNl(sb, " does not have this property");
-            } else {
-                appendToSbNoNl(sb, " does not have ");
-
-                HashSet<Character> vowels = new HashSet<Character>(Arrays.asList('a', 'e', 'i', 'o', 'u'));
-
-                if(vowels.contains(Character.toLowerCase(propertyName.charAt(0)))) {
-                    appendToSbNoNl(sb, "an ");
-                } else {
-                    appendToSbNoNl(sb, "a ");
-                }
-
-                appendToSbNoNl(sb, propertyName);
+        // Extract instance and property
+        for (ExtractedItem extractedItem : extractedItems) {
+            if (extractedItem.isInstanceItem()) {
+                instance = extractedItem.getInstance();
+            } else if (extractedItem.isPropertyItem()) {
+                properties = extractedItem.getPropertyList();
             }
         }
 
-        appendToSbNoNl(sb, ".");
-
-        return sb.toString();
-    }
-
-    private Tuple<CeInstance, CeProperty> instanceHasProperty(FinalItem instanceItem, FinalItem propertyItem) {
-        ExtractedItem extractedProperty = propertyItem.getFirstExtractedItem();
-        ArrayList<CeProperty> properties = extractedProperty.getPropertyList();
-
-        ExtractedItem extractedInstance = instanceItem.getFirstExtractedItem();
-        CeInstance instance = extractedInstance.getInstance();
         CeConcept[] instanceConcepts = instance.getDirectConcepts();
 
-        Tuple<CeInstance, CeProperty> matchingConceptProperty = null;
-
-        for (CeProperty property : properties) {
-            CeConcept propertyConcept = property.getDomainConcept();
+        // Find property that matches instance
+        for (CeProperty prop : properties) {
+            CeConcept propertyConcept = prop.getDomainConcept();
 
             for (CeConcept instanceConcept : instanceConcepts) {
                 if (instanceConcept.equals(propertyConcept)) {
-                    matchingConceptProperty = new Tuple<CeInstance, CeProperty>(instance, property);
+                    property = prop;
                     break;
                 }
             }
         }
 
-        return matchingConceptProperty;
+        System.out.println("Instance: " + instance);
+        System.out.println("Property: " + property);
+
+        if (instance != null && property != null) {
+            String propertyName = property.getPropertyName();
+            CePropertyInstance propertyInstance = instance.getPropertyInstanceForProperty(property);
+
+            boolean allowConfigConcepts = allLeafConceptsAreConfigConcepts(instance);
+
+            if (propertyInstance != null) {
+                String value = propertyInstance.getFirstPropertyValue().getValue();
+
+                String qualifier = computeQualifierFor(instance, allowConfigConcepts);
+                appendToSbNoNl(sb, qualifier);
+                appendToSbNoNl(sb, " ");
+
+                if (property.isVerbSingular()) {
+                    appendToSbNoNl(sb, propertyName);
+                    appendToSbNoNl(sb, " ");
+                    appendToSbNoNl(sb, value);
+                } else {
+                    appendToSbNoNl(sb, "has");
+                    appendToSbNoNl(sb, " ");
+                    appendToSbNoNl(sb, value);
+                    appendToSbNoNl(sb, " as ");
+                    appendToSbNoNl(sb, propertyName);
+                }
+            } else {
+                String qualifier = computeQualifierFor(instance, true);
+                appendToSbNoNl(sb, qualifier);
+
+                if (property.isVerbSingular()) {
+                    appendToSbNoNl(sb, " does not have this property");
+                } else {
+                    appendToSbNoNl(sb, " does not have ");
+
+                    HashSet<Character> vowels = new HashSet<Character>(Arrays.asList('a', 'e', 'i', 'o', 'u'));
+
+                    if(vowels.contains(Character.toLowerCase(propertyName.charAt(0)))) {
+                        appendToSbNoNl(sb, "an ");
+                    } else {
+                        appendToSbNoNl(sb, "a ");
+                    }
+
+                    appendToSbNoNl(sb, propertyName);
+                }
+            }
+
+            appendToSbNoNl(sb, ".");
+        }
+
+        return sb.toString();
     }
 
     // Generate reply detailing type of instance

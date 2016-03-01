@@ -15,381 +15,381 @@ import com.ibm.ets.ita.ce.store.model.CeInstance;
 import com.ibm.ets.ita.ce.store.model.CeProperty;
 
 public class ExtractedItem extends GeneralItem {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
-	
-	private static final String CON_GROUP = "group";
-	private static final String PROP_EXPBY = "is expressed by";
+    public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
 
-	private ProcessedWord determinerWord = null;
-	private ProcessedWord startWord = null;
-	private ArrayList<ProcessedWord> otherWords = new ArrayList<ProcessedWord>();
-	private CeConcept concept = null;
-	private ArrayList<CeProperty> propList = null;
-	private CeInstance instance = null;
-	private String newInstanceId = null;
-	private ArrayList<MatchedTriple> matchedTriples = new ArrayList<MatchedTriple>();
+    private static final String CON_GROUP = "group";
+    private static final String PROP_EXPBY = "is expressed by";
 
-	private ExtractedItem previousItem = null;
-	private ExtractedItem nextItem = null;
+    private ProcessedWord determinerWord = null;
+    private ProcessedWord startWord = null;
+    private ArrayList<ProcessedWord> otherWords = new ArrayList<ProcessedWord>();
+    private CeConcept concept = null;
+    private ArrayList<CeProperty> propList = null;
+    private CeInstance instance = null;
+    private String newInstanceId = null;
+    private ArrayList<MatchedTriple> matchedTriples = new ArrayList<MatchedTriple>();
 
-	public ExtractedItem(ProcessedWord pWord, CeConcept pConcept) {
-		pWord.addExtractedItem(this);
+    private ExtractedItem previousItem = null;
+    private ExtractedItem nextItem = null;
 
-		this.id = "ei_" + pWord.getId();
-		this.startWord = pWord;
-		this.concept = pConcept;
+    public ExtractedItem(ProcessedWord pWord, CeConcept pConcept) {
+        pWord.addExtractedItem(this);
 
-		ProcessedWord possDet = this.startWord.getPreviousProcessedWord();
+        this.id = "ei_" + pWord.getId();
+        this.startWord = pWord;
+        this.concept = pConcept;
 
-		if (possDet != null) {
-			if (possDet.isDeterminer()) {
-				this.determinerWord = possDet;
-				possDet.addExtractedItem(this);
-			}
-		}
-	}
+        ProcessedWord possDet = this.startWord.getPreviousProcessedWord();
 
-	public ExtractedItem(ProcessedWord pWord, ArrayList<CeProperty> pPropList) {
-		pWord.addExtractedItem(this);
+        if (possDet != null) {
+            if (possDet.isDeterminer()) {
+                this.determinerWord = possDet;
+                possDet.addExtractedItem(this);
+            }
+        }
+    }
 
-		this.id = "ei_" + pWord.getId();
-		this.startWord = pWord;
-		this.propList = pPropList;
+    public ExtractedItem(ProcessedWord pWord, ArrayList<CeProperty> pPropList) {
+        pWord.addExtractedItem(this);
 
-		ProcessedWord possDet = this.startWord.getPreviousProcessedWord();
+        this.id = "ei_" + pWord.getId();
+        this.startWord = pWord;
+        this.propList = pPropList;
 
-		if (possDet != null) {
-			if (possDet.isDeterminer()) {
-				this.determinerWord = possDet;
-				possDet.addExtractedItem(this);
-			}
-		}
-	}
+        ProcessedWord possDet = this.startWord.getPreviousProcessedWord();
 
-	public ExtractedItem(ProcessedWord pWord, CeInstance pInstance) {
-		pWord.addExtractedItem(this);
+        if (possDet != null) {
+            if (possDet.isDeterminer()) {
+                this.determinerWord = possDet;
+                possDet.addExtractedItem(this);
+            }
+        }
+    }
 
-		this.id = "ei_" + pWord.getId();
-		this.startWord = pWord;
-		this.instance = pInstance;
+    public ExtractedItem(ProcessedWord pWord, CeInstance pInstance) {
+        pWord.addExtractedItem(this);
 
-		ProcessedWord possDet = this.startWord.getPreviousProcessedWord();
+        this.id = "ei_" + pWord.getId();
+        this.startWord = pWord;
+        this.instance = pInstance;
 
-		if (possDet != null) {
-			if (possDet.isDeterminer()) {
-				this.determinerWord = possDet;
-				possDet.addExtractedItem(this);
-			}
-		}
-	}
+        ProcessedWord possDet = this.startWord.getPreviousProcessedWord();
 
-	public ProcessedWord getDeterminerWord() {
-		return this.determinerWord;
-	}
+        if (possDet != null) {
+            if (possDet.isDeterminer()) {
+                this.determinerWord = possDet;
+                possDet.addExtractedItem(this);
+            }
+        }
+    }
 
-	public ProcessedWord getStartWord() {
-		return this.startWord;
-	}
-	
-	public ArrayList<ProcessedWord> getOtherWords() {
-		return this.otherWords;
-	}
-	
-	public void addOtherWord(ProcessedWord pWord) {
-		this.otherWords.add(pWord);
-		pWord.addExtractedItem(this);
-	}
+    public ProcessedWord getDeterminerWord() {
+        return this.determinerWord;
+    }
 
-	public CeConcept getConcept() {
-		return this.concept;
-	}
+    public ProcessedWord getStartWord() {
+        return this.startWord;
+    }
 
-	public ArrayList<CeProperty> getPropertyList() {
-		return this.propList;
-	}
+    public ArrayList<ProcessedWord> getOtherWords() {
+        return this.otherWords;
+    }
 
-	public CeProperty getFirstProperty() {
-		CeProperty result = null;
+    public void addOtherWord(ProcessedWord pWord) {
+        this.otherWords.add(pWord);
+        pWord.addExtractedItem(this);
+    }
 
-		//TODO: This needs to be more intelligent
-		if ((this.propList != null) && (!this.propList.isEmpty())) {
-			result = this.propList.get(0);
-		}
+    public CeConcept getConcept() {
+        return this.concept;
+    }
 
-		return result;
-	}
+    public ArrayList<CeProperty> getPropertyList() {
+        return this.propList;
+    }
 
-	public CeProperty getPropertyWithDomain(ActionContext pAc, CeConcept pDomCon) {
-		CeProperty result = null;
+    public CeProperty getFirstProperty() {
+        CeProperty result = null;
 
-		if (this.propList != null) {
-			for (CeProperty thisProp : this.propList) {
-				if (pDomCon.equalsOrHasParent(thisProp.getDomainConcept())) {
-					if (result != null) {
-						reportWarning("More than one property with domain concept '" + pDomCon.getConceptName() + "' found for: " + this.toString(), pAc);
-					}
-					result = thisProp;
-				}
-			}
-		}
+        //TODO: This needs to be more intelligent
+        if ((this.propList != null) && (!this.propList.isEmpty())) {
+            result = this.propList.get(0);
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	public CeInstance getInstance() {
-		return this.instance;
-	}
+    public CeProperty getPropertyWithDomain(ActionContext pAc, CeConcept pDomCon) {
+        CeProperty result = null;
 
-	public String getNewInstanceId() {
-		return this.newInstanceId;
-	}
+        if (this.propList != null) {
+            for (CeProperty thisProp : this.propList) {
+                if (pDomCon.equalsOrHasParent(thisProp.getDomainConcept())) {
+                    if (result != null) {
+                        reportWarning("More than one property with domain concept '" + pDomCon.getConceptName() + "' found for: " + this.toString(), pAc);
+                    }
+                    result = thisProp;
+                }
+            }
+        }
 
-	public void setNewInstanceId(String pVal) {
-		this.newInstanceId = pVal;
-	}
-	
-	public void setPreviousItem(ExtractedItem pEi) {
-		this.previousItem = pEi;
-		pEi.setNextItem(this);
-	}
+        return result;
+    }
 
-	public void setNextItem(ExtractedItem pEi) {
-		this.nextItem = pEi;
-	}
+    public CeInstance getInstance() {
+        return this.instance;
+    }
 
-	public ArrayList<MatchedTriple> getMatchedTriples() {
-		return this.matchedTriples;
-	}
+    public String getNewInstanceId() {
+        return this.newInstanceId;
+    }
 
-	public void addMatchedTriple(MatchedTriple pMt) {
-		this.matchedTriples.add(pMt);
-	}
+    public void setNewInstanceId(String pVal) {
+        this.newInstanceId = pVal;
+    }
 
-	public boolean isConceptItem() {
-		return this.concept != null;
-	}
+    public void setPreviousItem(ExtractedItem pEi) {
+        this.previousItem = pEi;
+        pEi.setNextItem(this);
+    }
 
-	public boolean isPropertyItem() {
-		return this.propList != null;
-	}
+    public void setNextItem(ExtractedItem pEi) {
+        this.nextItem = pEi;
+    }
 
-	public boolean isInstanceItem() {
-		return this.instance != null;
-	}
+    public ArrayList<MatchedTriple> getMatchedTriples() {
+        return this.matchedTriples;
+    }
 
-	public boolean isPluralConceptMatch() {
-		return this.startWord.refersToPluralConceptsExactly();
-	}
-	
-	public boolean isPluralOrGroup() {
-		return isPluralConceptMatch() || isGroupConcept();
-	}
-	
-	public boolean isGroupConcept() {
-		boolean result = false;
+    public void addMatchedTriple(MatchedTriple pMt) {
+        this.matchedTriples.add(pMt);
+    }
 
-		if (isConceptItem()) {
-			this.concept.getConceptName().equals(CON_GROUP);
-		}
+    public boolean isConceptItem() {
+        return this.concept != null;
+    }
 
-		return result;
-	}
+    public boolean isPropertyItem() {
+        return this.propList != null;
+    }
 
-	public ProcessedWord getLastWord() {
-		ProcessedWord result = null;
-		
-		if (this.otherWords.isEmpty()) {
-			result = this.startWord;
-		} else {
-			result = this.otherWords.get(this.otherWords.size() - 1);
-		}
-		
-		return result;
-	}
+    public boolean isInstanceItem() {
+        return this.instance != null;
+    }
 
-	public String getOriginalDescription() {
-		return formattedAllWords();
-	}
+    public boolean isPluralConceptMatch() {
+        return this.startWord.refersToPluralConceptsExactly();
+    }
 
-	public String getOriginalDescriptionForPreviousItem() {
-		String result = null;
+    public boolean isPluralOrGroup() {
+        return isPluralConceptMatch() || isGroupConcept();
+    }
 
-		if (this.previousItem != null) {
-			result = this.previousItem.getOriginalDescription();
-		} else {
-			result = getOriginalDescription();
-		}
+    public boolean isGroupConcept() {
+        boolean result = false;
 
-		return result;
-	}
+        if (isConceptItem()) {
+            this.concept.getConceptName().equals(CON_GROUP);
+        }
 
-	public String getOriginalDescriptionForNextItem() {
-		String result = null;
+        return result;
+    }
 
-		if (this.nextItem != null) {
-			result = this.nextItem.getOriginalDescription();
-		} else {
+    public ProcessedWord getLastWord() {
+        ProcessedWord result = null;
+
+        if (this.otherWords.isEmpty()) {
+            result = this.startWord;
+        } else {
+            result = this.otherWords.get(this.otherWords.size() - 1);
+        }
+
+        return result;
+    }
+
+    public String getOriginalDescription() {
+        return formattedAllWords();
+    }
+
+    public String getOriginalDescriptionForPreviousItem() {
+        String result = null;
+
+        if (this.previousItem != null) {
+            result = this.previousItem.getOriginalDescription();
+        } else {
+            result = getOriginalDescription();
+        }
+
+        return result;
+    }
+
+    public String getOriginalDescriptionForNextItem() {
+        String result = null;
+
+        if (this.nextItem != null) {
+            result = this.nextItem.getOriginalDescription();
+        } else {
 //			result = getOriginalDescription();
-			//TODO: Even if the word is not matched we should create an extracted item
-			//or similar to allow us to get to the unhandled words.
-			result = "???";
-		}
+            //TODO: Even if the word is not matched we should create an extracted item
+            //or similar to allow us to get to the unhandled words.
+            result = "???";
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	public String formattedAllWords() {
-		String result = "";
+    public String formattedAllWords() {
+        String result = "";
 
-		if (this.determinerWord != null) {
-			result += this.determinerWord.getWordText() + " ";
-		}
+        if (this.determinerWord != null) {
+            result += this.determinerWord.getWordText() + " ";
+        }
 
-		result += this.startWord.getWordText();
+        result += this.startWord.getWordText();
 
-		for (ProcessedWord gw : this.otherWords) {
-			result += " " + gw.getWordText();
-		}
+        for (ProcessedWord gw : this.otherWords) {
+            result += " " + gw.getWordText();
+        }
 
-		return result;
-	}
-	public String formattedType() {
-		String result = "";
-		
-		if (isConceptItem()) {
-			result = "concept";
-		} else if (isPropertyItem()) {
-			result = "property";
-		} else if (isInstanceItem()) {
-			result = "instance";
-		} else {
-			result = "unknown";
-		}
-		
-		return result;
-	}
+        return result;
+    }
+    public String formattedType() {
+        String result = "";
 
-	public String formattedItemName() {
-		String result = "";
+        if (isConceptItem()) {
+            result = "concept";
+        } else if (isPropertyItem()) {
+            result = "property";
+        } else if (isInstanceItem()) {
+            result = "instance";
+        } else {
+            result = "unknown";
+        }
 
-		if (isConceptItem()) {
-			result = this.concept.getConceptName();
-		} else if (isPropertyItem()) {
-			if (!this.propList.isEmpty()) {
-				result = this.propList.get(0).formattedFullPropertyName();
-			}
-		} else if (isInstanceItem()) {
-			result = this.instance.getInstanceName();
-		} else {
-			result = "unknown";
-		}
+        return result;
+    }
 
-		return result;
-	}
-	
-	public boolean hasMeaningfulDescription(ActionContext pAc) {
-		boolean result = true;
+    public String formattedItemName() {
+        String result = "";
 
-		if (isConceptItem()) {
-			String lcConName = this.concept.getConceptName().toLowerCase();
-			String lcDesc = getOriginalDescription().toLowerCase();
-			lcDesc = removeDeterminersFrom(lcDesc);
-			
-			result = !lcConName.equals(lcDesc);
+        if (isConceptItem()) {
+            result = this.concept.getConceptName();
+        } else if (isPropertyItem()) {
+            if (!this.propList.isEmpty()) {
+                result = this.propList.get(0).formattedFullPropertyName();
+            }
+        } else if (isInstanceItem()) {
+            result = this.instance.getInstanceName();
+        } else {
+            result = "unknown";
+        }
 
-			if (result) {
-				CeInstance mm = this.concept.retrieveMetaModelInstance(pAc);
+        return result;
+    }
 
-				for (String synonym : mm.getValueListFromPropertyNamed(PROP_EXPBY)) {
-					if (synonym.toLowerCase().equals(lcDesc)) {
-						result = false;
-						break;
-					}
-				}
-			}
-		}
-		
-		if (isInstanceItem()) {
-			String lcInstName = this.instance.getInstanceName().toLowerCase();
-			String lcDesc = getOriginalDescription().toLowerCase();
+    public boolean hasMeaningfulDescription(ActionContext pAc) {
+        boolean result = true;
 
-			result = !lcInstName.equals(lcDesc);
-			
-			if (result) {
-				for (String synonym : this.instance.getValueListFromPropertyNamed(PROP_EXPBY)) {
-					if (synonym.toLowerCase().equals(lcDesc)) {
-						result = false;
-						break;
-					}
-				}
-			}
-		}
+        if (isConceptItem()) {
+            String lcConName = this.concept.getConceptName().toLowerCase();
+            String lcDesc = getOriginalDescription().toLowerCase();
+            lcDesc = removeDeterminersFrom(lcDesc);
 
-		//TODO: Handle properties here
+            result = !lcConName.equals(lcDesc);
 
-		return result;
-	}
+            if (result) {
+                CeInstance mm = this.concept.retrieveMetaModelInstance(pAc);
 
-	private static String removeDeterminersFrom(String pLcText) {
-		String result = pLcText;
+                for (String synonym : mm.getValueListFromPropertyNamed(PROP_EXPBY)) {
+                    if (synonym.toLowerCase().equals(lcDesc)) {
+                        result = false;
+                        break;
+                    }
+                }
+            }
+        }
 
-		//TODO: This should not be hardcoded
-		if (result.startsWith("a ")) {
-			result = result.substring(2, result.length());
-		}
-		if (result.startsWith("an ")) {
-			result = result.substring(3, result.length());
-		}
-		if (result.startsWith("the ")) {
-			result = result.substring(4, result.length());
-		}
+        if (isInstanceItem()) {
+            String lcInstName = this.instance.getInstanceName().toLowerCase();
+            String lcDesc = getOriginalDescription().toLowerCase();
 
-		return result;
-	}
+            result = !lcInstName.equals(lcDesc);
 
-	public String calculateItemText() {
-		String result = "";
-		
-		if (this.determinerWord != null) {
-			result += this.determinerWord.getWordText() + " ";
-		}
+            if (result) {
+                for (String synonym : this.instance.getValueListFromPropertyNamed(PROP_EXPBY)) {
+                    if (synonym.toLowerCase().equals(lcDesc)) {
+                        result = false;
+                        break;
+                    }
+                }
+            }
+        }
 
-		result += this.startWord.getWordText();
+        //TODO: Handle properties here
 
-		for (ProcessedWord otherWord : this.otherWords) {
-			result += " " + otherWord.getWordText();
-		}
+        return result;
+    }
 
-		return result;
-	}
+    private static String removeDeterminersFrom(String pLcText) {
+        String result = pLcText;
 
-	public boolean isDominantInterpretation() {
-		boolean result = false;
-		
-		//TODO: This should be a much richer test
-		//Currently any extracted item that starts with a word that has multiple meanings is not a dominant interpretation
-		result = this.getStartWord().getExtractedItems().size() == 1;
-		
-		return result;
-	}
+        //TODO: This should not be hardcoded
+        if (result.startsWith("a ")) {
+            result = result.substring(2, result.length());
+        }
+        if (result.startsWith("an ")) {
+            result = result.substring(3, result.length());
+        }
+        if (result.startsWith("the ")) {
+            result = result.substring(4, result.length());
+        }
 
-	@Override
-	public String toString() {
-		String result = "";
-		String owText = "";
+        return result;
+    }
 
-		for (ProcessedWord oWord : this.otherWords) {
-			if (owText.isEmpty()) {
-				owText = ", otherWords=";
-			} else {
-				owText += ", ";
-			}
-			owText += oWord.getWordText();
-		}
+    public String calculateItemText() {
+        String result = "";
 
-		result = "[Extracted " + formattedType() + "] startWord=" + this.startWord.getWordText() + owText;
+        if (this.determinerWord != null) {
+            result += this.determinerWord.getWordText() + " ";
+        }
 
-		return result;
-	}
+        result += this.startWord.getWordText();
+
+        for (ProcessedWord otherWord : this.otherWords) {
+            result += " " + otherWord.getWordText();
+        }
+
+        return result;
+    }
+
+    public boolean isDominantInterpretation() {
+        boolean result = false;
+
+        //TODO: This should be a much richer test
+        //Currently any extracted item that starts with a word that has multiple meanings is not a dominant interpretation
+        result = this.getStartWord().getExtractedItems().size() == 1;
+
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        String result = "";
+        String owText = "";
+
+        for (ProcessedWord oWord : this.otherWords) {
+            if (owText.isEmpty()) {
+                owText = ", otherWords=";
+            } else {
+                owText += ", ";
+            }
+            owText += oWord.getWordText();
+        }
+
+        result = "[Extracted " + formattedType() + "] startWord=" + this.startWord.getWordText() + owText;
+
+        return result;
+    }
 
 }

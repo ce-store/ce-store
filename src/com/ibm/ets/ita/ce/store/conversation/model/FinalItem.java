@@ -8,77 +8,94 @@ import java.util.ArrayList;
  *******************************************************************************/
 
 public class FinalItem extends GeneralItem {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+    public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
 
-	private ArrayList<ExtractedItem> exItemList = null;
+    private ArrayList<ExtractedItem> exItemList = null;
 
-	public FinalItem(ExtractedItem pExItem) {
-		this.exItemList = new ArrayList<ExtractedItem>();
-		
-		this.exItemList.add(pExItem);
-	}
+    public FinalItem(ExtractedItem pExItem) {
+        this.exItemList = new ArrayList<ExtractedItem>();
 
-	public ArrayList<ExtractedItem> getExtractedItems() {
-		return this.exItemList;
-	}
+        this.exItemList.add(pExItem);
+    }
 
-	public ExtractedItem getFirstExtractedItem() {
-		ExtractedItem result = null;
+    public ArrayList<ExtractedItem> getExtractedItems() {
+        return this.exItemList;
+    }
 
-		if (!this.exItemList.isEmpty()) {
-			result = this.exItemList.get(0);
-		}
+    public ExtractedItem getFirstExtractedItem() {
+        ExtractedItem result = null;
 
-		return result;
-	}
+        if (!this.exItemList.isEmpty()) {
+            result = this.exItemList.get(0);
+        }
 
-	public ExtractedItem getLastExtractedItem() {
-		ExtractedItem result = null;
+        return result;
+    }
 
-		if (!this.exItemList.isEmpty()) {
-			result = this.exItemList.get(this.exItemList.size() - 1);
-		}
+    public ExtractedItem getLastExtractedItem() {
+        ExtractedItem result = null;
 
-		return result;
-	}
+        if (!this.exItemList.isEmpty()) {
+            result = this.exItemList.get(this.exItemList.size() - 1);
+        }
 
-	public void addExtractedItem(ExtractedItem pEi) {
-		if (!this.exItemList.contains(pEi)) {
-			this.exItemList.add(pEi);
-		}
-	}
-	
-	public boolean isConceptItem() {
-		boolean result = false;
-		ExtractedItem fei = getFirstExtractedItem();
+        return result;
+    }
 
-		if (fei != null) {
-			result = fei.isConceptItem();
-		}
+    public void addExtractedItem(ExtractedItem pEi) {
+        if (!this.exItemList.contains(pEi)) {
+            this.exItemList.add(pEi);
+        }
+    }
 
-		return result;
-	}
+    public boolean isConceptItem() {
+        boolean result = false;
+        ExtractedItem fei = getFirstExtractedItem();
 
-	public boolean isPropertyItem() {
-		boolean result = false;
-		ExtractedItem fei = getFirstExtractedItem();
+        if (fei != null) {
+            result = fei.isConceptItem();
+        }
 
-		if (fei != null) {
-			result = fei.isPropertyItem();
-		}
+        return result;
+    }
 
-		return result;
-	}
+    public boolean isPropertyItem() {
+        boolean result = false;
+        ExtractedItem fei = getFirstExtractedItem();
 
-	public boolean isInstanceItem() {
-		boolean result = false;
-		ExtractedItem fei = getFirstExtractedItem();
+        if (fei != null) {
+            result = fei.isPropertyItem();
+        }
 
-		if (fei != null) {
-			result = fei.isInstanceItem();
-		}
+        return result;
+    }
 
-		return result;
-	}
+    public boolean isInstanceItem() {
+        boolean result = false;
+        ExtractedItem fei = getFirstExtractedItem();
+
+        if (fei != null) {
+            result = fei.isInstanceItem();
+        }
+
+        return result;
+    }
+
+    public boolean isPropertyInstanceItem() {
+        ArrayList<ExtractedItem> extractedItems = getExtractedItems();
+
+        boolean propertyFound = false;
+        boolean instanceFound = false;
+
+        for (ExtractedItem item : extractedItems) {
+            if (item.isInstanceItem()) {
+                instanceFound = true;
+            } else if (item.isPropertyItem()) {
+                propertyFound = true;
+            }
+        }
+
+        return propertyFound && instanceFound;
+    }
 
 }
