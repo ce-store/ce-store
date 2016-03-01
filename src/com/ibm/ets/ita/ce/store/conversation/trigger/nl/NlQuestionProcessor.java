@@ -26,64 +26,6 @@ public class NlQuestionProcessor {
         return finalItems;
     }
 
-    private void findPropertiesRelatingToInstances(ArrayList<FinalItem> finalItems) {
-        ArrayList<FinalItem> toRemoveItems = new ArrayList<FinalItem>();
-
-        // Initial parse to look for connected instances and properties
-        for (FinalItem propertyItem : finalItems) {
-            if (propertyItem.isPropertyItem()) {
-                for (FinalItem instanceItem : finalItems) {
-                    if (instanceItem.isInstanceItem() && !toRemoveItems.contains(instanceItem) && !toRemoveItems.contains(propertyItem)) {
-                        Tuple<CeInstance, CeProperty> matchingConceptProperty = instanceHasProperty(instanceItem, propertyItem);
-
-                        System.out.println("Check " + matchingConceptProperty);
-                        if (matchingConceptProperty != null) {
-                            // Instance has this property. Append results
-                            System.out.println("FOUND - Instance has property!");
-                            toRemoveItems.add(instanceItem);
-
-                            ExtractedItem extractedProperty = propertyItem.getFirstExtractedItem();
-                            ProcessedWord word = extractedProperty.getStartWord();
-
-                            ExtractedItem extractedItem = new ExtractedItem(word, matchingConceptProperty.x);
-                            propertyItem.addExtractedItem(extractedItem);
-                        }
-                    }
-                }
-            }
-        }
-
-        // Remove processed items
-        for (FinalItem item : toRemoveItems) {
-            finalItems.remove(item);
-        }
-    }
-
-    // If instance has property then return the result of that property
-    private Tuple<CeInstance, CeProperty> instanceHasProperty(FinalItem instanceItem, FinalItem propertyItem) {
-        ExtractedItem extractedProperty = propertyItem.getFirstExtractedItem();
-        ArrayList<CeProperty> properties = extractedProperty.getPropertyList();
-
-        ExtractedItem extractedInstance = instanceItem.getFirstExtractedItem();
-        CeInstance instance = extractedInstance.getInstance();
-        CeConcept[] instanceConcepts = instance.getDirectConcepts();
-
-        Tuple<CeInstance, CeProperty> matchingConceptProperty = null;
-
-        for (CeProperty property : properties) {
-            CeConcept propertyConcept = property.getDomainConcept();
-
-            for (CeConcept instanceConcept : instanceConcepts) {
-                if (instanceConcept.equals(propertyConcept)) {
-                    matchingConceptProperty = new Tuple<CeInstance, CeProperty>(instance, property);
-                    break;
-                }
-            }
-        }
-
-        return matchingConceptProperty;
-    }
-
     // Create list of optional items from extracted items
     public ArrayList<FinalItem> getOptionItems(ArrayList<ProcessedWord> words) {
         System.out.println("\nGet option items...");
@@ -110,7 +52,7 @@ public class NlQuestionProcessor {
             if (wordItems != null) {
                 for (ExtractedItem item : wordItems) {
                     if (!items.contains(item)) {
-//						  TODO: Look into dominant interpretation
+                        // TODO: Look into dominant interpretation
                         if (item.isDominantInterpretation()) {
                             items.add(item);
                         }
@@ -182,6 +124,65 @@ public class NlQuestionProcessor {
         }
 
         return optionItems;
+    }
+
+    // Find final properties that exist on final instances
+    private void findPropertiesRelatingToInstances(ArrayList<FinalItem> finalItems) {
+        ArrayList<FinalItem> toRemoveItems = new ArrayList<FinalItem>();
+
+        // Initial parse to look for connected instances and properties
+        for (FinalItem propertyItem : finalItems) {
+            if (propertyItem.isPropertyItem()) {
+                for (FinalItem instanceItem : finalItems) {
+                    if (instanceItem.isInstanceItem() && !toRemoveItems.contains(instanceItem) && !toRemoveItems.contains(propertyItem)) {
+                        Tuple<CeInstance, CeProperty> matchingConceptProperty = instanceHasProperty(instanceItem, propertyItem);
+
+                        System.out.println("Check " + matchingConceptProperty);
+                        if (matchingConceptProperty != null) {
+                            // Instance has this property. Append results
+                            System.out.println("FOUND - Instance has property!");
+                            toRemoveItems.add(instanceItem);
+
+                            ExtractedItem extractedProperty = propertyItem.getFirstExtractedItem();
+                            ProcessedWord word = extractedProperty.getStartWord();
+
+                            ExtractedItem extractedItem = new ExtractedItem(word, matchingConceptProperty.x);
+                            propertyItem.addExtractedItem(extractedItem);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Remove processed items
+        for (FinalItem item : toRemoveItems) {
+            finalItems.remove(item);
+        }
+    }
+
+    // If instance has property then return the result of that property
+    private Tuple<CeInstance, CeProperty> instanceHasProperty(FinalItem instanceItem, FinalItem propertyItem) {
+        ExtractedItem extractedProperty = propertyItem.getFirstExtractedItem();
+        ArrayList<CeProperty> properties = extractedProperty.getPropertyList();
+
+        ExtractedItem extractedInstance = instanceItem.getFirstExtractedItem();
+        CeInstance instance = extractedInstance.getInstance();
+        CeConcept[] instanceConcepts = instance.getDirectConcepts();
+
+        Tuple<CeInstance, CeProperty> matchingConceptProperty = null;
+
+        for (CeProperty property : properties) {
+            CeConcept propertyConcept = property.getDomainConcept();
+
+            for (CeConcept instanceConcept : instanceConcepts) {
+                if (instanceConcept.equals(propertyConcept)) {
+                    matchingConceptProperty = new Tuple<CeInstance, CeProperty>(instance, property);
+                    break;
+                }
+            }
+        }
+
+        return matchingConceptProperty;
     }
 
     // Does question start with 'who'?

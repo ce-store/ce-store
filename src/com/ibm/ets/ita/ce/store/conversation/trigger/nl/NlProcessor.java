@@ -73,11 +73,6 @@ public class NlProcessor extends GeneralProcessor {
                 sp.extractMatchingEntities(sentence, words);
                 System.out.println("\nDone matching");
 
-                for (ProcessedWord w : words) {
-                    System.out.println(w);
-                    System.out.println(w.getExtractedItems());
-                }
-
                 ArrayList<FinalItem> finalItems = qp.getFinalItems(words);
                 ArrayList<FinalItem> optionItems = qp.getOptionItems(words);
 
@@ -93,6 +88,10 @@ public class NlProcessor extends GeneralProcessor {
                 }
 
                 if (optionItems != null) {
+                    if (!sb.toString().isEmpty()) {
+                        sb.append("\n");
+                    }
+
                     allOptionItems.addAll(optionItems);
                     sb.append(ag.answerOptionQuestion(optionItems));
                 }
@@ -110,7 +109,21 @@ public class NlProcessor extends GeneralProcessor {
         ArrayList<String> referencedItems = new ArrayList<String>();
         ArrayList<CeInstance> referencedInsts = new ArrayList<CeInstance>();
 
-        // Extract referenced items to set 'about' property in card
+        extractReferencedItems(allFinalItems, referencedItems, referencedInsts);
+
+        // Look for interesting things
+        InterestingThingsProcessor interestingThings = new InterestingThingsProcessor(ac);
+        String interestingAnswer = interestingThings.generate(referencedInsts);
+        System.out.println("Interesting things: " + interestingAnswer);
+
+        // Generate NL Card with reply
+        String humanAgent = findHumanAgent(cardInst);
+        cg.generateNLCard(cardInst, sb.toString(), th.getTriggerName(), humanAgent, referencedItems);
+    }
+
+    // Extract referenced items to set 'about' property in card
+    private void extractReferencedItems(ArrayList<FinalItem> allFinalItems, ArrayList<String> referencedItems,
+            ArrayList<CeInstance> referencedInsts) {
         for (FinalItem item : allFinalItems) {
             ArrayList<ExtractedItem> extractedItems = item.getExtractedItems();
 
@@ -167,14 +180,6 @@ public class NlProcessor extends GeneralProcessor {
                 }
             }
         }
-
-        InterestingThingsProcessor interestingThings = new InterestingThingsProcessor(ac);
-        String interestingAnswer = interestingThings.generate(referencedInsts);
-        System.out.println("Interesting things: " + interestingAnswer);
-
-        // Generate NL Card with reply
-        String humanAgent = findHumanAgent(cardInst);
-        cg.generateNLCard(cardInst, sb.toString(), th.getTriggerName(), humanAgent, referencedItems);
     }
 
     // Pass on Tell agent's message to human agent

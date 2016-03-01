@@ -115,31 +115,15 @@ public class NlAnswerGenerator {
     // Generate a reply detailing an instance
     private String instanceAnswer(FinalItem item) {
         StringBuilder sb = new StringBuilder();
-        ArrayList<ExtractedItem> extractedItems = item.getExtractedItems();
 
-        int numExtractedItems = extractedItems.size();
-        boolean multipleAnswers = numExtractedItems > 1;
+        ExtractedItem extractedItem = item.getFirstExtractedItem();
+        CeInstance instance = extractedItem.getInstance();
 
-        if (multipleAnswers) {
-            appendToSb(sb, "You asked " + numExtractedItems + " things.  The answers are:");
-        }
+        ArrayList<CeInstance> processedInsts = new ArrayList<CeInstance>();
 
-        for (int i = 0; i < numExtractedItems; ++i) {
-            ExtractedItem extractedItem = extractedItems.get(i);
-            CeInstance instance = extractedItem.getInstance();
-
-            if (multipleAnswers) {
-                appendToSb(sb, "");
-                sb.append(i);
-                sb.append(") ");
-            }
-
-            ArrayList<CeInstance> processedInsts = new ArrayList<CeInstance>();
-
-            sb.append(instanceType(instance));
-            sb.append(instanceProperties(instance, processedInsts));
-            sb.append(instanceReferences(instance, processedInsts));
-        }
+        sb.append(instanceType(instance));
+        sb.append(instanceProperties(instance, processedInsts));
+        sb.append(instanceReferences(instance, processedInsts));
 
         return sb.toString();
     }

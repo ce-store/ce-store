@@ -211,22 +211,53 @@ public class NlSentenceProcessor {
                         reportDebug("Ignoring later partial for property: " + word.getWordText(), ac);
                     }
                 } else if (word.isGroundedOnInstance()) {
-                    CeInstance tgtInst = retrieveSingleInstanceFrom(word.listGroundedInstances(), word, "object");
+                    ArrayList<CeInstance> objInsts = word.listGroundedInstances();
 
-                    if (tgtInst != null) {
-                        word.setChosenInstance(tgtInst);
-                        reportDebug("I got an object instance (" + tgtInst.getInstanceName()  + "), from word: " + word.toString(), ac);
-                        ExtractedItem extInst = new ExtractedItem(word, tgtInst);
-                        if (lastExtracted != null) {
-                            extInst.setPreviousItem(lastExtracted);
+                    boolean confirmRequired = word.confirmRequired();
+
+                    if (confirmRequired) {
+                        for (CeInstance objInst : objInsts) {
+                            ExtractedItem extInst = new ExtractedItem(word, objInst);
+
+                            if (lastExtracted != null) {
+                                extInst.setPreviousItem(lastExtracted);
+                            }
+
+                            lastExtracted = extInst;
                         }
-                        word.addConnectedWordsTo(extInst);
-//                        this.otherInstances.add(extInst);
-
-                        lastExtracted = extInst;
                     } else {
-                        reportWarning("No object instance found for word: " + word.toString(), ac);
+                        CeInstance objectInst = retrieveSingleInstanceFrom(objInsts, word, "object");
+
+                        if (objectInst != null) {
+                            word.setChosenInstance(objectInst);
+                            reportDebug("I got an object instance (" + objectInst.getInstanceName()  + "), from word: " + word.toString(), ac);
+                            ExtractedItem extInst = new ExtractedItem(word, objectInst);
+
+                            if (lastExtracted != null) {
+                                extInst.setPreviousItem(lastExtracted);
+                            }
+
+                            word.addConnectedWordsTo(extInst);
+                            lastExtracted = extInst;
+                        }
                     }
+
+                    // -----
+
+//                    if (objectInst != null) {
+//                        word.setChosenInstance(objectInst);
+//                        reportDebug("I got an object instance (" + objectInst.getInstanceName()  + "), from word: " + word.toString(), ac);
+//                        ExtractedItem extInst = new ExtractedItem(word, objectInst);
+//                        if (lastExtracted != null) {
+//                            extInst.setPreviousItem(lastExtracted);
+//                        }
+//                        word.addConnectedWordsTo(extInst);
+////                        this.otherInstances.add(extInst);
+//
+//                        lastExtracted = extInst;
+//                    } else {
+//                        reportWarning("No object instance found for word: " + word.toString(), ac);
+//                    }
                 } else {
 //                    this.ungroundedWords.add(word);
                 }
