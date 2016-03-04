@@ -36,10 +36,12 @@ public class SessionCreations {
 	public void setNewInstances(HashSet<CeInstance> pNewInsts) {
 		this.newInstances = pNewInsts;
 
-		if (this.totalInstances == null) {
-			this.totalInstances = new HashSet<CeInstance>();
+		if (pNewInsts != null) {
+			if (this.totalInstances == null) {
+				this.totalInstances = new HashSet<CeInstance>();
+			}
+			this.totalInstances.addAll(pNewInsts);
 		}
-		this.totalInstances.addAll(pNewInsts);
 	}
 
 	public void recordNewInstance(CeInstance pInst) {
