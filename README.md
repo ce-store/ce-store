@@ -31,6 +31,11 @@ Set the Eclipse Text encoding
   1. In Eclipse open `Window`, `Preferences`, `General`, `Workspace`
   2. Set the Text file encoding to UTF-8, Click on `OK`
 
+Set new Eclipse file associations
+  1. In Eclipse open `Window`, `Preferences`, `General`, `Content Types`
+  2. Click on the `Text` entry in the top `Content types` pane
+  3. In the lower `File associations` pane, use the `Add` button to add file associations for `*.ce` and `*.cecmd`, then click on `Ok`.
+
 Import the project into Eclipse
 
   1. In Eclipse select `File` then `Import`
