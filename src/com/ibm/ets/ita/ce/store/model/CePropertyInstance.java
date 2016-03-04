@@ -317,7 +317,13 @@ public class CePropertyInstance implements Comparable<CePropertyInstance> {
 			result = new HashSet<CeInstance>();
 			
 			for (CePropertyValue thisPv : this.propertyValues) {
-				result.add(thisPv.getValueInstance(pAc));
+				CeInstance thisInst = thisPv.getValueInstance(pAc);
+				
+				if (thisInst != null) {
+					result.add(thisInst);
+				} else {
+					reportWarning("Could not locate instance named '" + thisPv.getValue() + "' when processing " + this.toString(), pAc);
+				}
 			}
 		}
 
