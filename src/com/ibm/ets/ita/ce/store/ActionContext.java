@@ -128,6 +128,10 @@ public abstract class ActionContext {
 		this.validatingOnly = true;
 	}
 
+	public void markAsNotValidating() {
+		this.validatingOnly = false;
+	}
+
 	public boolean isAutoExecutingRules() {
 		return this.autoExecuteRules;
 	}
