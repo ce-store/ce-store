@@ -10,6 +10,7 @@ import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.getBooleanValu
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.substituteCeParameters;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportException;
+import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportWarning;
 
 import java.util.ArrayList;
 import java.util.TreeMap;
@@ -227,7 +228,7 @@ public abstract class GeneralConversationHandler extends CeNotifyHandler {
 		String userName = pConvInst.getSingleValueFromPropertyNamed(PROP_ISFROM);
 
 		validateCeText(pCeText, userName);
-
+		
 		return saveCeTextWithFlag(pCeText, FORM_CONVFACT, this.runRulesOnSave);
 	}
 
@@ -262,7 +263,11 @@ public abstract class GeneralConversationHandler extends CeNotifyHandler {
 				generateAnswerCeFor(sb, bfSen, pUserName);
 			}
 
-			saveCeTextWithFlag(sb.toString(), "src_answers", false);
+			if (sb.length() > 0) {
+				saveCeTextWithFlag(sb.toString(), "src_answers", false);
+			} else {
+				reportWarning("No answer CE generated for incoming CE: " + pCeText, this.ac);
+			}
 		}
 
 		return result;
@@ -314,6 +319,8 @@ public abstract class GeneralConversationHandler extends CeNotifyHandler {
 
 				//TODO: Add support for datatype properties
 			}
+		} else {
+			reportWarning("Unsupported sentence type encountered: " + pSen.toString(), this.ac);
 		}
 	}
 

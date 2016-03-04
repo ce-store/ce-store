@@ -198,7 +198,15 @@ public class ConversationProcessor {
 				generateCeConversationCard(pConvInst, ResultOfAnalysis.msgEmptyText());
 			}
 		} else {
-			msgActNotAuthorised(pConvInst, fromInst.getInstanceName(), "tell");
+			String fromName = null;
+			
+			if (fromInst != null) {
+				fromName = fromInst.getInstanceName();
+			} else {
+				fromName = "(unknown)";
+			}
+			
+			msgActNotAuthorised(pConvInst, fromName, "tell");
 		}
 	}
 
