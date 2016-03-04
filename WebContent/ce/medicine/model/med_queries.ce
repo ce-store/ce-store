@@ -95,3 +95,25 @@ for which W, S, _SSN, _AW, M and _AM is it true that
     ( the woman W has the value _AW as age ) and ( the value _AW >= '21' ) and
     ( the man M has the value _AM as age ) and ( the value _AM >= '21' )
 .
+
+[ reports about Jean and Fred ]
+for which R and T is it true that
+  ( the medical report R has the value T as text ) and
+  ( the medical report R mentions the person 'Jean' ) and
+  ( the medical report R mentions the person 'Fred' )
+.
+
+[ reports about Fred and someone who is not Fred - v1 ]
+for which R and T is it true that
+  ( the medical report R has the value T as text ) and
+  ( the medical report R mentions the person 'Fred' ) and
+  ( the medical report R mentions the person P2 ) and
+  ( the value P2 != 'Fred' )
+.
+
+[ reports about Fred and someone who is not Fred - v2 ]
+for which R and T is it true that
+  ( the medical report R has the value T as text and mentions the person 'Fred' and mentions the person P2 ) and
+  ( the value P2 != 'Fred' )
+.
+

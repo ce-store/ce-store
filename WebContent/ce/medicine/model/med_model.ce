@@ -63,3 +63,7 @@ conceptualise a ~ event ~ E that
 conceptualise a ~ check up ~ C that is an event.
 conceptualise a ~ consultation ~ C that is an event.
 conceptualise an ~ operation ~ O that is an event.
+
+conceptualise a ~ medical report ~ R that
+  ~ mentions ~ the person P and
+  has the value T as ~ text ~.

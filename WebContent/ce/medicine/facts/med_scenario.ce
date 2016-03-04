@@ -81,3 +81,25 @@ there is a cancer scan named scan1.
 the person James
   has the sequence (the medical procedure 'cat scan', the medical procedure chemotherapy, the medical procedure 'barium meal') as medical procedures and
   is the brother of the person David.
+
+
+-- Medical reports
+the medical report 'report 1'
+  mentions the person 'Jean' and
+  mentions the person 'Fred' and
+  has 'A medical report about Jean and Fred' as text.
+
+the medical report 'report 2'
+  mentions the person 'Jean' and
+  mentions the person 'Jane' and
+  has 'A medical report about Jean and Jane' as text.
+
+the medical report 'report 3'
+  mentions the person 'Jean' and
+  mentions the person 'Bill' and
+  has 'A medical report about Jean and Bill' as text.
+
+the medical report 'report 4'
+  mentions the person 'Jean' and
+  mentions the person 'James' and
+  has 'A medical report about Jean and James' as text.
