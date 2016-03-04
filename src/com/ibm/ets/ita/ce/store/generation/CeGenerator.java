@@ -73,24 +73,28 @@ public class CeGenerator extends GeneralGenerator {
 	protected void ceAddFnProperty(String pPropName, String pRange, String pRawVal) {
 		String encVal = encodeAndEncloseInQuotesIfNeeded(pRawVal);
 
-		appendConnector();
-		appendToSbNoNl(this.sb, INDENT);
-		appendToSbNoNl(this.sb, "has ");
-		appendRangeTextFor(pRange);
-		appendToSbNoNl(this.sb, encVal);
-		appendToSbNoNl(this.sb, " as ");
-		appendToSbNoNl(this.sb, pPropName);
+		if (!encVal.isEmpty()) {
+			appendConnector();
+			appendToSbNoNl(this.sb, INDENT);
+			appendToSbNoNl(this.sb, "has ");
+			appendRangeTextFor(pRange);
+			appendToSbNoNl(this.sb, encVal);
+			appendToSbNoNl(this.sb, " as ");
+			appendToSbNoNl(this.sb, pPropName);
+		}
 	}
 
 	protected void ceAddVsProperty(String pPropName, String pRange, String pRawVal) {
 		String encVal = encodeAndEncloseInQuotesIfNeeded(pRawVal);
 
-		appendConnector();
-		appendToSbNoNl(this.sb, INDENT);
-		appendToSbNoNl(this.sb, pPropName);
-		appendToSbNoNl(this.sb, " ");
-		appendRangeTextFor(pRange);
-		appendToSbNoNl(this.sb, encVal);
+		if (!encVal.isEmpty()) {
+			appendConnector();
+			appendToSbNoNl(this.sb, INDENT);
+			appendToSbNoNl(this.sb, pPropName);
+			appendToSbNoNl(this.sb, " ");
+			appendRangeTextFor(pRange);
+			appendToSbNoNl(this.sb, encVal);
+		}
 	}
 	
 	protected void ceSecondaryConcept(String pDeterminer, String pConName) {
