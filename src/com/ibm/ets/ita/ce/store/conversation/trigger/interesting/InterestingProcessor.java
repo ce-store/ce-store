@@ -4,7 +4,6 @@ import com.ibm.ets.ita.ce.store.ActionContext;
 import com.ibm.ets.ita.ce.store.conversation.trigger.general.CardGenerator;
 import com.ibm.ets.ita.ce.store.conversation.trigger.general.CeGenerator;
 import com.ibm.ets.ita.ce.store.conversation.trigger.general.GeneralProcessor;
-import com.ibm.ets.ita.ce.store.conversation.trigger.general.Property;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
 
 public class InterestingProcessor extends GeneralProcessor {
@@ -19,21 +18,10 @@ public class InterestingProcessor extends GeneralProcessor {
         ce = new CeGenerator(ac);
     }
 
-    // Process Tell card
-    public void process(CeInstance cardInst) {
-        String interestingText = cardInst.getSingleValueFromPropertyNamed(Property.CONTENT.toString());
-        String fromService = cardInst.getSingleValueFromPropertyNamed(Property.IS_FROM.toString());
-        System.out.println("Interesting text: " + interestingText);
+    // Process interesting thing
+    public void process(CeInstance inst) {
+        String interestedParty = inst.getSingleValueFromPropertyNamed("interested party");
 
-//        if (isValidCe(interestingText)) {
-//            // Valid CE - accept and add to store
-//            System.out.println("Save valid CE");
-//            String source = ce.generateSrcName(th.getTriggerName());
-//            ce.save(interestingText, source);
-//            cg.generateTellReplyCard(cardInst, interestingText, th.getTriggerName(), fromService);
-//        } else {
-//            // Not valid CE - reject card
-//            System.out.println("Not valid CE");
-//        }
+        cg.generateInterestingFactCard(inst, th.getTriggerName(), interestedParty);
     }
 }

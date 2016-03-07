@@ -1,14 +1,13 @@
 package com.ibm.ets.ita.ce.store.conversation.trigger.interesting;
 
-import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.formattedDuration;
-import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportDebug;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportWarning;
 
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.HashSet;
 
 import com.ibm.ets.ita.ce.store.ActionContext;
-import com.ibm.ets.ita.ce.store.conversation.trigger.general.Card;
+import com.ibm.ets.ita.ce.store.conversation.trigger.general.Concept;
 import com.ibm.ets.ita.ce.store.conversation.trigger.general.GeneralTriggerHandler;
+import com.ibm.ets.ita.ce.store.conversation.trigger.general.Type;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
 
 public class InterestingTriggerHandler extends GeneralTriggerHandler {
@@ -21,52 +20,45 @@ public class InterestingTriggerHandler extends GeneralTriggerHandler {
         initialise(ac);
         extractTriggerDetailsUsing(triggerName);
 
-        // Only property matched triggers are handled
-        if (thingType.equals(TYPE_PROP)) {
+        System.out.println("thingType: " + thingType);
+        System.out.println("thingName: " + thingName);
+        System.out.println("triggerName: " + triggerName);
+        System.out.println("sourceId: " + sourceId);
+        System.out.println("ruleOrQuery: " + ruleOrQuery);
+        System.out.println("ruleOrQueryName: " + ruleOrQueryName);
+
+        if (thingType.toLowerCase().equals(Type.PROPERTY.toString())) {
+            // Triggered on property
             handlePropertyTrigger();
+        } else if (thingType.toLowerCase().equals(Type.CONCEPT.toString())) {
+            // Triggered on concept
+            handleConceptTrigger();
         } else {
             reportWarning("Unexpected trigger type (" + thingType + ") for conversation trigger handler", ac);
         }
     }
 
-    // Check new instances are Tell cards
+    // Handle new properties
     private void handlePropertyTrigger() {
-        if (ac.getSessionCreations().getNewInstances() != null) {
-            //TODO: Review whether this CopyOnWriteArrayList is needed here
-            CopyOnWriteArrayList<CeInstance> copyList = new CopyOnWriteArrayList<CeInstance>(ac.getSessionCreations().getNewInstances());
+        HashSet<CeInstance> newInstances = ac.getSessionCreations().getNewInstances();
 
-            for (CeInstance thisInst : copyList) {
-                if (thisInst.isConceptNamed(ac, Card.TELL.toString())) {
-                    handleCardInstance(thisInst);
+        if (newInstances != null) {
+            InterestingProcessor ip = new InterestingProcessor(ac, this);
+
+            for (CeInstance inst : newInstances) {
+                // TODO: Fix for instances with parent concepts of interesting thing
+                if (inst.isConceptNamed(ac, Concept.INTERESTING.toString())) {
+                    System.out.println("New interesting thing: ");
+                    System.out.println(inst);
+                    ip.process(inst);
                 }
             }
         }
     }
 
-    // Check card hasn't already been processed and is for this agent
-    private void handleCardInstance(CeInstance cardInst) {
-        if (!isCardAlreadyProcessed(cardInst)) {
-            if (isThisCardForMe(cardInst)) {
-                doMessageProcessing(cardInst);
-            } else {
-                reportDebug("Ignoring message '" + cardInst.getInstanceName() + "' as it was not directed to me", ac);
-            }
-        }
+    // Handle concepts
+    private void handleConceptTrigger() {
+        // TODO Auto-generated method stub
+
     }
-
-    // Process NL message
-    protected void doMessageProcessing(CeInstance cardInst) {
-        long startTime = System.currentTimeMillis();
-
-        System.out.println(cardInst);
-
-        InterestingProcessor ip = new InterestingProcessor(ac, this);
-        ip.process(cardInst);
-
-//        TellProcessor tp = new TellProcessor(ac, this);
-//        tp.process(cardInst);
-
-        reportDebug("Conversation processing took " + formattedDuration(startTime) + " seconds", ac);
-    }
-
 }

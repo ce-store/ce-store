@@ -9,8 +9,6 @@ import com.ibm.ets.ita.ce.store.model.CePropertyInstance;
 
 public abstract class GeneralTriggerHandler extends CeNotifyHandler {
 
-    protected static final String TYPE_PROP = "PROPERTY";
-
     protected ActionContext ac = null;
     protected CeInstance trigInst = null;
     protected CeInstance fromInst = null;

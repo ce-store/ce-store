@@ -9,6 +9,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import com.ibm.ets.ita.ce.store.ActionContext;
 import com.ibm.ets.ita.ce.store.conversation.trigger.general.Card;
 import com.ibm.ets.ita.ce.store.conversation.trigger.general.GeneralTriggerHandler;
+import com.ibm.ets.ita.ce.store.conversation.trigger.general.Type;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
 
 public class TellTriggerHandler extends GeneralTriggerHandler {
@@ -22,7 +23,7 @@ public class TellTriggerHandler extends GeneralTriggerHandler {
         extractTriggerDetailsUsing(triggerName);
 
         // Only property matched triggers are handled
-        if (thingType.equals(TYPE_PROP)) {
+        if (thingType.toLowerCase().equals(Type.PROPERTY.toString())) {
             handlePropertyTrigger();
         } else {
             reportWarning("Unexpected trigger type (" + thingType + ") for conversation trigger handler", ac);

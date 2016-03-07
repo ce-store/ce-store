@@ -4,6 +4,7 @@ public enum Concept {
     SERVICE("service"),
     COMMON_WORDS("common word list"),
     NEGATION_WORDS("negation word list"),
+    INTERESTING("interesting thing"),
     UNINTERESTING("uninteresting property"),
     CONV_THING("conv thing"),
     MAN("man"),
