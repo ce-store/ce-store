@@ -10,7 +10,9 @@ public enum Word {
     LIST("list"),
     SUMMARISE("summarise"),
     SUMMARIZE("summarize"),
-    COUNT("count");
+    COUNT("count"),
+    INTERESTING("interesting"),
+    INTERESTED("interested");
     private String name;
 
     private Word(String name) {

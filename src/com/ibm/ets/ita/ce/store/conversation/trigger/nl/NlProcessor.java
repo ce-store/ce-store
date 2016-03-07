@@ -13,6 +13,7 @@ import com.ibm.ets.ita.ce.store.conversation.trigger.general.CardGenerator;
 import com.ibm.ets.ita.ce.store.conversation.trigger.general.GeneralProcessor;
 import com.ibm.ets.ita.ce.store.conversation.trigger.general.Property;
 import com.ibm.ets.ita.ce.store.conversation.trigger.general.Reply;
+import com.ibm.ets.ita.ce.store.conversation.trigger.general.Word;
 import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
 import com.ibm.ets.ita.ce.store.model.CeProperty;
@@ -44,16 +45,45 @@ public class NlProcessor extends GeneralProcessor {
             // NL
             System.out.println("Not valid CE");
             if (fromTellService(cardInst)) {
+                // Reply from Tell
                 processTellResponse(cardInst, nlText);
+            } else if (isAboutInterestingThing(modNlText)) {
+                // About Interesting Thing
+                processITResponse(cardInst, modNlText);
             } else {
+                // Other Natural Language
                 processNLResponse(cardInst, modNlText);
             }
         }
     }
 
-    private void processNLResponse(CeInstance cardInst, String nlText) {
+    private void processITResponse(CeInstance cardInst, String text) {
+        convText = ConvText.createNewText(ac, text);
+        System.out.println("Conv text: " + convText);
+
+        NlSentenceProcessor sp = new NlSentenceProcessor(ac, cardInst);
+        NlQuestionProcessor qp = new NlQuestionProcessor();
+
+        for (ConvSentence sentence : convText.getChildSentences()) {
+            ArrayList<ProcessedWord> words = sp.process(sentence);
+            sp.extractMatchingEntities(sentence, words);
+
+            ArrayList<FinalItem> finalItems = qp.getFinalItems(words);
+
+            if (finalItems != null) {
+                for (FinalItem finalItem : finalItems) {
+                    ExtractedItem item = finalItem.getFirstExtractedItem();
+                    CeConcept concept = item.getConcept();
+
+                    cg.generateInterestingCard(cardInst, concept, th.getTriggerName(), th.getTellServiceName());
+                }
+            }
+        }
+    }
+
+    private void processNLResponse(CeInstance cardInst, String text) {
         // TODO: Convert NL questions into CE queries and pass to Ask agent
-        convText = ConvText.createNewText(ac, nlText);
+        convText = ConvText.createNewText(ac, text);
         System.out.println("Conv text: " + convText);
 
         NlSentenceProcessor sp = new NlSentenceProcessor(ac, cardInst);
@@ -95,7 +125,6 @@ public class NlProcessor extends GeneralProcessor {
                     allOptionItems.addAll(optionItems);
                     sb.append(ag.answerOptionQuestion(optionItems));
                 }
-
             } else {
                 // TODO: Something else - what would these be?
             }
@@ -211,6 +240,11 @@ public class NlProcessor extends GeneralProcessor {
     private boolean fromTellService(CeInstance cardInst) {
         String fromService = cardInst.getSingleValueFromPropertyNamed(Property.IS_FROM.toString());
         return fromService.equals(th.getTellServiceName());
+    }
+
+    private boolean isAboutInterestingThing(String text) {
+        text = text.toLowerCase();
+        return text.contains(Word.INTERESTING.toString()) || text.contains(Word.INTERESTED.toString());
     }
 
     // Trim leading and trailing whitespace and append full stop if needed

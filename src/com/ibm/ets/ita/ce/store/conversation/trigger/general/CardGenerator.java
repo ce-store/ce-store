@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.TreeMap;
 
 import com.ibm.ets.ita.ce.store.ActionContext;
+import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
 
 public class CardGenerator {
@@ -69,10 +70,11 @@ public class CardGenerator {
         String source = ce.generateSrcName(fromService);
         System.out.println(ceSentence);
         ce.save(ceSentence, source);
+        System.out.println("\nDone saving.");
     }
 
     public void generateNLCard(CeInstance cardInst, String convText, String fromService, String toService, ArrayList<String> referencedInsts) {
-        System.out.println("\nGenerate reply tell card:");
+        System.out.println("\nGenerate nl card:");
         System.out.println("Matched instances: " + referencedInsts);
         StringBuilder sb = new StringBuilder();
         TreeMap<String, String> ceParms = new TreeMap<String, String>();
@@ -110,6 +112,34 @@ public class CardGenerator {
         ceParms.put("%CARD_TYPE%", Card.NL.toString());
         ceParms.put("%CARD_NAME%", ce.generateNewUid());
         ceParms.put("%CONV_TEXT%", convText);
+        ceParms.put("%FROM_SERV%", fromService);
+        ceParms.put("%TO_SERV%", toService);
+        ceParms.put("%PREV_CARD%", cardInst.getInstanceName());
+
+        String ceSentence = substituteCeParameters(sb.toString(), ceParms);
+        String source = ce.generateSrcName(fromService);
+        System.out.println(ceSentence);
+        ce.save(ceSentence, source);
+    }
+
+    public void generateInterestingCard(CeInstance cardInst, CeConcept concept, String fromService,
+            String toService) {
+        System.out.println("\nGenerate interesting things card:");
+        StringBuilder sb = new StringBuilder();
+        TreeMap<String, String> ceParms = new TreeMap<String, String>();
+
+        String content = ce.generateInterestingThing(concept);
+
+        appendToSb(sb, "there is a %CARD_TYPE% named '%CARD_NAME%' that");
+        appendToSb(sb, "  has the timestamp '{now}' as timestamp and");
+        appendToSb(sb, "  has '%CONV_TEXT%' as content and");
+        appendToSb(sb, "  is from the service '%FROM_SERV%' and");
+        appendToSb(sb, "  is to the service '%TO_SERV%' and");
+        appendToSb(sb, "  is in reply to the card '%PREV_CARD%'.");
+
+        ceParms.put("%CARD_TYPE%", Card.TELL.toString());
+        ceParms.put("%CARD_NAME%", ce.generateNewUid());
+        ceParms.put("%CONV_TEXT%", content);
         ceParms.put("%FROM_SERV%", fromService);
         ceParms.put("%TO_SERV%", toService);
         ceParms.put("%PREV_CARD%", cardInst.getInstanceName());
