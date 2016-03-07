@@ -85,11 +85,21 @@ public class CardGenerator {
     }
 
     // User has declared their interest in something - create new interesting thing
-    public void generateInterestingCard(CeInstance cardInst, CeConcept concept, String fromService,
+    public void generateInterestingConceptCard(CeInstance cardInst, CeConcept concept, String fromService,
             String toService) {
         System.out.println("\nGenerate interesting things card:");
 
-        String content = ce.generateInterestingThing(concept);
+        String content = ce.generateInterestingConcept(concept);
+        generateCard(Card.TELL.toString(), content, fromService, toService, cardInst.getInstanceName());
+    }
+
+    // User has declared their interest in something - create new interesting thing
+    public void generateInterestingInstanceCard(CeInstance cardInst, CeInstance instance, String fromService,
+            String toService) {
+        System.out.println("\nGenerate interesting things card:");
+
+        String content = ce.generateInterestingInstance(instance, cardInst.getSingleValueFromPropertyNamed(Property.IS_FROM.toString()));
+        System.out.println("content: " + content);
         generateCard(Card.TELL.toString(), content, fromService, toService, cardInst.getInstanceName());
     }
 

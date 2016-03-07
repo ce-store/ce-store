@@ -32,6 +32,5 @@ there is a card trigger named 'tell trigger' that
 there is a card trigger named 'interesting things trigger' that
   has 'com.ibm.ets.ita.ce.store.conversation.trigger.interesting.InterestingTriggerHandler' as class to notify and
   has 'interesting thing' as concept name and
-  has 'interested party' as property name and
   has 'service' as from concept and
   has 'Interesting Thing' as from instance.

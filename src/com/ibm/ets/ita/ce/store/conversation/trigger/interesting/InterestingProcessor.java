@@ -22,6 +22,10 @@ public class InterestingProcessor extends GeneralProcessor {
     public void process(CeInstance inst) {
         String interestedParty = inst.getSingleValueFromPropertyNamed("interested party");
 
+        if (interestedParty == null) {
+            interestedParty = "Moira";
+        }
+
         cg.generateInterestingFactCard(inst, th.getTriggerName(), interestedParty);
     }
 }

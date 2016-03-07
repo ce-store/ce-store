@@ -73,9 +73,14 @@ public class NlProcessor extends GeneralProcessor {
             if (finalItems != null) {
                 for (FinalItem finalItem : finalItems) {
                     ExtractedItem item = finalItem.getFirstExtractedItem();
-                    CeConcept concept = item.getConcept();
 
-                    cg.generateInterestingCard(cardInst, concept, th.getTriggerName(), th.getTellServiceName());
+                    if (finalItem.isConceptItem()) {
+                        CeConcept concept = item.getConcept();
+                        cg.generateInterestingConceptCard(cardInst, concept, th.getTriggerName(), th.getTellServiceName());
+                    } else if (finalItem.isInstanceItem()) {
+                        CeInstance instance = item.getInstance();
+                        cg.generateInterestingInstanceCard(cardInst, instance, th.getTriggerName(), th.getTellServiceName());
+                    }
                 }
             }
         }

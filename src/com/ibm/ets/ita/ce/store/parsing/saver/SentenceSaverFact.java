@@ -20,193 +20,202 @@ import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentence;
 import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentenceFactNormal;
 
 public class SentenceSaverFact extends SentenceSaver {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+    public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
 
-	protected SentenceSaverFact(ActionContext pAc, BuilderSentence pSentence) {
-		super (pAc, pSentence);
-	}
+    protected SentenceSaverFact(ActionContext pAc, BuilderSentence pSentence) {
+        super (pAc, pSentence);
+    }
 
-	private BuilderSentenceFactNormal getTargetFactSentence() {
-		return (BuilderSentenceFactNormal)this.targetSentence;
-	}
+    private BuilderSentenceFactNormal getTargetFactSentence() {
+        return (BuilderSentenceFactNormal)this.targetSentence;
+    }
 
-	public void saveFactSentence() {
-		storeValidSentence();
+    public void saveFactSentence() {
+        storeValidSentence();
 
-		if ((this.targetConcept == null) && (!this.targetSentence.isQualified())) {
-			if (this.targetSentence.isRationaleProcessing()) {
-				//Nothing needs to be done here...
-				//rationale sentences can have null target concepts (e.g. when the subject is "the value"
-				//and they do not need to be saved or processed
-			} else {
-				//Unable to process sentence due to null target concept
-				reportError("Unexpected null targetConcept, for sentence: " + this.sentenceText, this.ac);
-			}
-		} else {
-			if (!this.targetSentence.isQualified()) {
-				processMainInstance();
-			}
-		}
-	}
+        if ((this.targetConcept == null) && (!this.targetSentence.isQualified())) {
+            if (this.targetSentence.isRationaleProcessing()) {
+                //Nothing needs to be done here...
+                //rationale sentences can have null target concepts (e.g. when the subject is "the value"
+                //and they do not need to be saved or processed
+            } else {
+                //Unable to process sentence due to null target concept
+                reportError("Unexpected null targetConcept, for sentence: " + this.sentenceText, this.ac);
+            }
+        } else {
+            if (!this.targetSentence.isQualified()) {
+                processMainInstance();
+            }
+        }
+    }
 
-	private void processMainInstance() {
-		String instName = getTargetFactSentence().getInstanceName();
-		
-		if (!instName.isEmpty()) {
-			CeInstance newInst = this.ac.getModelBuilder().getOrCreateInstanceNamed(this.ac, instName);
-			this.ac.getSessionCreations().recordNewInstance(newInst);
+    private void processMainInstance() {
+        String instName = getTargetFactSentence().getInstanceName();
 
-			//First Save any secondary instances (from "is a" statements)
-			processSecondaryInstances(newInst);
+        if (!instName.isEmpty()) {
+            CeInstance newInst = this.ac.getModelBuilder().getOrCreateInstanceNamed(this.ac, instName);
+            this.ac.getSessionCreations().recordNewInstance(newInst);
 
-			//Save the instance
-			saveInstance(this.targetConcept, newInst);
+            //First Save any secondary instances (from "is a" statements)
+            processSecondaryInstances(newInst);
 
-			//Process the properties
-			processProperties(newInst);
+            //Save the instance
+            saveInstance(this.targetConcept, newInst);
 
-			//Process the sequences
-			processSequences();
-		} else {
-			reportError("Instance not saved as no name was specified.  For sentence: " + getTargetFactSentence().getSentenceText(), this.ac);
-		}
-	}
+            //Process the properties
+            processProperties(newInst);
 
-	private void processSecondaryInstances(CeInstance pInst) {
-		//Inserts for any other specified concepts (from "is a" statements)
-		for (CeConcept thisSecConcept : getTargetFactSentence().getAllSecondaryConcepts()) {
-			//Save the instance (abstract and concrete) for each secondary concept
-			saveInstance(thisSecConcept, pInst);
-		}
-	}
+            //Process the sequences
+            processSequences();
+        } else {
+            reportError("Instance not saved as no name was specified.  For sentence: " + getTargetFactSentence().getSentenceText(), this.ac);
+        }
+    }
 
-	private void processSequences() {
-		//TODO: Replace this with the final version
-		for (CeSequence thisSeq : this.getTargetFactSentence().getSequences()) {
-			thisSeq.tempDebug(this.ac);
-		}
-	}
+    private void processSecondaryInstances(CeInstance pInst) {
+        //Inserts for any other specified concepts (from "is a" statements)
+        for (CeConcept thisSecConcept : getTargetFactSentence().getAllSecondaryConcepts()) {
+            //Save the instance (abstract and concrete) for each secondary concept
+            saveInstance(thisSecConcept, pInst);
+        }
+    }
 
-	private void processProperties(CeInstance pInst) {
-		for (CePropertyInstance thisPi : this.getTargetFactSentence().retrieveAllProperties()) {
-			thisPi.setRelatedInstance(this.ac, pInst);
-			processPropertyValuesFor(thisPi);
-			mergePropertyInstance(pInst, thisPi);
-		}
-	}
+    private void processSequences() {
+        //TODO: Replace this with the final version
+        for (CeSequence thisSeq : this.getTargetFactSentence().getSequences()) {
+            thisSeq.tempDebug(this.ac);
+        }
+    }
 
-	private void processPropertyValuesFor(CePropertyInstance pPi) {
-		CeProperty thisProp = pPi.getRelatedProperty();
+    private void processProperties(CeInstance pInst) {
+        for (CePropertyInstance thisPi : this.getTargetFactSentence().retrieveAllProperties()) {
+            thisPi.setRelatedInstance(this.ac, pInst);
+            processPropertyValuesFor(thisPi);
+            mergePropertyInstance(pInst, thisPi);
+        }
+    }
 
-		if (thisProp != null) {
-			if (thisProp.isSingleCardinality()) {
-				//There is only one property value to be processed
-				processPropertyValue(pPi, pPi.getSingleOrFirstValue());
-			} else {
-				//There are multiple property values so process each one in turn
-				for (String thisVal : pPi.getValueListWithDuplicates()) {
-					processPropertyValue(pPi, thisVal);
-				}
-			}
-		} else {
-			reportError("Unexpected null property encountered, for sentence: " + this.sentenceText, this.ac);
-		}
-	}
+    private void processPropertyValuesFor(CePropertyInstance pPi) {
+        CeProperty thisProp = pPi.getRelatedProperty();
 
-	private void processPropertyValue(CePropertyInstance pPropInst, String pValue) {
-		if (!pValue.isEmpty()) {
-			CeConcept rangeConcept = pPropInst.getSingleOrFirstRangeConcept(this.ac);
+        if (thisProp != null) {
+            if (thisProp.isSingleCardinality()) {
+                //There is only one property value to be processed
+                processPropertyValue(pPi, pPi.getSingleOrFirstValue());
+            } else {
+                //There are multiple property values so process each one in turn
+                for (String thisVal : pPi.getValueListWithDuplicates()) {
+                    processPropertyValue(pPi, thisVal);
+                }
+            }
+        } else {
+            reportError("Unexpected null property encountered, for sentence: " + this.sentenceText, this.ac);
+        }
+    }
 
-			if (rangeConcept != null) {
-				if (!pValue.isEmpty()) {
-					CeInstance relInst = this.ac.getModelBuilder().getOrCreateInstanceNamed(this.ac, pValue);
-					this.ac.getSessionCreations().recordNewInstance(relInst);
-					this.ac.getCurrentSource().addAffectedConcept(rangeConcept);
-					relInst.addConceptAndParents(rangeConcept);
+    private void processPropertyValue(CePropertyInstance pPropInst, String pValue) {
+        if (!pValue.isEmpty()) {
+            CeConcept rangeConcept = pPropInst.getSingleOrFirstRangeConcept(this.ac);
 
-					if (this.ac.getCeConfig().isSavingCeSentences()) {
-						relInst.addSecondarySentence(this.sentenceInstance);
-					}
+            if (rangeConcept != null) {
+                if (!pValue.isEmpty()) {
+                    CeInstance relInst = this.ac.getModelBuilder().getOrCreateInstanceNamed(this.ac, pValue);
+                    this.ac.getSessionCreations().recordNewInstance(relInst);
+                    this.ac.getCurrentSource().addAffectedConcept(rangeConcept);
+                    relInst.addConceptAndParents(rangeConcept);
 
-					//Save the instance (regardless of whether it is new or not)
-					getModelBuilder().saveInstance(this.ac, relInst);
-				} else {
-					reportError("Property not saved as no name was specified for target instance.  For property '" + pPropInst.getPropertyName() + "' in sentence: " + getTargetFactSentence().getSentenceText(), this.ac);
-				}
-			} else {
-				//Constant values can be ignored as there is nothing extra to create in the model
-			}
-		}
-	}
+                    if (this.ac.getCeConfig().isSavingCeSentences()) {
+                        relInst.addSecondarySentence(this.sentenceInstance);
+                    }
 
-	private void mergePropertyInstance(CeInstance pInst, CePropertyInstance pPi) {
-		//The builder sentence will always have separate property instances, but these need to be merged
-		//as multiple values on a single property instance on the final instance
-		CePropertyInstance existingPropInst = pInst.getPropertyInstanceNamed(pPi.getPropertyName());
-		if (existingPropInst == null) {
-			pInst.addPropertyInstance(pPi);
-			existingPropInst = pPi;
+                    //Save the instance (regardless of whether it is new or not)
+                    getModelBuilder().saveInstance(this.ac, relInst);
+                } else {
+                    reportError("Property not saved as no name was specified for target instance.  For property '" + pPropInst.getPropertyName() + "' in sentence: " + getTargetFactSentence().getSentenceText(), this.ac);
+                }
+            } else {
+                //Constant values can be ignored as there is nothing extra to create in the model
+            }
+        }
+    }
 
-			//Notify the action context that this property has been affected by this execution
-			this.ac.getCurrentSource().addAffectedProperty(pPi.getRelatedProperty());
-		} else {
-			if (!pPi.isSingleCardinality()) {
-				for (CePropertyValue thisPv : pPi.getPropertyValues()) {
-					existingPropInst.addPropertyValue(this.ac, thisPv);
+    private void mergePropertyInstance(CeInstance pInst, CePropertyInstance pPi) {
+        //The builder sentence will always have separate property instances, but these need to be merged
+        //as multiple values on a single property instance on the final instance
+        CePropertyInstance existingPropInst = pInst.getPropertyInstanceNamed(pPi.getPropertyName());
+        if (existingPropInst == null) {
+            pInst.addPropertyInstance(pPi);
+            existingPropInst = pPi;
 
-					//Notify the action context that this property has been affected by this execution
-					this.ac.getCurrentSource().addAffectedProperty(pPi.getRelatedProperty());
-				}
-			} else {
-				CePropertyValue existingPv = existingPropInst.getPropertyValues()[0];
-				CePropertyValue thisPv = pPi.getPropertyValues()[0];
+            //Notify the action context that this property has been affected by this execution
+            this.ac.getCurrentSource().addAffectedProperty(pPi.getRelatedProperty());
+        } else {
+            if (!pPi.isSingleCardinality()) {
+                for (CePropertyValue thisPv : pPi.getPropertyValues()) {
+                    existingPropInst.addPropertyValue(this.ac, thisPv);
 
-				if (!existingPv.getValue().equals(thisPv.getValue())) {
-					reportWarning("Adding unmatching property value on single cardinality property (" + pPi.toString() + ") for instance '" + pInst.getInstanceName() + "'.", this.ac);
-				}
+                    //Notify the action context that this property has been affected by this execution
+                    this.ac.getCurrentSource().addAffectedProperty(pPi.getRelatedProperty());
+                }
+            } else {
+                CePropertyValue existingPv = existingPropInst.getPropertyValues()[0];
+                CePropertyValue thisPv = pPi.getPropertyValues()[0];
 
-				existingPropInst.addPropertyValue(this.ac, thisPv);
+                if (!existingPv.getValue().equals(thisPv.getValue())) {
+                    reportWarning("Adding unmatching property value on single cardinality property (" + pPi.toString() + ") for instance '" + pInst.getInstanceName() + "'.", this.ac);
+                }
 
-				//Notify the action context that this property has been affected by this execution
-				this.ac.getCurrentSource().addAffectedProperty(pPi.getRelatedProperty());
-			}
-		}
-		
-		if (existingPropInst.getRelatedProperty().isObjectProperty()) {
-			//DSB 14/09/2014 - Add the referring property instance to each of the related instances
-			ModelBuilder mb = this.ac.getModelBuilder();
-			for (String instName : existingPropInst.getValueList()) {
-				if (!instName.isEmpty()) {
-					CeInstance relInst = mb.getInstanceNamed(this.ac, instName);
-					
-					if (relInst != null) {
-						relInst.addReferringPropertyInstance(existingPropInst);
-					} else {
-						reportWarning("No instance named '" + instName + "' found during setting up of property references", this.ac);
-					}
-				}
-			}
-		}
-	}
+                existingPropInst.addPropertyValue(this.ac, thisPv);
 
-	private void saveInstance(CeConcept pConcept, CeInstance pInst) {
-		if (!pInst.isDirectConcept(pConcept)) {
-			//DSB 13/08/2013 - This is now conditional.  Will only be listed as an affected concept
-			//if the instance in question was not already that concept
-			//Notify the action context that this concept has been affected by this execution
-			this.ac.getCurrentSource().addAffectedConcept(pConcept);
-		}
+                //Notify the action context that this property has been affected by this execution
+                this.ac.getCurrentSource().addAffectedProperty(pPi.getRelatedProperty());
+            }
+        }
 
-		//Add the concept and parents and record this primary sentence
-		pInst.addConceptAndParents(pConcept);
-		if (this.ac.getCeConfig().isSavingCeSentences()) {
-			pInst.addPrimarySentence(this.sentenceInstance);
-		}
-	}
+        if (existingPropInst.getRelatedProperty().isObjectProperty()) {
+            //DSB 14/09/2014 - Add the referring property instance to each of the related instances
+            ModelBuilder mb = this.ac.getModelBuilder();
+            for (String instName : existingPropInst.getValueList()) {
+                if (!instName.isEmpty()) {
+                    CeInstance relInst = mb.getInstanceNamed(this.ac, instName);
 
-	@Override
-	public String toString() {
-		return "SentenceSaverFact for: " + this.targetSentence.toString();
-	}
+                    if (relInst != null) {
+                        relInst.addReferringPropertyInstance(existingPropInst);
+                    } else {
+                        reportWarning("No instance named '" + instName + "' found during setting up of property references", this.ac);
+                    }
+                }
+            }
+        }
+    }
+
+    private void saveInstance(CeConcept pConcept, CeInstance pInst) {
+//        if (!pInst.isDirectConcept(pConcept)) {
+//DSB 13/08/2013 - This is now conditional.  Will only be listed as an affected concept
+//if the instance in question was not already that concept
+//Notify the action context that this concept has been affected by this execution
+//
+//Anna: Removed the condition and added all direct concepts to affected concepts.
+// 		Used to trigger changes on an 'interesting thing' that isn't directly expressed
+//    	eg. 'the person x is an interesting thing'
+//    		'the person x has new property...'
+            CeConcept[] concepts = pInst.getDirectConcepts();
+
+            for (CeConcept concept : concepts) {
+                this.ac.getCurrentSource().addAffectedConcept(concept);
+            }
+//        }
+
+        //Add the concept and parents and record this primary sentence
+        pInst.addConceptAndParents(pConcept);
+        if (this.ac.getCeConfig().isSavingCeSentences()) {
+            pInst.addPrimarySentence(this.sentenceInstance);
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "SentenceSaverFact for: " + this.targetSentence.toString();
+    }
 
 }

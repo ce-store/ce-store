@@ -8,6 +8,7 @@ import java.util.TreeMap;
 import com.ibm.ets.ita.ce.store.ActionContext;
 import com.ibm.ets.ita.ce.store.StoreActions;
 import com.ibm.ets.ita.ce.store.model.CeConcept;
+import com.ibm.ets.ita.ce.store.model.CeInstance;
 import com.ibm.ets.ita.ce.store.model.CeSource;
 
 public class CeGenerator {
@@ -41,7 +42,7 @@ public class CeGenerator {
         return SRC_PREFIX + sender;
     }
 
-    public String generateInterestingThing(CeConcept concept) {
+    public String generateInterestingConcept(CeConcept concept) {
         StringBuilder sb = new StringBuilder();
         TreeMap<String, String> ceParms = new TreeMap<String, String>();
 
@@ -49,6 +50,23 @@ public class CeGenerator {
         appendToSb(sb, "  is an interesting thing.");
 
         ceParms.put("%CONCEPT_NAME%", concept.getConceptName());
+
+        String ceSentence = substituteCeParameters(sb.toString(), ceParms);
+        return ceSentence;
+    }
+
+    public String generateInterestingInstance(CeInstance instance, String user) {
+        StringBuilder sb = new StringBuilder();
+        TreeMap<String, String> ceParms = new TreeMap<String, String>();
+
+        appendToSb(sb, "the %CONCEPT_NAME% '%INSTANCE_NAME%'");
+        appendToSb(sb, "  is an interesting thing.");
+        appendToSb(sb, "the interesting thing '%INSTANCE_NAME%'");
+        appendToSb(sb, "  has the CE user %USER% as interested party.");
+
+        ceParms.put("%CONCEPT_NAME%", instance.getFirstLeafConceptName());
+        ceParms.put("%INSTANCE_NAME%", instance.getInstanceName());
+        ceParms.put("%USER%", user);
 
         String ceSentence = substituteCeParameters(sb.toString(), ceParms);
         return ceSentence;
