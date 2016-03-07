@@ -1012,8 +1012,6 @@ public class ProcessorCe {
 
 		//Only save the CE if there was any CE actually created
 		if (pSb.length() > 0) {
-			ProcessorCe procCe = new ProcessorCe(this.ac, false, this.senStats);
-
 			CeSource mmSrc = this.ac.getModelBuilder().getSourceById(SRCID_POPMODEL);
 			if (mmSrc == null) {
 				CeSource tempCurrentSource = this.ac.getCurrentSource();
@@ -1023,8 +1021,16 @@ public class ProcessorCe {
 			
 			CeSource otherSource = this.ac.getCurrentSource();
 
-			this.ac.setCurrentSource(mmSrc);
-			this.ac.setLastSource(mmSrc);
+			//DSB 07/03/2016 - To prevent issues with the source being overwritten and the various
+			//affected properties and concepts being lost this saving of meta-model CE is not done in
+			//the same way as trigger notifications, but creating a new separate instance of ActionContext
+			//to perform the updates.
+			NotifyActionContext nAc = new NotifyActionContext(this.ac, "(Notify Trigger)");
+
+			nAc.setCurrentSource(mmSrc);
+			nAc.setLastSource(mmSrc);
+			ProcessorCe procCe = new ProcessorCe(nAc, false, this.senStats);
+
 			procCe.processNormalSentencesFromSbWithExistingSource(pSb, CeSource.SRCTYPE_ID_INTERNAL, STEPNAME_POPMODEL, "", sTime, StoreActions.MODE_NORMAL, mmSrc);
 			this.ac.setCurrentSource(otherSource);
 		}
