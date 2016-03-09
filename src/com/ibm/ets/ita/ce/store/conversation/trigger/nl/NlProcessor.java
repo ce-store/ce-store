@@ -120,16 +120,13 @@ public class NlProcessor extends GeneralProcessor {
         NlAnswerGenerator ag = new NlAnswerGenerator(ac);
         StringBuilder sb = new StringBuilder();
 
-        if (finalItems != null) {
+        if (optionItems != null && !optionItems.isEmpty()) {
+            // Options are available so reply asking for clarification
+            sb.append(ag.answerOptionQuestion(optionItems));
+        } else if (finalItems != null && !finalItems.isEmpty()) {
+            // Only final items available so answer with information about them
             // TODO: Compute who/what/where answers differently
             sb.append(ag.answerStandardQuestion(finalItems));
-        }
-
-        if (optionItems != null) {
-            if (!sb.toString().isEmpty()) {
-                sb.append("\n");
-            }
-            sb.append(ag.answerOptionQuestion(optionItems));
         }
 
         // If string builder is empty, then nothing has been understood

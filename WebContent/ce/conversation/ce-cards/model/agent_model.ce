@@ -4,15 +4,9 @@ conceptualise an ~ agent ~ A that
   has the country C as ~ affiliation ~.
 
 conceptualise an ~ individual ~ I that is an agent.
-conceptualise an ~ organisation ~ O that is an agent.
 
-conceptualise a ~ person ~ P that is an individual.
-Note: A human agent.
-
-conceptualise a ~ service ~ S that is an individual.
+conceptualise a ~ service ~ S that is an agent.
 Note: A software service.
-
-conceptualise a ~ team ~ T that is an organisation.
 
 conceptualise an ~ agent ~ A that
   has the country C as ~ affiliation ~ and
@@ -26,3 +20,13 @@ conceptualise a ~ template ~ T that
   has the value V as ~ template string ~ and
   has the value V as ~ reply ~ and
   has the agent A as ~ recipient ~.
+
+
+-- OLD
+
+--conceptualise an ~ organisation ~ O that is an agent.
+
+--conceptualise a ~ person ~ P that is an individual.
+Note: A human agent.
+
+--conceptualise a ~ team ~ T that is an organisation.

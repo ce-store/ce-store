@@ -3,8 +3,8 @@
 -- All Rights Reserved
 -- --------------------------------------------------------------------------
 
-there is a service named 'Moira'.
-there is a service named 'Tell'.
+there is an agent named 'Moira'.
+there is an agent named 'Tell'.
 
 -- Template parameter rules
 
@@ -13,7 +13,7 @@ there is a service named 'Tell'.
 -- ~ U ~ = from user
 -- ~ S ~ = original string
 
-there is a service named 'Interesting' that
+there is an agent named 'Interesting' that
   has the keyword 'interested' as keyword and
   has the template 'interesting instance' as template and
   has the template 'interesting concept' as template.
