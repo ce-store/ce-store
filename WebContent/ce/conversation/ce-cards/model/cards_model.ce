@@ -89,22 +89,6 @@ why: "v12345 is a threat" -> tell: "v12345 is owned by HVT John Smith and..." (h
 threat, as opposed to say, the vehicle's location).
 
 
-conceptualise a ~ country ~ C.
-
-conceptualise an ~ agent ~ A that
-  has the country C as ~ affiliation ~.
-
-conceptualise an ~ individual ~ I that is an agent.
-conceptualise an ~ organisation ~ O that is an agent.
-
-conceptualise a ~ person ~ P that is an individual.
-Note: A human agent.
-
-conceptualise a ~ service ~ S that is an individual.
-Note: A software service.
-
-conceptualise a ~ team ~ T that is an organisation.
-
 conceptualise a ~ resource ~ R.
 Note: An external resource (e.g. images or documents).
 

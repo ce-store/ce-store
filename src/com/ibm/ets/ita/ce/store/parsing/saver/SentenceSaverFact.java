@@ -8,6 +8,8 @@ package com.ibm.ets.ita.ce.store.parsing.saver;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportWarning;
 
+import java.util.HashSet;
+
 import com.ibm.ets.ita.ce.store.ActionContext;
 import com.ibm.ets.ita.ce.store.ModelBuilder;
 import com.ibm.ets.ita.ce.store.model.CeConcept;
@@ -199,11 +201,15 @@ public class SentenceSaverFact extends SentenceSaver {
 // 		Used to trigger changes on an 'interesting thing' that isn't directly expressed
 //    	eg. 'the person x is an interesting thing'
 //    		'the person x has new property...'
-            CeConcept[] concepts = pInst.getDirectConcepts();
+        CeConcept[] directConcepts = pInst.getDirectConcepts();
+        HashSet<CeConcept> inheritedConcepts = pInst.getInheritedConcepts();
 
-            for (CeConcept concept : concepts) {
-                this.ac.getCurrentSource().addAffectedConcept(concept);
-            }
+        for (CeConcept concept : directConcepts) {
+            this.ac.getCurrentSource().addAffectedConcept(concept);
+        }
+        for (CeConcept concept : inheritedConcepts) {
+            this.ac.getCurrentSource().addAffectedConcept(concept);
+        }
 //        }
 
         //Add the concept and parents and record this primary sentence

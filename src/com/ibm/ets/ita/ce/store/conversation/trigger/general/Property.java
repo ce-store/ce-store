@@ -8,7 +8,9 @@ public enum Property {
     FROM_INSTANCE("from instance"),
     TELL_SERVICE("tell service"),
     CONTENT("content"),
-    SINGLE_QUAL("single qualifier");
+    SINGLE_QUAL("single qualifier"),
+    INTERESTED_PARTY("interested party");
+
     private String name;
 
     private Property(String name) {

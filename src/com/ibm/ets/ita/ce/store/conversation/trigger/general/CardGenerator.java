@@ -8,36 +8,32 @@ import java.util.ArrayList;
 import java.util.TreeMap;
 
 import com.ibm.ets.ita.ce.store.ActionContext;
-import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
+import com.ibm.ets.ita.ce.store.model.CeSentence;
 
 public class CardGenerator {
 
     private CeGenerator ce;
+    private ActionContext ac;
 
     public CardGenerator(ActionContext ac) {
         ce = new CeGenerator(ac);
+        this.ac = ac;
     }
 
     // Tell cards are used to add valid CE to the store
     public void generateTellCard(CeInstance cardInst, String convText, String fromService, String toService) {
-        System.out.println("\nGenerate tell card:");
-
         generateCard(Card.TELL.toString(), convText, fromService, toService, cardInst.getInstanceName());
     }
 
     // Reply to service that sent the Tell card if its card has been accepted or not
     public void generateTellReplyCard(CeInstance cardInst, String tellText, String fromService,
             String toService) {
-        System.out.println("\nGenerate reply tell card:");
-
         generateCard(Card.NL.toString(), Reply.SAVED.message(), fromService, toService, cardInst.getInstanceName());
     }
 
     // Generate NL card
     public void generateNLCard(CeInstance cardInst, String convText, String fromService, String toService, ArrayList<String> referencedInsts) {
-        System.out.println("\nGenerate nl card:");
-        System.out.println("Matched instances: " + referencedInsts);
         StringBuilder sb = new StringBuilder();
         TreeMap<String, String> ceParms = new TreeMap<String, String>();
 
@@ -80,39 +76,53 @@ public class CardGenerator {
 
         String ceSentence = substituteCeParameters(sb.toString(), ceParms);
         String source = ce.generateSrcName(fromService);
-        System.out.println(ceSentence);
         ce.save(ceSentence, source);
     }
 
     // User has declared their interest in something - create new interesting thing
-    public void generateInterestingConceptCard(CeInstance cardInst, CeConcept concept, String fromService,
+    public void generateInterestingThingCard(CeInstance cardInst, String content, String fromService,
             String toService) {
-        System.out.println("\nGenerate interesting things card:");
-
-        String content = ce.generateInterestingConcept(concept);
         generateCard(Card.TELL.toString(), content, fromService, toService, cardInst.getInstanceName());
     }
 
-    // User has declared their interest in something - create new interesting thing
-    public void generateInterestingInstanceCard(CeInstance cardInst, CeInstance instance, String fromService,
-            String toService) {
-        System.out.println("\nGenerate interesting things card:");
+    public void generatePotentialInterestingThingCard(CeInstance inst, String fromService, String toService) {
+        StringBuilder sb = new StringBuilder();
 
-        String content = ce.generateInterestingInstance(instance, cardInst.getSingleValueFromPropertyNamed(Property.IS_FROM.toString()));
-        System.out.println("content: " + content);
-        generateCard(Card.TELL.toString(), content, fromService, toService, cardInst.getInstanceName());
+        appendToSb(sb, Reply.NEW_INTERESTING.toString());
+        appendToSbNoNl(sb, Reply.STATE_INTEREST.toString());
+        appendToSbNoNl(sb, inst.getInstanceName());
+        appendToSb(sb, ".");
+
+        String content = sb.toString();
+        System.out.println("Content: " + content);
+        generateCard(Card.NL.toString(), content, fromService, toService, null);
     }
 
     // Found an interesting thing - send to interested user
     public void generateInterestingFactCard(CeInstance inst, String fromService, String toService) {
-        System.out.println("\nGenerate interesting thing found card:");
+        System.out.println("\nGenerate interesting thing found card:\n");
 
-        String content = "I've found new information on " + inst.getInstanceName() + ".";
-        generateCard(Card.NL.toString(), content, fromService, toService, null);
+        CeSentence[] sentences = inst.getPrimarySentences();
+        CeSentence lastSentence = sentences[sentences.length - 1];
+        String sentenceText = lastSentence.getCeText(ac);
+
+        if (!sentenceText.contains(Property.INTERESTED_PARTY.toString())) {
+            StringBuilder sb = new StringBuilder();
+
+            appendToSbNoNl(sb, Reply.NEW_INFORMATION.toString());
+            appendToSbNoNl(sb, inst.getInstanceName());
+            appendToSb(sb, ":");
+
+            appendToSb(sb, sentenceText);
+
+            String content = sb.toString();
+            System.out.println("Content: " + content);
+            generateCard(Card.NL.toString(), content, fromService, toService, null);
+        }
     }
 
     // Generate generic card
-    private void generateCard(String cardType, String content, String fromService, String toService, String prevCard) {
+    public void generateCard(String cardType, String content, String fromService, String toService, String prevCard) {
         StringBuilder sb = new StringBuilder();
         TreeMap<String, String> ceParms = new TreeMap<String, String>();
 

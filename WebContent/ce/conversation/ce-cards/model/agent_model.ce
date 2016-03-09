@@ -1,0 +1,27 @@
+conceptualise a ~ country ~ C.
+
+conceptualise an ~ agent ~ A that
+  has the country C as ~ affiliation ~.
+
+conceptualise an ~ individual ~ I that is an agent.
+conceptualise an ~ organisation ~ O that is an agent.
+
+conceptualise a ~ person ~ P that is an individual.
+Note: A human agent.
+
+conceptualise a ~ service ~ S that is an individual.
+Note: A software service.
+
+conceptualise a ~ team ~ T that is an organisation.
+
+conceptualise an ~ agent ~ A that
+  has the country C as ~ affiliation ~ and
+  has the keyword K as ~ keyword ~ and
+  has the template T as ~ template ~.
+
+conceptualise a ~ keyword ~ K.
+
+conceptualise a ~ template ~ T that
+  has the value V as ~ matching thing ~ and
+  has the value V as ~ template string ~ and
+  has the agent A as ~ recipient ~.

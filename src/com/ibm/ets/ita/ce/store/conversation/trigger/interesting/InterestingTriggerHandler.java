@@ -16,25 +16,19 @@ public class InterestingTriggerHandler extends GeneralTriggerHandler {
     @Override
     public void notify(ActionContext ac, String thingType, String thingName, String triggerName, String sourceId,
             String ruleOrQuery, String ruleOrQueryName) {
-        System.out.println("\nInteresting thing trigger notification received");
+        System.out.println("Interesting thing trigger notification received");
 
         initialise(ac);
         extractTriggerDetailsUsing(triggerName);
-
-        System.out.println("\nthingType: " + thingType);
-        System.out.println("thingName: " + thingName);
-        System.out.println("triggerName: " + triggerName);
-        System.out.println("sourceId: " + sourceId);
-        System.out.println("ruleOrQuery: " + ruleOrQuery);
-        System.out.println("ruleOrQueryName: " + ruleOrQueryName);
-        System.out.println("");
 
         if (thingType.toLowerCase().equals(Type.PROPERTY.toString())) {
             // Triggered on property
 //            handlePropertyTrigger();
         } else if (thingType.toLowerCase().equals(Type.CONCEPT.toString())) {
-            // Triggered on concept
-            handleConceptTrigger();
+            if (thingName.equals(Concept.INTERESTING.toString())) {
+                // Triggered on concept
+                handleConceptTrigger();
+            }
         } else {
             reportWarning("Unexpected trigger type (" + thingType + ") for conversation trigger handler", ac);
         }
