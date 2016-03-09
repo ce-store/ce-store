@@ -9,7 +9,13 @@ public enum Property {
     TELL_SERVICE("tell service"),
     CONTENT("content"),
     SINGLE_QUAL("single qualifier"),
-    INTERESTED_PARTY("interested party");
+    INTERESTED_PARTY("interested party"),
+    MATCHING_THING("matching thing"),
+    TEMPLATE("template"),
+    TEMPLATE_STRING("template string"),
+    RECIPIENT("recipient"),
+    REPLY("reply"),
+    KEYWORD("keyword");
 
     private String name;
 

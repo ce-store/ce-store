@@ -23,6 +23,7 @@ there is a keyword named 'interested'.
 there is a template named 'interesting instance' that
   has the value 'instance' as matching thing and
   has the value 'the thing ~ I ~ is an interesting thing. the interesting thing ~ I ~ has the CE user ~ U ~ as interested party.' as template string and
+  has the value 'I will inform you of new information about ~ I ~.' as reply and
   has the agent 'Tell' as recipient.
 
 there is a template named 'interesting concept' that
@@ -35,6 +36,7 @@ there is a template named 'interesting concept' that
       ( the interesting thing T has the CE user ~ U ~ as interested party )
     .'
   as template string and
+  has the value 'I will inform you of new information about ~ C ~.' as reply and
   has the agent 'Tell' as recipient.
 
 there is an agent named 'FRA' that
@@ -45,4 +47,5 @@ there is a keyword named 'fra'.
 
 there is a template named 'fra question' that
   has the value '~ S ~' as template string and
+  has the value 'I have sent that to the FRA.' as reply and
   has the agent 'FRA' as recipient.

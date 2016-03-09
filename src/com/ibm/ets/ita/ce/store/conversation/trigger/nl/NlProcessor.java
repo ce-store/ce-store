@@ -10,10 +10,11 @@ import com.ibm.ets.ita.ce.store.conversation.model.FinalItem;
 import com.ibm.ets.ita.ce.store.conversation.model.ProcessedWord;
 import com.ibm.ets.ita.ce.store.conversation.trigger.general.Card;
 import com.ibm.ets.ita.ce.store.conversation.trigger.general.CardGenerator;
-import com.ibm.ets.ita.ce.store.conversation.trigger.general.CeGenerator;
+import com.ibm.ets.ita.ce.store.conversation.trigger.general.Concept;
 import com.ibm.ets.ita.ce.store.conversation.trigger.general.GeneralProcessor;
 import com.ibm.ets.ita.ce.store.conversation.trigger.general.Property;
 import com.ibm.ets.ita.ce.store.conversation.trigger.general.Reply;
+import com.ibm.ets.ita.ce.store.conversation.trigger.general.Word;
 import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
 import com.ibm.ets.ita.ce.store.model.CeProperty;
@@ -23,13 +24,11 @@ public class NlProcessor extends GeneralProcessor {
 
     private ConvText convText;
     private NlTriggerHandler th;
-    private CeGenerator ce;
 
     public NlProcessor(ActionContext ac, NlTriggerHandler th) {
         this.ac = ac;
         this.th = th;
         cg = new CardGenerator(ac);
-        ce = new CeGenerator(ac);
     }
 
     // Process card
@@ -122,19 +121,19 @@ public class NlProcessor extends GeneralProcessor {
     }
 
     private void runAgent(CeInstance agent, ArrayList<FinalItem> finalItems, ArrayList<CeInstance> matchingKeywords, CeInstance cardInst, String text) {
-        ArrayList<CeInstance> templates = agent.getInstanceListFromPropertyNamed(ac, "template");
+        ArrayList<CeInstance> templates = agent.getInstanceListFromPropertyNamed(ac, Property.TEMPLATE.toString());
 
         for (CeInstance template : templates) {
             boolean thingsFound;
             CeInstance matchingInstance = null;
             CeConcept matchingConcept = null;
 
-            ArrayList<String> requiredThings = template.getValueListFromPropertyNamed("matching thing");
+            ArrayList<String> requiredThings = template.getValueListFromPropertyNamed(Property.MATCHING_THING.toString());
             if (!requiredThings.isEmpty()) {
                 thingsFound = true;
 
                 for (String requirement : requiredThings) {
-                    if (requirement.equals("instance")) {
+                    if (requirement.equals(Word.INSTANCE.toString())) {
                         for (FinalItem item : finalItems) {
                             if (item.isInstanceItem()) {
                                 CeInstance extractedInstance = item.getFirstExtractedItem().getInstance();
@@ -146,7 +145,7 @@ public class NlProcessor extends GeneralProcessor {
                         }
 
                         thingsFound = thingsFound && (matchingInstance != null);
-                    } else if (requirement.equals("concept")) {
+                    } else if (requirement.equals(Word.CONCEPT.toString())) {
                         for (FinalItem item : finalItems) {
                             if (item.isConceptItem()) {
                                 matchingConcept = item.getFirstExtractedItem().getConcept();
@@ -161,22 +160,26 @@ public class NlProcessor extends GeneralProcessor {
             }
 
             if (thingsFound) {
-                String templateString = template.getLatestValueFromPropertyNamed("template string");
-                String recipient = template.getLatestValueFromPropertyNamed("recipient");
+                String templateString = template.getLatestValueFromPropertyNamed(Property.TEMPLATE_STRING.toString());
+                String recipient = template.getLatestValueFromPropertyNamed(Property.RECIPIENT.toString());
+                String reply = template.getLatestValueFromPropertyNamed(Property.REPLY.toString());
                 String interestedUser = cardInst.getSingleValueFromPropertyNamed(Property.IS_FROM.toString());
 
                 String completedTemplate = substituteItemsIntoTemplate(templateString, matchingInstance, matchingConcept, interestedUser, text);
+                String completedReply = substituteItemsIntoTemplate(reply, matchingInstance, matchingConcept, interestedUser, text);
+
                 cg.generateCard(Card.TELL.toString(), completedTemplate, th.getTriggerName(), recipient, cardInst.getInstanceName());
+                cg.generateCard(Card.NL.toString(), completedReply, th.getTriggerName(), interestedUser, cardInst.getInstanceName());
             }
         }
     }
 
     private void findMatchingAgents(String sentence, ArrayList<CeInstance> matchingAgents, ArrayList<CeInstance> matchingKeywords) {
-        ArrayList<CeInstance> agents = ac.getModelBuilder().getAllInstancesForConceptNamed(ac, "agent");
+        ArrayList<CeInstance> agents = ac.getModelBuilder().getAllInstancesForConceptNamed(ac, Concept.AGENT.toString());
 
         // Find agents with matching keywords
         for (CeInstance agent : agents) {
-            ArrayList<CeInstance> keywords = agent.getInstanceListFromPropertyNamed(ac, "keyword");
+            ArrayList<CeInstance> keywords = agent.getInstanceListFromPropertyNamed(ac, Property.KEYWORD.toString());
 
             for (CeInstance keyword : keywords) {
                 // TODO: Do this using final items

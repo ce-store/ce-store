@@ -12,7 +12,10 @@ public enum Word {
     SUMMARIZE("summarize"),
     COUNT("count"),
     INTERESTING("interesting"),
-    INTERESTED("interested");
+    INTERESTED("interested"),
+    INSTANCE("instance"),
+    CONCEPT("concept");
+
     private String name;
 
     private Word(String name) {

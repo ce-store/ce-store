@@ -8,7 +8,9 @@ public enum Concept {
     UNINTERESTING("uninteresting property"),
     CONV_THING("conv thing"),
     MAN("man"),
-    WOMAN("woman");
+    WOMAN("woman"),
+    AGENT("agent");
+
     private String name;
 
     private Concept(String name) {
