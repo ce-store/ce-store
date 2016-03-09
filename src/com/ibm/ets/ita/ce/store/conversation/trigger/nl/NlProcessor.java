@@ -1,5 +1,8 @@
 package com.ibm.ets.ita.ce.store.conversation.trigger.nl;
 
+import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.appendToSb;
+import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.appendToSbNoNl;
+
 import java.util.ArrayList;
 
 import com.ibm.ets.ita.ce.store.ActionContext;
@@ -60,10 +63,11 @@ public class NlProcessor extends GeneralProcessor {
 
                 // Find agents matching keywords as defined in config
                 findMatchingAgents(sentence.getSentenceText(), matchingAgents, matchingKeywords);
+                System.out.println("Matching agents: " + matchingAgents);
 
                 if (matchingAgents.size() > 1) {
-                    // TODO: Confirm which agent with user
-
+                    // Confirm which agent with user
+                    processConfirmAgent(cardInst, matchingAgents);
                 } else if (matchingAgents.size() == 1) {
                     // Run agent
                     CeInstance agent = matchingAgents.get(0);
@@ -86,6 +90,29 @@ public class NlProcessor extends GeneralProcessor {
                 }
             }
         }
+    }
+
+    private void processConfirmAgent(CeInstance cardInst, ArrayList<CeInstance> matchingAgents) {
+        StringBuilder sb = new StringBuilder();
+        appendToSbNoNl(sb, Reply.STATEMENT_MATCHES_MULTIPLE.toString());
+
+        for (int i = 0; i < matchingAgents.size(); ++i) {
+            CeInstance agent = matchingAgents.get(i);
+
+            appendToSbNoNl(sb, agent.getInstanceName());
+
+            if (i < matchingAgents.size() - 2) {
+                appendToSbNoNl(sb, ",");
+            } else if (i < matchingAgents.size() - 1) {
+                appendToSbNoNl(sb, " and ");
+            }
+        }
+
+        appendToSb(sb, Reply.AGENTS.toString());
+
+        appendToSbNoNl(sb, Reply.BE_SPECIFIC.toString());
+        String humanAgent = findHumanAgent(cardInst);
+        cg.generateCard(Card.NL.toString(), sb.toString(), th.getTriggerName(), humanAgent, cardInst.getInstanceName());
     }
 
     private void processNLResponse(CeInstance cardInst, ArrayList<FinalItem> finalItems, ArrayList<FinalItem> optionItems) {
