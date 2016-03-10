@@ -62,6 +62,7 @@ public class NlProcessor extends GeneralProcessor {
                 sp.extractMatchingEntities(sentence, words);
                 ArrayList<FinalItem> finalItems = qp.getFinalItems(words);
                 ArrayList<FinalItem> optionItems = qp.getOptionItems(words);
+                ArrayList<FinalItem> maybeItems = qp.getMaybeItems(words);
 
                 // Find agents matching keywords as defined in config
                 findMatchingAgents(sentence.getSentenceText(), matchingAgents, matchingKeywords);
@@ -83,7 +84,7 @@ public class NlProcessor extends GeneralProcessor {
 
                     } else if (convText.isQuestion()) {
                         // Respond to NL question
-                        replyToNLQuestion(cardInst, finalItems, optionItems);
+                        replyToNLQuestion(cardInst, finalItems, optionItems, maybeItems);
                     } else {
                         // Other NL - attempted fact sentence
                         interpretSentence(cardInst, finalItems);
@@ -181,13 +182,16 @@ public class NlProcessor extends GeneralProcessor {
     }
 
     // NL Question found. Try and reply to matched instances, concepts and properties.
-    private void replyToNLQuestion(CeInstance cardInst, ArrayList<FinalItem> finalItems, ArrayList<FinalItem> optionItems) {
+    private void replyToNLQuestion(CeInstance cardInst, ArrayList<FinalItem> finalItems, ArrayList<FinalItem> optionItems, ArrayList<FinalItem> maybeItems) {
         // TODO: Convert NL questions into CE queries and pass to Ask agent
         StringBuilder sb = new StringBuilder();
 
         if (optionItems != null && !optionItems.isEmpty()) {
             // Options are available so reply asking for clarification
             sb.append(ag.answerOptionQuestion(optionItems));
+        } else if (maybeItems != null && !maybeItems.isEmpty()) {
+            // Potential matching items available
+            sb.append(ag.answerMaybeQuestion(maybeItems));
         } else if (finalItems != null && !finalItems.isEmpty()) {
             // Only final items available so answer with information about them
             // TODO: Compute who/what/where answers differently

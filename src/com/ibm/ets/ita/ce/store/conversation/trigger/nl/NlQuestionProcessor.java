@@ -37,6 +37,18 @@ public class NlQuestionProcessor {
         return optionalFinalItems;
     }
 
+    // Create list of optional items from extracted items
+    public ArrayList<FinalItem> getMaybeItems(ArrayList<ProcessedWord> words) {
+        ArrayList<ExtractedItem> maybeExtractedItems = computeMaybeExtractedItems(words);
+        ArrayList<FinalItem> maybeFinalItems = null;
+
+        if (maybeExtractedItems != null) {
+            maybeFinalItems = initialiseOptionItems(maybeExtractedItems);
+        }
+
+        return maybeFinalItems;
+    }
+
     // Check extracted items aren't repeated and are the dominant interpretation before adding to list
     private ArrayList<ExtractedItem> computeFinalExtractedItems(ArrayList<ProcessedWord> words) {
         ArrayList<ExtractedItem> items = new ArrayList<ExtractedItem>();
@@ -70,6 +82,28 @@ public class NlQuestionProcessor {
                 for (ExtractedItem item : wordItems) {
                     if (!items.contains(item)) {
                         if (word.confirmRequired()) {
+                            items.add(item);
+                        }
+                    }
+                }
+            }
+        }
+
+        return items;
+    }
+
+    // Check extracted items aren't repeated and require correction before adding to list
+    private ArrayList<ExtractedItem> computeMaybeExtractedItems(ArrayList<ProcessedWord> words) {
+        ArrayList<ExtractedItem> items = new ArrayList<ExtractedItem>();
+
+        for (ProcessedWord word : words) {
+            ArrayList<ExtractedItem> wordItems = word.getExtractedItems();
+
+            if (wordItems != null) {
+                for (ExtractedItem item : wordItems) {
+                    if (!items.contains(item)) {
+                        if (word.correctionRequired()) {
+                            System.out.println("Correction required - adding " + item);
                             items.add(item);
                         }
                     }

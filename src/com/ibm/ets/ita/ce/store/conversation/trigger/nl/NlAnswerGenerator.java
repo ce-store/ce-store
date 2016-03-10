@@ -58,6 +58,7 @@ public class NlAnswerGenerator {
 
         return sb.toString();
     }
+
     // Build answer with options
     public Object answerOptionQuestion(ArrayList<FinalItem> optionItems) {
         StringBuilder sb = new StringBuilder();
@@ -89,6 +90,47 @@ public class NlAnswerGenerator {
 
                     appendToSb(sb, "'" + uncertainWord.getWordText() + "' could mean " + options + ".");
                     appendToSb(sb, "Please re-ask your question with a specific option.");
+                } else if (item.isPropertyItem()) {
+                    // TODO
+                }
+            }
+        }
+
+        return sb.toString();
+    }
+
+    // Build answer with options
+    public Object answerMaybeQuestion(ArrayList<FinalItem> maybeItems) {
+        System.out.println("answer maybe question");
+        StringBuilder sb = new StringBuilder();
+
+        if (!maybeItems.isEmpty()) {
+            for (FinalItem item : maybeItems) {
+                if (item.isConceptItem()) {
+                    // TODO
+                } else if (item.isInstanceItem()) {
+                    ProcessedWord uncertainWord = null;
+                    String options = "";
+
+                    ArrayList<ExtractedItem> extractedItems = item.getExtractedItems();
+                    for (int i = 0; i < extractedItems.size(); ++i) {
+                        ExtractedItem ei = extractedItems.get(i);
+                        if (uncertainWord == null) {
+                            uncertainWord = ei.getStartWord();
+                        }
+
+                        CeInstance tgtInst = ei.getInstance();
+                        options += tgtInst.getInstanceName();
+
+                        if (i < extractedItems.size() - 3) {
+                            options += ", ";
+                        } else if (i == extractedItems.size() - 2) {
+                            options += " or ";
+                        }
+                    }
+
+                    appendToSb(sb, "I couldn't match '" + uncertainWord.getWordText() + "' to an instance.");
+                    appendToSb(sb, "You may have meant " + options + ".");
                 } else if (item.isPropertyItem()) {
                     // TODO
                 }

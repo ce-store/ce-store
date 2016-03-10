@@ -63,14 +63,13 @@ public class ProcessedWord extends GeneralItem {
     private TreeMap<String, CeProperty> matchingRelations = null;
     private CeInstance matchingInstance = null;
 
-    private ArrayList<CeInstance> maybeMatchingInstances = null;
-
-    //Referred (indirectly
+    //Referred (indirectly)
     private TreeMap<String, CeConcept> referredExactConcepts = null;
     private TreeMap<String, CeProperty> referredExactRelations = null;
     private TreeMap<String, CeInstance> referredExactInstances = null;
     private TreeMap<String, CeConcept> referredExactConceptsPlural = null;
     private TreeMap<String, CeInstance> referredExactInstancesPlural = null;
+    private TreeMap<String, CeInstance> referredMaybeInstances = null;
 
     //Types of words
     private boolean isStandardWord = false;
@@ -79,6 +78,7 @@ public class ProcessedWord extends GeneralItem {
     private boolean isNumberWord = false;
     private boolean isQuestionWord = false;
     private boolean optionRequired = false;
+    private boolean correctionRequired = false;
 
     private boolean partialStartWord = false;
     private boolean partialConceptReference = false;
@@ -231,6 +231,10 @@ public class ProcessedWord extends GeneralItem {
         return (this.referredExactInstances != null) && !this.referredExactInstances.isEmpty();
     }
 
+    public boolean refersToInstancesMaybe() {
+        return (this.referredMaybeInstances != null) && !this.referredMaybeInstances.isEmpty();
+    }
+
     public ArrayList<ExtractedItem> getExtractedItems() {
         return this.extractedItems;
     }
@@ -320,7 +324,12 @@ public class ProcessedWord extends GeneralItem {
     }
 
     public boolean confirmRequired() {
-        return this.optionRequired;
+        return optionRequired;
+    }
+
+    public boolean correctionRequired() {
+        System.out.println("Correction required? " + correctionRequired);
+        return correctionRequired;
     }
 
     public boolean isDeterminer() {
@@ -379,42 +388,52 @@ public class ProcessedWord extends GeneralItem {
         if (isAnaphor(strippedWord)) {
 
             CeInstance prevCard = pCardInstance.getSingleInstanceFromPropertyNamed(pAc, PROP_REPLY);
+            ArrayList<ArrayList<CeInstance>> allPotentialCorrections = new ArrayList<ArrayList<CeInstance>>();
 
             // arbitrary limit of 10 cards deep
-            for (int i = 0; i < 10 && this.matchingInstance == null && prevCard != null && this.optionRequired == false; ++i) {
+            for (int i = 0; i < 10 && matchingInstance == null && prevCard != null && optionRequired == false; ++i) {
                 ArrayList<CeInstance> prevCardAbouts = prevCard.getInstanceListFromPropertyNamed(pAc, PROP_ABOUT);
 
                 // try and match all instances that previous card is about
                 ArrayList<CeInstance> matchingInstances = new ArrayList<CeInstance>();
+                ArrayList<CeInstance> potentialCorrections = new ArrayList<CeInstance>();
+
                 for (CeInstance prevCardAbout : prevCardAbouts) {
-                    if ((strippedWord.equals(Anaphor.HE.toString())
-                            || strippedWord.equals(Anaphor.HIS.toString())
-                            || strippedWord.equals(Anaphor.HIM.toString()))
+                    boolean matchFound = false;
+
+                    if (isMaleAnaphor(strippedWord)
                             && prevCardAbout.isConceptNamed(pAc, CON_MAN)) {
                         // word == "he" and last talked about instance was a man
-                        matchingInstances.add(prevCardAbout);
-                    } else if ((strippedWord.equals(Anaphor.SHE.toString())
-                            || strippedWord.equals(Anaphor.HER.toString()))
+                        matchFound = true;
+                    } else if (isFemaleAnaphor(strippedWord)
                             && prevCardAbout.isConceptNamed(pAc, CON_WOMAN)) {
                         // word == "she" and last talked about instance was a woman
-                        matchingInstances.add(prevCardAbout);
-                    } else if (strippedWord.equals(Anaphor.THEY.toString())
+                        matchFound = true;
+                    } else if (isUngenderedAnaphor(strippedWord)
                             && prevCardAbout.isConceptNamed(pAc, CON_PERSON)) {
                         // word == "they" and last talked about instance was a person
-                        matchingInstances.add(prevCardAbout);
+                        matchFound = true;
                     } else if (strippedWord.equals(Anaphor.IT.toString())) {
                         // word == "it" and last talked about instance was anything
+                        matchFound = true;
+                    }
+
+                    if (matchFound) {
                         matchingInstances.add(prevCardAbout);
+                    } else {
+                        potentialCorrections.add(prevCardAbout);
                     }
                 }
 
+                allPotentialCorrections.add(potentialCorrections);
+
                 if (matchingInstances.size() == 1) {
                     // if only one match in previous card, assume correct
-                    this.matchingInstance = matchingInstances.get(0);
+                    matchingInstance = matchingInstances.get(0);
                     addReferredExactInstance(matchingInstances.get(0));
                 } else if (matchingInstances.size() > 1) {
                     // if more than one match, show option card
-                    this.optionRequired = true;
+                    optionRequired = true;
                     for (CeInstance inst : matchingInstances) {
                         addReferredExactInstance(inst);
                     }
@@ -423,7 +442,39 @@ public class ProcessedWord extends GeneralItem {
                 // get previous card
                 prevCard = prevCard.getSingleInstanceFromPropertyNamed(pAc, PROP_REPLY);
             }
+
+            if (matchingInstance == null && optionRequired == false) {
+                // no matches, look at potential corrections
+                for (ArrayList<CeInstance> potentialCorrections : allPotentialCorrections) {
+                    if (!correctionRequired && potentialCorrections.size() > 0) {
+                        correctionRequired = true;
+
+                        System.out.println("\nCorrection required for " + getWordText());
+                        System.out.println(correctionRequired());
+                        for (CeInstance potentialCorrection : potentialCorrections) {
+                            addReferredMaybeInstance(potentialCorrection);
+                            System.out.println("  Add maybe: " + potentialCorrection);
+                        }
+                    }
+                }
+            }
         }
+    }
+
+    private boolean isMaleAnaphor(String word) {
+        return word.equals(Anaphor.HE.toString())
+            || word.equals(Anaphor.HIS.toString())
+            || word.equals(Anaphor.HIM.toString());
+    }
+
+    private boolean isFemaleAnaphor(String word) {
+        return word.equals(Anaphor.SHE.toString())
+            || word.equals(Anaphor.HER.toString());
+    }
+
+    private boolean isUngenderedAnaphor(String word) {
+        return word.equals(Anaphor.THEY.toString())
+            || word.equals(Anaphor.THEIR.toString());
     }
 
     private void checkForMatchingConcept(ActionContext pAc) {
@@ -1095,6 +1146,14 @@ public class ProcessedWord extends GeneralItem {
         this.referredExactInstances.put(pInst.getInstanceName(), pInst);
     }
 
+    private void addReferredMaybeInstance(CeInstance pInst) {
+        if (referredMaybeInstances == null) {
+            referredMaybeInstances = new TreeMap<String, CeInstance>();
+        }
+
+        referredMaybeInstances.put(pInst.getInstanceName(), pInst);
+    }
+
     public Collection<CeInstance> listReferredExactInstances() {
         Collection<CeInstance> result = null;
 
@@ -1250,6 +1309,7 @@ public class ProcessedWord extends GeneralItem {
         return
             (matchesToInstance() && !isLaterPartOfPartial()) ||
             refersToInstancesExactly() ||
+            refersToInstancesMaybe() ||
             refersToPluralInstancesExactly() ||
             (this.partialInstanceReference && this.partialStartWord);
     }
@@ -1335,6 +1395,10 @@ public class ProcessedWord extends GeneralItem {
 
             if (refersToPluralInstancesExactly()) {
                 set.addAll(this.referredExactInstancesPlural.values());
+            }
+
+            if (refersToInstancesMaybe()) {
+                set.addAll(this.referredMaybeInstances.values());
             }
 
             result = winnowInstances(set);

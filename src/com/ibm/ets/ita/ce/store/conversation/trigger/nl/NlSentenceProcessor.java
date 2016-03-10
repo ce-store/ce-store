@@ -142,9 +142,7 @@ public class NlSentenceProcessor {
     private void extractInstance(ProcessedWord word, ExtractedItem lastExtracted) {
         ArrayList<CeInstance> instances = word.listGroundedInstances();
 
-        boolean confirmRequired = word.confirmRequired();
-
-        if (confirmRequired) {
+        if (word.confirmRequired() || word.correctionRequired()) {
             for (CeInstance instance : instances) {
                 ExtractedItem extractedInstance = new ExtractedItem(word, instance);
 
