@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 import com.ibm.ets.ita.ce.store.ActionContext;
+import com.ibm.ets.ita.ce.store.conversation.model.ConvText;
 import com.ibm.ets.ita.ce.store.conversation.model.ExtractedItem;
 import com.ibm.ets.ita.ce.store.conversation.model.FinalItem;
 import com.ibm.ets.ita.ce.store.conversation.model.ProcessedWord;
@@ -222,9 +223,6 @@ public class NlAnswerGenerator {
                 }
             }
         }
-
-        System.out.println("Instance: " + instance);
-        System.out.println("Property: " + property);
 
         if (instance != null && property != null) {
             String propertyName = property.getPropertyName();
@@ -546,5 +544,63 @@ public class NlAnswerGenerator {
 
     public String nothingUnderstood() {
         return Reply.NOT_UNDERSTOOD.message();
+    }
+
+    public String interpret(ConvText convText, ArrayList<FinalItem> finalItems) {
+        System.out.println("Conv: " + convText + "\n");
+
+        for (FinalItem item : finalItems) {
+            System.out.println("Final Item");
+            for (ExtractedItem ei : item.getExtractedItems()) {
+                System.out.println("  Extracted Item: " + ei);
+            }
+            System.out.println("");
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        if (finalItems.size() > 0) {
+            FinalItem subject = finalItems.get(0);
+
+            if (subject.isConceptItem()) {
+                makeSenseOfConceptLedSentence(convText, finalItems);
+            } else if (subject.isInstanceItem()) {
+
+            } else if (subject.isPropertyItem()) {
+
+            }
+        }
+
+        return sb.toString();
+    }
+
+    private void makeSenseOfConceptLedSentence(ConvText convText, ArrayList<FinalItem> finalItems) {
+//        HashSet<ExtractedItem> matchSet = new HashSet<ExtractedItem>();
+//        HashSet<ExtractedItem> unmatchSet = new HashSet<ExtractedItem>();
+//
+//        FinalItem subject = finalItems.get(0);
+//        ExtractedItem extractedSubject = subject.getFirstExtractedItem();
+//        CeConcept extractedConcept = extractedSubject.getConcept();
+//
+//        for (int i = 1; i < finalItems.size(); ++i) {
+//            FinalItem item = finalItems.get(i);
+//
+//            if (item.isPropertyItem()) {
+//                boolean matchFound = false;
+//                ExtractedItem extracted = item.getFirstExtractedItem();
+//
+////        		for (ExtractedItem extracted : item.getExtractedItems()) {
+//                    CeProperty extractedProperty = extracted.getFirstProperty();
+//                    if (extractedConcept.hasDirectProperty(extractedProperty)) {
+//                        matchSet.add(extracted);
+//                        matchFound = true;
+//                    }
+////        		}
+//
+//                if (!matchFound) {
+//                    unmatchSet.add(extracted);
+//                }
+//            }
+//        }
     }
 }

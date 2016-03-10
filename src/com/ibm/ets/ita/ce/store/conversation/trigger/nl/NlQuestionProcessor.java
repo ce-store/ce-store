@@ -14,7 +14,6 @@ public class NlQuestionProcessor {
 
     // Create list of final items from extracted items
     public ArrayList<FinalItem> getFinalItems(ArrayList<ProcessedWord> words) {
-        System.out.println("\nGet final items...");
         ArrayList<ExtractedItem> finalExtractedItems = computeFinalExtractedItems(words);
         ArrayList<FinalItem> finalItems = null;
 
@@ -28,12 +27,10 @@ public class NlQuestionProcessor {
 
     // Create list of optional items from extracted items
     public ArrayList<FinalItem> getOptionItems(ArrayList<ProcessedWord> words) {
-        System.out.println("\nGet option items...");
         ArrayList<ExtractedItem> optionExtractedItems = computeOptionExtractedItems(words);
         ArrayList<FinalItem> optionalFinalItems = null;
 
         if (optionExtractedItems != null) {
-            System.out.println("Options available: " + optionExtractedItems);
             optionalFinalItems = initialiseOptionItems(optionExtractedItems);
         }
 
@@ -42,7 +39,6 @@ public class NlQuestionProcessor {
 
     // Check extracted items aren't repeated and are the dominant interpretation before adding to list
     private ArrayList<ExtractedItem> computeFinalExtractedItems(ArrayList<ProcessedWord> words) {
-        System.out.println("\nCompute final extracted items");
         ArrayList<ExtractedItem> items = new ArrayList<ExtractedItem>();
 
         for (ProcessedWord word : words) {
@@ -89,8 +85,6 @@ public class NlQuestionProcessor {
         ArrayList<FinalItem> finalItems = new ArrayList<FinalItem>();
 
         for (ExtractedItem item : extractedItems) {
-            System.out.println("Extracted item: " + item);
-
             FinalItem finalItem = new FinalItem(item);
             finalItems.add(finalItem);
         }
@@ -136,10 +130,8 @@ public class NlQuestionProcessor {
                     if (instanceItem.isInstanceItem() && !toRemoveItems.contains(instanceItem) && !toRemoveItems.contains(propertyItem)) {
                         Tuple<CeInstance, CeProperty> matchingConceptProperty = instanceHasProperty(instanceItem, propertyItem);
 
-                        System.out.println("Check " + matchingConceptProperty);
                         if (matchingConceptProperty != null) {
                             // Instance has this property. Append results
-                            System.out.println("FOUND - Instance has property!");
                             toRemoveItems.add(instanceItem);
 
                             ExtractedItem extractedProperty = propertyItem.getFirstExtractedItem();

@@ -29,7 +29,6 @@ public class NlSentenceProcessor {
 
     // Process words in sentence to decipher meaning
     public ArrayList<ProcessedWord> process(ConvSentence sentence) {
-        System.out.println("\nProcess sentence");
 
         ArrayList<ProcessedWord> words = prepareWords(sentence);
         classify(words);
@@ -39,10 +38,8 @@ public class NlSentenceProcessor {
 
     // Create the initial ProcessedWord list
     private ArrayList<ProcessedWord> prepareWords(ConvSentence sentence) {
-        System.out.println("Prepare words");
         ArrayList<ProcessedWord> processedWords = new ArrayList<ProcessedWord>();
         ArrayList<ConvWord> words = sentence.getAllWords();
-        System.out.println("Words: " + words);
 
         for (ConvWord word : words) {
             ProcessedWord processedWord = new ProcessedWord(word);
@@ -81,7 +78,6 @@ public class NlSentenceProcessor {
 
     // Find entities matching words in sentence and create an ExtractedItem for each
     public void extractMatchingEntities(ConvSentence sentence, ArrayList<ProcessedWord> words) {
-        System.out.println("\nMatch entities...");
         ExtractedItem lastExtracted = null;
 
         for (ProcessedWord word : words) {
