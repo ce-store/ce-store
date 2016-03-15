@@ -164,18 +164,19 @@ public class NlProcessor extends GeneralProcessor {
                 String reply = template.getLatestValueFromPropertyNamed(Property.REPLY.toString());
                 String interestedUser = cardInst.getSingleValueFromPropertyNamed(Property.IS_FROM.toString());
 
+                String completedRecipient = substituteItemsIntoTemplate(recipient, matchingInstance, matchingConcept, interestedUser, text);
                 String completedTemplate = substituteItemsIntoTemplate(templateString, matchingInstance, matchingConcept, interestedUser, text);
                 String completedReply = substituteItemsIntoTemplate(reply, matchingInstance, matchingConcept, interestedUser, text);
 
-                cg.generateCard(Card.TELL.toString(), completedTemplate, th.getTriggerName(), recipient, cardInst.getInstanceName());
+                cg.generateCard(Card.TELL.toString(), completedTemplate, th.getTriggerName(), completedRecipient, cardInst.getInstanceName());
                 cg.generateCard(Card.NL.toString(), completedReply, th.getTriggerName(), interestedUser, cardInst.getInstanceName());
             }
         }
     }
 
-    // Pass on Tell agent's message to human agent
+    // Pass on Tell agent's message to human agent if other agent reply not already sent
     private void forwardTellResponse(CeInstance cardInst, String convText) {
-        if (convText.equals(Reply.SAVED.message())) {
+        if (!templateAgentAlreadySentReply(cardInst) && convText.equals(Reply.SAVED.message())) {
             String humanAgent = findHumanAgent(cardInst);
             cg.generateNLCard(cardInst, convText, th.getTriggerName(), humanAgent, null);
         }
@@ -247,16 +248,33 @@ public class NlProcessor extends GeneralProcessor {
         }
     }
 
+    private boolean matchesAgents(String sentence) {
+        ArrayList<CeInstance> agents = ac.getModelBuilder().getAllInstancesForConceptNamed(ac, Concept.AGENT.toString());
+
+        for (CeInstance agent : agents) {
+            ArrayList<CeInstance> keywords = agent.getInstanceListFromPropertyNamed(ac, Property.KEYWORD.toString());
+
+            for (CeInstance keyword : keywords) {
+                // TODO: Do this using final items
+                if (sentence.toLowerCase().contains(keyword.getInstanceName().toLowerCase())) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     // Substitute mentioned instances, concepts, from user and original text into agent template
     private String substituteItemsIntoTemplate(String str, CeInstance instance, CeConcept concept, String user, String originalText) {
         if (instance != null) {
-            str = str.replace("~ I ~", "'" + instance.getInstanceName() + "'");
+            str = str.replace("~ I ~", instance.getInstanceName());
         }
         if (concept != null) {
             str = str.replace("~ C ~", concept.getConceptName());
         }
         if (user != null) {
-            str = str.replace("~ U ~", "'" + user + "'");
+            str = str.replace("~ U ~", user);
         }
         if (originalText != null) {
             str = str.replace("~ S ~", originalText);
@@ -319,8 +337,7 @@ public class NlProcessor extends GeneralProcessor {
         }
     }
 
-    // Find the last spoke to human agent from earlier in the conversation
-    private String findHumanAgent(CeInstance cardInst) {
+    private CeInstance getLastHumanAgent(CeInstance cardInst) {
         CeInstance prevCard = cardInst;
 
         while (fromTellService(prevCard) || fromNLService(prevCard)) {
@@ -331,8 +348,24 @@ public class NlProcessor extends GeneralProcessor {
             prevCard = prevCard.getSingleInstanceFromPropertyNamed(ac, Property.IN_REPLY_TO.toString());
         }
 
-        String humanAgent = prevCard.getSingleValueFromPropertyNamed(Property.IS_FROM.toString());
-        return humanAgent;
+        return prevCard;
+    }
+
+    // Find the last spoke to human agent from earlier in the conversation
+    private String findHumanAgent(CeInstance cardInst) {
+        CeInstance prevCard = getLastHumanAgent(cardInst);
+
+        if (prevCard != null) {
+            String humanAgent = prevCard.getSingleValueFromPropertyNamed(Property.IS_FROM.toString());
+            return humanAgent;
+        } else {
+            return null;
+        }
+    }
+
+    private boolean templateAgentAlreadySentReply(CeInstance cardInst) {
+        CeInstance lastHumanCard = getLastHumanAgent(cardInst);
+        return matchesAgents(lastHumanCard.getSingleValueFromPropertyNamed(Property.CONTENT.toString()));
     }
 
     private boolean fromNLService(CeInstance cardInst) {
