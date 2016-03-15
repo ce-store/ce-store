@@ -546,10 +546,12 @@ public class NlProcessor extends GeneralProcessor {
                 if (instance == null) {
                     ArrayList<ExtractedItem> extractedItems = word.getExtractedItems();
 
-                    for (ExtractedItem item : extractedItems) {
-                        if (item.isInstanceItem()) {
-                            instance = item.getInstance();
-                            break;
+                    if (extractedItems != null) {
+                        for (ExtractedItem item : extractedItems) {
+                            if (item.isInstanceItem()) {
+                                instance = item.getInstance();
+                                break;
+                            }
                         }
                     }
                 }
