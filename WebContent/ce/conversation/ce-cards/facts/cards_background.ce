@@ -24,8 +24,7 @@ there is a template agent named 'Inform' that
 
 there is a keyword named 'inform'.
 
-there is a template named 'inform agent' that
-  has the value 'instance' as matching thing and
+there is an instance template named 'inform agent' that
   has the value
   'there is a NL card named \'msg_{uid}\' that
     has the timestamp \'{now}\' as timestamp and
@@ -36,6 +35,7 @@ there is a template named 'inform agent' that
   has the value 'I have forwarded your message to ~ I ~.' as reply and
   has the agent 'Tell' as recipient.
 
+
 there is a template agent named 'Interesting' that
   has the keyword 'interested' as keyword and
   has the template 'interesting instance' as template and
@@ -43,14 +43,12 @@ there is a template agent named 'Interesting' that
 
 there is a keyword named 'interested'.
 
-there is a template named 'interesting instance' that
-  has the value 'instance' as matching thing and
+there is an instance template named 'interesting instance' that
   has the value 'the thing \'~ I ~\' is an interesting thing. the interesting thing \'~ I ~\' has the CE user \'~ U ~\' as interested party.' as template string and
   has the value 'I will inform you of new information about ~ I ~.' as reply and
   has the agent 'Tell' as recipient.
 
-there is a template named 'interesting concept' that
-  has the value 'concept' as matching thing and
+there is a concept template named 'interesting concept' that
   has the value
   '[interesting ~ C ~]
     if
@@ -62,6 +60,7 @@ there is a template named 'interesting concept' that
   as template string and
   has the value 'I will inform you of new information about ~ C ~.' as reply and
   has the agent 'Tell' as recipient.
+
 
 there is a template agent named 'FRA' that
   has the keyword 'fra' as keyword and

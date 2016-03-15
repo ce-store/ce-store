@@ -16,7 +16,6 @@ conceptualise a ~ template agent ~ A that
 conceptualise a ~ keyword ~ K.
 
 conceptualise a ~ template ~ T that
-  has the value M as ~ matching thing ~ and
   has the value T as ~ template string ~ and
   has the value R as ~ reply ~ and
   has the agent A as ~ recipient ~.

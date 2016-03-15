@@ -17,7 +17,6 @@ import com.ibm.ets.ita.ce.store.conversation.trigger.general.Concept;
 import com.ibm.ets.ita.ce.store.conversation.trigger.general.GeneralProcessor;
 import com.ibm.ets.ita.ce.store.conversation.trigger.general.Property;
 import com.ibm.ets.ita.ce.store.conversation.trigger.general.Reply;
-import com.ibm.ets.ita.ce.store.conversation.trigger.general.Word;
 import com.ibm.ets.ita.ce.store.handler.QueryHandler;
 import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
@@ -140,39 +139,31 @@ public class NlProcessor extends GeneralProcessor {
         ArrayList<CeInstance> templates = agent.getInstanceListFromPropertyNamed(ac, Property.TEMPLATE.toString());
 
         for (CeInstance template : templates) {
-            boolean thingsFound;
+            boolean thingsFound = true;
             CeInstance matchingInstance = null;
             CeConcept matchingConcept = null;
 
-            ArrayList<String> requiredThings = template.getValueListFromPropertyNamed(Property.MATCHING_THING.toString());
-            if (!requiredThings.isEmpty()) {
-                thingsFound = true;
+//            ArrayList<String> requiredThings = template.getValueListFromPropertyNamed(Property.MATCHING_THING.toString());
+            if (template.isConceptNamed(ac, Concept.INSTANCE_TEMPLATE.toString())) {
+                for (FinalItem item : finalItems) {
+                    if (item.isInstanceItem()) {
+                        CeInstance extractedInstance = item.getFirstExtractedItem().getInstance();
 
-                for (String requirement : requiredThings) {
-                    if (requirement.equals(Word.INSTANCE.toString())) {
-                        for (FinalItem item : finalItems) {
-                            if (item.isInstanceItem()) {
-                                CeInstance extractedInstance = item.getFirstExtractedItem().getInstance();
-
-                                if (!matchingKeywords.contains(extractedInstance)) {
-                                    matchingInstance = extractedInstance;
-                                }
-                            }
+                        if (!matchingKeywords.contains(extractedInstance)) {
+                            matchingInstance = extractedInstance;
                         }
-
-                        thingsFound = thingsFound && (matchingInstance != null);
-                    } else if (requirement.equals(Word.CONCEPT.toString())) {
-                        for (FinalItem item : finalItems) {
-                            if (item.isConceptItem()) {
-                                matchingConcept = item.getFirstExtractedItem().getConcept();
-                            }
-                        }
-
-                        thingsFound = thingsFound && (matchingConcept != null);
                     }
                 }
-            } else {
-                thingsFound = true;
+
+                thingsFound = thingsFound && (matchingInstance != null);
+            } else if (template.isConceptNamed(ac, Concept.CONCEPT_TEMPLATE.toString())) {
+                for (FinalItem item : finalItems) {
+                    if (item.isConceptItem()) {
+                        matchingConcept = item.getFirstExtractedItem().getConcept();
+                    }
+                }
+
+                thingsFound = thingsFound && (matchingConcept != null);
             }
 
             if (thingsFound) {
