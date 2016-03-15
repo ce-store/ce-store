@@ -13,6 +13,7 @@ public enum Word {
     COUNT("count"),
     INTERESTING("interesting"),
     INTERESTED("interested"),
+    PROPERTY("property"),
     INSTANCE("instance"),
     CONCEPT("concept");
 

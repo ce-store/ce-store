@@ -18,10 +18,12 @@ import com.ibm.ets.ita.ce.store.conversation.trigger.general.GeneralProcessor;
 import com.ibm.ets.ita.ce.store.conversation.trigger.general.Property;
 import com.ibm.ets.ita.ce.store.conversation.trigger.general.Reply;
 import com.ibm.ets.ita.ce.store.conversation.trigger.general.Word;
+import com.ibm.ets.ita.ce.store.handler.QueryHandler;
 import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
 import com.ibm.ets.ita.ce.store.model.CeProperty;
 import com.ibm.ets.ita.ce.store.model.CePropertyInstance;
+import com.ibm.ets.ita.ce.store.model.container.ContainerCeResult;
 
 public class NlProcessor extends GeneralProcessor {
 
@@ -75,19 +77,34 @@ public class NlProcessor extends GeneralProcessor {
                     CeInstance agent = matchingAgents.get(0);
                     sendToAgent(agent, finalItems, matchingKeywords, cardInst, nlText);
                 } else {
-                    // No matching agents
-                    if (fromTellService(cardInst)) {
-                        // Reply from Tell
-                        forwardTellResponse(cardInst, nlText);
-                    } else if (isInterestingQuestion(nlText)) {
-                        // TODO: Ignore interesting question?
+                    // No matching agents, find command words with matching templates
+                    ArrayList<CeInstance> matchingCommands = findMatchingCommands(words);
+                    System.out.println("matching commands: " + matchingCommands);
 
-                    } else if (convText.isQuestion()) {
-                        // Respond to NL question
-                        replyToNLQuestion(cardInst, finalItems, optionItems, maybeItems);
+                    if (!matchingCommands.isEmpty()) {
+                        // Matching commands
+                        if (matchingCommands.size() > 1) {
+                            // TODO: Confirm which command with user
+
+                        } else {
+                            // Execute command query
+                            CeInstance command = matchingCommands.get(0);
+                            executeCommand(command, words, cardInst);
+                        }
                     } else {
-                        // Other NL - attempted fact sentence
-                        interpretSentence(cardInst, finalItems);
+                        // No matching commands
+                        if (fromTellService(cardInst)) {
+                            // Reply from Tell
+                            forwardTellResponse(cardInst, nlText);
+                        } else if (isInterestingQuestion(nlText)) {
+                            // TODO: Ignore interesting question?
+                        } else if (convText.isQuestion()) {
+                            // Respond to NL question
+                            replyToNLQuestion(cardInst, finalItems, optionItems, maybeItems);
+                        } else {
+                            // Other NL - attempted fact sentence
+                            interpretSentence(cardInst, finalItems);
+                        }
                     }
                 }
             }
@@ -164,9 +181,9 @@ public class NlProcessor extends GeneralProcessor {
                 String reply = template.getLatestValueFromPropertyNamed(Property.REPLY.toString());
                 String interestedUser = cardInst.getSingleValueFromPropertyNamed(Property.IS_FROM.toString());
 
-                String completedRecipient = substituteItemsIntoTemplate(recipient, matchingInstance, matchingConcept, interestedUser, text);
-                String completedTemplate = substituteItemsIntoTemplate(templateString, matchingInstance, matchingConcept, interestedUser, text);
-                String completedReply = substituteItemsIntoTemplate(reply, matchingInstance, matchingConcept, interestedUser, text);
+                String completedRecipient = substituteItemsIntoTemplate(recipient, null, matchingInstance, matchingConcept, interestedUser, text);
+                String completedTemplate = substituteItemsIntoTemplate(templateString, null, matchingInstance, matchingConcept, interestedUser, text);
+                String completedReply = substituteItemsIntoTemplate(reply, null, matchingInstance, matchingConcept, interestedUser, text);
 
                 cg.generateCard(Card.TELL.toString(), completedTemplate, th.getTriggerName(), completedRecipient, cardInst.getInstanceName());
                 cg.generateCard(Card.NL.toString(), completedReply, th.getTriggerName(), interestedUser, cardInst.getInstanceName());
@@ -266,7 +283,10 @@ public class NlProcessor extends GeneralProcessor {
     }
 
     // Substitute mentioned instances, concepts, from user and original text into agent template
-    private String substituteItemsIntoTemplate(String str, CeInstance instance, CeConcept concept, String user, String originalText) {
+    private String substituteItemsIntoTemplate(String str, CeProperty property, CeInstance instance, CeConcept concept, String user, String originalText) {
+        if (property != null) {
+            str = str.replace("~ P ~", property.getPropertyName());
+        }
         if (instance != null) {
             str = str.replace("~ I ~", instance.getInstanceName());
         }
@@ -361,6 +381,227 @@ public class NlProcessor extends GeneralProcessor {
         } else {
             return null;
         }
+    }
+
+    // Execute command based on command word and matching template
+    private void executeCommand(CeInstance command, ArrayList<ProcessedWord> words, CeInstance cardInst) {
+        ArrayList<CeInstance> templates = command.getInstanceListFromPropertyNamed(ac, Property.TEMPLATE.toString());
+
+        CeProperty matchingProperty = null;
+        CeInstance matchingInstance = null;
+        CeConcept matchingConcept = null;
+
+        String completeQuery = null;
+        String completeReply = null;
+
+        // Get query, reply and matching items from template
+        for (CeInstance template : templates) {
+            boolean matchedTemplate = false;
+
+            String query = template.getSingleValueFromPropertyNamed(Property.TEMPLATE_STRING.toString());
+            String reply = template.getSingleValueFromPropertyNamed(Property.REPLY.toString());
+
+            if (template.isConceptNamed(ac, Concept.PROPERTY_TEMPLATE.toString())) {
+                // Template requires property
+                for (ProcessedWord word : words) {
+                    if (!word.equals(command.getInstanceName()) && word.isGroundedOnProperty() && matchingProperty == null) {
+                        matchingProperty = getMatchingProperty(word, query);
+                        matchedTemplate = true;
+                        System.out.println("Matching property: " + matchingProperty);
+                    }
+                }
+            } else if (template.isConceptNamed(ac, Concept.INSTANCE_TEMPLATE.toString())) {
+                // Template requires instance
+                for (ProcessedWord word : words) {
+                    if (!word.equals(command.getInstanceName()) && word.isGroundedOnInstance() && matchingInstance == null) {
+                        matchingInstance = getMatchingInstance(word, query);
+                        matchedTemplate = true;
+                    }
+                }
+            } else if (template.isConceptNamed(ac, Concept.CONCEPT_TEMPLATE.toString())) {
+                // Template requires concept
+                for (ProcessedWord word : words) {
+                    if (!word.equals(command.getInstanceName()) && word.isGroundedOnConcept() && matchingConcept == null) {
+                        matchingConcept = getMatchingConcept(word, query);
+                        matchedTemplate = true;
+                        System.out.println("Matching concept: " + matchingConcept);
+                    }
+                }
+            } else {
+                // Template has no requirements
+                matchedTemplate = true;
+            }
+
+            if (matchedTemplate) {
+                completeQuery = substituteItemsIntoTemplate(query, matchingProperty, matchingInstance, matchingConcept, null, null);
+                completeReply = substituteItemsIntoTemplate(reply, matchingProperty, matchingInstance, matchingConcept, null, null);
+
+                if (matchingProperty != null) {
+                    completeQuery = completeQuery.replace("~ C1 ~", matchingProperty.getDomainConcept().getConceptName());
+                    completeQuery = completeQuery.replace("~ C2 ~", matchingProperty.getRangeConcept().getConceptName());
+                }
+
+                System.out.println("Completed query:");
+                System.out.println(completeQuery);
+            }
+        }
+
+        if (completeQuery != null) {
+            // Execute query
+            QueryHandler qh = new QueryHandler(this.ac);
+            ContainerCeResult result = qh.executeUserSpecifiedCeQuery(completeQuery, null, null);
+
+            completeReply = completeReply.replace("~ N ~", new Integer(result.getResultRows().size()).toString());
+
+            // Do substitutions for CE
+            ArrayList<String> ceResults = result.getCeResults();
+            StringBuilder sb = new StringBuilder();
+
+            for (String ce : ceResults) {
+                appendToSb(sb, ce);
+            }
+
+            completeReply = completeReply.replace("~ CE ~", sb.toString());
+
+            // Do substitutions for headers
+            ArrayList<String> headers = result.getHeaders();
+            String[] splits = completeReply.split("~");
+            sb = new StringBuilder();
+
+            for (String split : splits) {
+                String trimmedSplit = split.trim();
+
+                for (String header : headers) {
+                    if (trimmedSplit.equals(header)) {
+                        int index = result.getIndexForHeader(header);
+
+                        StringBuilder replacement = new StringBuilder();
+
+                        ArrayList<ArrayList<String>> resultRows = result.getResultRows();
+                        for (int i = 0; i < resultRows.size(); ++i) {
+                            ArrayList<String> row = resultRows.get(i);
+                            replacement.append(row.get(index));
+
+                            if (i < resultRows.size() - 2) {
+                                replacement.append(", ");
+                            } else if (i < resultRows.size() - 1) {
+                                replacement.append(" and ");
+                            }
+                        }
+
+                        split = replacement.toString();
+                    }
+                }
+                sb.append(split);
+            }
+            System.out.println(sb.toString());
+
+            String humanAgent = findHumanAgent(cardInst);
+            cg.generateCard(Card.NL.toString(), sb.toString(), th.getTriggerName(), humanAgent, cardInst.getInstanceName());
+        }
+    }
+
+    private CeProperty getMatchingProperty(ProcessedWord word, String query) {
+        ArrayList<ExtractedItem> items = word.getExtractedItems();
+        CeProperty property = null;
+
+        for (ExtractedItem item : items) {
+            if (item.isPropertyItem() && property == null) {
+                ArrayList<CeProperty> topLevelProperties = ag.getTopLevelProperties(item.getPropertyList());
+
+                if (!topLevelProperties.isEmpty()) {
+                    property = topLevelProperties.get(0);
+                }
+            }
+        }
+
+        return property;
+    }
+
+    private CeInstance getMatchingInstance(ProcessedWord word, String query) {
+        ArrayList<ExtractedItem> extractedItems = word.getExtractedItems();
+        CeInstance instance = null;
+
+        for (ExtractedItem item : extractedItems) {
+            if (item.isInstanceItem() && instance == null) {
+                instance = item.getInstance();
+            }
+        }
+
+        return instance;
+    }
+
+    private CeConcept getMatchingConcept(ProcessedWord word, String query) {
+        ArrayList<ExtractedItem> extractedItems = word.getExtractedItems();
+        CeConcept concept = null;
+
+        for (ExtractedItem item : extractedItems) {
+            if (item.isConceptItem() && concept == null) {
+                concept = item.getConcept();
+            }
+        }
+
+        return concept;
+    }
+
+    // Loop through templates on mentioned command words and add required matching items
+    private ArrayList<CeInstance> findMatchingCommands(ArrayList<ProcessedWord> words) {
+        ArrayList<CeInstance> instances = new ArrayList<CeInstance>();
+
+        for (ProcessedWord word : words) {
+            if (word.isGroundedOnInstance()) {
+                CeInstance instance = word.getMatchingInstance();
+
+                if (instance == null) {
+                    ArrayList<ExtractedItem> extractedItems = word.getExtractedItems();
+
+                    for (ExtractedItem item : extractedItems) {
+                        if (item.isInstanceItem()) {
+                            instance = item.getInstance();
+                            break;
+                        }
+                    }
+                }
+
+                if (instance != null) {
+                    if (instance.isConceptNamed(ac, Concept.COMMAND_WORD.toString())) {
+                        ArrayList<CeInstance> templates = instance.getInstanceListFromPropertyNamed(ac, Property.TEMPLATE.toString());
+
+                        for (CeInstance template : templates) {
+                            if (template.isConceptNamed(ac, Concept.PROPERTY_TEMPLATE.toString())) {
+                                // Template requires property
+                                for (ProcessedWord matchingWord : words) {
+                                    if (matchingWord != word && matchingWord.isGroundedOnProperty() && !instances.contains(instance)) {
+                                        instances.add(instance);
+                                    }
+                                }
+                            } else if (template.isConceptNamed(ac, Concept.INSTANCE_TEMPLATE.toString())) {
+                                // Template requires instance
+                                for (ProcessedWord matchingWord : words) {
+                                    if (matchingWord != word && matchingWord.isGroundedOnInstance() && !instances.contains(instance)) {
+                                        instances.add(instance);
+                                    }
+                                }
+                            } else if (template.isConceptNamed(ac, Concept.CONCEPT_TEMPLATE.toString())) {
+                                // Template requires concept
+                                for (ProcessedWord matchingWord : words) {
+                                    if (matchingWord != word && matchingWord.isGroundedOnConcept() && !instances.contains(instance)) {
+                                        instances.add(instance);
+                                    }
+                                }
+                            } else {
+                                // Template has no requirements
+                                if (!instances.contains(instance)) {
+                                    instances.add(instance);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return instances;
     }
 
     private boolean templateAgentAlreadySentReply(CeInstance cardInst) {

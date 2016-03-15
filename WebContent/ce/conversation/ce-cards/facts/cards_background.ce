@@ -3,8 +3,13 @@
 -- All Rights Reserved
 -- --------------------------------------------------------------------------
 
+-- Agents
+
 there is an agent named 'Moira'.
 there is an agent named 'Tell'.
+
+
+-- Template Agents
 
 -- Template parameter rules
 
@@ -68,3 +73,66 @@ there is a template named 'fra question' that
   has the value '~ S ~' as template string and
   has the value 'I have sent that to the FRA.' as reply and
   has the agent 'FRA' as recipient.
+
+
+-- Command Words
+
+-- Extended template parameter rules
+
+-- ~ N ~ = number of instances matching concept
+-- ~ V1 ~ = list of matching column
+
+
+there is a command word named 'list' that
+  has the template 'list concept template' as template and
+  has the template 'list property template' as template.
+
+there is a concept template named 'list concept template' that
+  has the value
+'for which V1 is it true that
+  ( there is a ~ C ~ named V1 )
+.'
+  as template string and
+  has the value
+'There are ~ N ~ instances of ~ C ~.
+They are ~ V1 ~.'
+  as reply.
+
+there is a property template named 'list property template' that
+  has the value
+'for which V1 is it true that
+  ( the ~ C1 ~ V1 ~ P ~ the ~ C2 ~ V2 )
+.'
+  as template string and
+  has the value
+'There are ~ N ~ relationships of ~ P ~.
+~ CE ~'
+  as reply.
+
+
+there is a command word named 'count' that
+  has the template 'count template' as template.
+
+there is a concept template named 'count template' that
+  has the value
+'for which V1 is it true that
+  ( there is a ~ C ~ named V1 )
+.'
+  as template string and
+  has the value
+'There are ~ N ~ instances of ~ C ~.'
+  as reply.
+
+
+there is a command word named 'describe associates' that
+  has the template 'describe associates template' as template.
+
+there is a template named 'describe associates template' that
+  has the value
+'for which V1 and V2 is it true that
+  ( the person V1 is the associate of the person V2 )
+.'
+  as template string and
+  has the value
+'~ CE ~'
+  as reply.

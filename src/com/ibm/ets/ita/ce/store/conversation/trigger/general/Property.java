@@ -15,7 +15,8 @@ public enum Property {
     TEMPLATE_STRING("template string"),
     RECIPIENT("recipient"),
     REPLY("reply"),
-    KEYWORD("keyword");
+    KEYWORD("keyword"),
+    QUERY("query");
 
     private String name;
 

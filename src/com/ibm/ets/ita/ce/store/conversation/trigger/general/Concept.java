@@ -9,7 +9,11 @@ public enum Concept {
     CONV_THING("conv thing"),
     MAN("man"),
     WOMAN("woman"),
-    AGENT("agent");
+    AGENT("agent"),
+    COMMAND_WORD("command word"),
+    PROPERTY_TEMPLATE("property template"),
+    INSTANCE_TEMPLATE("instance template"),
+    CONCEPT_TEMPLATE("concept template");
 
     private String name;
 

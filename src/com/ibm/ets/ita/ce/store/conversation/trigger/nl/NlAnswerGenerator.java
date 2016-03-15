@@ -171,12 +171,8 @@ public class NlAnswerGenerator {
         return sb.toString();
     }
 
-    // Generate reply detailing top matching properties
-    private String propertyAnswer(FinalItem item) {
-        StringBuilder sb = new StringBuilder();
-        ExtractedItem extractedItem = item.getFirstExtractedItem();
-
-        ArrayList<CeProperty> properties = extractedItem.getPropertyList();
+    // Get top level properties (and ignore child properties)
+    public ArrayList<CeProperty> getTopLevelProperties(ArrayList<CeProperty> properties) {
         ArrayList<CeProperty> topLevelProperties = new ArrayList<CeProperty>();
 
         // Find top level property
@@ -209,6 +205,17 @@ public class NlAnswerGenerator {
                 }
             }
         }
+
+        return topLevelProperties;
+    }
+
+    // Generate reply detailing top matching properties
+    private String propertyAnswer(FinalItem item) {
+        StringBuilder sb = new StringBuilder();
+        ExtractedItem extractedItem = item.getFirstExtractedItem();
+
+        ArrayList<CeProperty> properties = extractedItem.getPropertyList();
+        ArrayList<CeProperty> topLevelProperties = getTopLevelProperties(properties);
 
         for (CeProperty property : topLevelProperties) {
 

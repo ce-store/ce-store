@@ -328,7 +328,6 @@ public class ProcessedWord extends GeneralItem {
     }
 
     public boolean correctionRequired() {
-        System.out.println("Correction required? " + correctionRequired);
         return correctionRequired;
     }
 
