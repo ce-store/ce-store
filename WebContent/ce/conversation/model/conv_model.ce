@@ -11,11 +11,16 @@ Author:  Dave Braines
 
 conceptualise a ~ configuration concept ~ CC.
 conceptualise an ~ uninteresting property ~ UP.
-conceptualise an ~ interesting thing ~ I that
-  has the CE user IP as ~ interested party ~.
 
-conceptualise a ~ CE user ~ U that
-  is an uninteresting property.
+conceptualise an ~ interested party ~ IP that
+  is an uninteresting property and
+  has the CE user U as ~ user ~ and
+  has the value T as ~ timestamp ~.
+
+conceptualise an ~ interesting thing ~ I that
+  has the interested party IP as ~ interested party ~.
+conceptualise an ~ uninteresting thing ~ U that
+  has the interested party IP as ~ uninterested party ~.
 
 conceptualise a ~ linguistic thing ~ L that
   is a configuration concept and

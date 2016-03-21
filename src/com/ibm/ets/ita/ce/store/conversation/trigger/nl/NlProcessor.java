@@ -78,7 +78,6 @@ public class NlProcessor extends GeneralProcessor {
                 } else {
                     // No matching agents, find command words with matching templates
                     ArrayList<CeInstance> matchingCommands = findMatchingCommands(words);
-                    System.out.println("matching commands: " + matchingCommands);
 
                     if (!matchingCommands.isEmpty()) {
                         // Matching commands
@@ -247,8 +246,9 @@ public class NlProcessor extends GeneralProcessor {
             ArrayList<CeInstance> keywords = agent.getInstanceListFromPropertyNamed(ac, Property.KEYWORD.toString());
 
             for (CeInstance keyword : keywords) {
+                String regex = "(?s).*\\b" + keyword.getInstanceName().toLowerCase() + "\\b.*";
                 // TODO: Do this using final items
-                if (sentence.toLowerCase().contains(keyword.getInstanceName().toLowerCase())) {
+                if (sentence.toLowerCase().matches(regex)) {
                     matchingAgents.add(agent);
                     matchingKeywords.add(keyword);
                 }
@@ -264,7 +264,8 @@ public class NlProcessor extends GeneralProcessor {
 
             for (CeInstance keyword : keywords) {
                 // TODO: Do this using final items
-                if (sentence.toLowerCase().contains(keyword.getInstanceName().toLowerCase())) {
+                String regex = "(?s).*\\b" + keyword.getInstanceName().toLowerCase() + "\\b.*";
+                if (sentence.toLowerCase().matches(regex)) {
                     return true;
                 }
             }
@@ -289,6 +290,12 @@ public class NlProcessor extends GeneralProcessor {
         }
         if (originalText != null) {
             str = str.replace("~ S ~", originalText);
+        }
+        if (originalText != null) {
+            str = str.replace("~ UID ~", "{uid}");
+        }
+        if (originalText != null) {
+            str = str.replace("~ NOW ~", "{now}");
         }
 
         return str;

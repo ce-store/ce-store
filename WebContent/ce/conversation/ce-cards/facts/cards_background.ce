@@ -35,6 +35,7 @@ there is an instance template named 'inform agent' that
   has the value 'I have forwarded your message to ~ I ~.' as reply and
   has the agent 'Tell' as recipient.
 
+-- Interesting
 
 there is a template agent named 'Interesting' that
   has the keyword 'interested' as keyword and
@@ -43,35 +44,62 @@ there is a template agent named 'Interesting' that
 
 there is a keyword named 'interested'.
 
+the linguistic thing 'interested' is expressed by 'interest'.
+
 there is an instance template named 'interesting instance' that
-  has the value 'the thing \'~ I ~\' is an interesting thing. the interesting thing \'~ I ~\' has the CE user \'~ U ~\' as interested party.' as template string and
+  has the value
+'the thing \'~ I ~\' is an interesting thing.
+there is an interested party named \'party_~ UID ~\' that
+  has the CE user \'~ U ~\' as user and
+  has the value ~ NOW ~ as timestamp.
+the interesting thing \'~ I ~\'
+  has the interested party \'party_~ UID ~\' as interested party.' as template string and
   has the value 'I will inform you of new information about ~ I ~.' as reply and
   has the agent 'Tell' as recipient.
 
 there is a concept template named 'interesting concept' that
   has the value
   '[interesting ~ C ~]
-    if
-      ( the thing T is a ~ C ~ )
-    then
-      ( the thing T is an interesting thing ) and
-      ( the interesting thing T has the CE user \'~ U ~\' as interested party )
-    .'
+  if
+    ( the thing T is a ~ C ~
+  then
+    ( the thing T is an interesting thing ) and
+    ( the interesting thing T has the CE user \'~ U ~\' as interested party )
+  .'
   as template string and
   has the value 'I will inform you of new information about ~ C ~.' as reply and
   has the agent 'Tell' as recipient.
 
+-- Not interesting
 
-there is a template agent named 'FRA' that
-  has the keyword 'fra' as keyword and
-  has the template 'fra question' as template.
+there is a template agent named 'Uninteresting' that
+  has the keyword 'uninterested' as keyword and
+  has the template 'uninteresting instance' as template.
 
-there is a keyword named 'fra'.
+there is a keyword named 'uninterested'.
 
-there is a template named 'fra question' that
-  has the value '~ S ~' as template string and
-  has the value 'I have sent that to the FRA.' as reply and
-  has the agent 'FRA' as recipient.
+there is an instance template named 'uninteresting instance' that
+  has the value
+'the thing \'~ I ~\' is an uninteresting thing.
+there is an interested party named \'party_~ UID ~\' that
+  has the CE user \'~ U ~\' as user and
+  has the value ~ NOW ~ as timestamp.
+the uninteresting thing \'~ I ~\'
+  has the interested party \'party_~ UID ~\' as uninterested party.' as template string and
+  has the value 'I will no longer inform you of new information about ~ I ~.' as reply and
+  has the agent 'Tell' as recipient.
+
+
+--there is a template agent named 'FRA' that
+--  has the keyword 'fra' as keyword and
+--  has the template 'fra question' as template.
+
+--there is a keyword named 'fra'.
+
+--there is a template named 'fra question' that
+--  has the value '~ S ~' as template string and
+--  has the value 'I have sent that to the FRA.' as reply and
+--  has the agent 'FRA' as recipient.
 
 
 -- Command Words

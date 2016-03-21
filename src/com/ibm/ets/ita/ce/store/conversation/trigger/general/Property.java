@@ -10,6 +10,7 @@ public enum Property {
     CONTENT("content"),
     SINGLE_QUAL("single qualifier"),
     INTERESTED_PARTY("interested party"),
+    UNINTERESTED_PARTY("uninterested party"),
     MATCHING_THING("matching thing"),
     TEMPLATE("template"),
     TEMPLATE_STRING("template string"),

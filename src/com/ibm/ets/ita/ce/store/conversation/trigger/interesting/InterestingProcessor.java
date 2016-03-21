@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import com.ibm.ets.ita.ce.store.ActionContext;
 import com.ibm.ets.ita.ce.store.conversation.trigger.general.CardGenerator;
-import com.ibm.ets.ita.ce.store.conversation.trigger.general.Concept;
 import com.ibm.ets.ita.ce.store.conversation.trigger.general.GeneralProcessor;
 import com.ibm.ets.ita.ce.store.conversation.trigger.general.Property;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
@@ -21,25 +20,31 @@ public class InterestingProcessor extends GeneralProcessor {
 
     // Process interesting thing
     public void process(CeInstance inst) {
-        String interestedParty = inst.getSingleValueFromPropertyNamed(Property.INTERESTED_PARTY.toString());
-        System.out.println("\nInterested party: " + interestedParty);
+        ArrayList<CeInstance> interestedParties = inst.getInstanceListFromPropertyNamed(ac, Property.INTERESTED_PARTY.toString());
+        ArrayList<CeInstance> uninterestedParties = inst.getInstanceListFromPropertyNamed(ac, Property.UNINTERESTED_PARTY.toString());
 
-        if (interestedParty == null || interestedParty.isEmpty()) {
-            System.out.println("No interested party");
-            ArrayList<CeInstance> interestingInstances = ac.getModelBuilder().getAllInstancesForConceptNamed(ac, Concept.INTERESTING.toString());
-            ArrayList<String> interestedParties = new ArrayList<String>();
+        for (CeInstance interestedParty : interestedParties) {
+            boolean sendFact = true;
 
-            for (CeInstance interestingInst : interestingInstances) {
-                String user = interestingInst.getSingleValueFromPropertyNamed(Property.INTERESTED_PARTY.toString());
-                System.out.println("Interested party: " + user);
+            String interestedUser = interestedParty.getSingleValueFromPropertyNamed("user");
+            String interestedTimestamp = interestedParty.getSingleValueFromPropertyNamed("timestamp");
 
-                if (user != null && !user.isEmpty()) {
-                    interestedParties.add(user);
-                    cg.generatePotentialInterestingThingCard(inst, th.getTriggerName(), user);
+            for (CeInstance uninterestedParty : uninterestedParties) {
+                String uninterestedUser = uninterestedParty.getSingleValueFromPropertyNamed("user");
+
+                // Check if user has registered uninterest more recently than interest
+                if (interestedUser.equals(uninterestedUser)) {
+                    String uninterestedTimestamp = uninterestedParty.getSingleValueFromPropertyNamed("timestamp");
+
+                    if (Long.parseLong(interestedTimestamp, 10) < Long.parseLong(uninterestedTimestamp, 10)) {
+                        sendFact = false;
+                    }
                 }
             }
-        } else {
-            cg.generateInterestingFactCard(inst, th.getTriggerName(), interestedParty);
+
+            if (sendFact) {
+                cg.generateInterestingFactCard(inst, th.getTriggerName(), interestedUser);
+            }
         }
     }
 }

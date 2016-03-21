@@ -101,7 +101,6 @@ public class NlAnswerGenerator {
 
     // Build answer with options
     public Object answerMaybeQuestion(ArrayList<FinalItem> maybeItems) {
-        System.out.println("answer maybe question");
         StringBuilder sb = new StringBuilder();
 
         if (!maybeItems.isEmpty()) {
@@ -241,7 +240,6 @@ public class NlAnswerGenerator {
     }
 
     private Object instancePropertyAnswer(FinalItem item) {
-        System.out.println("Create instance property answer");
         StringBuilder sb = new StringBuilder();
 
         ArrayList<ExtractedItem> extractedItems = item.getExtractedItems();
