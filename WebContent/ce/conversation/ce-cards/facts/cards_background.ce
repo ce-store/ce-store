@@ -17,6 +17,8 @@ there is an agent named 'Tell'.
 -- ~ C ~ = concept name
 -- ~ U ~ = from user
 -- ~ S ~ = original string
+-- ~ NOW ~ = {now}
+-- ~ UID ~ = {uid}
 
 there is a template agent named 'Inform' that
   has the keyword 'inform' as keyword and
@@ -51,7 +53,7 @@ there is an instance template named 'interesting instance' that
 'the thing \'~ I ~\' is an interesting thing.
 there is an interested party named \'party_~ UID ~\' that
   has the CE user \'~ U ~\' as user and
-  has the value ~ NOW ~ as timestamp.
+  has the value \'~ NOW ~\' as timestamp.
 the interesting thing \'~ I ~\'
   has the interested party \'party_~ UID ~\' as interested party.' as template string and
   has the value 'I will inform you of new information about ~ I ~.' as reply and
@@ -59,22 +61,25 @@ the interesting thing \'~ I ~\'
 
 there is a concept template named 'interesting concept' that
   has the value
-  '[interesting ~ C ~]
+  '[~ U ~ interested in ~ C ~]
   if
-    ( the thing T is a ~ C ~
+    ( the thing T is a ~ C ~ )
   then
-    ( the thing T is an interesting thing ) and
-    ( the interesting thing T has the CE user \'~ U ~\' as interested party )
+    ( there is an interested party named \'party_~ UID ~\' that
+        has the CE user \'~ U ~\' as user and
+        has the value \'~ NOW ~\' as timestamp ) and
+    ( the interesting thing T has the interested party \'party_~ UID ~\' as interested party )
   .'
   as template string and
   has the value 'I will inform you of new information about ~ C ~.' as reply and
   has the agent 'Tell' as recipient.
 
--- Not interesting
+-- Uninteresting
 
 there is a template agent named 'Uninteresting' that
   has the keyword 'uninterested' as keyword and
-  has the template 'uninteresting instance' as template.
+  has the template 'uninteresting instance' as template and
+  has the template 'uninteresting concept' as template.
 
 there is a keyword named 'uninterested'.
 
@@ -83,10 +88,25 @@ there is an instance template named 'uninteresting instance' that
 'the thing \'~ I ~\' is an uninteresting thing.
 there is an interested party named \'party_~ UID ~\' that
   has the CE user \'~ U ~\' as user and
-  has the value ~ NOW ~ as timestamp.
+  has the value \'~ NOW ~\' as timestamp.
 the uninteresting thing \'~ I ~\'
   has the interested party \'party_~ UID ~\' as uninterested party.' as template string and
   has the value 'I will no longer inform you of new information about ~ I ~.' as reply and
+  has the agent 'Tell' as recipient.
+
+there is a concept template named 'uninteresting concept' that
+  has the value
+  '[~ U ~ uninterested in ~ C ~]
+  if
+    ( the interesting thing T is a ~ C ~ )
+  then
+    ( there is an interested party named \'party_~ UID ~\' that
+        has the CE user \'~ U ~\' as user and
+        has the value \'~ NOW ~\' as timestamp ) and
+    ( the uninteresting thing T has the interested party \'party_~ UID ~\' as uninterested party )
+  .'
+  as template string and
+  has the value 'I will no longer inform you of new information about ~ C ~.' as reply and
   has the agent 'Tell' as recipient.
 
 

@@ -21,10 +21,7 @@ public class InterestingTriggerHandler extends GeneralTriggerHandler {
         initialise(ac);
         extractTriggerDetailsUsing(triggerName);
 
-        if (thingType.toLowerCase().equals(Type.PROPERTY.toString())) {
-            // Triggered on property
-//            handlePropertyTrigger();
-        } else if (thingType.toLowerCase().equals(Type.CONCEPT.toString())) {
+        if (thingType.toLowerCase().equals(Type.CONCEPT.toString())) {
             if (thingName.equals(Concept.INTERESTING.toString())) {
                 // Triggered on concept
                 handleConceptTrigger();
@@ -33,26 +30,6 @@ public class InterestingTriggerHandler extends GeneralTriggerHandler {
             reportWarning("Unexpected trigger type (" + thingType + ") for conversation trigger handler", ac);
         }
     }
-
-    // Handle new properties
-//    private void handlePropertyTrigger() {
-//        HashSet<CeInstance> newInstances = ac.getSessionCreations().getNewInstances();
-//
-//        if (newInstances != null) {
-//            CopyOnWriteArrayList<CeInstance> copiedInstances = new CopyOnWriteArrayList<CeInstance>(ac.getSessionCreations().getNewInstances());
-//
-//            InterestingProcessor ip = new InterestingProcessor(ac, this);
-//
-//            for (CeInstance inst : copiedInstances) {
-//                // TODO: Fix for instances with parent concepts of interesting thing
-//                if (inst.isConceptNamed(ac, Concept.INTERESTING.toString())) {
-//                    System.out.println("New interesting thing: ");
-//                    System.out.println(inst);
-//                    ip.process(inst);
-//                }
-//            }
-//        }
-//    }
 
     // Handle concepts
     private void handleConceptTrigger() {
