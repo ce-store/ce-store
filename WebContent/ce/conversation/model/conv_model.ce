@@ -114,3 +114,8 @@ conceptualise a ~ matched datatype triple ~ MDT that is a matched triple.
 conceptualise a ~ direct matched triple ~ DMT that is a matched triple.
 conceptualise a ~ domain-matched triple ~ DMT that is a matched triple.
 conceptualise a ~ domain-unmatched triple ~ DUT that is a matched triple.
+
+conceptualise a ~ confirm reply ~ CR that
+  has the value V as ~ word ~.
+conceptualise a ~ positive confirm reply ~ PCR that is a confirm reply.
+conceptualise a ~ negative confirm reply ~ NCR that is a confirm reply.

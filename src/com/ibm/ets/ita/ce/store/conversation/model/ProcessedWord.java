@@ -189,6 +189,10 @@ public class ProcessedWord extends GeneralItem {
         return this.matchingInstance;
     }
 
+    public TreeMap<String, CeProperty> getMatchingRelations() {
+        return this.matchingRelations;
+    }
+
     public boolean matchesToConcept() {
         return this.matchingConcept != null;
     }

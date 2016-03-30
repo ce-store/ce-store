@@ -8,7 +8,8 @@ public enum Reply {
     STATE_INTEREST("Please state if you are interested in "),
     STATEMENT_MATCHES_MULTIPLE("Your statement matches the "),
     AGENTS(" agents."),
-    BE_SPECIFIC("Please be specific and ask again.");
+    BE_SPECIFIC("Please be specific and ask again."),
+    NOT_SAVED("Okay, I have not saved that information");
 
     private String message;
 

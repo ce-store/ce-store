@@ -23,13 +23,13 @@ public class CardGenerator {
 
     // Tell cards are used to add valid CE to the store
     public void generateTellCard(CeInstance cardInst, String convText, String fromService, String toService) {
-        generateCard(Card.TELL.toString(), convText, fromService, toService, cardInst.getInstanceName());
+        generateCard(Card.TELL.toString(), convText, fromService, toService, cardInst.getInstanceName(), null);
     }
 
     // Reply to service that sent the Tell card if its card has been accepted or not
     public void generateTellReplyCard(CeInstance cardInst, String tellText, String fromService,
             String toService) {
-        generateCard(Card.NL.toString(), Reply.SAVED.message(), fromService, toService, cardInst.getInstanceName());
+        generateCard(Card.NL.toString(), Reply.SAVED.message(), fromService, toService, cardInst.getInstanceName(), null);
     }
 
     // Generate NL card
@@ -82,7 +82,7 @@ public class CardGenerator {
     // User has declared their interest in something - create new interesting thing
     public void generateInterestingThingCard(CeInstance cardInst, String content, String fromService,
             String toService) {
-        generateCard(Card.TELL.toString(), content, fromService, toService, cardInst.getInstanceName());
+        generateCard(Card.TELL.toString(), content, fromService, toService, cardInst.getInstanceName(), null);
     }
 
     public void generatePotentialInterestingThingCard(CeInstance inst, String fromService, String toService) {
@@ -95,7 +95,7 @@ public class CardGenerator {
 
         String content = sb.toString();
         System.out.println("Content: " + content);
-        generateCard(Card.NL.toString(), content, fromService, toService, null);
+        generateCard(Card.NL.toString(), content, fromService, toService, null, null);
     }
 
     // Found an interesting thing - send to interested user
@@ -117,12 +117,29 @@ public class CardGenerator {
 
             String content = sb.toString();
             System.out.println("Content: " + content);
-            generateCard(Card.NL.toString(), content, fromService, toService, null);
+            generateCard(Card.NL.toString(), content, fromService, toService, null, null);
         }
     }
 
+    private String addAbout(ArrayList<String> referencedInsts) {
+        StringBuilder sb = new StringBuilder();
+
+    	if (referencedInsts != null) {
+	        int numReferences = referencedInsts.size();
+
+	        for (int i = 0; i < numReferences; ++i) {
+	            String inst = referencedInsts.get(i);
+	            appendToSbNoNl(sb, "  is about the thing '");
+	            appendToSbNoNl(sb, inst);
+                appendToSb(sb, "' and");
+	        }
+    	}
+
+    	return sb.toString();
+    }
+
     // Generate generic card
-    public void generateCard(String cardType, String content, String fromService, String toService, String prevCard) {
+    public void generateCard(String cardType, String content, String fromService, String toService, String prevCard, ArrayList<String> referencedInsts) {
         StringBuilder sb = new StringBuilder();
         TreeMap<String, String> ceParms = new TreeMap<String, String>();
 
@@ -130,6 +147,8 @@ public class CardGenerator {
         appendToSb(sb, "  has the timestamp '{now}' as timestamp and");
         appendToSb(sb, "  has '%CONV_TEXT%' as content and");
         appendToSb(sb, "  is from the service '%FROM_SERV%' and");
+
+        appendToSbNoNl(sb, addAbout(referencedInsts));
 
         if (prevCard != null) {
             appendToSb(sb, "  is to the service '%TO_SERV%' and");

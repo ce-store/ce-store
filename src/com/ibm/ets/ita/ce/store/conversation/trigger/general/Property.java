@@ -17,7 +17,8 @@ public enum Property {
     RECIPIENT("recipient"),
     REPLY("reply"),
     KEYWORD("keyword"),
-    QUERY("query");
+    QUERY("query"),
+    WORD("word");
 
     private String name;
 

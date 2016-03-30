@@ -5,13 +5,16 @@ import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportWarning;
 
 import java.util.ArrayList;
+import java.util.TreeMap;
 
 import com.ibm.ets.ita.ce.store.ActionContext;
 import com.ibm.ets.ita.ce.store.conversation.model.ConvSentence;
 import com.ibm.ets.ita.ce.store.conversation.model.ConvWord;
 import com.ibm.ets.ita.ce.store.conversation.model.ExtractedItem;
+import com.ibm.ets.ita.ce.store.conversation.model.NewMatchedTriple;
 import com.ibm.ets.ita.ce.store.conversation.model.ProcessedWord;
 import com.ibm.ets.ita.ce.store.conversation.trigger.general.Concept;
+import com.ibm.ets.ita.ce.store.conversation.trigger.general.Prefix;
 import com.ibm.ets.ita.ce.store.conversation.trigger.general.Word;
 import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
@@ -20,18 +23,16 @@ import com.ibm.ets.ita.ce.store.model.CeProperty;
 public class NlSentenceProcessor {
 
     private ActionContext ac = null;
-    private CeInstance cardInstance = null;
 
-    public NlSentenceProcessor(ActionContext ac, CeInstance cardInst) {
+    public NlSentenceProcessor(ActionContext ac) {
         this.ac = ac;
-        this.cardInstance = cardInst;
     }
 
     // Process words in sentence to decipher meaning
-    public ArrayList<ProcessedWord> process(ConvSentence sentence) {
+    public ArrayList<ProcessedWord> process(ConvSentence sentence, CeInstance cardInstance) {
 
         ArrayList<ProcessedWord> words = prepareWords(sentence);
-        classify(words);
+        classify(words, cardInstance);
 
         return words;
     }
@@ -52,31 +53,33 @@ public class NlSentenceProcessor {
 
     // If question word, mark ProcessedWord
     private void markQuestionWord(ProcessedWord word) {
-        if ((word.getLcWordText().equals(Word.WHO.toString())) ||
-            (word.getLcWordText().equals(Word.WHERE.toString())) ||
-            (word.getLcWordText().equals(Word.WHEN.toString())) ||
-            (word.getLcWordText().equals(Word.WHAT.toString())) ||
-            (word.getLcWordText().equals(Word.WHICH.toString())) ||
-            (word.getLcWordText().equals(Word.WHY.toString())) ||
-            (word.getLcWordText().equals(Word.LIST.toString())) ||
-            (word.getLcWordText().equals(Word.SUMMARISE.toString())) ||
-            (word.getLcWordText().equals(Word.SUMMARIZE.toString())) ||
-            (word.getLcWordText().equals(Word.COUNT.toString()))) {
+        if ((word.getLcWordText().equals(Word.WHO.toString())) || (word.getLcWordText().equals(Word.WHERE.toString()))
+                || (word.getLcWordText().equals(Word.WHEN.toString()))
+                || (word.getLcWordText().equals(Word.WHAT.toString()))
+                || (word.getLcWordText().equals(Word.WHICH.toString()))
+                || (word.getLcWordText().equals(Word.WHY.toString()))
+                || (word.getLcWordText().equals(Word.LIST.toString()))
+                || (word.getLcWordText().equals(Word.SUMMARISE.toString()))
+                || (word.getLcWordText().equals(Word.SUMMARIZE.toString()))
+                || (word.getLcWordText().equals(Word.COUNT.toString()))) {
             word.markAsQuestionWord();
         }
     }
 
     // Classify all ProcessedWords
-    private void classify(ArrayList<ProcessedWord> words) {
-        ArrayList<CeInstance> commonWords = ac.getModelBuilder().getAllInstancesForConceptNamed(ac, Concept.COMMON_WORDS.toString());
-        ArrayList<CeInstance> negationWords = ac.getModelBuilder().getAllInstancesForConceptNamed(ac, Concept.NEGATION_WORDS.toString());
+    private void classify(ArrayList<ProcessedWord> words, CeInstance cardInstance) {
+        ArrayList<CeInstance> commonWords = ac.getModelBuilder().getAllInstancesForConceptNamed(ac,
+                Concept.COMMON_WORDS.toString());
+        ArrayList<CeInstance> negationWords = ac.getModelBuilder().getAllInstancesForConceptNamed(ac,
+                Concept.NEGATION_WORDS.toString());
 
         for (ProcessedWord word : words) {
             word.classify(ac, commonWords, negationWords, cardInstance);
         }
     }
 
-    // Find entities matching words in sentence and create an ExtractedItem for each
+    // Find entities matching words in sentence and create an ExtractedItem for
+    // each
     public void extractMatchingEntities(ConvSentence sentence, ArrayList<ProcessedWord> words) {
         ExtractedItem lastExtracted = null;
 
@@ -106,7 +109,8 @@ public class NlSentenceProcessor {
         CeConcept concept = retrieveSingleConceptFrom(word.listGroundedConcepts(), word);
 
         if (concept != null) {
-            reportDebug("I got an object concept (" + concept.getConceptName()  + "), from word: " + word.toString(), ac);
+            reportDebug("I got an object concept (" + concept.getConceptName() + "), from word: " + word.toString(),
+                    ac);
             ExtractedItem extractedConcept = new ExtractedItem(word, concept);
 
             if (lastExtracted != null) {
@@ -157,7 +161,9 @@ public class NlSentenceProcessor {
 
             if (instance != null) {
                 word.setChosenInstance(instance);
-                reportDebug("I got an object instance (" + instance.getInstanceName()  + "), from word: " + word.toString(), ac);
+                reportDebug(
+                        "I got an object instance (" + instance.getInstanceName() + "), from word: " + word.toString(),
+                        ac);
                 ExtractedItem extractedInstance = new ExtractedItem(word, instance);
 
                 if (lastExtracted != null) {
@@ -166,8 +172,8 @@ public class NlSentenceProcessor {
 
                 word.addConnectedWordsTo(extractedInstance);
                 lastExtracted = extractedInstance;
-            }  else {
-                 reportWarning("No object instance found for word: " + word.toString(), ac);
+            } else {
+                reportWarning("No object instance found for word: " + word.toString(), ac);
             }
         }
     }
@@ -179,7 +185,7 @@ public class NlSentenceProcessor {
         if (concepts.isEmpty()) {
             reportError("No grounded concept found for word: " + word.toString(), ac);
         } else if (concepts.size() > 1) {
-            reportError("Too many (" + concepts.size() + ") grounded concepts found for word: "  + word.toString(), ac);
+            reportError("Too many (" + concepts.size() + ") grounded concepts found for word: " + word.toString(), ac);
         } else {
             result = concepts.get(0);
         }
@@ -194,7 +200,8 @@ public class NlSentenceProcessor {
         if (instances.isEmpty()) {
             reportError("No grounded instance found for word: " + word.toString(), ac);
         } else if (instances.size() > 1) {
-            reportDebug("Too many (" + instances.size() + ") grounded instances found for word: "  + word.toString(), ac);
+            reportDebug("Too many (" + instances.size() + ") grounded instances found for word: " + word.toString(),
+                    ac);
             result = chooseLongestNameFrom(instances);
         } else {
             result = instances.get(0);
@@ -220,5 +227,184 @@ public class NlSentenceProcessor {
         }
 
         return result;
+    }
+
+    public CeProperty getMatchingProperty(ProcessedWord word, NlAnswerGenerator ag) {
+        CeProperty wordProperty = null;
+
+        if (word.isGroundedOnProperty()) {
+            TreeMap<String, CeProperty> matchingRelations = word.getMatchingRelations();
+
+            if (matchingRelations != null && matchingRelations.size() == 1) {
+                wordProperty = matchingRelations.firstEntry().getValue();
+            } else {
+                ArrayList<ExtractedItem> items = word.getExtractedItems();
+
+                if (items != null) {
+                    for (ExtractedItem item : items) {
+                        if (item.isPropertyItem()) {
+                            ArrayList<CeProperty> topLevelProperties = ag.getTopLevelProperties(item.getPropertyList());
+
+                            if (!topLevelProperties.isEmpty()) {
+                                wordProperty = topLevelProperties.get(0);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return wordProperty;
+    }
+
+    public CeInstance getMatchingInstance(ProcessedWord word) {
+        CeInstance wordInstance = null;
+
+        if (word.isGroundedOnInstance()) {
+            wordInstance = word.getMatchingInstance();
+
+            if (wordInstance == null) {
+                ArrayList<ExtractedItem> extractedItems = word.getExtractedItems();
+
+                if (extractedItems != null) {
+                    for (ExtractedItem item : extractedItems) {
+                        if (item.isInstanceItem()) {
+                            wordInstance = item.getInstance();
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        return wordInstance;
+    }
+
+    public CeConcept getMatchingConcept(ProcessedWord word) {
+        CeConcept wordConcept = null;
+
+        if (word.isGroundedOnConcept()) {
+            wordConcept = word.getMatchingConcept();
+
+            if (wordConcept == null) {
+                ArrayList<ExtractedItem> extractedItems = word.getExtractedItems();
+
+                if (extractedItems != null) {
+                    for (ExtractedItem item : extractedItems) {
+                        if (item.isConceptItem()) {
+                            wordConcept = item.getConcept();
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        return wordConcept;
+    }
+
+    private boolean appearsBefore(ProcessedWord w1, ProcessedWord w2, ArrayList<ProcessedWord> words) {
+        return words.indexOf(w1) < words.indexOf(w2);
+    }
+
+    public ArrayList<NewMatchedTriple> matchTriples(ArrayList<ProcessedWord> words, NlAnswerGenerator ag) {
+        ArrayList<NewMatchedTriple> matchedTriples = new ArrayList<NewMatchedTriple>();
+
+        // TODO Auto-generated method stub
+        System.out.println("\nMatch triples");
+        System.out.println("Words: " + words);
+
+        ArrayList<ProcessedWord> properties = new ArrayList<ProcessedWord>();
+        ArrayList<ProcessedWord> instances = new ArrayList<ProcessedWord>();
+        ArrayList<ProcessedWord> concepts = new ArrayList<ProcessedWord>();
+        ArrayList<ProcessedWord> ungrounded = new ArrayList<ProcessedWord>();
+
+        // Sort words into properties, instances, concepts and ungrounded words
+        for (ProcessedWord word : words) {
+            if (word.isGroundedOnProperty()) {
+                properties.add(word);
+            } else if (word.isGroundedOnInstance()) {
+                instances.add(word);
+            } else if (word.isGroundedOnConcept()) {
+                concepts.add(word);
+            } else {
+                ungrounded.add(word);
+            }
+        }
+
+        System.out.println("\nProperties: " + properties);
+        System.out.println("Instances: " + instances);
+        System.out.println("Concepts: " + concepts);
+        System.out.println("Ungrounded: " + ungrounded);
+
+        // Loop through properties and try and match instances to them
+        for (ProcessedWord propertyWord : properties) {
+            // TODO: Try with all extracted
+            CeProperty property = getMatchingProperty(propertyWord, ag);
+
+            if (property != null) {
+                ArrayList<CeInstance> matchedDomains = new ArrayList<CeInstance>();
+                ArrayList<CeInstance> matchedRanges = new ArrayList<CeInstance>();
+
+                CeConcept domain = property.getDomainConcept();
+                CeConcept range = property.getRangeConcept();
+
+                for (ProcessedWord instanceWord : instances) {
+                    // TODO: Try with all extracted
+                    CeInstance instance = getMatchingInstance(instanceWord);
+
+                    if (instance.isConcept(domain)) {
+                        matchedDomains.add(instance);
+                    }
+
+                    if (instance.isConcept(range)) {
+                        matchedRanges.add(instance);
+                    }
+                }
+
+                NewMatchedTriple matchedTriple = null;
+                ArrayList<CeInstance> processedInstances = new ArrayList<CeInstance>();
+
+                // Add matched triples
+                for (CeInstance matchedDomain : matchedDomains) {
+                    for (CeInstance matchedRange : matchedRanges) {
+                        if (matchedDomain != matchedRange && !processedInstances.contains(matchedDomain)
+                                && !processedInstances.contains(matchedRange)) {
+                            matchedTriple = new NewMatchedTriple(matchedDomain, property, matchedRange);
+                            matchedTriples.add(matchedTriple);
+                            processedInstances.add(matchedDomain);
+                            processedInstances.add(matchedRange);
+                        }
+                    }
+                }
+
+                // If nothing matched on <instance:property:instance> try
+                // <concept:property:instance> or <instance:property:concept>
+                if (matchedTriples.isEmpty()) {
+                    for (ProcessedWord conceptWord : concepts) {
+                        for (ProcessedWord instanceWord : instances) {
+                            CeConcept concept = conceptWord.getMatchingConcept();
+                            CeInstance instance = getMatchingInstance(instanceWord);
+
+                            if ((concept.equals(domain) || concept.hasDirectParent(domain)) && instance.isConcept(range)
+                                    && appearsBefore(conceptWord, instanceWord, words)) {
+                                String uid = ac.getModelBuilder().getNextUid(ac, Prefix.UNKNOWN.toString());
+                                matchedTriple = new NewMatchedTriple(concept, uid, property, instance);
+                                matchedTriples.add(matchedTriple);
+                            } else if (instance.isConcept(domain)
+                                    && (concept.equals(range) || concept.hasDirectParent(range))
+                                    && appearsBefore(instanceWord, conceptWord, words)) {
+                                String uid = ac.getModelBuilder().getNextUid(ac, Prefix.UNKNOWN.toString());
+                                matchedTriple = new NewMatchedTriple(instance, property, concept, uid);
+                                matchedTriples.add(matchedTriple);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return matchedTriples;
     }
 }

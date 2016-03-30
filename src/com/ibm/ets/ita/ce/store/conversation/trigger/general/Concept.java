@@ -13,7 +13,10 @@ public enum Concept {
     COMMAND_WORD("command word"),
     PROPERTY_TEMPLATE("property template"),
     INSTANCE_TEMPLATE("instance template"),
-    CONCEPT_TEMPLATE("concept template");
+    CONCEPT_TEMPLATE("concept template"),
+    CONFIRM_REPLY("confirm reply"),
+    POSITIVE_CONFIRM_REPLY("positive confirm reply"),
+    NEGATIVE_CONFIRM_REPLY("negative confirm reply");
 
     private String name;
 
