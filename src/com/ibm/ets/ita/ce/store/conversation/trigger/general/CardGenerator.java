@@ -13,11 +13,11 @@ import com.ibm.ets.ita.ce.store.model.CeSentence;
 
 public class CardGenerator {
 
-    private CeGenerator ce;
+    private ConvCeGenerator ce;
     private ActionContext ac;
 
     public CardGenerator(ActionContext ac) {
-        ce = new CeGenerator(ac);
+        ce = new ConvCeGenerator(ac);
         this.ac = ac;
     }
 

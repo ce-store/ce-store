@@ -14,7 +14,6 @@ import com.ibm.ets.ita.ce.store.conversation.model.ExtractedItem;
 import com.ibm.ets.ita.ce.store.conversation.model.NewMatchedTriple;
 import com.ibm.ets.ita.ce.store.conversation.model.ProcessedWord;
 import com.ibm.ets.ita.ce.store.conversation.trigger.general.Concept;
-import com.ibm.ets.ita.ce.store.conversation.trigger.general.Prefix;
 import com.ibm.ets.ita.ce.store.conversation.trigger.general.Word;
 import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
@@ -363,7 +362,6 @@ public class NlSentenceProcessor {
                     }
                 }
 
-                NewMatchedTriple matchedTriple = null;
                 ArrayList<CeInstance> processedInstances = new ArrayList<CeInstance>();
 
                 // Add matched triples
@@ -371,8 +369,7 @@ public class NlSentenceProcessor {
                     for (CeInstance matchedRange : matchedRanges) {
                         if (matchedDomain != matchedRange && !processedInstances.contains(matchedDomain)
                                 && !processedInstances.contains(matchedRange)) {
-                            matchedTriple = new NewMatchedTriple(matchedDomain, property, matchedRange);
-                            matchedTriples.add(matchedTriple);
+                            matchedTriples.add(new NewMatchedTriple(matchedDomain, property, matchedRange));
                             processedInstances.add(matchedDomain);
                             processedInstances.add(matchedRange);
                         }
@@ -389,15 +386,57 @@ public class NlSentenceProcessor {
 
                             if ((concept.equals(domain) || concept.hasDirectParent(domain)) && instance.isConcept(range)
                                     && appearsBefore(conceptWord, instanceWord, words)) {
-                                String uid = ac.getModelBuilder().getNextUid(ac, Prefix.UNKNOWN.toString());
-                                matchedTriple = new NewMatchedTriple(concept, uid, property, instance);
-                                matchedTriples.add(matchedTriple);
+                                matchedTriples.add(new NewMatchedTriple(concept, property, instance, ac));
                             } else if (instance.isConcept(domain)
                                     && (concept.equals(range) || concept.hasDirectParent(range))
                                     && appearsBefore(instanceWord, conceptWord, words)) {
-                                String uid = ac.getModelBuilder().getNextUid(ac, Prefix.UNKNOWN.toString());
-                                matchedTriple = new NewMatchedTriple(instance, property, concept, uid);
-                                matchedTriples.add(matchedTriple);
+                                matchedTriples.add(new NewMatchedTriple(instance, property, concept, ac));
+                            }
+                        }
+                    }
+                }
+
+                // If nothing matched, try <instance:property:MISSING> or <MISSING:property:instance>
+                if (matchedTriples.isEmpty()) {
+                    for (ProcessedWord instanceWord : instances) {
+                        CeInstance instance = getMatchingInstance(instanceWord);
+
+                        if (appearsBefore(instanceWord, propertyWord, words)) {
+                            if (instance.isConcept(domain)) {
+                                matchedTriples.add(new NewMatchedTriple(instance, property, range, ac));
+                            } else if (instance.isConcept(range)) {
+                                matchedTriples.add(new NewMatchedTriple(domain, property, instance, ac));
+                            }
+                        } else {
+                            if (instance.isConcept(range)) {
+                                matchedTriples.add(new NewMatchedTriple(domain, property, instance, ac));
+                            } else if (instance.isConcept(domain)) {
+                                matchedTriples.add(new NewMatchedTriple(instance, property, range, ac));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // If no properties, try matching instances <instance:MISSING:instance>
+        if (properties.isEmpty()) {
+            for (ProcessedWord domainWord: instances) {
+                for (ProcessedWord rangeWord : instances) {
+                    if (domainWord != rangeWord && appearsBefore(domainWord, rangeWord, instances)) {
+                        CeInstance domain = getMatchingInstance(domainWord);
+                        CeInstance range = getMatchingInstance(rangeWord);
+                        CeConcept[] domainConcepts = domain.getDirectConcepts();
+
+                        for (CeConcept domainConcept : domainConcepts) {
+                            CeProperty[] domainProperties = domainConcept.getDirectProperties();
+
+                            for (CeProperty domainProperty : domainProperties) {
+                                CeConcept rangeConcept = domainProperty.getRangeConcept();
+
+                                if (range.isConcept(rangeConcept)) {
+                                    matchedTriples.add(new NewMatchedTriple(domain, domainProperty, range));
+                                }
                             }
                         }
                     }

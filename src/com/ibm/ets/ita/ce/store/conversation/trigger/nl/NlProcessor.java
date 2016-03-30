@@ -15,6 +15,7 @@ import com.ibm.ets.ita.ce.store.conversation.model.ProcessedWord;
 import com.ibm.ets.ita.ce.store.conversation.trigger.general.Card;
 import com.ibm.ets.ita.ce.store.conversation.trigger.general.CardGenerator;
 import com.ibm.ets.ita.ce.store.conversation.trigger.general.Concept;
+import com.ibm.ets.ita.ce.store.conversation.trigger.general.ConvCeGenerator;
 import com.ibm.ets.ita.ce.store.conversation.trigger.general.GeneralProcessor;
 import com.ibm.ets.ita.ce.store.conversation.trigger.general.Property;
 import com.ibm.ets.ita.ce.store.conversation.trigger.general.Reply;
@@ -285,7 +286,9 @@ public class NlProcessor extends GeneralProcessor {
 
         if (triples.size() == 1) {
             NewMatchedTriple triple = triples.get(0);
-            sb.append(triple.getSentence());
+
+            ConvCeGenerator ccg = new ConvCeGenerator(ac);
+            sb.append(ccg.generateFactFromTriple(triple));
 
             cardType = Card.CONFIRM.toString();
             referencedInsts = triple.getReferencedInstances();

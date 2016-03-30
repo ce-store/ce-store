@@ -2,7 +2,7 @@ package com.ibm.ets.ita.ce.store.conversation.trigger.tell;
 
 import com.ibm.ets.ita.ce.store.ActionContext;
 import com.ibm.ets.ita.ce.store.conversation.trigger.general.CardGenerator;
-import com.ibm.ets.ita.ce.store.conversation.trigger.general.CeGenerator;
+import com.ibm.ets.ita.ce.store.conversation.trigger.general.ConvCeGenerator;
 import com.ibm.ets.ita.ce.store.conversation.trigger.general.GeneralProcessor;
 import com.ibm.ets.ita.ce.store.conversation.trigger.general.Property;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
@@ -10,13 +10,13 @@ import com.ibm.ets.ita.ce.store.model.CeInstance;
 public class TellProcessor extends GeneralProcessor {
 
     private TellTriggerHandler th = null;
-    private CeGenerator ce;
+    private ConvCeGenerator ce;
 
     public TellProcessor(ActionContext ac, TellTriggerHandler th) {
         this.ac = ac;
         this.th = th;
         cg = new CardGenerator(ac);
-        ce = new CeGenerator(ac);
+        ce = new ConvCeGenerator(ac);
     }
 
     // Process Tell card

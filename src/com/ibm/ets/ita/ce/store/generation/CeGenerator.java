@@ -25,13 +25,10 @@ public class CeGenerator extends GeneralGenerator {
 	protected static final String CON_RELCON = "relation concept";
 
 	private String connector = null;
-	protected StringBuilder sb = null;
 
-	protected CeGenerator(ActionContext pAc, StringBuilder pSb) {
-		super(pAc);
-		
-		this.sb = pSb;
-	}
+    protected CeGenerator(ActionContext pAc) {
+        super(pAc);
+    }
 
 	public static String getNewUidFor(ActionContext pAc, CeConcept pCon) {
 		String uidPrefix = null;
@@ -46,90 +43,114 @@ public class CeGenerator extends GeneralGenerator {
 		return pAc.getModelBuilder().getNextUid(pAc, uidPrefix);
 	}
 
-	protected void ceDeclarationLong(String pDeterminer, String pConName, String pRawInstName) {
+	protected String ceDeclarationLong(String pDeterminer, String pConName, String pRawInstName) {
+	    StringBuilder sb = new StringBuilder();
 		String encInstName = encodeAndEncloseInQuotesIfNeeded(pRawInstName);
 
-		appendToSbNoNl(this.sb, "there is ");
-		appendToSbNoNl(this.sb, pDeterminer);
-		appendToSbNoNl(this.sb, " ");
-		appendToSbNoNl(this.sb, pConName);
-		appendToSbNoNl(this.sb, " named ");
-		appendToSbNoNl(this.sb, encInstName);
+		appendToSbNoNl(sb, "there is ");
+		appendToSbNoNl(sb, pDeterminer);
+		appendToSbNoNl(sb, " ");
+		appendToSbNoNl(sb, pConName);
+		appendToSbNoNl(sb, " named ");
+		appendToSbNoNl(sb, encInstName);
 
 		this.connector = CONN_THAT;
+		return sb.toString();
 	}
-	
-	protected void ceDeclarationShort(String pConName, String pRawInstName) {
+
+	protected String ceDeclarationShort(String pConName, String pRawInstName) {
+        StringBuilder sb = new StringBuilder();
 		String encInstName = encodeAndEncloseInQuotesIfNeeded(pRawInstName);
 
-		appendToSbNoNl(this.sb, "the ");
-		appendToSbNoNl(this.sb, pConName);
-		appendToSbNoNl(this.sb, " ");
-		appendToSbNoNl(this.sb, encInstName);
+		appendToSbNoNl(sb, "the ");
+		appendToSbNoNl(sb, pConName);
+		appendToSbNoNl(sb, " ");
+		appendToSbNoNl(sb, encInstName);
 
 		this.connector = CONN_BLANK;
+        return sb.toString();
 	}
 
-	protected void ceAddFnProperty(String pPropName, String pRange, String pRawVal) {
+	protected String ceAddFnProperty(String pPropName, String pRange, String pRawVal) {
+        StringBuilder sb = new StringBuilder();
 		String encVal = encodeAndEncloseInQuotesIfNeeded(pRawVal);
 
 		if (!encVal.isEmpty()) {
 			appendConnector();
-			appendToSbNoNl(this.sb, INDENT);
-			appendToSbNoNl(this.sb, "has ");
-			appendRangeTextFor(pRange);
-			appendToSbNoNl(this.sb, encVal);
-			appendToSbNoNl(this.sb, " as ");
-			appendToSbNoNl(this.sb, pPropName);
+			appendToSbNoNl(sb, INDENT);
+			appendToSbNoNl(sb, "has ");
+			appendToSbNoNl(sb, appendRangeTextFor(pRange));
+			appendToSbNoNl(sb, encVal);
+			appendToSbNoNl(sb, " as ");
+			appendToSbNoNl(sb, pPropName);
 		}
+        return sb.toString();
 	}
 
-	protected void ceAddVsProperty(String pPropName, String pRange, String pRawVal) {
+	protected String ceAddVsProperty(String pPropName, String pRange, String pRawVal) {
+        StringBuilder sb = new StringBuilder();
 		String encVal = encodeAndEncloseInQuotesIfNeeded(pRawVal);
 
 		if (!encVal.isEmpty()) {
 			appendConnector();
-			appendToSbNoNl(this.sb, INDENT);
-			appendToSbNoNl(this.sb, pPropName);
-			appendToSbNoNl(this.sb, " ");
-			appendRangeTextFor(pRange);
-			appendToSbNoNl(this.sb, encVal);
+			appendToSbNoNl(sb, INDENT);
+			appendToSbNoNl(sb, pPropName);
+			appendToSbNoNl(sb, " ");
+            appendToSbNoNl(sb, appendRangeTextFor(pRange));
+			appendToSbNoNl(sb, encVal);
 		}
+        return sb.toString();
 	}
-	
-	protected void ceSecondaryConcept(String pDeterminer, String pConName) {
+
+	protected String ceSecondaryConcept(String pDeterminer, String pConName) {
+        StringBuilder sb = new StringBuilder();
 		appendConnector();
-		appendToSbNoNl(this.sb, INDENT);
-		appendToSbNoNl(this.sb, "is ");
-		appendToSbNoNl(this.sb, pDeterminer);
-		appendToSbNoNl(this.sb, " ");
-		appendToSbNoNl(this.sb, pConName);
+		appendToSbNoNl(sb, INDENT);
+		appendToSbNoNl(sb, "is ");
+		appendToSbNoNl(sb, pDeterminer);
+		appendToSbNoNl(sb, " ");
+		appendToSbNoNl(sb, pConName);
+        return sb.toString();
 	}
 
-	protected void ceEndSentence() {
-		appendToSb(this.sb, ".");
-		appendToSb(this.sb, "");	//An extra blank line to separate the next sentence
+    protected String ceEndFinalSentence() {
+        StringBuilder sb = new StringBuilder();
+        appendToSb(sb, ".");
+        return sb.toString();
+    }
+
+    protected String ceEndSentence() {
+        StringBuilder sb = new StringBuilder();
+        appendToSb(sb, ".");
+        appendToSb(sb, "");    //An extra blank line to separate the next sentence
+        return sb.toString();
+    }
+
+	protected String ceAnnotationForInvalidCe() {
+        StringBuilder sb = new StringBuilder();
+		appendToSb(sb, "Note: This CE is invalid.");
+        return sb.toString();
 	}
 
-	protected void ceAnnotationForInvalidCe() {
-		appendToSb(this.sb, "Note: This CE is invalid.");
-	}
-
-	private void appendConnector() {
+	private String appendConnector() {
+        StringBuilder sb = new StringBuilder();
 		if (this.connector != null) {
-			appendToSb(this.sb, this.connector);
+			appendToSb(sb, this.connector);
 			this.connector = null;
 		} else {
-			appendToSb(this.sb, CONN_AND);
+			appendToSb(sb, CONN_AND);
 		}
+        return sb.toString();
 	}
 
-	private void appendRangeTextFor(String pRange) {
+	private String appendRangeTextFor(String pRange) {
+        StringBuilder sb = new StringBuilder();
 		if (pRange != null) {
-			appendToSbNoNl(this.sb, "the ");
-			appendToSbNoNl(this.sb, pRange);
-			appendToSbNoNl(this.sb, " ");
+			appendToSbNoNl(sb, "the ");
+			appendToSbNoNl(sb, pRange);
+			appendToSbNoNl(sb, " ");
 		}
+        return sb.toString();
 	}
 
 }
