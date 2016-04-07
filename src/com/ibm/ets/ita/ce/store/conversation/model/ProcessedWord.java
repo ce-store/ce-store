@@ -193,6 +193,10 @@ public class ProcessedWord extends GeneralItem {
         return this.matchingRelations;
     }
 
+    public TreeMap<String, CeProperty> getReferredExactRelations() {
+        return referredExactRelations;
+    }
+
     public boolean matchesToConcept() {
         return this.matchingConcept != null;
     }
@@ -376,20 +380,17 @@ public class ProcessedWord extends GeneralItem {
     }
 
     private boolean isAnaphor(String word) {
-        return word.equals(Anaphor.HE.toString())
-            || word.equals(Anaphor.HIS.toString())
-            || word.equals(Anaphor.HIM.toString())
-            || word.equals(Anaphor.SHE.toString())
-            || word.equals(Anaphor.HER.toString())
-            || word.equals(Anaphor.THEY.toString())
-            || word.equals(Anaphor.IT.toString());
+        return isMaleAnaphor(word)
+            || isFemaleAnaphor(word)
+            || isUngenderedAnaphor(word)
+            || word.equals(Anaphor.IT.toString())
+            || word.equals(Anaphor.ITS.toString());
     }
 
     private void checkForAnaphoricReference(ActionContext pAc, CeInstance pCardInstance) {
         String strippedWord = getDeclutteredText();
 
         if (isAnaphor(strippedWord)) {
-
             CeInstance prevCard = pCardInstance.getSingleInstanceFromPropertyNamed(pAc, PROP_REPLY);
             ArrayList<ArrayList<CeInstance>> allPotentialCorrections = new ArrayList<ArrayList<CeInstance>>();
 
@@ -416,7 +417,8 @@ public class ProcessedWord extends GeneralItem {
                             && prevCardAbout.isConceptNamed(pAc, CON_PERSON)) {
                         // word == "they" and last talked about instance was a person
                         matchFound = true;
-                    } else if (strippedWord.equals(Anaphor.IT.toString())) {
+                    } else if (strippedWord.equals(Anaphor.IT.toString())
+                            || strippedWord.equals(Anaphor.ITS.toString())) {
                         // word == "it" and last talked about instance was anything
                         matchFound = true;
                     }
@@ -462,6 +464,93 @@ public class ProcessedWord extends GeneralItem {
                 }
             }
         }
+    }
+
+    private boolean overwriteReferences(ActionContext ac, CeInstance instance, CeProperty property, ProcessedWord nextWord) {
+        CeInstance referringInstance = instance.getSingleInstanceFromPropertyNamed(ac, property.getPropertyName());
+        System.out.println("Property: " + property);
+
+        if (referringInstance != null) {
+            // remove current matches for this word
+            matchingInstance = null;
+            removeReferredExactInstance(instance);
+
+            // add new match for this word
+            partialInstanceReference = true;
+            partialStartWord = true;
+            addReferredExactInstance(referringInstance);
+
+            // add new reference for next word
+            nextWord.partialInstanceReference = true;
+            nextWord.partialStartWord = false;
+
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private void checkForPossessiveAnaphors(ActionContext ac, CeInstance cardInstance) {
+        String strippedWord = getDeclutteredText();
+
+        if (refersToInstancesExactly() && isPossessivePronoun(strippedWord)) {
+            ProcessedWord nextWord = getNextProcessedWord();
+
+            if (nextWord.isGroundedOnProperty()) {
+                System.out.println("\nCheck for possessive anaphors");
+                System.out.println(this);
+
+                TreeMap<String, CeProperty> referredRelations = nextWord.getReferredExactRelations();
+                TreeMap<String, CeProperty> matchingRelations = nextWord.getMatchingRelations();
+                CeInstance instance = referredExactInstances.firstEntry().getValue();
+
+                System.out.println("Instance: " + instance);
+
+                System.out.println("\nNext word: " + nextWord);
+                System.out.println("Referred relations: " + referredRelations);
+                System.out.println("Matching relations: " + matchingRelations);
+
+                ArrayList<CeProperty> propertiesToRemove = new ArrayList<CeProperty>();
+
+                // Check referred relations
+                if (referredRelations != null) {
+                    for (String propertyName : referredRelations.keySet()) {
+                        CeProperty property = referredRelations.get(propertyName);
+                        boolean removeProperty = overwriteReferences(ac, instance, property, nextWord);
+
+                        if (removeProperty) {
+                            // add property to removal list
+                            propertiesToRemove.add(property);
+                        }
+                    }
+                }
+
+                // Check matching relations
+                if (matchingRelations != null) {
+                    for (String propertyName : matchingRelations.keySet()) {
+                        CeProperty property = matchingRelations.get(propertyName);
+                        boolean removeProperty = overwriteReferences(ac, instance, property, nextWord);
+
+                        if (removeProperty) {
+                            // add property to removal list
+                            propertiesToRemove.add(property);
+                        }
+                    }
+                }
+
+                // Remove resolved relations
+                for (CeProperty property : propertiesToRemove) {
+                    nextWord.removeRelation(property);
+                }
+            }
+        }
+    }
+
+    private boolean isPossessivePronoun(String word) {
+        return word.equals(Anaphor.HIS.toString())
+            || word.equals(Anaphor.HER.toString())
+            || word.equals(Anaphor.THEIR.toString())
+            || word.equals(Anaphor.ITS.toString());
     }
 
     private boolean isMaleAnaphor(String word) {
@@ -550,6 +639,10 @@ public class ProcessedWord extends GeneralItem {
         checkForPartialMatchingConcepts(pAc, decText);
         checkForPartialMatchingRelations(pAc, decText);
         checkForPartialMatchingInstances(pAc, decText);
+    }
+
+    public void cluster(ActionContext ac, CeInstance cardInstance) {
+        checkForPossessiveAnaphors(ac, cardInstance);
     }
 
     private void checkForReferringConcepts(ActionContext pAc) {
@@ -986,6 +1079,16 @@ public class ProcessedWord extends GeneralItem {
         }
     }
 
+    private void removeRelation(CeProperty property) {
+        if (referredExactRelations != null) {
+            referredExactRelations.remove(property.formattedFullPropertyName());
+        }
+
+        if (matchingRelations != null) {
+            matchingRelations.remove(property.formattedFullPropertyName());
+        }
+    }
+
     public Collection<CeProperty> listReferredExactRelations() {
         Collection<CeProperty> result = null;
 
@@ -1141,27 +1244,33 @@ public class ProcessedWord extends GeneralItem {
         return result;
     }
 
-    private void addReferredExactInstance(CeInstance pInst) {
-        if (this.referredExactInstances == null) {
-            this.referredExactInstances = new TreeMap<String, CeInstance>();
+    private void addReferredExactInstance(CeInstance inst) {
+        if (referredExactInstances == null) {
+            referredExactInstances = new TreeMap<String, CeInstance>();
         }
 
-        this.referredExactInstances.put(pInst.getInstanceName(), pInst);
+        referredExactInstances.put(inst.getInstanceName(), inst);
     }
 
-    private void addReferredMaybeInstance(CeInstance pInst) {
+    private void removeReferredExactInstance(CeInstance inst) {
+        if (referredExactInstances != null) {
+            referredExactInstances.remove(inst.getInstanceName());
+        }
+    }
+
+    private void addReferredMaybeInstance(CeInstance inst) {
         if (referredMaybeInstances == null) {
             referredMaybeInstances = new TreeMap<String, CeInstance>();
         }
 
-        referredMaybeInstances.put(pInst.getInstanceName(), pInst);
+        referredMaybeInstances.put(inst.getInstanceName(), inst);
     }
 
     public Collection<CeInstance> listReferredExactInstances() {
         Collection<CeInstance> result = null;
 
-        if (this.referredExactInstances != null) {
-            result = this.referredExactInstances.values();
+        if (referredExactInstances != null) {
+            result = referredExactInstances.values();
         } else {
             result = new ArrayList<CeInstance>();
         }

@@ -75,6 +75,10 @@ public class NlSentenceProcessor {
         for (ProcessedWord word : words) {
             word.classify(ac, commonWords, negationWords, cardInstance);
         }
+
+        for (ProcessedWord word : words) {
+            word.cluster(ac, cardInstance);
+        }
     }
 
     // Find entities matching words in sentence and create an ExtractedItem for

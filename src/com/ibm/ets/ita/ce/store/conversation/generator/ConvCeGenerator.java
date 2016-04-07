@@ -33,7 +33,7 @@ public class ConvCeGenerator extends CeGenerator {
 	private static final String CON_NUMWORD = "number word";
 
 	protected ConvCeGenerator(ActionContext pAc, StringBuilder pSb) {
-		super(pAc, pSb);
+		super(pAc);
 	}
 
 	public static void generateConvCeFor(ActionContext pAc, SentenceProcessor pSp, ConvText pCt, StringBuilder pSb) {

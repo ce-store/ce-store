@@ -3,7 +3,6 @@ package com.ibm.ets.ita.ce.store.conversation.model;
 import java.util.ArrayList;
 
 import com.ibm.ets.ita.ce.store.ActionContext;
-import com.ibm.ets.ita.ce.store.conversation.trigger.general.Prefix;
 import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
 import com.ibm.ets.ita.ce.store.model.CeProperty;
@@ -32,7 +31,7 @@ public class NewMatchedTriple {
     // <concept:property:instance>
     public NewMatchedTriple (CeConcept domainConcept, CeProperty property, CeInstance rangeInstance, ActionContext ac) {
         this.domain = domainConcept;
-        this.domainName = ac.getModelBuilder().getNextUid(ac, Prefix.UNKNOWN.toString());
+        this.domainName = ac.getModelBuilder().getNextUid(ac, domain.getConceptName().substring(0, 1).toLowerCase());
         this.property = property;
         this.range = property.getRangeConcept();
         this.rangeInstance = rangeInstance;
@@ -46,7 +45,7 @@ public class NewMatchedTriple {
         this.domainName = domainInstance.getInstanceName();
         this.property = property;
         this.range = rangeConcept;
-        this.rangeName = ac.getModelBuilder().getNextUid(ac, Prefix.UNKNOWN.toString());
+        this.rangeName = ac.getModelBuilder().getNextUid(ac, range.getConceptName().substring(0, 1).toLowerCase());
     }
 
     public CeConcept getDomain() {

@@ -67,7 +67,6 @@ public class NlProcessor extends GeneralProcessor {
 
                 // Find agents matching keywords as defined in config
                 findMatchingAgents(sentence.getSentenceText(), matchingAgents, matchingKeywords);
-                System.out.println("Matching agents: " + matchingAgents);
 
                 if (matchingAgents.size() > 1) {
                     // Confirm which agent with user
@@ -201,7 +200,7 @@ public class NlProcessor extends GeneralProcessor {
     private void forwardTellResponse(CeInstance cardInst, String convText) {
         if (!templateAgentAlreadySentReply(cardInst) && convText.equals(Reply.SAVED.message())) {
             String humanAgent = findHumanAgent(cardInst);
-            cg.generateNLCard(cardInst, convText, th.getTriggerName(), humanAgent, null);
+            cg.generateCard(Card.NL.toString(), convText, th.getTriggerName(), humanAgent, cardInst.getInstanceName(), null);
         }
     }
 
@@ -273,7 +272,7 @@ public class NlProcessor extends GeneralProcessor {
 
         // Generate NL Card with reply
         String humanAgent = findHumanAgent(cardInst);
-        cg.generateNLCard(cardInst, sb.toString(), th.getTriggerName(), humanAgent, referencedItems);
+        cg.generateCard(Card.NL.toString(), sb.toString(), th.getTriggerName(), humanAgent, cardInst.getInstanceName(), referencedItems);
     }
 
     private void replyToNlFact(CeInstance cardInst, ArrayList<NewMatchedTriple> triples) {
