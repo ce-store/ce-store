@@ -373,9 +373,15 @@ public class NlSentenceProcessor {
                     for (CeInstance matchedRange : matchedRanges) {
                         if (matchedDomain != matchedRange && !processedInstances.contains(matchedDomain)
                                 && !processedInstances.contains(matchedRange)) {
-                            matchedTriples.add(new NewMatchedTriple(matchedDomain, property, matchedRange));
-                            processedInstances.add(matchedDomain);
-                            processedInstances.add(matchedRange);
+                            NewMatchedTriple triple = new NewMatchedTriple(matchedDomain, property, matchedRange);
+                            NewMatchedTriple inverse = new NewMatchedTriple(matchedRange, property, matchedDomain);
+
+                            // Check triple hasn't already been added as itself or its inverse (used for multiple property matches)
+                            if (!matchedTriples.contains(triple) && !matchedTriples.contains(inverse)) {
+                                matchedTriples.add(triple);
+                                processedInstances.add(matchedDomain);
+                                processedInstances.add(matchedRange);
+                            }
                         }
                     }
                 }

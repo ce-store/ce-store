@@ -120,4 +120,13 @@ public class NewMatchedTriple {
     public String toString() {
         return "[MatchedTriple] (" + domain + ") " + getDomainName() + ":" + getPropertyName() + ":" + "(" + range + ") " + getRangeName();
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof NewMatchedTriple) {
+            NewMatchedTriple triple = (NewMatchedTriple) obj;
+            return domainInstance.equals(triple.getDomainInstance()) && property.equals(triple.getProperty()) && rangeInstance.equals(triple.getRangeInstance());
+        }
+        return false;
+    }
 }
