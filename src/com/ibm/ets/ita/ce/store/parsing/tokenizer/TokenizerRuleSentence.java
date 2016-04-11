@@ -371,6 +371,8 @@ public class TokenizerRuleSentence extends TokenizerSentence {
 		}
 
 		this.targetRule = CeRule.createNew(getTargetSentence().getSentenceText(), this.ruleName);
+
+		this.ac.getCurrentSource().addAffectedRule(this.targetRule);
 	}
 
 	private void addNewPremiseClause() {
