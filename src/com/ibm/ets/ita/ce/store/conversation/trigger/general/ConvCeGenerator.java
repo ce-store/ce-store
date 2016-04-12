@@ -55,7 +55,15 @@ public class ConvCeGenerator extends CeGenerator {
     public String generateFactFromTriple(NewMatchedTriple triple) {
         StringBuilder sb = new StringBuilder();
         String propertyName = triple.getPropertyName();
-        String rangeConceptName = triple.getRange().getConceptName();
+        CeConcept range = triple.getRange();
+        String rangeConceptName;
+
+        if (range == null) {
+            rangeConceptName = "value";
+        } else {
+            rangeConceptName = range.getConceptName();
+        }
+
         String rangeName = triple.getRangeName();
 
         appendToSb(sb, ceDeclarationShort(triple.getDomain().getConceptName(), triple.getDomainName()));

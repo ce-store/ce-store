@@ -4,6 +4,7 @@ import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.appendToSb;
 import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.appendToSbNoNl;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import com.ibm.ets.ita.ce.store.ActionContext;
 import com.ibm.ets.ita.ce.store.conversation.model.ConvSentence;
@@ -375,6 +376,7 @@ public class NlProcessor extends GeneralProcessor {
     // Extract referenced items to set 'about' property in card
     private void extractReferencedItems(ArrayList<FinalItem> allFinalItems, ArrayList<String> referencedItems,
             ArrayList<CeInstance> referencedInsts) {
+        System.out.println("\nExtract referenced items");
         for (FinalItem item : allFinalItems) {
             ArrayList<ExtractedItem> extractedItems = item.getExtractedItems();
 
@@ -397,22 +399,54 @@ public class NlProcessor extends GeneralProcessor {
 
                 // Find property that matches instance
                 for (CeProperty prop : properties) {
-                    CeConcept propertyConcept = prop.getDomainConcept();
+                    CeConcept propertyDomain = prop.getDomainConcept();
+                    CeConcept propertyRange = prop.getRangeConcept();
+
+//                    System.out.println("\nDomain: " + propertyDomain);
+//                    System.out.println("Range: " + propertyRange + "\n");
 
                     for (CeConcept instanceConcept : instanceConcepts) {
-                        if (instanceConcept.equals(propertyConcept)) {
+                        if (instanceConcept.equalsOrHasParent(propertyDomain)) {
+                            property = prop;
+                            break;
+                        }
+
+                        if (instanceConcept.equalsOrHasParent(propertyRange)) {
                             property = prop;
                             break;
                         }
                     }
                 }
+                System.out.println(property);
 
                 // Add value from property instance
-                CePropertyInstance propertyInstance = instance.getPropertyInstanceForProperty(property);
+                CePropertyInstance propertyInstance = null;
+                String propertyName = property.getPropertyName();
+
+                if (instance.hasPropertyInstanceForPropertyNamed(propertyName)) {
+                    // Get value of property from instance
+                    propertyInstance = instance.getPropertyInstanceForProperty(property);
+                } else if (instance.hasReferringPropertyInstanceForPropertyNamed(propertyName)) {
+                    // Get value referring to instance through property
+                    propertyInstance = instance.getReferringPropertyInstanceForProperty(property);
+                }
 
                 if (propertyInstance != null) {
-                    String value = propertyInstance.getFirstPropertyValue().getValue();
-                    referencedItems.add(value);
+                    if (instance.hasPropertyInstanceForPropertyNamed(property.getPropertyName())) {
+                        HashSet<String> values = propertyInstance.getValueList();
+
+                        for (String value : values) {
+                            System.out.println(value + "\n");
+                            referencedItems.add(value);
+                        }
+                    } else if (instance.hasReferringPropertyInstanceForPropertyNamed(propertyName)) {
+                        CePropertyInstance[] referringInstances = instance.getReferringPropertyInstancesNamed(propertyName);
+
+                        for (CePropertyInstance referringInstance : referringInstances) {
+                            System.out.println(referringInstance.getRelatedInstance().getInstanceName() + "\n");
+                            referencedItems.add(referringInstance.getRelatedInstance().getInstanceName());
+                        }
+                    }
                 }
             } else {
                 for (ExtractedItem extractedItem : extractedItems) {

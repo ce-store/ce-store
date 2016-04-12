@@ -311,6 +311,18 @@ public class NlSentenceProcessor {
         return words.indexOf(w1) < words.indexOf(w2);
     }
 
+    private String findValueFromUngroundedWords(ArrayList<ProcessedWord> ungrounded) {
+
+        ArrayList<ProcessedWord> potentialValues = new ArrayList<ProcessedWord>();
+        CeConcept commonWord = ac.getModelBuilder().getConceptNamed(ac, "common word");
+//        commonWord.
+
+        for (ProcessedWord word : ungrounded) {
+        }
+
+        return ungrounded.get(0).getWordText();
+    }
+
     public ArrayList<NewMatchedTriple> matchTriples(ArrayList<ProcessedWord> words, NlAnswerGenerator ag) {
         ArrayList<NewMatchedTriple> matchedTriples = new ArrayList<NewMatchedTriple>();
 
@@ -396,10 +408,12 @@ public class NlSentenceProcessor {
 
                             if ((concept.equals(domain) || concept.hasDirectParent(domain)) && instance.isConcept(range)
                                     && appearsBefore(conceptWord, instanceWord, words)) {
+                                System.out.println("Add <concept:property:instance>");
                                 matchedTriples.add(new NewMatchedTriple(concept, property, instance, ac));
                             } else if (instance.isConcept(domain)
                                     && (concept.equals(range) || concept.hasDirectParent(range))
                                     && appearsBefore(instanceWord, conceptWord, words)) {
+                                System.out.println("Add <instance:property:concept>");
                                 matchedTriples.add(new NewMatchedTriple(instance, property, concept, ac));
                             }
                         }
@@ -413,7 +427,23 @@ public class NlSentenceProcessor {
 
                         if (appearsBefore(instanceWord, propertyWord, words)) {
                             if (instance.isConcept(domain)) {
-                                matchedTriples.add(new NewMatchedTriple(instance, property, range, ac));
+                                System.out.println("\nMatch");
+                                System.out.println(instance);
+                                System.out.println(property);
+                                System.out.println(range);
+
+                                if (range == null) {
+                                    // Value property
+                                    System.out.println("\nValue");
+                                    System.out.println(ungrounded);
+
+                                    String value = findValueFromUngroundedWords(ungrounded);
+
+                                    matchedTriples.add(new NewMatchedTriple(instance, property, value));
+                                } else {
+                                    // Relationship property
+                                    matchedTriples.add(new NewMatchedTriple(instance, property, range, ac));
+                                }
                             } else if (instance.isConcept(range)) {
                                 matchedTriples.add(new NewMatchedTriple(domain, property, instance, ac));
                             }
@@ -421,7 +451,13 @@ public class NlSentenceProcessor {
                             if (instance.isConcept(range)) {
                                 matchedTriples.add(new NewMatchedTriple(domain, property, instance, ac));
                             } else if (instance.isConcept(domain)) {
-                                matchedTriples.add(new NewMatchedTriple(instance, property, range, ac));
+                                if (range == null) {
+                                    // Value property
+
+                                } else {
+                                    // Relationship property
+                                    matchedTriples.add(new NewMatchedTriple(instance, property, range, ac));
+                                }
                             }
                         }
                     }

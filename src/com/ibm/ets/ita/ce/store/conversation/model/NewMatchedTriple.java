@@ -48,6 +48,15 @@ public class NewMatchedTriple {
         this.rangeName = ac.getModelBuilder().getNextUid(ac, range.getConceptName().substring(0, 1).toLowerCase());
     }
 
+    // <instance:property:value>
+    public NewMatchedTriple (CeInstance domainInstance, CeProperty property, String rangeValue) {
+        this.domain = property.getDomainConcept();
+        this.domainInstance = domainInstance;
+        this.domainName = domainInstance.getInstanceName();
+        this.property = property;
+        this.rangeName = rangeValue;
+    }
+
     public CeConcept getDomain() {
         return domain;
     }
@@ -125,7 +134,7 @@ public class NewMatchedTriple {
     public boolean equals(Object obj) {
         if (obj instanceof NewMatchedTriple) {
             NewMatchedTriple triple = (NewMatchedTriple) obj;
-            return domainInstance.equals(triple.getDomainInstance()) && property.equals(triple.getProperty()) && rangeInstance.equals(triple.getRangeInstance());
+            return domainInstance.equals(triple.getDomainInstance()) && property.equals(triple.getProperty()) && rangeInstance.equals(triple.getRangeInstance()) && rangeName.equals(triple.getRangeName());
         }
         return false;
     }

@@ -260,10 +260,16 @@ public class NlAnswerGenerator {
 
         // Find property that matches instance
         for (CeProperty prop : properties) {
-            CeConcept propertyConcept = prop.getDomainConcept();
+            CeConcept propertyDomain = prop.getDomainConcept();
+            CeConcept propertyRange = prop.getRangeConcept();
 
             for (CeConcept instanceConcept : instanceConcepts) {
-                if (instanceConcept.equals(propertyConcept)) {
+                if (instanceConcept.equalsOrHasParent(propertyDomain)) {
+                    property = prop;
+                    break;
+                }
+
+                if (instanceConcept.equalsOrHasParent(propertyRange)) {
                     property = prop;
                     break;
                 }
@@ -272,29 +278,96 @@ public class NlAnswerGenerator {
 
         if (instance != null && property != null) {
             String propertyName = property.getPropertyName();
-            CePropertyInstance propertyInstance = instance.getPropertyInstanceForProperty(property);
-
+            CePropertyInstance propertyInstance = null;
+            CePropertyInstance[] referringInstances = null;
             boolean allowConfigConcepts = allLeafConceptsAreConfigConcepts(instance);
 
-            if (propertyInstance != null) {
-                String value = propertyInstance.getFirstPropertyValue().getValue();
+            if (instance.hasPropertyInstanceForPropertyNamed(propertyName)) {
+                // Property exists on instance
+                propertyInstance = instance.getPropertyInstanceForProperty(property);
+                System.out.println("\nProperty Instance: " + propertyInstance);
 
                 String qualifier = computeQualifierFor(instance, allowConfigConcepts);
-                appendToSbNoNl(sb, qualifier);
-                appendToSbNoNl(sb, " ");
+                HashSet<String> values = propertyInstance.getValueList();
+                System.out.println(values);
+
+                if (values != null) {
+                    int i = 0;
+
+                    for (String val : values) {
+                        if (i == 0) {
+                            appendToSbNoNl(sb, qualifier);
+                            appendToSbNoNl(sb, " ");
+
+                            if (property.isVerbSingular()) {
+                                appendToSbNoNl(sb, propertyName);
+                                appendToSbNoNl(sb, " ");
+                                appendToSbNoNl(sb, val);
+                            } else {
+                                appendToSbNoNl(sb, "has");
+                                appendToSbNoNl(sb, " ");
+                                appendToSbNoNl(sb, val);
+                            }
+                        } else {
+                            if (i < values.size() - 1) {
+                                appendToSbNoNl(sb, ", ");
+                            } else {
+                                appendToSbNoNl(sb, " and ");
+                            }
+
+                            if (property.isVerbSingular()) {
+                                appendToSbNoNl(sb, val);
+                            } else {
+                                appendToSbNoNl(sb, val);
+
+                                if (i == values.size() - 1) {
+                                    appendToSbNoNl(sb, " as ");
+                                    appendToSbNoNl(sb, propertyName);
+                                }
+                            }
+                        }
+
+                        ++i;
+                    }
+                }
+            } else if (instance.hasReferringPropertyInstanceForPropertyNamed(propertyName)) {
+                // Property refers to instance
+                referringInstances = instance.getReferringPropertyInstancesNamed(propertyName);
+                String value = instance.getInstanceName();
+
+                for (int i = 0; i < referringInstances.length; ++i) {
+                    CePropertyInstance referringInstance = referringInstances[i];
+                    CeInstance relatedInstance = referringInstance.getRelatedInstance();
+                    String qualifier = relatedInstance.getInstanceName();
+
+                    appendToSbNoNl(sb, qualifier);
+
+                    if (i < referringInstances.length - 2) {
+                        appendToSbNoNl(sb, ", ");
+                    } else if (i == referringInstances.length - 2) {
+                        appendToSbNoNl(sb, " and ");
+                    } else {
+                        appendToSbNoNl(sb, " ");
+                    }
+                }
 
                 if (property.isVerbSingular()) {
                     appendToSbNoNl(sb, propertyName);
                     appendToSbNoNl(sb, " ");
                     appendToSbNoNl(sb, value);
                 } else {
-                    appendToSbNoNl(sb, "has");
+                    if (referringInstances.length > 1) {
+                        appendToSbNoNl(sb, "have");
+                    } else {
+                        appendToSbNoNl(sb, "has");
+                    }
                     appendToSbNoNl(sb, " ");
                     appendToSbNoNl(sb, value);
                     appendToSbNoNl(sb, " as ");
                     appendToSbNoNl(sb, propertyName);
                 }
             } else {
+                // No instance property or referring property
                 String qualifier = computeQualifierFor(instance, true);
                 appendToSbNoNl(sb, qualifier);
 
