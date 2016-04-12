@@ -566,11 +566,12 @@ public abstract class CeStoreRestApi extends ApiHandler {
 
 	protected void setInstanceListAsStructuredResult(Collection<CeInstance> pInstList) {
 		CeWebInstance instWeb = new CeWebInstance(this.wc);
+		boolean suppPropTypes = getBooleanParameterNamed(CeStoreRestApiInstance.PARM_SPTS, false);
 
 		if (isDefaultStyle() || isSummaryStyle()) {
-			getWebActionResponse().setStructuredResult(instWeb.generateSummaryListJsonFor(pInstList));
+			getWebActionResponse().setStructuredResult(instWeb.generateSummaryListJsonFor(pInstList, suppPropTypes));
 		} else {
-			getWebActionResponse().setStructuredResult(instWeb.generateFullListJsonFor(pInstList));
+			getWebActionResponse().setStructuredResult(instWeb.generateFullListJsonFor(pInstList, suppPropTypes));
 		}
 	}
 
@@ -580,12 +581,25 @@ public abstract class CeStoreRestApi extends ApiHandler {
 	}
 
 	protected void setSentenceLoadResults(ContainerSentenceLoadResult pSenStats) {
+		boolean suppPropTypes = getBooleanParameterNamed(CeStoreRestApiInstance.PARM_SPTS, false);
+
 		CeWebSpecial webSpec = new CeWebSpecial(this.wc);
-		getWebActionResponse().setStructuredResult(webSpec.generateSentenceLoadResultsFrom(pSenStats));
+		getWebActionResponse().setStructuredResult(webSpec.generateSentenceLoadResultsFrom(pSenStats, suppPropTypes));
 	}
 
 	protected void setCeResultAsStructuredResult(ContainerCeResult pCeResult, boolean pReturnInstances) {
-		getWebActionResponse().setStructuredResult(CeWebContainerResult.generateNormalCeQueryResultFrom(this.wc, pCeResult, pReturnInstances));
+		int numSteps = getNumericUrlParameterValueNamed(CeStoreRestApiInstance.PARM_STEPS, -1);
+		boolean relInsts = getBooleanParameterNamed(CeStoreRestApiInstance.PARM_RELINSTS, true);
+		boolean refInsts = getBooleanParameterNamed(CeStoreRestApiInstance.PARM_REFINSTS, true);
+		boolean suppPropTypes = getBooleanParameterNamed(CeStoreRestApiInstance.PARM_SPTS, false);
+		String limRelsText = getParameterNamed(CeStoreRestApiInstance.PARM_LIMRELS);
+		String[] limRels = null;
+		
+		if (limRelsText != null) {
+			limRels = limRelsText.split(",");
+		}
+
+		getWebActionResponse().setStructuredResult(CeWebContainerResult.generateNormalCeQueryResultFrom(this.wc, pCeResult, pReturnInstances, numSteps, relInsts, refInsts, limRels, suppPropTypes));
 	}
 
 }

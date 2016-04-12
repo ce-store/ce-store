@@ -418,7 +418,9 @@ public class CeStoreRestApiSpecial extends CeStoreRestApi {
 	}
 
 	private void setMultipleConceptInstanceListAsStructuredResult(TreeMap<String, ArrayList<CeInstance>> pList, int pNumSteps, boolean pRelInsts, boolean pRefInsts, String[] pLimRels) {
-		getWebActionResponse().setStructuredResult(CeWebSpecial.generateMultipleConceptInstanceListFrom(this.wc, this, pList, pNumSteps, pRelInsts, pRefInsts, pLimRels));
+		boolean suppPropTypes = getBooleanParameterNamed(CeStoreRestApiInstance.PARM_SPTS, false);
+
+		getWebActionResponse().setStructuredResult(CeWebSpecial.generateMultipleConceptInstanceListFrom(this.wc, this, pList, pNumSteps, pRelInsts, pRefInsts, pLimRels, suppPropTypes));
 	}
 
 	private void setDiverseConceptInstanceListAsStructuredResult(TreeMap<CeInstance, ArrayList<CeConcept>> pInstList) {

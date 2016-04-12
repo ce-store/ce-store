@@ -52,7 +52,7 @@ public class CeWebContainerResult extends CeWebObject {
 	//	KEY_HEADERS[]
 	//	KEY_TYPES[]
 	//	KEY_RESULTS[[]]
-	public static CeStoreJsonObject generateNormalCeQueryResultFrom(ActionContext pAc, ContainerCeResult pCeResult, boolean pReturnInstances) {
+	public static CeStoreJsonObject generateNormalCeQueryResultFrom(ActionContext pAc, ContainerCeResult pCeResult, boolean pReturnInstances, int pNumSteps, boolean pRelInsts, boolean pRefInsts, String[] pLimRels, boolean pSuppPropTypes) {
 		CeStoreJsonObject jObj = new CeStoreJsonObject();
 
 		if (pCeResult != null) {
@@ -90,7 +90,7 @@ public class CeWebContainerResult extends CeWebObject {
 			putAllArrayStringValuesIn(jObj, KEY_RESULTS, queryResults);	
 
 			if (pReturnInstances) {
-				createInstanceResultsFor(pAc, jObj, KEY_INSTANCES, queryResults, pCeResult.getTypes());
+				createInstanceResultsFor(pAc, jObj, KEY_INSTANCES, queryResults, pCeResult.getTypes(), pNumSteps, pRelInsts, pRefInsts, pLimRels, pSuppPropTypes);
 			}
 		} else {
 			reportError("Unexpected null container CE result encountered during details JSON rendering", pAc);
@@ -99,12 +99,9 @@ public class CeWebContainerResult extends CeWebObject {
 		return jObj;
 	}
 	
-	private static void createInstanceResultsFor(ActionContext pAc, CeStoreJsonObject pObj, String pKey, ArrayList<ArrayList<String>> pResults, ArrayList<String> pTypes) {
+	private static void createInstanceResultsFor(ActionContext pAc, CeStoreJsonObject pObj, String pKey, ArrayList<ArrayList<String>> pResults, ArrayList<String> pTypes, int pNumSteps, boolean pRelInsts, boolean pRefInsts, String[] pLimRels, boolean pSuppPropTypes) {
 		CeStoreJsonObject jInsts = new CeStoreJsonObject();
 		
-		//TODO: numSteps should be respected here too
-		//TODO: full vs summary should be respected here too
-
 		for (ArrayList<String> thisRow : pResults) {
 			for (int i = 0; i < pTypes.size(); i++) {
 				String thisType = pTypes.get(i);
@@ -115,7 +112,7 @@ public class CeWebContainerResult extends CeWebObject {
 						CeInstance thisInst = pAc.getModelBuilder().getInstanceNamed(pAc,  thisId);
 						
 						CeWebInstance webInst = new CeWebInstance(pAc);
-						CeStoreJsonObject jInst = webInst.generateSummaryDetailsJsonFor(thisInst, 0, false, false, null);
+						CeStoreJsonObject jInst = webInst.generateSummaryDetailsJsonFor(thisInst, pNumSteps, pRelInsts, pRefInsts, pLimRels, pSuppPropTypes);
 						
 						jInsts.put(thisInst.getInstanceName(), jInst);
 					}

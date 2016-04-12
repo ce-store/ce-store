@@ -129,7 +129,7 @@ public class CeWebSpecial extends CeWebObject {
         return jObj;
     }
 
-    public CeStoreJsonObject generateSentenceLoadResultsFrom(ContainerSentenceLoadResult pSenStats) {
+    public CeStoreJsonObject generateSentenceLoadResultsFrom(ContainerSentenceLoadResult pSenStats, boolean pSuppPropTypes) {
         CeStoreJsonObject jObj = new CeStoreJsonObject();
         CeWebInstance instWeb = new CeWebInstance(this.ac);
         long execTime = System.currentTimeMillis() - this.ac.getStartTime();
@@ -140,7 +140,7 @@ public class CeWebSpecial extends CeWebObject {
         putLongValueIn(jObj, KEY_EXECTIME, execTime);
 
         if ((pSenStats.getNewInstances() != null) && (!pSenStats.getNewInstances().isEmpty())) {
-            putArrayValueIn(jObj, KEY_NEWINSTS, instWeb.generateSummaryListJsonFor(pSenStats.getNewInstances()));
+            putArrayValueIn(jObj, KEY_NEWINSTS, instWeb.generateSummaryListJsonFor(pSenStats.getNewInstances(), pSuppPropTypes));
         }
 
         if (pSenStats.getCreatedSentences() != null) {
@@ -180,7 +180,7 @@ public class CeWebSpecial extends CeWebObject {
     // Generic multiple concept instance list response structure:
     // KEY_COUNT
     public static CeStoreJsonObject generateMultipleConceptInstanceListFrom(ActionContext pAc, ApiHandler pApiHandler,
-            TreeMap<String, ArrayList<CeInstance>> pList, int pNumSteps, boolean pRelInsts, boolean pRefInsts, String[] pLimRels) {
+            TreeMap<String, ArrayList<CeInstance>> pList, int pNumSteps, boolean pRelInsts, boolean pRefInsts, String[] pLimRels, boolean pSuppPropTypes) {
         CeStoreJsonObject jObj = new CeStoreJsonObject();
 
         if (pList != null) {
@@ -193,9 +193,9 @@ public class CeWebSpecial extends CeWebObject {
                         CeWebInstance instWeb = new CeWebInstance(pAc);
 
                         if ((pApiHandler.isDefaultStyle()) || (pApiHandler.isFullStyle())) {
-                            jArr.add(instWeb.generateFullDetailsJsonFor(thisInst, pNumSteps, pRelInsts, pRefInsts, pLimRels));
+                            jArr.add(instWeb.generateFullDetailsJsonFor(thisInst, pNumSteps, pRelInsts, pRefInsts, pLimRels, pSuppPropTypes));
                         } else {
-                            jArr.add(instWeb.generateSummaryDetailsJsonFor(thisInst, pNumSteps, pRelInsts, pRefInsts, pLimRels));
+                            jArr.add(instWeb.generateSummaryDetailsJsonFor(thisInst, pNumSteps, pRelInsts, pRefInsts, pLimRels, pSuppPropTypes));
                         }
                     }
                 }

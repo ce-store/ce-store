@@ -44,23 +44,23 @@ public class CeWebInstance extends CeWebObject {
         super(pAc);
     }
 
-    public CeStoreJsonObject generateFullDetailsJsonFor(CeInstance pInst, int pNumSteps, boolean pRelInsts, boolean pRefInsts, String[] pLimRels) {
+    public CeStoreJsonObject generateFullDetailsJsonFor(CeInstance pInst, int pNumSteps, boolean pRelInsts, boolean pRefInsts, String[] pLimRels, boolean pSuppPropTypes) {
         CeStoreJsonObject mainObj = new CeStoreJsonObject();
 
         if (pNumSteps <= 0) {
-            mainObj = normalFullDetailsJsonFor(pInst);
+            mainObj = normalFullDetailsJsonFor(pInst, pSuppPropTypes);
         } else {
-            mainObj.put("main_instance", normalFullDetailsJsonFor(pInst));
+            mainObj.put("main_instance", normalFullDetailsJsonFor(pInst, pSuppPropTypes));
 
             if (pRelInsts) {
             	CeStoreJsonObject relInsts = new CeStoreJsonObject();
-                relatedInstancesJsonFor(pInst, pNumSteps, 1, relInsts, pLimRels);
+                relatedInstancesJsonFor(pInst, pNumSteps, 1, relInsts, pLimRels, pSuppPropTypes);
                 mainObj.put("related_instances", relInsts);
             }
 
             if (pRefInsts) {
 	            CeStoreJsonObject refInsts = new CeStoreJsonObject();
-	            referringInstancesJsonFor(pInst, pNumSteps, 1, refInsts, pLimRels);
+	            referringInstancesJsonFor(pInst, pNumSteps, 1, refInsts, pLimRels, pSuppPropTypes);
 	            mainObj.put("referring_instances", refInsts);
             }
         }
@@ -68,19 +68,19 @@ public class CeWebInstance extends CeWebObject {
         return mainObj;
     }
 
-    private void relatedInstancesJsonFor(CeInstance pInst, int pNumSteps, int pDepth, CeStoreJsonObject pResult, String[] pLimRels) {
+    private void relatedInstancesJsonFor(CeInstance pInst, int pNumSteps, int pDepth, CeStoreJsonObject pResult, String[] pLimRels, boolean pSuppPropTypes) {
         int thisDepth = pDepth + 1;
 
         for (CeInstance relInst : pInst.getAllRelatedInstances(this.ac, pLimRels)) {
-            pResult.put(relInst.getInstanceName(), normalSummaryDetailsJsonFor(relInst));
+            pResult.put(relInst.getInstanceName(), normalSummaryDetailsJsonFor(relInst, pSuppPropTypes));
 
             if (thisDepth <= pNumSteps) {
-                relatedInstancesJsonFor(relInst, pNumSteps, thisDepth, pResult, pLimRels);
+                relatedInstancesJsonFor(relInst, pNumSteps, thisDepth, pResult, pLimRels, pSuppPropTypes);
             }
         }
     }
 
-    private void referringInstancesJsonFor(CeInstance pInst, int pNumSteps, int pDepth, CeStoreJsonObject pResult, String[] pLimRels) {
+    private void referringInstancesJsonFor(CeInstance pInst, int pNumSteps, int pDepth, CeStoreJsonObject pResult, String[] pLimRels, boolean pSuppPropTypes) {
         int thisDepth = pDepth + 1;
         QueryHandler qh = new QueryHandler(this.ac);
         TreeMap<String, HashSet<CeInstance>> refResult = qh.listAllInstanceReferencesFor(pInst);
@@ -102,10 +102,10 @@ public class CeWebInstance extends CeWebObject {
 	            }	
 
 	            for (CeInstance refInst : refInsts) {
-	                refArray.add(normalSummaryDetailsJsonFor(refInst));
+	                refArray.add(normalSummaryDetailsJsonFor(refInst, pSuppPropTypes));
 
 	                if (thisDepth <= pNumSteps) {
-	                    referringInstancesJsonFor(refInst, pNumSteps, thisDepth, pResult, pLimRels);
+	                    referringInstancesJsonFor(refInst, pNumSteps, thisDepth, pResult, pLimRels, pSuppPropTypes);
 	                }
 	            }
 
@@ -114,7 +114,7 @@ public class CeWebInstance extends CeWebObject {
         }
     }
 
-    private CeStoreJsonObject normalFullDetailsJsonFor(CeInstance pInst) {
+    private CeStoreJsonObject normalFullDetailsJsonFor(CeInstance pInst, boolean pSuppPropTypes) {
         CeStoreJsonObject mainObj = new CeStoreJsonObject();
 
         putStringValueIn(mainObj, KEY_TYPE, TYPE_INST);
@@ -170,7 +170,10 @@ public class CeWebInstance extends CeWebObject {
         }
 
         putObjectValueIn(mainObj, KEY_PROPVALS, propValsObj);
-        putObjectValueIn(mainObj, KEY_PROPTYPES, propTypesObj);
+
+        if (!pSuppPropTypes) {
+            putObjectValueIn(mainObj, KEY_PROPTYPES, propTypesObj);
+        }
 
         if (!propRatObj.isEmpty()) {
             putObjectValueIn(mainObj, KEY_PROPRAT, propRatObj);
@@ -182,23 +185,23 @@ public class CeWebInstance extends CeWebObject {
         return mainObj;
     }
 
-    public CeStoreJsonObject generateSummaryDetailsJsonFor(CeInstance pInst, int pNumSteps, boolean pRelInsts, boolean pRefInsts, String[] pLimInsts) {
+    public CeStoreJsonObject generateSummaryDetailsJsonFor(CeInstance pInst, int pNumSteps, boolean pRelInsts, boolean pRefInsts, String[] pLimInsts, boolean pSuppPropTypes) {
         CeStoreJsonObject mainObj = new CeStoreJsonObject();
 
         if (pNumSteps <= 0) {
-            mainObj = normalSummaryDetailsJsonFor(pInst);
+            mainObj = normalSummaryDetailsJsonFor(pInst, pSuppPropTypes);
         } else {
-            mainObj.put("main_instance", normalSummaryDetailsJsonFor(pInst));
+            mainObj.put("main_instance", normalSummaryDetailsJsonFor(pInst, pSuppPropTypes));
 
             if (pRelInsts) {
 	            CeStoreJsonObject relInsts = new CeStoreJsonObject();
-	            relatedInstancesJsonFor(pInst, pNumSteps, 1, relInsts, pLimInsts);
+	            relatedInstancesJsonFor(pInst, pNumSteps, 1, relInsts, pLimInsts, pSuppPropTypes);
 	            mainObj.put("related_instances", relInsts);
             }
 
             if (pRefInsts) {
 	            CeStoreJsonObject refInsts = new CeStoreJsonObject();
-	            referringInstancesJsonFor(pInst, pNumSteps, 1, refInsts, pLimInsts);
+	            referringInstancesJsonFor(pInst, pNumSteps, 1, refInsts, pLimInsts, pSuppPropTypes);
 	            mainObj.put("referring_instances", refInsts);
             }
         }
@@ -206,7 +209,7 @@ public class CeWebInstance extends CeWebObject {
         return mainObj;
     }
 
-    private CeStoreJsonObject normalSummaryDetailsJsonFor(CeInstance pInst) {
+    private CeStoreJsonObject normalSummaryDetailsJsonFor(CeInstance pInst, boolean pSuppPropTypes) {
         CeStoreJsonObject mainObj = new CeStoreJsonObject();
 
         putStringValueIn(mainObj, KEY_TYPE, TYPE_INST);
@@ -244,28 +247,32 @@ public class CeWebInstance extends CeWebObject {
         }
 
         putObjectValueIn(mainObj, KEY_PROPVALS, propValsObj);
-        putObjectValueIn(mainObj, KEY_PROPTYPES, propTypesObj);
+
+        if (!pSuppPropTypes) {
+            putObjectValueIn(mainObj, KEY_PROPTYPES, propTypesObj);
+        }
+
         putIntValueIn(mainObj, KEY_PRISEN_COUNT, pInst.countPrimarySentences());
         putIntValueIn(mainObj, KEY_SECSEN_COUNT, pInst.countSecondarySentences());
 
         return mainObj;
     }
 
-    public CeStoreJsonArray generateFullListJsonFor(Collection<CeInstance> pInstList) {
+    public CeStoreJsonArray generateFullListJsonFor(Collection<CeInstance> pInstList, boolean pSuppPropTypes) {
         CeStoreJsonArray jInsts = new CeStoreJsonArray();
 
         for (CeInstance thisInst : pInstList) {
-            jInsts.add(normalFullDetailsJsonFor(thisInst));
+            jInsts.add(normalFullDetailsJsonFor(thisInst, pSuppPropTypes));
         }
 
         return jInsts;
     }
 
-    public CeStoreJsonArray generateSummaryListJsonFor(Collection<CeInstance> pInstList) {
+    public CeStoreJsonArray generateSummaryListJsonFor(Collection<CeInstance> pInstList, boolean pSuppPropTypes) {
         CeStoreJsonArray jInsts = new CeStoreJsonArray();
 
         for (CeInstance thisInst : pInstList) {
-            jInsts.add(normalSummaryDetailsJsonFor(thisInst));
+            jInsts.add(normalSummaryDetailsJsonFor(thisInst, pSuppPropTypes));
         }
 
         return jInsts;
