@@ -302,11 +302,9 @@ public class NlAnswerGenerator {
                             if (property.isVerbSingular()) {
                                 appendToSbNoNl(sb, propertyName);
                                 appendToSbNoNl(sb, " ");
-                                appendToSbNoNl(sb, val);
                             } else {
                                 appendToSbNoNl(sb, "has");
                                 appendToSbNoNl(sb, " ");
-                                appendToSbNoNl(sb, val);
                             }
                         } else {
                             if (i < values.size() - 1) {
@@ -314,16 +312,16 @@ public class NlAnswerGenerator {
                             } else {
                                 appendToSbNoNl(sb, " and ");
                             }
+                        }
 
-                            if (property.isVerbSingular()) {
-                                appendToSbNoNl(sb, val);
-                            } else {
-                                appendToSbNoNl(sb, val);
+                        if (property.isVerbSingular()) {
+                            appendToSbNoNl(sb, val);
+                        } else {
+                            appendToSbNoNl(sb, val);
 
-                                if (i == values.size() - 1) {
-                                    appendToSbNoNl(sb, " as ");
-                                    appendToSbNoNl(sb, propertyName);
-                                }
+                            if (i == values.size() - 1) {
+                                appendToSbNoNl(sb, " as ");
+                                appendToSbNoNl(sb, propertyName);
                             }
                         }
 
