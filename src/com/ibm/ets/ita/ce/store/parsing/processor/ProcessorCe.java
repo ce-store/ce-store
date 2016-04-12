@@ -750,6 +750,14 @@ public class ProcessorCe {
 
 		pSource.debugAffectedConceptsAndProperties(this.ac);
 
+		for (CeRule newRule : pSource.getAffectedRules()) {
+			if (newRule.hasAnyUnboundedCreationConclusionClauses()) {
+				reportWarning("New rule '" + newRule.getRuleName() + "' will not be included in auto execution of rules as it creates new instances in the conclusion and would over-generate instances", this.ac);
+			} else {
+				rulesToRun.add(newRule);
+			}
+		}
+
 		for (CeRule thisRule : this.ac.getModelBuilder().getAllRules().values()) {
 			if (thisRule.hasAnyUnboundedCreationConclusionClauses()) {
 				reportWarning("Rule '" + thisRule.getRuleName() + "' will not be included in auto execution of rules as it creates new instances in the conclusion and would over-generate instances", this.ac);

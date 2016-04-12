@@ -55,6 +55,7 @@ public class CeSource extends CeModelEntity {
 	//DSB 22/07/2013 - Relocated from ActionContext
 	private HashSet<CeConcept> affectedConcepts = new HashSet<CeConcept>();
 	private HashSet<CeProperty> affectedProperties = new HashSet<CeProperty>();
+	private HashSet<CeRule> affectedRules = new HashSet<CeRule>();
 
 	private CeSource() {
 		//This is private to ensure that new instances can only be created via the various static methods		
@@ -423,6 +424,10 @@ public class CeSource extends CeModelEntity {
 		return this.affectedProperties;
 	}
 
+	public HashSet<CeRule> getAffectedRules() {
+		return this.affectedRules;
+	}
+
 	public void addAffectedConcept(CeConcept pConcept) {
 		this.affectedConcepts.add(pConcept);
 	}
@@ -431,9 +436,14 @@ public class CeSource extends CeModelEntity {
 		this.affectedProperties.add(pProperty);
 	}
 
+	public void addAffectedRule(CeRule pRule) {
+		this.affectedRules.add(pRule);
+	}
+
 	public void clearNotifications() {
 		this.affectedConcepts = new HashSet<CeConcept>();
 		this.affectedProperties = new HashSet<CeProperty>();
+		this.affectedRules = new HashSet<CeRule>();
 	}
 
 	public void debugAffectedConceptsAndProperties(ActionContext pAc) {
