@@ -158,7 +158,6 @@ public class CeGeneratorConclusion {
 		StringBuilder sb = new StringBuilder();
 
 		processClauses(sb, pTgtVar, pRow);
-		generateRationaleAndCloseSentence(sb, pRow);
 
 		return sb.toString();
 	}
@@ -166,10 +165,22 @@ public class CeGeneratorConclusion {
 	private void processClauses(StringBuilder pSb, String pTgtVar, CeConclusionRow pRow) {
 		String connectorText = "";
 		boolean generatedStart = false;
-		
+		CeConcept lastTgtCon = null;
+
 		for (CeClause thisClause : getAllChildConclusionClauses()) {
 			String clauseTv = getVariableStubFrom(thisClause.getTargetVariable());
 			if (clauseTv.equals(pTgtVar)) {
+				CeConcept thisTgtCon = thisClause.getTargetConcept();
+
+				if ((thisTgtCon != null) && (!thisTgtCon.equalsOrHasParent(lastTgtCon))) {
+					//The concept is not compatible with the previous so a new sentence must be started
+					generateRationaleAndCloseSentence(pSb, pRow);
+					connectorText = "";
+					generatedStart = false;
+				}
+
+				lastTgtCon = thisTgtCon;
+
 				if (thisClause.isSimpleClause()) {
 					connectorText = generateCeConclusionForSimpleClause(pSb, thisClause, pRow, connectorText);
 					generatedStart = true;
@@ -178,11 +189,14 @@ public class CeGeneratorConclusion {
 				} else {
 					connectorText = generateCeConclusionForNormalClause(pSb, thisClause, pRow, connectorText, generatedStart);
 					generatedStart = true;
-				}				
+				}
+
 			}
 		}
+
+		generateRationaleAndCloseSentence(pSb, pRow);
 	}
-	
+
 	private String generateCeConclusionForSimpleClause(StringBuilder pSb, CeClause pClause, CeConclusionRow pRow, String pConnectorText) {
 		String connectorText = pConnectorText;
 		CeConcept tgtCon = pClause.getTargetConcept();

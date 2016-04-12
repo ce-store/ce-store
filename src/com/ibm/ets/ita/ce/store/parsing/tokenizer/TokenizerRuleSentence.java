@@ -16,6 +16,7 @@ import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.model.CePropertyInstance;
 import com.ibm.ets.ita.ce.store.model.CeQuery;
 import com.ibm.ets.ita.ce.store.model.CeRule;
+import com.ibm.ets.ita.ce.store.model.CeSource;
 import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentence;
 import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentenceFactNormal;
 import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentenceRuleOrQuery;
@@ -372,7 +373,13 @@ public class TokenizerRuleSentence extends TokenizerSentence {
 
 		this.targetRule = CeRule.createNew(getTargetSentence().getSentenceText(), this.ruleName);
 
-		this.ac.getCurrentSource().addAffectedRule(this.targetRule);
+		CeSource currSrc = this.ac.getCurrentSource();
+		
+		if (currSrc != null) {
+			currSrc.addAffectedRule(this.targetRule);
+		} else {
+			reportDebug("Cannot save rule as there is no current source", this.ac);
+		}
 	}
 
 	private void addNewPremiseClause() {
