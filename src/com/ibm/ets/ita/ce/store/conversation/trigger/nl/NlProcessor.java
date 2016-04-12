@@ -151,6 +151,7 @@ public class NlProcessor extends GeneralProcessor {
     private void sendToAgent(CeInstance agent, ArrayList<ProcessedWord> words, ArrayList<CeInstance> matchingKeywords,
             CeInstance cardInst, String text) {
         ArrayList<CeInstance> templates = agent.getInstanceListFromPropertyNamed(ac, Property.TEMPLATE.toString());
+        boolean cardGenerated = false;
 
         for (CeInstance template : templates) {
             boolean thingsFound = true;
@@ -170,6 +171,9 @@ public class NlProcessor extends GeneralProcessor {
             } else if (template.isConceptNamed(ac, Concept.CONCEPT_TEMPLATE.toString())) {
                 for (ProcessedWord word : words) {
                     matchingConcept = sp.getMatchingConcept(word);
+                    if (matchingConcept != null) {
+                        break;
+                    }
                 }
 
                 thingsFound = thingsFound && (matchingConcept != null);
@@ -192,7 +196,13 @@ public class NlProcessor extends GeneralProcessor {
                         cardInst.getInstanceName(), null);
                 cg.generateCard(Card.NL.toString(), completedReply, th.getTriggerName(), interestedUser,
                         cardInst.getInstanceName(), null);
+                cardGenerated = true;
             }
+        }
+
+        if (!cardGenerated) {
+            String humanAgent = findHumanAgent(cardInst);
+            cg.generateCard(Card.NL.toString(), ag.nothingUnderstood(), th.getTriggerName(), humanAgent, cardInst.getInstanceName(), null);
         }
     }
 

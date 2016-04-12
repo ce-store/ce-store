@@ -66,12 +66,21 @@ public class ConvCeGenerator extends CeGenerator {
 
         String rangeName = triple.getRangeName();
 
-        appendToSb(sb, ceDeclarationShort(triple.getDomain().getConceptName(), triple.getDomainName()));
+        if (propertyName == null && range == null) {
+            appendToSb(sb, ceDeclarationShort(triple.getDomainInstance().getFirstLeafConceptName(), triple.getDomainName()));
 
-        if (triple.getProperty().isFunctionalNoun()) {
-            appendToSbNoNl(sb, ceAddFnProperty(propertyName, rangeConceptName, rangeName));
+            String conceptName = triple.getDomain().getConceptName();
+            boolean startsWithVowel = "aeiou".indexOf(conceptName.charAt(0)) > 0;
+            String determiner = startsWithVowel ? "an" : "a";
+            appendToSbNoNl(sb, ceSecondaryConcept(determiner, conceptName));
         } else {
-            appendToSbNoNl(sb, ceAddVsProperty(propertyName, rangeConceptName, rangeName));
+            appendToSb(sb, ceDeclarationShort(triple.getDomain().getConceptName(), triple.getDomainName()));
+
+            if (triple.getProperty().isFunctionalNoun()) {
+                appendToSbNoNl(sb, ceAddFnProperty(propertyName, rangeConceptName, rangeName));
+            } else {
+                appendToSbNoNl(sb, ceAddVsProperty(propertyName, rangeConceptName, rangeName));
+            }
         }
 
         appendToSbNoNl(sb, ceEndFinalSentence());

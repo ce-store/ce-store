@@ -490,6 +490,20 @@ public class NlSentenceProcessor {
             }
         }
 
+        // If no matching instances, try matching concepts <concept:MISSING:instance>
+        if (matchedTriples.isEmpty()) {
+            for (ProcessedWord instanceWord : instances) {
+                CeInstance instance = getMatchingInstance(instanceWord);
+                for (ProcessedWord conceptWord : concepts) {
+                    CeConcept concept = getMatchingConcept(conceptWord);
+                    NewMatchedTriple triple = new NewMatchedTriple(concept, instance);
+                    if (!matchedTriples.contains(triple)) {
+                        matchedTriples.add(triple);
+                    }
+                }
+            }
+        }
+
         return matchedTriples;
     }
 }

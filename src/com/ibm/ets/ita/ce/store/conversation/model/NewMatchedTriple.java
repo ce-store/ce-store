@@ -57,6 +57,13 @@ public class NewMatchedTriple {
         this.rangeName = rangeValue;
     }
 
+    // <concept:MISSING:instance>
+    public NewMatchedTriple (CeConcept domainConcept, CeInstance domainInstance) {
+        this.domain = domainConcept;
+        this.domainInstance = domainInstance;
+        this.domainName = domainInstance.getInstanceName();
+    }
+
     public CeConcept getDomain() {
         return domain;
     }
@@ -74,7 +81,11 @@ public class NewMatchedTriple {
     }
 
     public String getPropertyName() {
-    	return property.getPropertyName();
+        if (property != null) {
+            return property.getPropertyName();
+        } else {
+            return null;
+        }
     }
 
     public CeConcept getRange() {
@@ -127,15 +138,36 @@ public class NewMatchedTriple {
 
     @Override
     public String toString() {
-        return "[MatchedTriple] (" + domain + ") " + getDomainName() + ":" + getPropertyName() + ":" + "(" + range + ") " + getRangeName();
+        return "[MatchedTriple] (" + getDomain() + ") " + getDomainName() + ":" + getPropertyName() + ":" + "(" + getRange() + ") " + getRangeName();
     }
 
     @Override
     public boolean equals(Object obj) {
+        boolean result = false;
         if (obj instanceof NewMatchedTriple) {
             NewMatchedTriple triple = (NewMatchedTriple) obj;
-            return domainInstance.equals(triple.getDomainInstance()) && property.equals(triple.getProperty()) && rangeInstance.equals(triple.getRangeInstance()) && rangeName.equals(triple.getRangeName());
+            result = true;
+
+            if (domainInstance != null && triple.getDomainInstance() != null) {
+                result = result && domainInstance.equals(triple.getDomainInstance());
+            }
+            if (domain != null && triple.getDomain() != null) {
+                result = result && domain.equals(triple.getDomain());
+            }
+            if (property != null && triple.getProperty() != null) {
+                result = result && property.equals(triple.getProperty());
+            }
+            if (range != null && triple.getRange() != null) {
+                result = result && range.equals(triple.getRange());
+            }
+            if (rangeInstance != null && triple.getRangeInstance() != null) {
+                result = result && rangeInstance.equals(triple.getRangeInstance());
+            }
+            if (rangeName != null && triple.getRangeName() != null) {
+                result = result && rangeName.equals(triple.getRangeName());
+            }
         }
-        return false;
+
+        return result;
     }
 }
