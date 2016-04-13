@@ -283,12 +283,12 @@ public class NlProcessor extends GeneralProcessor {
 
         // Generate NL Card with reply
         String humanAgent = findHumanAgent(cardInst);
-        cg.generateCard(Card.NL.toString(), sb.toString(), th.getTriggerName(), humanAgent, cardInst.getInstanceName(), referencedItems);
+        cg.generateCard(Card.GIST.toString(), sb.toString(), th.getTriggerName(), humanAgent, cardInst.getInstanceName(), referencedItems);
     }
 
     private void replyToNlFact(CeInstance cardInst, ArrayList<NewMatchedTriple> triples) {
         StringBuilder sb = new StringBuilder();
-        String cardType = Card.NL.toString();
+        String cardType = Card.GIST.toString();
         ArrayList<String> referencedInsts = null;
 
         System.out.println("\nSize: " + triples.size());
@@ -618,7 +618,7 @@ public class NlProcessor extends GeneralProcessor {
             System.out.println(sb.toString());
 
             String humanAgent = findHumanAgent(cardInst);
-            cg.generateCard(Card.NL.toString(), sb.toString(), th.getTriggerName(), humanAgent,
+            cg.generateCard(Card.GIST.toString(), sb.toString(), th.getTriggerName(), humanAgent,
                     cardInst.getInstanceName(), null);
         }
     }

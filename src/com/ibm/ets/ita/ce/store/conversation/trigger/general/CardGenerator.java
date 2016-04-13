@@ -29,7 +29,7 @@ public class CardGenerator {
     // Reply to service that sent the Tell card if its card has been accepted or not
     public void generateTellReplyCard(CeInstance cardInst, String tellText, String fromService,
             String toService) {
-        generateCard(Card.NL.toString(), Reply.SAVED.message(), fromService, toService, cardInst.getInstanceName(), null);
+        generateCard(Card.GIST.toString(), Reply.SAVED.message(), fromService, toService, cardInst.getInstanceName(), null);
     }
 
     // Generate NL card
@@ -133,7 +133,7 @@ public class CardGenerator {
 
             String content = sb.toString();
             System.out.println("Content: " + content);
-            generateCard(Card.NL.toString(), content, fromService, toService, null, null);
+            generateCard(Card.GIST.toString(), content, fromService, toService, null, null);
         }
     }
 
