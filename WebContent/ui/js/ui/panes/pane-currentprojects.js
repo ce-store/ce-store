@@ -44,8 +44,15 @@ function PaneCurrentProjects() {
 			basic: {
 				title: 'Basic sentence sets',
 				links: [
-					{ url: 'ce-store/ce/medicine/cmd/med_load.cecmd', name: 'Medicine' }
-					]
+					{ url: 'ce-store/ce/medicine/cmd/med_load.cecmd', name: 'Medicine' },
+					{ url: 'ce-store/ce/road-to-war/cmd/load.cecmd', name: 'Road To War' },
+	                { url: 'ce-store/ce/road-to-war/cmd/loadbackground.cecmd', name: 'Road To War Background' },
+	                { url: 'ce-store/ce/road-to-war/cmd/loadserials.cecmd', name: 'Road To War all Serials' },
+	                { url: 'ce-store/ce/road-to-war/cmd/loadserial1-2.cecmd', name: 'Road To War Serial 1-2' },
+	                { url: 'ce-store/ce/road-to-war/cmd/loadserial3.cecmd', name: 'Road To War Serial 3' },
+	                { url: 'ce-store/ce/road-to-war/cmd/loadserial4.cecmd', name: 'Road To War Serial 4' },
+	                { url: 'ce-store/ce/road-to-war/cmd/loadserial5-12.cecmd', name: 'Road To War Serial 5-12' }
+	                ]
 			}
 		};
 	};
