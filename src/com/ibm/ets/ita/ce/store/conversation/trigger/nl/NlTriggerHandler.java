@@ -35,7 +35,7 @@ public class NlTriggerHandler extends GeneralTriggerHandler {
             CopyOnWriteArrayList<CeInstance> copyList = new CopyOnWriteArrayList<CeInstance>(ac.getSessionCreations().getNewInstances());
 
             for (CeInstance thisInst : copyList) {
-                if (thisInst.isConceptNamed(ac, Card.NL.toString())) {
+                if (thisInst.isConceptNamed(ac, Card.GENERAL.toString())) {
                     handleCardInstance(thisInst);
                 }
             }

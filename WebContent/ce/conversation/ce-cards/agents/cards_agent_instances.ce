@@ -16,7 +16,7 @@
 
 there is a nl card trigger named 'nl trigger' that
   has 'com.ibm.ets.ita.ce.store.conversation.trigger.nl.NlTriggerHandler' as class to notify and
-  has 'nl card' as concept name and
+  has 'card' as concept name and
   has 'content' as property name and
   has 'service' as from concept and
   has 'Moira' as from instance and

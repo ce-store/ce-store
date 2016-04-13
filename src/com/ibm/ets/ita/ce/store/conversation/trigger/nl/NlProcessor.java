@@ -211,7 +211,7 @@ public class NlProcessor extends GeneralProcessor {
     private void forwardTellResponse(CeInstance cardInst, String convText) {
         if (!templateAgentAlreadySentReply(cardInst) && convText.equals(Reply.SAVED.message())) {
             String humanAgent = findHumanAgent(cardInst);
-            cg.generateCard(Card.NL.toString(), convText, th.getTriggerName(), humanAgent, cardInst.getInstanceName(), null);
+            cg.generateCard(Card.GIST.toString(), convText, th.getTriggerName(), humanAgent, cardInst.getInstanceName(), null);
         }
     }
 
@@ -236,7 +236,7 @@ public class NlProcessor extends GeneralProcessor {
         } else {
             // Negative response
             String humanAgent = findHumanAgent(cardInst);
-            cg.generateCard(Card.NL.toString(), Reply.NOT_SAVED.toString(), th.getTriggerName(), humanAgent,
+            cg.generateCard(Card.GIST.toString(), Reply.NOT_SAVED.toString(), th.getTriggerName(), humanAgent,
                     cardInst.getInstanceName(), null);
         }
     }
