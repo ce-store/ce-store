@@ -302,6 +302,72 @@ public class CeSentence implements Comparable<CeSentence> {
 		return this.structuredCeTextList;
 	}
 	
+	public String calculateCeTextWithoutRationale() {
+		String result = null;
+
+		if ((this.rationaleText == null) || (this.rationaleText.isEmpty())) {
+			//There is no rationale - just return the ceText
+			result = this.ceText;
+		} else {
+			//Rebuild the CE until the point where rationale starts and return only that
+			StringBuilder sb = new StringBuilder();
+			boolean nextTokenIsQuote = false;
+			boolean inQuote = false;
+			String spaceBefore = "";
+			String spaceAfter = "";
+
+			for (String thisToken : this.structuredCeTextList) {
+				if (nextTokenIsQuote) {
+					nextTokenIsQuote = false;
+					inQuote = !inQuote;
+					
+					if (inQuote) {
+						sb.append(" ");
+						sb.append(thisToken);
+						spaceBefore = "";
+						spaceAfter = "";
+					} else {
+						sb.append(thisToken);
+						spaceBefore = " ";
+					}
+				} else {
+					if (thisToken.equals("{Because}:")) {
+						//This token signifies the beginning of the rationale, so stop here
+						sb.append(".");
+						break;
+					} else if (thisToken.equals("{Connector}:")) {
+						//These indicate a new clause
+						sb.append("\n  ");
+					} else if (thisToken.equals("{Property}:")) {
+						//Remember that an extra space is needed after the next word
+						spaceAfter = " ";
+					} else if (thisToken.equals("{Quote}:")) {
+						//Special processing for quotes
+						nextTokenIsQuote = true;
+					} else if (thisToken.startsWith("{")) {
+						//Anything else can be ignored and replaced with a space (unless in a quote)
+						if (!inQuote) {
+							sb.append(" ");
+						}
+					} else if (thisToken.startsWith("[")) {
+						//Just ignore these - they define property domain and range
+					} else {
+						sb.append(spaceBefore);
+						sb.append(thisToken);
+						sb.append(spaceAfter);
+
+						spaceBefore = "";
+						spaceAfter = "";
+					}
+				}
+			}
+
+			result = sb.toString();
+		}
+
+		return result;
+	}
+
 	protected void createStructuredCeTextFrom(ArrayList<String> pCeTextList) {
 		if (pCeTextList != null) {
 			this.structuredCeTextList = new String[pCeTextList.size()];
