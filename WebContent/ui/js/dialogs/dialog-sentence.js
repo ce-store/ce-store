@@ -16,11 +16,11 @@ function DialogSentence() {
 	};
 
 	this.loadNewSentenceSet = function(pUrl, pName) {
-		var response = confirm('This will empty the contents of the CE store and all current data will be lost.  Are you sure?');
+//		var response = confirm('This will empty the contents of the CE store and all current data will be lost.  Are you sure?');
 
-		if (response) {
+//		if (response) {
 			this.processCommandsRelative(pUrl, pName);
-		}
+//		}
 	};
 
 	this.useCeForInstance = function(pInstId, pConName) {
