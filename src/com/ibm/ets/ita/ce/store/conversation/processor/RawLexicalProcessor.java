@@ -9,8 +9,8 @@ import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportWarnin
 
 import com.ibm.ets.ita.ce.store.ActionContext;
 import com.ibm.ets.ita.ce.store.StoreActions;
-import com.ibm.ets.ita.ce.store.conversation.model.ConvPhrase;
 import com.ibm.ets.ita.ce.store.conversation.model.ConvSentence;
+import com.ibm.ets.ita.ce.store.conversation.model.ConvText;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
 import com.ibm.ets.ita.ce.store.model.CeSource;
 
@@ -20,7 +20,7 @@ public class RawLexicalProcessor {
 	private static final String SRC_CONVDEBUG = "conv_debug";
 
 	private ActionContext ac = null;
-	private ConvPhrase convPhrase = null;
+	private ConvText convText = null;
 	private CeInstance cardInstance = null;
 	private SentenceProcessor sp = null;
 
@@ -44,7 +44,7 @@ public class RawLexicalProcessor {
 		result = handleAsNaturalLanguageText(pConvText);
 
 		//If no CE text or no info messages were generated then nothing was understood from the processing
-		if (this.convPhrase.isAssertion()) {
+		if (this.convText.isAssertion()) {
 			if (result.getInfoMessage() == null) {
 				if ((result.getCeText() == null) || (result.getCeText().isEmpty())) {
 					result = ResultOfAnalysis.msgNotUnderstood();
@@ -54,13 +54,13 @@ public class RawLexicalProcessor {
 
 		return result;
 	}
-	
+
 	private ResultOfAnalysis handleAsNaturalLanguageText(String pConvText) {
 		ResultOfAnalysis overallResult = new ResultOfAnalysis();
 
-		this.convPhrase = ConvPhrase.createNewPhrase(this.ac, pConvText);
+		this.convText = ConvText.createNewText(this.ac, pConvText);
 
-		for (ConvSentence thisSen : this.convPhrase.getChildSentences()) {
+		for (ConvSentence thisSen : this.convText.getChildSentences()) {
 			this.sp = new SentenceProcessor(this.ac, this.cardInstance, thisSen, this.useDefaultScoring);
 			ResultOfAnalysis thisResult = sp.processSentence();
 
@@ -85,7 +85,7 @@ public class RawLexicalProcessor {
 	private void generateConvCe(SentenceProcessor pSp) {
 		StringBuilder sb = new StringBuilder();
 
-		pSp.generateConvCe(sb, this.convPhrase);
+		pSp.generateConvCe(sb, this.convText);
 		saveAsCe(sb);
 	}
 
@@ -95,7 +95,7 @@ public class RawLexicalProcessor {
 			CeSource tgtSrc = CeSource.createNewFormSource(this.ac, SRC_CONVDEBUG, SRC_CONVDEBUG);
 			sa.saveCeText(pSb.toString(), tgtSrc);
 		} else {
-			reportWarning("No debug sentences generated from conversation text:" + this.convPhrase.getPhraseText(), this.ac);
+			reportWarning("No debug sentences generated from conversation text:" + this.convText.getText(), this.ac);
 		}
 	}
 

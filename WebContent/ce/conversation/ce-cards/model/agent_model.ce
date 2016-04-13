@@ -1,0 +1,37 @@
+conceptualise a ~ country ~ C.
+
+conceptualise an ~ agent ~ A that
+  has the country C as ~ affiliation ~.
+
+conceptualise an ~ individual ~ I that is an agent.
+
+conceptualise a ~ service ~ S that is an agent.
+Note: A software service.
+
+conceptualise a ~ template agent ~ A that
+  is an agent and
+  has the keyword K as ~ keyword ~ and
+  has the template T as ~ template ~.
+
+conceptualise a ~ keyword ~ K.
+
+conceptualise a ~ template ~ T that
+  has the value T as ~ template string ~ and
+  has the value R as ~ reply ~ and
+  has the agent A as ~ recipient ~.
+
+conceptualise a ~ property template ~ T that is a template.
+conceptualise a ~ instance template ~ T that is a template.
+conceptualise a ~ concept template ~ T that is a template.
+
+conceptualise a ~ command word ~ C that
+  has the template T as ~ template ~.
+
+-- OLD
+
+--conceptualise an ~ organisation ~ O that is an agent.
+
+--conceptualise a ~ person ~ P that is an individual.
+Note: A human agent.
+
+--conceptualise a ~ team ~ T that is an organisation.

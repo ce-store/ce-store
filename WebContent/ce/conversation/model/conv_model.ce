@@ -11,7 +11,16 @@ Author:  Dave Braines
 
 conceptualise a ~ configuration concept ~ CC.
 conceptualise an ~ uninteresting property ~ UP.
-conceptualise an ~ interesting thing ~ I.
+
+conceptualise an ~ interested party ~ IP that
+  is an uninteresting property and
+  has the CE user U as ~ user ~ and
+  has the value T as ~ timestamp ~.
+
+conceptualise an ~ interesting thing ~ I that
+  has the interested party IP as ~ interested party ~.
+conceptualise an ~ uninteresting thing ~ U that
+  has the interested party IP as ~ uninterested party ~.
 
 conceptualise a ~ linguistic thing ~ L that
   is a configuration concept and
@@ -27,14 +36,14 @@ conceptualise a ~ conversation sentence ~ S that is a sentence.
 conceptualise a ~ conv thing ~ CT that
   is a configuration concept.
 
-conceptualise a ~ conv phrase ~ P that
+conceptualise a ~ conv text ~ T that
   is a conv thing and
-  has the value PT as ~ phrase text ~ and
+  has the value T as ~ text ~ and
   has the conv sentence CS as ~ sentence ~.
 
-conceptualise a ~ conv assertion ~ A that is a conv phrase.
-conceptualise a ~ conv question ~ Q that is a conv phrase.
-conceptualise a ~ conv unknown ~ U that is a conv phrase.
+conceptualise a ~ conv assertion ~ A that is a conv text.
+conceptualise a ~ conv question ~ Q that is a conv text.
+conceptualise a ~ conv unknown ~ U that is a conv text.
 
 conceptualise a ~ conv sentence ~ S that
   is a conv thing and
@@ -105,3 +114,8 @@ conceptualise a ~ matched datatype triple ~ MDT that is a matched triple.
 conceptualise a ~ direct matched triple ~ DMT that is a matched triple.
 conceptualise a ~ domain-matched triple ~ DMT that is a matched triple.
 conceptualise a ~ domain-unmatched triple ~ DUT that is a matched triple.
+
+conceptualise a ~ confirm reply ~ CR that
+  has the value V as ~ word ~.
+conceptualise a ~ positive confirm reply ~ PCR that is a confirm reply.
+conceptualise a ~ negative confirm reply ~ NCR that is a confirm reply.

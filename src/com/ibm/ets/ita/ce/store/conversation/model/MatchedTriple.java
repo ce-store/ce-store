@@ -11,171 +11,175 @@ import com.ibm.ets.ita.ce.store.model.CeInstance;
 import com.ibm.ets.ita.ce.store.model.CeProperty;
 
 public class MatchedTriple extends GeneralItem {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+    public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
 
-	public static final String CON_DOM_MATCHED = "domain-matched triple";
-	public static final String CON_DOM_UNMATCHED = "domain-unmatched triple";
-	public static final String CON_DIRECT = "direct matched triple";
-	private static final String UID_PREFIX = "mt";
-	
-	private ExtractedItem extractedItem = null;
-	private CeConcept subjectConcept = null;
-	private CeInstance subjectInstance = null;
+    public static final String CON_DOM_MATCHED = "domain-matched triple";
+    public static final String CON_DOM_UNMATCHED = "domain-unmatched triple";
+    public static final String CON_DIRECT = "direct matched triple";
+    private static final String UID_PREFIX = "mt";
 
-	private CeProperty predicateProperty = null;
+    private ExtractedItem extractedItem = null;
+    private CeConcept subjectConcept = null;
+    private CeInstance subjectInstance = null;
 
-	private String objectInstanceId = null;
-	private String objectConceptName = null;
-	private String objectValue = null;
-	private String originalDescription = null;
-	private String context = "";
-	private boolean isNewInstance = false;
-	private boolean isProcessed = false;
+    private CeProperty predicateProperty = null;
 
-	public static MatchedTriple createOpTriple(ActionContext pAc, ExtractedItem pEi, CeConcept pSubCon, CeProperty pPredProp, String pObjInstId, String pObjConName, String pOrigDesc, String pContext, boolean pIsNewInst, CeInstance pSubInst) {
-		MatchedTriple thisMt = new MatchedTriple();
+    private String objectInstanceId = null;
+    private String objectConceptName = null;
+    private String objectValue = null;
+    private String originalDescription = null;
+    private String context = "";
+    private boolean isNewInstance = false;
+    private boolean isProcessed = false;
 
-		thisMt.id = pAc.getModelBuilder().getNextUid(pAc, UID_PREFIX);
-		thisMt.extractedItem = pEi;
-		thisMt.subjectConcept = pSubCon;
-		thisMt.subjectInstance = pSubInst;
-		thisMt.predicateProperty = pPredProp;
-		thisMt.objectInstanceId = pObjInstId;
-		thisMt.objectConceptName = pObjConName;
-		thisMt.originalDescription = pOrigDesc;
-		thisMt.context = pContext;
-		thisMt.isNewInstance = pIsNewInst;
+    public static MatchedTriple createOpTriple(ActionContext pAc, ExtractedItem pEi, CeConcept pSubCon, CeProperty pPredProp, String pObjInstId, String pObjConName, String pOrigDesc, String pContext, boolean pIsNewInst, CeInstance pSubInst) {
+        MatchedTriple thisMt = new MatchedTriple();
 
-		pEi.addMatchedTriple(thisMt);
+        thisMt.id = pAc.getModelBuilder().getNextUid(pAc, UID_PREFIX);
+        thisMt.extractedItem = pEi;
+        thisMt.subjectConcept = pSubCon;
+        thisMt.subjectInstance = pSubInst;
+        thisMt.predicateProperty = pPredProp;
+        thisMt.objectInstanceId = pObjInstId;
+        thisMt.objectConceptName = pObjConName;
+        thisMt.originalDescription = pOrigDesc;
+        thisMt.context = pContext;
+        thisMt.isNewInstance = pIsNewInst;
 
-		return thisMt;
-	}
+        pEi.addMatchedTriple(thisMt);
+        System.out.println("\nOp Triple");
+        System.out.println(thisMt);
 
-	public static MatchedTriple createDpTriple(ActionContext pAc, ExtractedItem pEi, CeConcept pSubCon, CeProperty pPredProp, String pObjVal, String pContext) {
-		MatchedTriple thisMt = new MatchedTriple();
+        return thisMt;
+    }
 
-		thisMt.id = pAc.getModelBuilder().getNextUid(pAc, UID_PREFIX);
-		thisMt.extractedItem = pEi;
-		thisMt.subjectConcept = pSubCon;
-		thisMt.predicateProperty = pPredProp;
-		thisMt.objectValue = pObjVal;
-		thisMt.context = pContext;
+    public static MatchedTriple createDpTriple(ActionContext pAc, ExtractedItem pEi, CeConcept pSubCon, CeProperty pPredProp, String pObjVal, String pContext) {
+        MatchedTriple thisMt = new MatchedTriple();
 
-		pEi.addMatchedTriple(thisMt);
+        thisMt.id = pAc.getModelBuilder().getNextUid(pAc, UID_PREFIX);
+        thisMt.extractedItem = pEi;
+        thisMt.subjectConcept = pSubCon;
+        thisMt.predicateProperty = pPredProp;
+        thisMt.objectValue = pObjVal;
+        thisMt.context = pContext;
 
-		return thisMt;
-	}
-	
-	public boolean isProcessed() {
-		return this.isProcessed;
-	}
+        pEi.addMatchedTriple(thisMt);
+        System.out.println("\nDp Triple");
+        System.out.println(thisMt);
 
-	public void markAsProcessed() {
-		this.isProcessed = true;
-	}
+        return thisMt;
+    }
 
-	public ExtractedItem getExtractedItem() {
-		return this.extractedItem;
-	}
+    public boolean isProcessed() {
+        return this.isProcessed;
+    }
 
-	public CeConcept getSubjectConcept() {
-		return this.subjectConcept;
-	}
+    public void markAsProcessed() {
+        this.isProcessed = true;
+    }
 
-	public CeInstance getSubjectInstance() {
-		return this.subjectInstance;
-	}
+    public ExtractedItem getExtractedItem() {
+        return this.extractedItem;
+    }
 
-	public CeProperty getPredicateProperty() {
-		return this.predicateProperty;
-	}
+    public CeConcept getSubjectConcept() {
+        return this.subjectConcept;
+    }
 
-	public String getObjectInstanceId() {
-		return this.objectInstanceId;
-	}
+    public CeInstance getSubjectInstance() {
+        return this.subjectInstance;
+    }
 
-	public String getObjectConceptName() {
-		return this.objectConceptName;
-	}
+    public CeProperty getPredicateProperty() {
+        return this.predicateProperty;
+    }
 
-	public String getObjectValue() {
-		return this.objectValue;
-	}
+    public String getObjectInstanceId() {
+        return this.objectInstanceId;
+    }
 
-	public String getOriginalDescription() {
-		return this.originalDescription;
-	}
+    public String getObjectConceptName() {
+        return this.objectConceptName;
+    }
 
-	public boolean isSubjectConcept() {
-		return this.subjectConcept != null;
-	}
+    public String getObjectValue() {
+        return this.objectValue;
+    }
 
-	public boolean isSubjectInstance() {
-		return this.subjectInstance != null;
-	}
+    public String getOriginalDescription() {
+        return this.originalDescription;
+    }
 
-	public boolean isObjectInstance() {
-		return this.objectInstanceId != null;
-	}
+    public boolean isSubjectConcept() {
+        return this.subjectConcept != null;
+    }
 
-	public boolean isObjectValue() {
-		return this.objectValue != null;
-	}
+    public boolean isSubjectInstance() {
+        return this.subjectInstance != null;
+    }
 
-	public boolean isNewInstance() {
-		return this.isNewInstance;
-	}
+    public boolean isObjectInstance() {
+        return this.objectInstanceId != null;
+    }
 
-	public boolean needsDescription() {
-		return isObjectInstance() && (!this.originalDescription.equals(this.objectConceptName));
-	}
+    public boolean isObjectValue() {
+        return this.objectValue != null;
+    }
 
-	public String calculateCeConceptName() {
-		return this.context;
-	}
-	
-	public String getDeterminerForObjectConcept(ActionContext pAc) {
-		String result = null;
-		CeConcept objCon = pAc.getModelBuilder().getConceptNamed(pAc, getObjectConceptName());
+    public boolean isNewInstance() {
+        return this.isNewInstance;
+    }
 
-		if (objCon != null) {
-			result = objCon.conceptQualifier();
-		} else {
-			//TODO: Should not be hardcoded
-			result = "a";
-		}
+    public boolean needsDescription() {
+        return isObjectInstance() && (!this.originalDescription.equals(this.objectConceptName));
+    }
 
-		return result;
-	}
+    public String calculateCeConceptName() {
+        return this.context;
+    }
 
-	@Override
-	public String toString() {
-		String result = "";
-		String subjLabel = "";
-		String subjName = "";
-		String objLabel = "";
-		String objName = "";
-		String predName = this.predicateProperty.getPropertyName();
-		
-		if (isSubjectConcept()) {
-			subjLabel = "con";
-			subjName = this.subjectConcept.getConceptName();
-		} else {
-			subjLabel = "inst";
-			subjName = this.subjectInstance.getInstanceName();
-		}
+    public String getDeterminerForObjectConcept(ActionContext pAc) {
+        String result = null;
+        CeConcept objCon = pAc.getModelBuilder().getConceptNamed(pAc, getObjectConceptName());
 
-		if (isObjectInstance()) {
-			objLabel = "inst";
-			objName = this.objectInstanceId;
-		} else {
-			objLabel = "val";
-			objName = this.objectValue;
-		}
+        if (objCon != null) {
+            result = objCon.conceptQualifier();
+        } else {
+            //TODO: Should not be hardcoded
+            result = "a";
+        }
 
-		result = "[MatchedTriple(" + subjLabel + ":" + objLabel + ")] " + subjName + "->" + predName + "->" + objName + " (" + this.context + ")";
-		
-		return result;
-	}
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        String result = "";
+        String subjLabel = "";
+        String subjName = "";
+        String objLabel = "";
+        String objName = "";
+        String predName = this.predicateProperty.getPropertyName();
+
+        if (isSubjectConcept()) {
+            subjLabel = "con";
+            subjName = this.subjectConcept.getConceptName();
+        } else {
+            subjLabel = "inst";
+            subjName = this.subjectInstance.getInstanceName();
+        }
+
+        if (isObjectInstance()) {
+            objLabel = "inst";
+            objName = this.objectInstanceId;
+        } else {
+            objLabel = "val";
+            objName = this.objectValue;
+        }
+
+        result = "[MatchedTriple(" + subjLabel + ":" + objLabel + ")] " + subjName + "->" + predName + "->" + objName + " (" + this.context + ")";
+
+        return result;
+    }
 
 }

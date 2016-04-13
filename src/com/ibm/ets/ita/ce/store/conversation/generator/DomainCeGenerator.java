@@ -1,17 +1,9 @@
 package com.ibm.ets.ita.ce.store.conversation.generator;
 
-/*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
- * All Rights Reserved
- *******************************************************************************/
-
-import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.appendToSbNoNl;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 
 import com.ibm.ets.ita.ce.store.ActionContext;
-import com.ibm.ets.ita.ce.store.ModelBuilder;
 import com.ibm.ets.ita.ce.store.conversation.model.ExtractedItem;
 import com.ibm.ets.ita.ce.store.conversation.model.MatchedTriple;
 import com.ibm.ets.ita.ce.store.conversation.model.ProcessedWord;
@@ -34,13 +26,13 @@ public class DomainCeGenerator extends CeGenerator {
 	private static final String PROP_SIZE = "size";
 
 	private static final String UID_PREFIX_GROUP = "g";
-	
+
 	private SentenceProcessor sp = null;
 	private HashSet<String> processedUids = new HashSet<String>();
 
 	private DomainCeGenerator(ActionContext pAc, SentenceProcessor pSp, StringBuilder pSb) {
-		super(pAc, pSb);
-		
+		super(pAc);
+
 		this.sp = pSp;
 	}
 
@@ -86,7 +78,7 @@ public class DomainCeGenerator extends CeGenerator {
 			newUid = conceptLedProcessingFor(thisCon, tgtCons, newUid);
 		}
 	}
-	
+
 	private String conceptLedProcessingFor(CeConcept pCon, HashSet<CeConcept> pAllCons, String pUid) {
 		String thisUid = pUid;
 		boolean newInst = false;
@@ -108,7 +100,7 @@ public class DomainCeGenerator extends CeGenerator {
 			doOtherConProcessing(pAllCons);
 			ceEndSentence();
 
-			processTriplesForExtraInstanceDefinitions(pCon);			
+			processTriplesForExtraInstanceDefinitions(pCon);
 		} else {
 			ceForTriplesMatchingConcept(pCon, thisUid, false, newInst);
 			ceEndSentence();
@@ -126,12 +118,12 @@ public class DomainCeGenerator extends CeGenerator {
 	private ExtractedItem getSubjectEi() {
 		ExtractedItem result = null;
 		ArrayList<ExtractedItem> eiList = getSubjectEiList();
-		
+
 		//TODO: Is it sufficient to just get the first?
 		if ((eiList != null) && (!eiList.isEmpty())) {
 			result = eiList.get(0);
 		}
-		
+
 		return result;
 	}
 
@@ -237,15 +229,15 @@ public class DomainCeGenerator extends CeGenerator {
 		boolean firstTime = true;
 
 		for (ProcessedWord thisPw : this.sp.getAllProcessedWords()) {
-			if (thisPw.isUnmatchedWord()) {
-				if (firstTime) {
-					appendToSbNoNl(this.sb, "Note: The following words were not matched:");
-					firstTime = false;
-				}
-
-				appendToSbNoNl(this.sb, " ");
-				appendToSbNoNl(this.sb, thisPw.getWordText());
-			}
+//			if (thisPw.isUnmatchedWord()) {
+//				if (firstTime) {
+//					appendToSbNoNl(this.sb, "Note: The following words were not matched:");
+//					firstTime = false;
+//				}
+//
+//				appendToSbNoNl(this.sb, " ");
+//				appendToSbNoNl(this.sb, thisPw.getWordText());
+//			}
 		}
 
 		if (!firstTime) {
@@ -323,7 +315,7 @@ public class DomainCeGenerator extends CeGenerator {
 	private void computeStartingTextFor(String pTgtUid, CeConcept pTgtCon) {
 		String tgtConName = getSubjectConceptNameFor(pTgtCon);
 		boolean useShortDec = useShortDeclaration(pTgtUid);
-		
+
 		if (useShortDec) {
 			ceDeclarationShort(tgtConName, pTgtUid);
 		} else {
@@ -344,7 +336,7 @@ public class DomainCeGenerator extends CeGenerator {
 
 		return result;
 	}
-	
+
 	private String getSubjectConceptNameFor(CeConcept pTgtCon) {
 		String result = null;
 
@@ -406,7 +398,7 @@ public class DomainCeGenerator extends CeGenerator {
 			}
 		}
 	}
-	
+
 	private void tryToAddGroupSize() {
 		for (ProcessedWord thisPw : this.sp.getAllProcessedWords()) {
 			//Try for instances of number
@@ -434,13 +426,13 @@ public class DomainCeGenerator extends CeGenerator {
 	}
 
 	private void testCeForValidity() {
-		String ceText = this.sb.toString();
-
-		if (!ceText.trim().isEmpty()) {
-			if (!ModelBuilder.isThisCeValid(this.ac, ceText)) {
-				ceAnnotationForInvalidCe();
-			}
-		}
+//		String ceText = this.sb.toString();
+//
+//		if (!ceText.trim().isEmpty()) {
+//			if (!ModelBuilder.isThisCeValid(this.ac, ceText)) {
+//				ceAnnotationForInvalidCe();
+//			}
+//		}
 	}
 
 	private void generateInstanceDefinitionCeFor(MatchedTriple thisMt) {

@@ -3,4 +3,183 @@
 -- All Rights Reserved
 -- --------------------------------------------------------------------------
 
-there is a service named 'Moira'.
+-- Agents
+
+there is an agent named 'Moira'.
+there is an agent named 'Tell'.
+
+
+-- Template Agents
+
+-- Template parameter rules
+
+-- ~ I ~ = instance name
+-- ~ C ~ = concept name
+-- ~ U ~ = from user
+-- ~ S ~ = original string
+-- ~ NOW ~ = {now}
+-- ~ UID ~ = {uid}
+
+there is a template agent named 'Inform' that
+  has the keyword 'inform' as keyword and
+  has the template 'inform agent' as template.
+
+there is a keyword named 'inform'.
+
+there is an instance template named 'inform agent' that
+  has the value
+  'there is a NL card named \'msg_{uid}\' that
+    has the timestamp \'{now}\' as timestamp and
+    is from the individual \'Moira\' and
+    is to the service \'~ I ~\' and
+    has \'~ U ~ told me: ~ S ~\' as content.'
+  as template string and
+  has the value 'I have forwarded your message to ~ I ~.' as reply and
+  has the agent 'Tell' as recipient.
+
+-- Interesting
+
+there is a template agent named 'Interesting' that
+  has the keyword 'interested' as keyword and
+  has the template 'interesting instance' as template and
+  has the template 'interesting concept' as template.
+
+there is a keyword named 'interested'.
+
+the linguistic thing 'interested' is expressed by 'interest'.
+
+there is an instance template named 'interesting instance' that
+  has the value
+'the thing \'~ I ~\' is an interesting thing.
+there is an interested party named \'party_~ UID ~\' that
+  has the CE user \'~ U ~\' as user and
+  has the value \'~ NOW ~\' as timestamp.
+the interesting thing \'~ I ~\'
+  has the interested party \'party_~ UID ~\' as interested party.' as template string and
+  has the value 'I will inform you of new information about ~ I ~.' as reply and
+  has the agent 'Tell' as recipient.
+
+there is a concept template named 'interesting concept' that
+  has the value
+  '[~ U ~ interested in ~ C ~]
+  if
+    ( the thing T is a ~ C ~ )
+  then
+    ( there is an interested party named \'party_~ UID ~\' that
+        has the CE user \'~ U ~\' as user and
+        has the value \'~ NOW ~\' as timestamp ) and
+    ( the interesting thing T has the interested party \'party_~ UID ~\' as interested party )
+  .'
+  as template string and
+  has the value 'I will inform you of new information about ~ C ~.' as reply and
+  has the agent 'Tell' as recipient.
+
+-- Uninteresting
+
+there is a template agent named 'Uninteresting' that
+  has the keyword 'uninterested' as keyword and
+  has the template 'uninteresting instance' as template and
+  has the template 'uninteresting concept' as template.
+
+there is a keyword named 'uninterested'.
+
+there is an instance template named 'uninteresting instance' that
+  has the value
+'the thing \'~ I ~\' is an uninteresting thing.
+there is an interested party named \'party_~ UID ~\' that
+  has the CE user \'~ U ~\' as user and
+  has the value \'~ NOW ~\' as timestamp.
+the uninteresting thing \'~ I ~\'
+  has the interested party \'party_~ UID ~\' as uninterested party.' as template string and
+  has the value 'I will no longer inform you of new information about ~ I ~.' as reply and
+  has the agent 'Tell' as recipient.
+
+there is a concept template named 'uninteresting concept' that
+  has the value
+  '[~ U ~ uninterested in ~ C ~]
+  if
+    ( the interesting thing T is a ~ C ~ )
+  then
+    ( there is an interested party named \'party_~ UID ~\' that
+        has the CE user \'~ U ~\' as user and
+        has the value \'~ NOW ~\' as timestamp ) and
+    ( the uninteresting thing T has the interested party \'party_~ UID ~\' as uninterested party )
+  .'
+  as template string and
+  has the value 'I will no longer inform you of new information about ~ C ~.' as reply and
+  has the agent 'Tell' as recipient.
+
+
+--there is a template agent named 'FRA' that
+--  has the keyword 'fra' as keyword and
+--  has the template 'fra question' as template.
+
+--there is a keyword named 'fra'.
+
+--there is a template named 'fra question' that
+--  has the value '~ S ~' as template string and
+--  has the value 'I have sent that to the FRA.' as reply and
+--  has the agent 'FRA' as recipient.
+
+
+-- Command Words
+
+-- Extended template parameter rules
+
+-- ~ N ~ = number of instances matching concept
+-- ~ V1 ~ = list of matching column
+
+
+there is a command word named 'list' that
+  has the template 'list concept template' as template and
+  has the template 'list property template' as template.
+
+there is a concept template named 'list concept template' that
+  has the value
+'for which V1 is it true that
+  ( there is a ~ C ~ named V1 )
+.'
+  as template string and
+  has the value
+'There are ~ N ~ instances of ~ C ~.
+They are ~ V1 ~.'
+  as reply.
+
+there is a property template named 'list property template' that
+  has the value
+'for which V1 is it true that
+  ( the ~ C1 ~ V1 ~ P ~ the ~ C2 ~ V2 )
+.'
+  as template string and
+  has the value
+'There are ~ N ~ relationships of ~ P ~.
+~ CE ~'
+  as reply.
+
+
+there is a command word named 'count' that
+  has the template 'count template' as template.
+
+there is a concept template named 'count template' that
+  has the value
+'for which V1 is it true that
+  ( there is a ~ C ~ named V1 )
+.'
+  as template string and
+  has the value
+'There are ~ N ~ instances of ~ C ~.'
+  as reply.
+
+
+there is a command word named 'describe associates' that
+  has the template 'describe associates template' as template.
+
+there is a template named 'describe associates template' that
+  has the value
+'for which V1 and V2 is it true that
+  ( the person V1 is the associate of the person V2 )
+.'
+  as template string and
+  has the value
+'~ CE ~'
+  as reply.

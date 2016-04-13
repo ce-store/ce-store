@@ -5,3 +5,5 @@
 
 perform load sentences from url '/ce-store/ce/conversation/model/conv_model.ce'.
 perform load sentences from url '/ce-store/ce/conversation/model/conv_metamodel.ce'.
+
+perform load sentences from url '/ce-store/ce/conversation/facts/conv_facts.ce'.

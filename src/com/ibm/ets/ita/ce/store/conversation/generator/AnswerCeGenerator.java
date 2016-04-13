@@ -12,7 +12,7 @@ public class AnswerCeGenerator extends CeGenerator {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
 
 	public AnswerCeGenerator(ActionContext pAc, StringBuilder pSb) {
-		super(pAc, pSb);
+		super(pAc);
 	}
 
 	public void generateCeForAnswer(String pAnswerId, String pDomCon, String pDomName, String pRangeCon, String pRangeName, String pFullPropName, String pUserName) {

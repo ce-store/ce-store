@@ -1,5 +1,8 @@
 package com.ibm.ets.ita.ce.store.conversation.generator;
 
+import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.appendToSb;
+import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.appendToSbNoNl;
+
 /*******************************************************************************
  * (C) Copyright IBM Corporation  2011, 2015
  * All Rights Reserved
@@ -11,6 +14,7 @@ import java.util.HashSet;
 import com.ibm.ets.ita.ce.store.ActionContext;
 import com.ibm.ets.ita.ce.store.conversation.model.ExtractedItem;
 import com.ibm.ets.ita.ce.store.conversation.model.FinalItem;
+import com.ibm.ets.ita.ce.store.conversation.model.ProcessedWord;
 import com.ibm.ets.ita.ce.store.conversation.processor.QuestionProcessor;
 import com.ibm.ets.ita.ce.store.generation.GeneralGenerator;
 import com.ibm.ets.ita.ce.store.model.CeConcept;
@@ -18,7 +22,6 @@ import com.ibm.ets.ita.ce.store.model.CeInstance;
 import com.ibm.ets.ita.ce.store.model.CeProperty;
 import com.ibm.ets.ita.ce.store.model.CePropertyInstance;
 import com.ibm.ets.ita.ce.store.model.CePropertyValue;
-import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.*;
 
 public class AnswerGenerator extends GeneralGenerator {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
@@ -38,7 +41,7 @@ public class AnswerGenerator extends GeneralGenerator {
 		this.ac = pAc;
 		this.sb = new StringBuilder();
 	}
-	
+
 	public boolean isEmpty() {
 		return this.sb.length() == 0;
 	}
@@ -52,7 +55,7 @@ public class AnswerGenerator extends GeneralGenerator {
 		appendToSbNoNl(this.sb, this.qp.computeQualifierText());
 		appendToSbNoNl(this.sb, "'");
 	}
-	
+
 	public void msgUnhandledQuestion(ArrayList<FinalItem> pFinalItems) {
 		msgUnhandledQuestion("more than four", pFinalItems);
 	}
@@ -90,11 +93,11 @@ public class AnswerGenerator extends GeneralGenerator {
 	public void msgStandaloneWhy() {
 		appendToSb(this.sb, "I can only answer why questions in the context of some previous information");
 	}
-	
+
 	public void msgMakesNoSense(String pContext) {
 		appendToSb(this.sb, "That question makes no sense! " + pContext);
 	}
-	
+
 	public void msgNoReasonFound() {
 		appendToSb(this.sb, "I can't find any reason for that I'm afraid");
 	}
@@ -112,7 +115,7 @@ public class AnswerGenerator extends GeneralGenerator {
 	public void appendRationaleCeText(String pCeText) {
 		appendToSb(this.sb, pCeText);
 	}
-	
+
 	public void appendCountForConcept(String pOrigTerm, int pCount) {
 		appendToSbNoNl(this.sb, "There are ");
 		appendToSbNoNl(this.sb, new Integer(pCount).toString());
@@ -120,13 +123,13 @@ public class AnswerGenerator extends GeneralGenerator {
 		appendToSbNoNl(this.sb, pOrigTerm);
 		appendToSb(this.sb, "defined in the system");
 	}
-	
+
 	public void appendListForNoneFound(String pPluralForm) {
 		appendToSbNoNl(this.sb, "No ");
 		appendToSbNoNl(this.sb, pPluralForm);
 		appendToSbNoNl(this.sb, " are defined in the system yet.");
 	}
-	
+
 	public void appendListForLimitExceeded(String pPluralForm, int pCount) {
 		appendToSbNoNl(this.sb, "There are ");
 		appendToSbNoNl(this.sb, new Integer(pCount).toString());
@@ -141,7 +144,7 @@ public class AnswerGenerator extends GeneralGenerator {
 		appendToSbNoNl(this.sb, " ");
 		appendToSbNoNl(this.sb, pPluralForm);
 		appendToSbNoNl(this.sb, " are defined in the system:");
-		
+
 		for (CeInstance thisInst : this.ac.getModelBuilder().getAllInstancesForConceptNamed(this.ac, pTgtCon.getConceptName())) {
 			if (pSummary) {
 				appendToSb(this.sb, "");
@@ -181,12 +184,12 @@ public class AnswerGenerator extends GeneralGenerator {
 			appendToSb(this.sb, "");
 		}
 	}
-	
+
 	public void appendTypeTextFor(CeInstance pTgtInst) {
 		boolean foundType = false;
 
 		appendToSbNoNl(this.sb, pTgtInst.getInstanceName());
-		
+
 		for (CeConcept leafCon : pTgtInst.getAllLeafConcepts()) {
 			if (!this.qp.isConfigCon(leafCon)) {
 				if (!foundType) {
@@ -204,7 +207,7 @@ public class AnswerGenerator extends GeneralGenerator {
 				foundType = true;
 			}
 		}
-		
+
 		if (!foundType) {
 			appendToSbNoNl(this.sb, " is part of the CE store configuration (");
 			appendToSbNoNl(this.sb, pTgtInst.getFirstLeafConceptName());
@@ -216,25 +219,25 @@ public class AnswerGenerator extends GeneralGenerator {
 
 	public void appendPropertiesTextFor(CeInstance pTgtInst, HashSet<CeInstance> pProcessedInsts, boolean pAllowConfigCons) {
 		boolean foundProp = false;
-		
+
 		for (CePropertyInstance pi : pTgtInst.getPropertyInstances()) {
 			if (!this.qp.isPropertyToBeIgnored(pi.getRelatedProperty())) {
 				String propName = pi.getPropertyName();
 				CeConcept domCon = pi.getRelatedProperty().getDomainConcept();
-				
+
 				if ((!this.qp.isConfigCon(domCon)) || pAllowConfigCons) {
 					if (!this.qp.isConceptToBeIgnored(domCon)) {
 						for (CePropertyValue thisPv : pi.getUniquePropertyValues()) {
 							String rangeName = thisPv.getRangeName();
 							String value = thisPv.getValue();
 							String fullRangeName = null;
-							
+
 							if (rangeName.equals(CON_VALUE)) {
 								fullRangeName = "";
 							} else {
 								fullRangeName = " the " + rangeName;
 								CeInstance refInst = this.ac.getModelBuilder().getInstanceNamed(this.ac, value);
-								
+
 								if (refInst != null) {
 									pProcessedInsts.add(refInst);
 								}
@@ -268,10 +271,10 @@ public class AnswerGenerator extends GeneralGenerator {
 							}
 						}
 					}
-				}			
+				}
 			}
 		}
-		
+
 		if (foundProp) {
 			appendToSbNoNl(this.sb, ".");
 		}
@@ -284,22 +287,22 @@ public class AnswerGenerator extends GeneralGenerator {
 		for (CePropertyInstance thisPi : refInsts) {
 			if (!this.qp.isPropertyToBeIgnored(thisPi.getRelatedProperty())) {
 				CeConcept domCon = thisPi.getRelatedProperty().getDomainConcept();
-	
+
 				if ((!this.qp.isConfigCon(domCon)) || pAllowConfigCons) {
 					if (!this.qp.isConceptToBeIgnored(domCon)) {
 						CeInstance thisInst = thisPi.getRelatedInstance();
-						
+
 						if (!pProcessedInsts.contains(thisInst)) {
 							foundRef = true;
 							appendToSb(this.sb, "");
-	
+
 							if (this.qp.isShowingRanges()) {
 								appendMainTypeTextFor(thisInst, pAllowConfigCons);
 								appendToSbNoNl(this.sb, " ");
 							}
 
 							appendToSbNoNl(this.sb, thisInst.getInstanceName());
-							
+
 							if (thisPi.getRelatedProperty().isVerbSingular()) {
 								appendToSbNoNl(this.sb, " ");
 								appendToSbNoNl(this.sb, thisPi.getPropertyName());
@@ -359,7 +362,7 @@ public class AnswerGenerator extends GeneralGenerator {
 		appendToSbNoNl(this.sb, pLon);
 		appendToSbNoNl(this.sb, ").");
 	}
-	
+
 	public void appendSpatialRelationshipDetails(String pInstName, CeInstance pRelInst, CePropertyInstance pPi, String pLat, String pLon, String pConnector, boolean pAllowConfigCons) {
 
 		appendToSbNoNl(this.sb, pConnector);
@@ -421,10 +424,10 @@ public class AnswerGenerator extends GeneralGenerator {
 
 			for (CeInstance answerInst : pAnswer) {
 				appendToSbNoNl(this.sb, connector);
-				
+
 				appendDefaultDeterminer(answerInst);
 				appendToSbNoNl(this.sb, answerInst.getInstanceName());
-				
+
 				connector = " and";
 			}
 
@@ -444,7 +447,7 @@ public class AnswerGenerator extends GeneralGenerator {
 
 		appendToSbNoNl(this.sb, ".");
 	}
-	
+
 	public void appendConInstPropAnswer(ArrayList<CeInstance> pAnswer, CeProperty pProp, CeInstance pTgtInst) {
 		String connector = " ";
 		String propName = null;
@@ -459,13 +462,13 @@ public class AnswerGenerator extends GeneralGenerator {
 			appendToSbNoNl(this.sb, pTgtInst.getInstanceName());
 			appendToSbNoNl(this.sb, " ");
 			appendToSbNoNl(this.sb, propName);
-			
+
 			for (CeInstance answerInst : pAnswer) {
 				appendToSbNoNl(this.sb, connector);
-				
+
 				appendDefaultDeterminer(answerInst);
 				appendToSbNoNl(this.sb, answerInst.getInstanceName());
-				
+
 				connector = " and ";
 			}
 		} else {
@@ -494,10 +497,10 @@ public class AnswerGenerator extends GeneralGenerator {
 
 			for (CeInstance answerInst : pAnswer) {
 				appendToSbNoNl(this.sb, connector);
-				
+
 				appendDefaultDeterminer(answerInst);
 				appendToSbNoNl(this.sb, answerInst.getInstanceName());
-				
+
 				connector = " and ";
 			}
 		} else {
@@ -514,7 +517,7 @@ public class AnswerGenerator extends GeneralGenerator {
 		appendToSbNoNl(this.sb, propName);
 		appendToSbNoNl(this.sb, " ");
 		appendToSbNoNl(this.sb, pTgtInst.getInstanceName());
-		
+
 		appendToSbNoNl(this.sb, ".");
 	}
 
@@ -532,13 +535,13 @@ public class AnswerGenerator extends GeneralGenerator {
 			appendToSbNoNl(this.sb, pTgtInst.getInstanceName());
 			appendToSbNoNl(this.sb, " ");
 			appendToSbNoNl(this.sb, propName);
-			
+
 			for (CeInstance answerInst : pAnswer) {
 				appendToSbNoNl(this.sb, connector);
-				
+
 				appendDefaultDeterminer(answerInst);
 				appendToSbNoNl(this.sb, answerInst.getInstanceName());
-				
+
 				connector = " and";
 			}
 		} else {
@@ -556,18 +559,18 @@ public class AnswerGenerator extends GeneralGenerator {
 
 	private void appendDefaultDeterminer(CeInstance pInst) {
 		String determiner = null;
-		
+
 		for (CeConcept thisCon : pInst.listAllConcepts()) {
 			CeInstance mm = thisCon.retrieveMetadataInstance(this.ac);
-			
+
 			if (mm != null) {
 				if (mm.hasPropertyInstanceForPropertyNamed(PROP_DEFDET)) {
 					determiner = mm.getSingleValueFromPropertyNamed(PROP_DEFDET);
 					break;
-				}				
+				}
 			}
 		}
-		
+
 		if (determiner != null) {
 			appendToSbNoNl(this.sb, determiner);
 			appendToSbNoNl(this.sb, " ");
@@ -593,7 +596,7 @@ public class AnswerGenerator extends GeneralGenerator {
 //			for (CeInstance answerInst : pAnswer) {
 //				appendToSbNoNl(connector);
 //				appendToSbNoNl(answerInst.getInstanceName());
-//				
+//
 //				if (pCon == null) {
 //					if (!this.qp.isWhoQuestion()) {
 //						//The type can be suppressed for who questions
@@ -602,7 +605,7 @@ public class AnswerGenerator extends GeneralGenerator {
 //						appendToSbNoNl(this.sb, ")");
 //					}
 //				}
-//				
+//
 //				connector = " and ";
 //			}
 //		} else {
@@ -614,7 +617,7 @@ public class AnswerGenerator extends GeneralGenerator {
 //				appendToSbNoNl(this.sb, "nothing");
 //			}
 //		}
-//		
+//
 //		appendToSbNoNl(this.sb, ".");
 //	}
 
@@ -631,7 +634,7 @@ public class AnswerGenerator extends GeneralGenerator {
 		} else {
 			propName = pProp.getPropertyName();
 		}
-		
+
 		appendToSbNoNl(this.sb, pTgtInst.getInstanceName());
 		appendToSbNoNl(this.sb, " ");
 		appendToSbNoNl(this.sb, propName);
@@ -642,11 +645,11 @@ public class AnswerGenerator extends GeneralGenerator {
 			if (pCon != null) {
 				appendToSbNoNl(this.sb, "the ");
 			}
-			
+
 			for (CeInstance answerInst : pAnswer) {
 				appendToSbNoNl(this.sb, connector);
 				appendToSbNoNl(this.sb, answerInst.getInstanceName());
-				
+
 				connector = " and ";
 			}
 		} else {
@@ -663,18 +666,18 @@ public class AnswerGenerator extends GeneralGenerator {
 	public void appendConAnswer(FinalItem pFi) {
 		ExtractedItem ei = pFi.getFirstExtractedItem();
 		CeConcept tgtCon = ei.getConcept();
-		
+
 		appendToSbNoNl(this.sb, tgtCon.getConceptName());
 		appendToSb(this.sb, " is a concept.");
 		appendToSbNoNl(this.sb, "It has ");
 		appendToSbNoNl(this.sb, new Integer(this.ac.getModelBuilder().countAllInstancesForConcept(tgtCon)).toString());
 		appendToSb(this.sb, " instances.");
 	}
-	
+
 	public void appendPropAnswer(FinalItem pFi) {
 		ExtractedItem ei = pFi.getFirstExtractedItem();
 		CeProperty tgtProp = ei.getFirstProperty();
-		
+
 		appendToSbNoNl(this.sb, tgtProp.getPropertyName());
 
 		if (tgtProp.isObjectProperty()) {
@@ -715,7 +718,7 @@ public class AnswerGenerator extends GeneralGenerator {
 			for (CeInstance answerInst : pAnswer) {
 				appendToSbNoNl(this.sb, separator);
 				appendToSbNoNl(this.sb, answerInst.getInstanceName());
-				
+
 				separator = ", ";
 			}
 		} else {
@@ -727,6 +730,31 @@ public class AnswerGenerator extends GeneralGenerator {
 		}
 
 		appendToSbNoNl(this.sb, ".");
+	}
+
+	public void appendOptAnswer(FinalItem pOpt) {
+		ProcessedWord uncertainWord = null;
+		String options = "";
+
+		ArrayList<ExtractedItem> extractedItems = pOpt.getExtractedItems();
+		for (int i = 0; i < extractedItems.size(); ++i) {
+			ExtractedItem ei = extractedItems.get(i);
+			if (uncertainWord == null) {
+				uncertainWord = ei.getStartWord();
+			}
+
+			CeInstance tgtInst = ei.getInstance();
+			options += tgtInst.getInstanceName();
+
+			if (i < extractedItems.size() - 3) {
+				options += ", ";
+			} else if (i == extractedItems.size() - 2) {
+				options += " or ";
+			}
+		}
+
+		appendToSb(sb, "'" + uncertainWord.getWordText() + "' could mean " + options + ".");
+		appendToSb(sb, "Please specify an option.");
 	}
 
 }

@@ -34,6 +34,8 @@ public class QuestionProcessor {
 	private static final String CON_SPATIAL = "spatial thing";
 	private static final String CON_CONVTHING = "conv thing";
 	private static final String CON_AGENT = "agent";
+	private static final String CON_MAN = "man";
+	private static final String CON_WOMAN = "woman";
 	private static final String CON_UNINTPROP = "uninteresting property";
 	private static final String PROP_SINGQUAL = "single qualifier";
 	private static final String PROP_IRT = "is in reply to";
@@ -46,16 +48,18 @@ public class QuestionProcessor {
 	private ActionContext ac = null;
 	private ArrayList<ProcessedWord> allWords = null;
 	private ArrayList<FinalItem> finalItems = null;
+	private ArrayList<FinalItem> optionItems = null;
 	private ArrayList<String> matchedIds = null;
 	private CeInstance cardInstance = null;
 	private ConvSentence convSen = null;
 	private CeConcept configCon = null;
 	private boolean isCeResponse = false;
+	private boolean isOptResponse = false;
 	private AnswerGenerator ag = null;
-	
+
 	private static String computeInstanceNameFrom(CeInstance pTgtInst, ExtractedItem pEi) {
 		String result = null;
-		
+
 		if (USE_FORMAL_NAMES) {
 			result = pTgtInst.getInstanceName();
 		} else {
@@ -77,9 +81,10 @@ public class QuestionProcessor {
 		this.configCon = this.ac.getModelBuilder().getConceptNamed(this.ac, CON_CONFIGCON);
 		this.ag = new AnswerGenerator(this.ac, this);
 	}
-	
+
 	private ArrayList<ExtractedItem> computeAllExtractedItems() {
 		ArrayList<ExtractedItem> result = new ArrayList<ExtractedItem>();
+		ArrayList<ExtractedItem> optionsResult = new ArrayList<ExtractedItem>();
 
 		for (ProcessedWord pw : this.allWords) {
 			if (pw.getExtractedItems() != null) {
@@ -87,15 +92,42 @@ public class QuestionProcessor {
 					if (!result.contains(ei)) {
 						if (ei.isDominantInterpretation()) {
 							result.add(ei);
+						} else if (pw.confirmRequired()) {
+							isOptResponse = true;
+							optionsResult.add(ei);
 						}
 					}
 				}
 			}
 		}
 
+		if (isOptResponse) {
+			FinalItem thisFi = null;
+			optionItems = new ArrayList<FinalItem>();
+
+			for (ExtractedItem option : optionsResult) {
+				if (option.isInstanceItem()) {
+					if (thisFi != null) {
+						if (thisFi.isInstanceItem()) {
+							thisFi.addExtractedItem(option);
+						} else {
+							thisFi = null;
+						}
+					}
+				} else {
+					thisFi = null;
+				}
+
+				if (thisFi == null) {
+					thisFi = new FinalItem(option);
+					optionItems.add(thisFi);
+				}
+			}
+		}
+
 		return result;
 	}
-	
+
 	private void initialiseFinalItems(ArrayList<ExtractedItem> pExList) {
 		FinalItem thisFi = null;
 		this.finalItems = new ArrayList<FinalItem>();
@@ -112,7 +144,7 @@ public class QuestionProcessor {
 			} else {
 				thisFi = null;
 			}
-			
+
 			if (thisFi == null) {
 				thisFi = new FinalItem(thisEi);
 				this.finalItems.add(thisFi);
@@ -132,7 +164,7 @@ public class QuestionProcessor {
 		}
 
 		generateQuestionAnalysis();
-		
+
 		if (isStandardQuestion()) {
 			if (ConversationProcessor.isAuthorisedForAsk(fromUser)) {
 				answerStandardQuestion();
@@ -164,42 +196,73 @@ public class QuestionProcessor {
 
 	private void generateQuestionAnalysis() {
 		StringBuilder sb = new StringBuilder();
-		
-		for (FinalItem thisFi : this.finalItems) {
-			if (thisFi.isConceptItem()) {
-				ExtractedItem thisEi = thisFi.getFirstExtractedItem();
-				CeConcept tgtCon = thisEi.getConcept();
 
-				sb.append("[con: ");
-				sb.append(tgtCon.getConceptName());
-				sb.append("] ");
-			} else if (thisFi.isPropertyItem()) {
-				ExtractedItem thisEi = thisFi.getFirstExtractedItem();
-				CeProperty tgtProp = thisEi.getFirstProperty();
+		if (finalItems != null) {
+			for (FinalItem thisFi : this.finalItems) {
+				if (thisFi.isConceptItem()) {
+					ExtractedItem thisEi = thisFi.getFirstExtractedItem();
+					CeConcept tgtCon = thisEi.getConcept();
 
-				sb.append("[prop: ");
-				sb.append(tgtProp.getPropertyName());
-				sb.append("] ");
-			} else if (thisFi.isInstanceItem()) {
-				String connector = "";
+					sb.append("[con: ");
+					sb.append(tgtCon.getConceptName());
+					sb.append("] ");
+				} else if (thisFi.isPropertyItem()) {
+					ExtractedItem thisEi = thisFi.getFirstExtractedItem();
+					CeProperty tgtProp = thisEi.getFirstProperty();
 
-				sb.append("[inst: ");
+					sb.append("[prop: ");
+					sb.append(tgtProp.getPropertyName());
+					sb.append("] ");
+				} else if (thisFi.isInstanceItem()) {
+					String connector = "";
 
-				for (ExtractedItem thisEi : thisFi.getExtractedItems()) {
-					CeInstance tgtInst = thisEi.getInstance();
-					sb.append(connector);
-					sb.append(tgtInst.getInstanceName());
-					connector = ", ";
+					sb.append("[inst: ");
+
+					for (ExtractedItem thisEi : thisFi.getExtractedItems()) {
+						CeInstance tgtInst = thisEi.getInstance();
+						System.out.println("tgtInst: " + tgtInst);
+						sb.append(connector);
+						sb.append(tgtInst.getInstanceName());
+						connector = ", ";
+					}
+
+					sb.append("] ");
+				} else {
+					ExtractedItem thisEi = thisFi.getFirstExtractedItem();
+
+					sb.append("[???: ");
+					sb.append(thisEi.toString());
+					sb.append("] ");
 				}
+			}
+		}
 
-				sb.append("] ");
-			} else {
-				ExtractedItem thisEi = thisFi.getFirstExtractedItem();
+		if (optionItems != null) {
+			for (FinalItem option : optionItems) {
+				if (option.isConceptItem()) {
+					// TODO
+				} else if (option.isPropertyItem()) {
+					// TODO
+				} else if (option.isInstanceItem()) {
+					String connector = "";
 
-				sb.append("[???: ");
-				sb.append(thisEi.toString());
-				sb.append("] ");
-				
+					sb.append("[opt inst: ");
+
+					for (ExtractedItem thisEi : option.getExtractedItems()) {
+						CeInstance tgtInst = thisEi.getInstance();
+						sb.append(connector);
+						sb.append(tgtInst.getInstanceName());
+						connector = ", ";
+					}
+
+					sb.append("] ");
+				} else {
+					ExtractedItem thisEi = option.getFirstExtractedItem();
+
+					sb.append("[???: ");
+					sb.append(thisEi.toString());
+					sb.append("] ");
+				}
 			}
 		}
 
@@ -212,6 +275,9 @@ public class QuestionProcessor {
 		if (this.isCeResponse) {
 			String ceText = this.ag.extractAnswerText();
 			result = ResultOfAnalysis.createTellFor(ceText);
+		} else if (isOptResponse) {
+			String optText = this.ag.extractAnswerText();
+			result = ResultOfAnalysis.createOptionResponse(optText);
 		} else {
 			String gistText = this.ag.extractAnswerText();
 			result = ResultOfAnalysis.createQuestionResponseWithGistAndCe(gistText, "");
@@ -227,17 +293,17 @@ public class QuestionProcessor {
 	private CeInstance findOriginalCard() {
 		//The original card is the one (if any) that this card is in reply to
 		CeInstance result = null;
-		
+
 		if (this.cardInstance != null) {
 			result = this.cardInstance.getSingleInstanceFromPropertyNamed(this.ac, PROP_IRT);
 		}
-		
+
 		return result;
 	}
 
 	private ProcessedWord getFirstQuestionWord() {
 		ProcessedWord result = null;
-		
+
 		for (ProcessedWord pw : this.allWords) {
 			if (pw.isQuestionWord()) {
 				result = pw;
@@ -247,20 +313,20 @@ public class QuestionProcessor {
 
 		return result;
 	}
-	
+
 	private ProcessedWord getFirstPostQuestionWord() {
 		ProcessedWord result = null;
 		boolean foundQuestion = false;
-		
+
 		for (ProcessedWord pw : this.allWords) {
 			if (foundQuestion) {
 				result = pw;
 				break;
 			}
-			
+
 			if (pw.isQuestionWord()) {
 				foundQuestion = true;
-			}			
+			}
 		}
 
 		return result;
@@ -275,12 +341,12 @@ public class QuestionProcessor {
 //				break;
 //			}
 //		}
-//		
+//
 //		return result;
 //	}
 
 	private void answerStandardQuestion() {
-		if (!this.finalItems.isEmpty()) {
+		if (finalItems != null && !this.finalItems.isEmpty()) {
 			if (this.finalItems.size() == 1) {
 				FinalItem firstFi = this.finalItems.get(0);
 
@@ -306,11 +372,15 @@ public class QuestionProcessor {
 			} else {
 				this.ag.msgUnhandledQuestion(this.finalItems);
 			}
+		} else if (optionItems != null && !optionItems.isEmpty()) {
+			for (FinalItem option : optionItems) {
+				this.ag.appendOptAnswer(option);
+			}
 		} else {
 			this.ag.msgNothingUnderstood();
 		}
 	}
-	
+
 	private void handle1ElementQuestion(FinalItem pFirstFi) {
 		if (pFirstFi.isConceptItem()) {
 			//Concept
@@ -362,7 +432,7 @@ public class QuestionProcessor {
 
 	private ArrayList<CeInstance> handle2ElementQuestion(FinalItem pFirstFi, FinalItem pSecondFi, boolean pFinal) {
 		ArrayList<CeInstance> answer = null;
-		
+
 		if (pFirstFi.isConceptItem() && pSecondFi.isConceptItem()) {
 			//Concept Concept
 			answer = handle2wayConConQuestion(pFirstFi, pSecondFi, pFinal);
@@ -397,7 +467,7 @@ public class QuestionProcessor {
 
 		return answer;
 	}
-	
+
 	private ArrayList<CeInstance> handle2wayConConQuestion(FinalItem pFirstFi, FinalItem pSecondFi, boolean pFinal) {
 		//TODO: Complete this
 		this.ag.msgNotYetSupported("handleConceptConceptQuestion()", this.finalItems);
@@ -494,7 +564,7 @@ public class QuestionProcessor {
 			for (CePropertyInstance thisPi : tgtInst.getReferringPropertyInstances()) {
 				if (thisPi.getPropertyName().equals(tgtProp.getPropertyName())) {
 					CeInstance matchedInst = thisPi.getRelatedInstance();
-		
+
 					if (isWhoQuestion()) {
 						if (matchedInst.isConceptNamed(this.ac, CON_AGENT)) {
 							if (!answer.contains(matchedInst)) {
@@ -509,7 +579,7 @@ public class QuestionProcessor {
 				}
 			}
 		}
-		
+
 
 		if (pFinal) {
 			if (forwardMode) {
@@ -541,7 +611,7 @@ public class QuestionProcessor {
 			if (thisPi.getPropertyName().equals(tgtProp.getPropertyName())) {
 				//TODO: This should handle values too
 				for (CeInstance matchedInst : thisPi.getValueInstanceList(this.ac)) {
-		
+
 					if (isWhoQuestion()) {
 						if (matchedInst.isConceptNamed(this.ac, CON_AGENT)) {
 							if (!answer.contains(matchedInst)) {
@@ -566,10 +636,10 @@ public class QuestionProcessor {
 
 	private ArrayList<CeInstance> handle3ElementQuestion(FinalItem pFirstFi, FinalItem pSecondFi, FinalItem pThirdFi, boolean pFinal) {
 		ArrayList<CeInstance> answer = null;
-		
+
 		//TODO: Handle more forms here?
 		answer = handle2ElementQuestion(pSecondFi, pThirdFi, false);
-		
+
 		if (pFirstFi.isConceptItem()) {
 			//Concept
 			answer = handle3wayConQuestion(pFirstFi, pSecondFi, pThirdFi, answer, pFinal);
@@ -624,7 +694,7 @@ public class QuestionProcessor {
 
 	private CeProperty getFirstProperty() {
 		CeProperty result = null;
-		
+
 		for (FinalItem thisFi : this.finalItems) {
 			if (thisFi.isPropertyItem()) {
 				//TODO: Better method than just getting the first property
@@ -639,7 +709,7 @@ public class QuestionProcessor {
 
 	private CeInstance getFirstInstance() {
 		CeInstance result = null;
-		
+
 		for (FinalItem thisFi : this.finalItems) {
 			if (thisFi.isInstanceItem()) {
 				ExtractedItem thisEi = thisFi.getFirstExtractedItem();
@@ -657,7 +727,7 @@ public class QuestionProcessor {
 
 	private void answerWhyQuestion() {
 		CeInstance originalCard = findOriginalCard();
-	
+
 		if (originalCard == null) {
 			//TODO: Relax this constraint.  You should be able to ask "why is Fred married"
 			this.ag.msgStandaloneWhy();
@@ -665,7 +735,7 @@ public class QuestionProcessor {
 			computeRationaleFor(originalCard);
 		}
 	}
-	
+
 	private void computeRationaleFor(CeInstance pOrigCard) {
 		String qualifierText = computeQualifierText();
 		ArrayList<String> existingCeText = new ArrayList<String>();
@@ -678,7 +748,7 @@ public class QuestionProcessor {
 
 					if (qualifierText.isEmpty() || lcCeText.contains(qualifierText)) {
 						String thisCeText = thisSen.getCeText(this.ac);
-						
+
 						if (!existingCeText.contains(thisCeText)) {
 							this.ag.appendRationaleCeText(thisCeText);
 							foundExplanation = true;
@@ -720,12 +790,12 @@ public class QuestionProcessor {
 			}
 		}
 	}
-	
+
 	private void computeListForConcept(CeConcept pTgtCon, String pOrigTerm, boolean pSummary) {
 		boolean isUnlimited = isUnlimitedListRequest();
 		String pluralForm = statedPluralFor(pTgtCon);
 		int instCount = this.ac.getModelBuilder().getInstanceCountForConcept(pTgtCon);
-		
+
 		if (pluralForm == null) {
 			if (pOrigTerm.equals(pTgtCon.getConceptName())) {
 				pluralForm = pOrigTerm + "s";
@@ -733,7 +803,7 @@ public class QuestionProcessor {
 				pluralForm = pOrigTerm;
 			}
 		}
-		
+
 		if (instCount == 0) {
 			this.ag.appendListForNoneFound(pluralForm);
 		} else {
@@ -744,14 +814,14 @@ public class QuestionProcessor {
 			}
 		}
 	}
-	
+
 	private String statedPluralFor(CeConcept pTgtCon) {
 		String result = null;
 		CeInstance mm = pTgtCon.retrieveMetaModelInstance(this.ac);
 
 		if (mm != null) {
 			result = mm.getSingleValueFromPropertyNamed(PROP_PLURAL);
-			
+
 			if (result.isEmpty()) {
 				result = null;
 			}
@@ -762,7 +832,7 @@ public class QuestionProcessor {
 
 	public String computeQualifierText() {
 		String result = null;
-		
+
 		for (ProcessedWord pw : this.allWords) {
 			if (!pw.isQuestionWord()) {
 				if (result == null) {
@@ -777,7 +847,7 @@ public class QuestionProcessor {
 
 		return result;
 	}
-	
+
 	private ArrayList<ExtractedItem> listAllExtractedItemConcepts() {
 		ArrayList<ExtractedItem> result = new ArrayList<ExtractedItem>();
 
@@ -793,13 +863,13 @@ public class QuestionProcessor {
 
 	private String extractQuestionPhrase() {
 		String result = null;
-		
+
 		for (ProcessedWord thisPw : this.allWords) {
 			if (thisPw.isQuestionWord()) {
 				if (result != null) {
 					result += " ";
 				}
-				
+
 				result += thisPw.getLcWordText();
 			}
 		}
@@ -817,7 +887,7 @@ public class QuestionProcessor {
 		} else if (isWhereQuestion()) {
 			computeLocationForInstance(pTgtInst, pEi, allowConfigCons);
 		}
-		
+
 		if (this.ag.isEmpty()) {
 			this.ag.appendNoSpatialAnswer(pTgtInst.getInstanceName());
 		}
@@ -830,7 +900,7 @@ public class QuestionProcessor {
 		this.ag.appendPropertiesTextFor(pTgtInst, processedInsts, pAllowConfigCons);
 		this.ag.appendReferencesTextFor(pTgtInst, processedInsts, pAllowConfigCons);
 	}
-	
+
 	private void computeLocationForInstance(CeInstance pTgtInst, ExtractedItem pEi, boolean pAllowConfigCons) {
 		computeDirectLocationFor(pTgtInst, pEi);
 		computeReferencedLocationFor(pTgtInst, pEi, pAllowConfigCons);
@@ -844,7 +914,7 @@ public class QuestionProcessor {
 			if ((!leafCon.equalsOrHasParent(this.configCon)) || pAllowConfigCons) {
 				CeInstance mm = leafCon.retrieveMetaModelInstance(this.ac);
 				qualifier = mm.getSingleValueFromPropertyNamed(PROP_SINGQUAL);
-				
+
 				if (!qualifier.isEmpty()) {
 					break;
 				}
@@ -856,7 +926,7 @@ public class QuestionProcessor {
 			for (CeConcept leafCon : pTgtInst.getAllLeafConcepts()) {
 				if (!leafCon.equalsOrHasParent(this.configCon)) {
 					qualifier = getSingleQualifierFor(leafCon);
-					
+
 					if (!qualifier.isEmpty()) {
 						break;
 					}
@@ -866,7 +936,13 @@ public class QuestionProcessor {
 
 		if ((qualifier == null) || (qualifier.isEmpty())) {
 			if (isWhoQuestion()) {
-				qualifier = "he or she";
+				if (pTgtInst.isConceptNamed(ac, CON_MAN)) {
+					qualifier = "he";
+				} else if (pTgtInst.isConceptNamed(ac, CON_WOMAN)) {
+					qualifier = "she";
+				} else {
+					qualifier = "he or she";
+				}
 			} else {
 				qualifier = "it";
 			}
@@ -885,7 +961,7 @@ public class QuestionProcessor {
 			if (qualifier.isEmpty()) {
 				for (CeConcept parCon : pTgtCon.getDirectParents()) {
 					qualifier = getSingleQualifierFor(parCon);
-					
+
 					if (!qualifier.isEmpty()) {
 						break;
 					}
@@ -909,10 +985,10 @@ public class QuestionProcessor {
 			}
 		}
 	}
-	
+
 	private void computeReferencedLocationFor(CeInstance pTgtInst, ExtractedItem pEi, boolean pAllowConfigCons) {
 		String connector = "";
-		
+
 		for (CePropertyInstance pi : pTgtInst.getPropertyInstances()) {
 			if (pi.getRelatedProperty().isObjectProperty()) {
 				for (CePropertyValue pv : pi.getUniquePropertyValues()) {
@@ -943,7 +1019,7 @@ public class QuestionProcessor {
 
 		return (fqw != null) && fqw.isWhy();
 	}
-	
+
 	private boolean isWhatQuestion() {
 		ProcessedWord fqw = getFirstQuestionWord();
 
@@ -1006,23 +1082,23 @@ public class QuestionProcessor {
 
 		return (fpqw != null) && fpqw.isAll();
 	}
-	
+
 	public boolean isConceptToBeIgnored(CeConcept pCon) {
 		ArrayList<String> excludeList = new ArrayList<String>();
 		excludeList.add(CON_CONVTHING);
 
 		return pCon.equalsOrHasParentNamed(this.ac, excludeList);
 	}
-	
+
 	public boolean isPropertyToBeIgnored(CeProperty pProp) {
 		boolean result = false;
-		
+
 		CeInstance mm = pProp.getMetaModelInstance(this.ac);
-		
+
 		if (mm != null) {
 			result = mm.isConceptNamed(this.ac, CON_UNINTPROP);
 		}
-		
+
 		return result;
 	}
 

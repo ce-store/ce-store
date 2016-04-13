@@ -1,0 +1,9 @@
+there is a positive confirm reply named 'yes' that
+  has the value 'yes' as word and
+  has the value 'y' as word and
+  has the value 'oui' as word.
+  
+there is a negative confirm reply named 'no' that
+  has the value 'no' as word and
+  has the value 'n' as word and
+  has the value 'non' as word.

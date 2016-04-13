@@ -51,7 +51,7 @@ public class ConversationTriggerHandler extends GeneralConversationHandler {
 			}
 		}
 	}
-	
+
 	private void handleCardInstance(CeInstance pCardInst) {
 		if (!isCardAlreadyProcessed(pCardInst)) {
 			if (isThisCardForMe(pCardInst)) {
@@ -66,7 +66,7 @@ public class ConversationTriggerHandler extends GeneralConversationHandler {
 		//The passed card instance is already processed if it has another card linked via
 		//the "is in reply to" property, and that card has the user name of this agent
 		//in the "is from" property.
-		
+
 		//More succinctly:
 		//This card has already been processed if any other card from this agent is already
 		//in reply to it.

@@ -7,8 +7,8 @@ package com.ibm.ets.ita.ce.store.conversation.generator;
 import com.ibm.ets.ita.ce.store.ActionContext;
 import com.ibm.ets.ita.ce.store.conversation.model.ConvClause;
 import com.ibm.ets.ita.ce.store.conversation.model.ConvItem;
-import com.ibm.ets.ita.ce.store.conversation.model.ConvPhrase;
 import com.ibm.ets.ita.ce.store.conversation.model.ConvSentence;
+import com.ibm.ets.ita.ce.store.conversation.model.ConvText;
 import com.ibm.ets.ita.ce.store.conversation.model.ConvWord;
 import com.ibm.ets.ita.ce.store.conversation.model.ExtractedItem;
 import com.ibm.ets.ita.ce.store.conversation.model.MatchedTriple;
@@ -33,13 +33,13 @@ public class ConvCeGenerator extends CeGenerator {
 	private static final String CON_NUMWORD = "number word";
 
 	protected ConvCeGenerator(ActionContext pAc, StringBuilder pSb) {
-		super(pAc, pSb);
+		super(pAc);
 	}
 
-	public static void generateConvCeFor(ActionContext pAc, SentenceProcessor pSp, ConvPhrase pCp, StringBuilder pSb) {
+	public static void generateConvCeFor(ActionContext pAc, SentenceProcessor pSp, ConvText pCt, StringBuilder pSb) {
 		ConvCeGenerator ccg = new ConvCeGenerator(pAc, pSb);
 
-		ccg.generateConvCeForPhrase(pCp);
+		ccg.generateConvCeForText(pCt);
 
 		for (ProcessedWord thisWord : pSp.getAllProcessedWords()) {
 			ccg.generateConvCeForProcessedWord(thisWord);
@@ -184,18 +184,18 @@ public class ConvCeGenerator extends CeGenerator {
 		ceEndSentence();
 	}
 
-	private void generateConvCeForPhrase(ConvPhrase pCp) {
-		ceDeclarationLong(ConvItem.getDeterminer(), pCp.getConceptName(), pCp.getId());
-		ceAddFnProperty("phrase text", null, pCp.getItemText());
+	private void generateConvCeForText(ConvText pCt) {
+		ceDeclarationLong(ConvItem.getDeterminer(), pCt.getConceptName(), pCt.getId());
+		ceAddFnProperty("text", null, pCt.getItemText());
 
-		for (ConvSentence cs : pCp.getChildSentences()) {
+		for (ConvSentence cs : pCt.getChildSentences()) {
 			ceAddFnProperty("sentence", ConvSentence.getConceptName(), cs.getId());
 		}
 
 		ceEndSentence();
 
 		//Now generate the conv CE for the child sentences
-		for (ConvSentence cs : pCp.getChildSentences()) {
+		for (ConvSentence cs : pCt.getChildSentences()) {
 			generateConvCeForSentence(cs);
 		}
 	}

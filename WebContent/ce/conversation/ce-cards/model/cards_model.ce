@@ -51,6 +51,9 @@ possible to determine for certain whether they represent a query or statement. O
 (via a confirm CE card) an ask or tell CE card is issued.
 Note: ~ content ~ the payload (NL content) of this card.
 
+conceptualise a ~ option card ~ C that is a CE card.
+Note: Used to clarify anaphoric resolutions with multiple possible options. It is used as a response to an NL card.
+
 conceptualise an ~ ask card ~ C that is a CE card.
 Note: Used to communicate a CE query.
 
@@ -86,24 +89,17 @@ why: "v12345 is a threat" -> tell: "v12345 is owned by HVT John Smith and..." (h
 threat, as opposed to say, the vehicle's location).
 
 
-conceptualise a ~ country ~ C.
-
-conceptualise an ~ agent ~ A that
-  has the country C as ~ affiliation ~.
-
-conceptualise an ~ individual ~ I that is an agent.
-conceptualise an ~ organisation ~ O that is an agent.
-
-conceptualise a ~ person ~ P that is an individual.
-Note: A human agent.
-
-conceptualise a ~ service ~ S that is an individual.
-Note: A software service.
-
-conceptualise a ~ team ~ T that is an organisation.
-
 conceptualise a ~ resource ~ R.
 Note: An external resource (e.g. images or documents).
+
+conceptualise a ~ card trigger ~ CT that
+  is a CE triggered event and
+  has the value FC as ~ from concept ~ and
+  has the value FI as ~ from instance ~.
+
+conceptualise a ~ nl card trigger ~ NCT that
+  is a card trigger and
+  has the value TT as ~ tell service ~.
 
 conceptualise a ~ conversation triggered event ~ CTE that
   is a CE triggered event and
