@@ -124,6 +124,11 @@ public class SentenceSaverFact extends SentenceSaver {
                     CeInstance relInst = this.ac.getModelBuilder().getOrCreateInstanceNamed(this.ac, pValue);
                     this.ac.getSessionCreations().recordNewInstance(relInst);
                     this.ac.getCurrentSource().addAffectedConcept(rangeConcept);
+
+                    for (CeConcept leafConcept : relInst.getAllLeafConcepts()) {
+                        this.ac.getCurrentSource().addAffectedConcept(leafConcept);
+                    }
+
                     relInst.addConceptAndParents(rangeConcept);
 
                     if (this.ac.getCeConfig().isSavingCeSentences()) {

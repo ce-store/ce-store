@@ -100,13 +100,27 @@ public class CardGenerator {
 
     // Found an interesting thing - send to interested user
     public void generateInterestingFactCard(CeInstance inst, String fromService, String toService) {
-        System.out.println("\nGenerate interesting thing found card:\n");
-
         CeSentence[] sentences = inst.getPrimarySentences();
-        CeSentence lastSentence = sentences[sentences.length - 1];
-        String sentenceText = lastSentence.getCeText(ac);
+        CeSentence[] secondarySentences = inst.getSecondarySentences();
+        String sentenceText = null;
 
-        if (!sentenceText.contains(Property.INTERESTED_PARTY.toString())) {
+        if (sentences.length > 0) {
+            CeSentence lastPrimarySentence = sentences[sentences.length - 1];
+
+            if (secondarySentences.length > 0) {
+                CeSentence lastSecondarySentence = secondarySentences[secondarySentences.length - 1];
+
+                if (lastPrimarySentence.getCreationDate() > lastSecondarySentence.getCreationDate()) {
+                    sentenceText = lastPrimarySentence.getCeText(ac);
+                } else {
+                    sentenceText = lastSecondarySentence.getCeText(ac);
+                }
+            } else {
+                sentenceText = lastPrimarySentence.getCeText(ac);
+            }
+        }
+
+        if (sentenceText != null && !sentenceText.contains(Property.INTERESTED_PARTY.toString())) {
             StringBuilder sb = new StringBuilder();
 
             appendToSbNoNl(sb, Reply.NEW_INFORMATION.toString());
