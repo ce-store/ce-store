@@ -111,12 +111,12 @@ public class CardGenerator {
                 CeSentence lastSecondarySentence = secondarySentences[secondarySentences.length - 1];
 
                 if (lastPrimarySentence.getCreationDate() > lastSecondarySentence.getCreationDate()) {
-                    sentenceText = lastPrimarySentence.getCeText(ac);
+                    sentenceText = lastPrimarySentence.calculateCeTextWithoutRationale();
                 } else {
-                    sentenceText = lastSecondarySentence.getCeText(ac);
+                    sentenceText = lastSecondarySentence.calculateCeTextWithoutRationale();
                 }
             } else {
-                sentenceText = lastPrimarySentence.getCeText(ac);
+                sentenceText = lastPrimarySentence.calculateCeTextWithoutRationale();
             }
         }
 
