@@ -23,11 +23,9 @@ public class TellProcessor extends GeneralProcessor {
     public void process(CeInstance cardInst) {
         String tellText = cardInst.getSingleValueFromPropertyNamed(Property.CONTENT.toString());
         String fromService = cardInst.getSingleValueFromPropertyNamed(Property.IS_FROM.toString());
-        System.out.println("Tell text: " + tellText);
 
         if (isValidCe(tellText)) {
             // Valid CE - accept and add to store
-            System.out.println("Save valid CE");
             String source = ce.generateSrcName(th.getTriggerName());
             ce.save(tellText, source);
             cg.generateTellReplyCard(cardInst, tellText, th.getTriggerName(), fromService);

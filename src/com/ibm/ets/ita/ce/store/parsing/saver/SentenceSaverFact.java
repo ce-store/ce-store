@@ -206,6 +206,13 @@ public class SentenceSaverFact extends SentenceSaver {
 // 		Used to trigger changes on an 'interesting thing' that isn't directly expressed
 //    	eg. 'the person x is an interesting thing'
 //    		'the person x has new property...'
+
+        //Add the concept and parents and record this primary sentence
+        pInst.addConceptAndParents(pConcept);
+        if (this.ac.getCeConfig().isSavingCeSentences()) {
+            pInst.addPrimarySentence(this.sentenceInstance);
+        }
+
         CeConcept[] directConcepts = pInst.getDirectConcepts();
         HashSet<CeConcept> inheritedConcepts = pInst.getInheritedConcepts();
 
@@ -216,12 +223,6 @@ public class SentenceSaverFact extends SentenceSaver {
             this.ac.getCurrentSource().addAffectedConcept(concept);
         }
 //        }
-
-        //Add the concept and parents and record this primary sentence
-        pInst.addConceptAndParents(pConcept);
-        if (this.ac.getCeConfig().isSavingCeSentences()) {
-            pInst.addPrimarySentence(this.sentenceInstance);
-        }
     }
 
     @Override

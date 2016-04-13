@@ -48,7 +48,7 @@ public class NlProcessor extends GeneralProcessor {
     public void process(CeInstance cardInst) {
         String nlText = cardInst.getSingleValueFromPropertyNamed(Property.CONTENT.toString());
         String modNlText = appendDotIfNeeded(nlText);
-        System.out.println("text: " + modNlText);
+        System.out.println("\nText: " + modNlText);
 
         // Test for valid CE
         if (isValidCe(modNlText)) {

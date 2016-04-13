@@ -16,7 +16,7 @@ public class InterestingTriggerHandler extends GeneralTriggerHandler {
     @Override
     public void notify(ActionContext ac, String thingType, String thingName, String triggerName, String sourceId,
             String ruleOrQuery, String ruleOrQueryName) {
-        System.out.println("Interesting thing trigger notification received");
+        System.out.println("\nInteresting thing trigger notification received");
 
         initialise(ac);
         extractTriggerDetailsUsing(triggerName);

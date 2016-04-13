@@ -120,7 +120,9 @@ public class CardGenerator {
             }
         }
 
-        if (sentenceText != null && !sentenceText.contains(Property.INTERESTED_PARTY.toString())) {
+        System.out.println("\nSentence text: " + sentenceText);
+
+        if (sentenceText != null && !sentenceText.contains(Property.INTERESTED_PARTY.toString()) && !sentenceText.contains(Card.GENERAL.toString())) {
             StringBuilder sb = new StringBuilder();
 
             appendToSbNoNl(sb, Reply.NEW_INFORMATION.toString());
@@ -183,7 +185,6 @@ public class CardGenerator {
 
         String ceSentence = substituteCeParameters(sb.toString(), ceParms);
         String source = ce.generateSrcName(fromService);
-        System.out.println(ceSentence);
         ce.save(ceSentence, source);
     }
 }
