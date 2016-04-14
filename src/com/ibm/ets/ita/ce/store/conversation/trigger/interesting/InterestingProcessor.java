@@ -1,12 +1,19 @@
 package com.ibm.ets.ita.ce.store.conversation.trigger.interesting;
 
+import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.appendToSb;
+import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.appendToSbNoNl;
+
 import java.util.ArrayList;
 
 import com.ibm.ets.ita.ce.store.ActionContext;
+import com.ibm.ets.ita.ce.store.conversation.trigger.general.Card;
 import com.ibm.ets.ita.ce.store.conversation.trigger.general.CardGenerator;
+import com.ibm.ets.ita.ce.store.conversation.trigger.general.Concept;
 import com.ibm.ets.ita.ce.store.conversation.trigger.general.GeneralProcessor;
 import com.ibm.ets.ita.ce.store.conversation.trigger.general.Property;
+import com.ibm.ets.ita.ce.store.conversation.trigger.general.Reply;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
+import com.ibm.ets.ita.ce.store.model.CeSentence;
 
 public class InterestingProcessor extends GeneralProcessor {
 
@@ -43,7 +50,51 @@ public class InterestingProcessor extends GeneralProcessor {
             }
 
             if (sendFact) {
-                cg.generateInterestingFactCard(inst, th.getTriggerName(), interestedUser);
+                // Get latest fact sentence
+                CeSentence[] sentences = inst.getPrimarySentences();
+                CeSentence[] secondarySentences = inst.getSecondarySentences();
+                String sentenceText = null;
+
+                if (sentences.length > 0) {
+                    CeSentence lastPrimarySentence = sentences[sentences.length - 1];
+
+                    if (secondarySentences.length > 0) {
+                        CeSentence lastSecondarySentence = secondarySentences[secondarySentences.length - 1];
+
+                        if (lastPrimarySentence.getCreationDate() > lastSecondarySentence.getCreationDate()) {
+                            sentenceText = lastPrimarySentence.calculateCeTextWithoutRationale();
+                        } else {
+                            // Check secondary sentences for uninteresting rules to prevent duplicate notifications
+                            ArrayList<CeInstance> uninterestingRules = ac.getModelBuilder().getAllInstancesForConceptNamed(ac, Concept.UNINTERESTING_RULE.toString());
+                            String ruleName = lastSecondarySentence.getRationaleRuleName();
+
+                            boolean isUninterestingRule = false;
+
+                            for (CeInstance uninterestingRule : uninterestingRules) {
+                                isUninterestingRule = isUninterestingRule || uninterestingRule.getInstanceName().equals(ruleName);
+                            }
+
+                            if (!isUninterestingRule) {
+                                sentenceText = lastSecondarySentence.calculateCeTextWithoutRationale();
+                            }
+                        }
+                    } else {
+                        sentenceText = lastPrimarySentence.calculateCeTextWithoutRationale();
+                    }
+                }
+
+                if (sentenceText != null && !sentenceText.contains(Property.INTERESTED_PARTY.toString()) && !sentenceText.contains(Card.GENERAL.toString())) {
+                    StringBuilder sb = new StringBuilder();
+
+                    appendToSbNoNl(sb, Reply.NEW_INFORMATION.toString());
+                    appendToSbNoNl(sb, inst.getInstanceName());
+                    appendToSb(sb, ":");
+
+                    appendToSb(sb, sentenceText);
+
+                    String content = sb.toString();
+                    cg.generateCard(Card.GIST.toString(), content, th.getTriggerName(), interestedUser, null, null);
+                }
             }
         }
     }

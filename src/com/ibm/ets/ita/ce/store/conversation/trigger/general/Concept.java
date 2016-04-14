@@ -6,6 +6,7 @@ public enum Concept {
     NEGATION_WORDS("negation word list"),
     INTERESTING("interesting thing"),
     UNINTERESTING("uninteresting property"),
+    UNINTERESTING_RULE("uninteresting rule"),
     CONV_THING("conv thing"),
     MAN("man"),
     WOMAN("woman"),

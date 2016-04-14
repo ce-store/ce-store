@@ -143,7 +143,7 @@ public class NlProcessor extends GeneralProcessor {
 
         appendToSbNoNl(sb, Reply.BE_SPECIFIC.toString());
         String humanAgent = findHumanAgent(cardInst);
-        cg.generateCard(Card.NL.toString(), sb.toString(), th.getTriggerName(), humanAgent, cardInst.getInstanceName(),
+        cg.generateCard(Card.GIST.toString(), sb.toString(), th.getTriggerName(), humanAgent, cardInst.getInstanceName(),
                 null);
     }
 
@@ -194,7 +194,7 @@ public class NlProcessor extends GeneralProcessor {
 
                 cg.generateCard(Card.TELL.toString(), completedTemplate, th.getTriggerName(), completedRecipient,
                         cardInst.getInstanceName(), null);
-                cg.generateCard(Card.NL.toString(), completedReply, th.getTriggerName(), interestedUser,
+                cg.generateCard(Card.GIST.toString(), completedReply, th.getTriggerName(), interestedUser,
                         cardInst.getInstanceName(), null);
                 cardGenerated = true;
             }
@@ -202,7 +202,7 @@ public class NlProcessor extends GeneralProcessor {
 
         if (!cardGenerated) {
             String humanAgent = findHumanAgent(cardInst);
-            cg.generateCard(Card.NL.toString(), ag.nothingUnderstood(), th.getTriggerName(), humanAgent, cardInst.getInstanceName(), null);
+            cg.generateCard(Card.GIST.toString(), ag.nothingUnderstood(), th.getTriggerName(), humanAgent, cardInst.getInstanceName(), null);
         }
     }
 

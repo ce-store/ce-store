@@ -9,16 +9,13 @@ import java.util.TreeMap;
 
 import com.ibm.ets.ita.ce.store.ActionContext;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
-import com.ibm.ets.ita.ce.store.model.CeSentence;
 
 public class CardGenerator {
 
     private ConvCeGenerator ce;
-    private ActionContext ac;
 
     public CardGenerator(ActionContext ac) {
         ce = new ConvCeGenerator(ac);
-        this.ac = ac;
     }
 
     // Tell cards are used to add valid CE to the store
@@ -32,111 +29,13 @@ public class CardGenerator {
         generateCard(Card.GIST.toString(), Reply.SAVED.message(), fromService, toService, cardInst.getInstanceName(), null);
     }
 
-    // Generate NL card
-    public void generateNLCard(CeInstance cardInst, String convText, String fromService, String toService, ArrayList<String> referencedInsts) {
-        StringBuilder sb = new StringBuilder();
-        TreeMap<String, String> ceParms = new TreeMap<String, String>();
-
-        appendToSb(sb, "there is a %CARD_TYPE% named '%CARD_NAME%' that");
-        appendToSb(sb, "  has the timestamp '{now}' as timestamp and");
-        appendToSb(sb, "  has '%CONV_TEXT%' as content and");
-        appendToSb(sb, "  is from the service '%FROM_SERV%' and");
-        appendToSb(sb, "  is to the service '%TO_SERV%' and");
-
-        if (referencedInsts != null) {
-            int numReferences = referencedInsts.size();
-
-            if (numReferences > 0) {
-                appendToSb(sb, "  is in reply to the card '%PREV_CARD%' and");
-
-                for (int i = 0; i < numReferences; ++i) {
-                    String inst = referencedInsts.get(i);
-                    appendToSbNoNl(sb, "  is about the thing '");
-                    appendToSbNoNl(sb, inst);
-
-                    if (i < numReferences - 1) {
-                        appendToSb(sb, "' and");
-                    } else {
-                        appendToSbNoNl(sb, "'.");
-                    }
-                }
-            } else {
-                appendToSb(sb, "  is in reply to the card '%PREV_CARD%'.");
-            }
-        } else {
-            appendToSb(sb, "  is in reply to the card '%PREV_CARD%'.");
-        }
-
-        ceParms.put("%CARD_TYPE%", Card.NL.toString());
-        ceParms.put("%CARD_NAME%", ce.generateNewUid());
-        ceParms.put("%CONV_TEXT%", convText);
-        ceParms.put("%FROM_SERV%", fromService);
-        ceParms.put("%TO_SERV%", toService);
-        ceParms.put("%PREV_CARD%", cardInst.getInstanceName());
-
-        String ceSentence = substituteCeParameters(sb.toString(), ceParms);
-        String source = ce.generateSrcName(fromService);
-        ce.save(ceSentence, source);
-    }
-
     // User has declared their interest in something - create new interesting thing
     public void generateInterestingThingCard(CeInstance cardInst, String content, String fromService,
             String toService) {
         generateCard(Card.TELL.toString(), content, fromService, toService, cardInst.getInstanceName(), null);
     }
 
-    public void generatePotentialInterestingThingCard(CeInstance inst, String fromService, String toService) {
-        StringBuilder sb = new StringBuilder();
-
-        appendToSb(sb, Reply.NEW_INTERESTING.toString());
-        appendToSbNoNl(sb, Reply.STATE_INTEREST.toString());
-        appendToSbNoNl(sb, inst.getInstanceName());
-        appendToSb(sb, ".");
-
-        String content = sb.toString();
-        System.out.println("Content: " + content);
-        generateCard(Card.NL.toString(), content, fromService, toService, null, null);
-    }
-
-    // Found an interesting thing - send to interested user
-    public void generateInterestingFactCard(CeInstance inst, String fromService, String toService) {
-        CeSentence[] sentences = inst.getPrimarySentences();
-        CeSentence[] secondarySentences = inst.getSecondarySentences();
-        String sentenceText = null;
-
-        if (sentences.length > 0) {
-            CeSentence lastPrimarySentence = sentences[sentences.length - 1];
-
-            if (secondarySentences.length > 0) {
-                CeSentence lastSecondarySentence = secondarySentences[secondarySentences.length - 1];
-
-                if (lastPrimarySentence.getCreationDate() > lastSecondarySentence.getCreationDate()) {
-                    sentenceText = lastPrimarySentence.calculateCeTextWithoutRationale();
-                } else {
-                    sentenceText = lastSecondarySentence.calculateCeTextWithoutRationale();
-                }
-            } else {
-                sentenceText = lastPrimarySentence.calculateCeTextWithoutRationale();
-            }
-        }
-
-        System.out.println("\nSentence text: " + sentenceText);
-
-        if (sentenceText != null && !sentenceText.contains(Property.INTERESTED_PARTY.toString()) && !sentenceText.contains(Card.GENERAL.toString())) {
-            StringBuilder sb = new StringBuilder();
-
-            appendToSbNoNl(sb, Reply.NEW_INFORMATION.toString());
-            appendToSbNoNl(sb, inst.getInstanceName());
-            appendToSb(sb, ":");
-
-            appendToSb(sb, sentenceText);
-
-            String content = sb.toString();
-            System.out.println("Content: " + content);
-            generateCard(Card.GIST.toString(), content, fromService, toService, null, null);
-        }
-    }
-
+    // Add referenced instances to the 'about' property on a card
     private String addAbout(ArrayList<String> referencedInsts) {
         StringBuilder sb = new StringBuilder();
 
