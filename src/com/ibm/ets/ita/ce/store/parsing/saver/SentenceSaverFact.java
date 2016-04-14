@@ -190,12 +190,7 @@ public class SentenceSaverFact extends SentenceSaver {
 	}
 
 	private void saveInstance(CeConcept pConcept, CeInstance pInst) {
-		if (!pInst.isDirectConcept(pConcept)) {
-			//DSB 13/08/2013 - This is now conditional.  Will only be listed as an affected concept
-			//if the instance in question was not already that concept
-			//Notify the action context that this concept has been affected by this execution
-			this.ac.getCurrentSource().addAffectedConcept(pConcept);
-		}
+		this.ac.getCurrentSource().addAffectedConcept(pConcept);
 
 		//Add the concept and parents and record this primary sentence
 		pInst.addConceptAndParents(pConcept);
