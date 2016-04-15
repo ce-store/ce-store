@@ -197,16 +197,6 @@ public class SentenceSaverFact extends SentenceSaver {
     }
 
     private void saveInstance(CeConcept pConcept, CeInstance pInst) {
-//        if (!pInst.isDirectConcept(pConcept)) {
-//DSB 13/08/2013 - This is now conditional.  Will only be listed as an affected concept
-//if the instance in question was not already that concept
-//Notify the action context that this concept has been affected by this execution
-//
-//Anna: Removed the condition and added all direct concepts to affected concepts.
-// 		Used to trigger changes on an 'interesting thing' that isn't directly expressed
-//    	eg. 'the person x is an interesting thing'
-//    		'the person x has new property...'
-
         //Add the concept and parents and record this primary sentence
         pInst.addConceptAndParents(pConcept);
         if (this.ac.getCeConfig().isSavingCeSentences()) {
@@ -222,7 +212,6 @@ public class SentenceSaverFact extends SentenceSaver {
         for (CeConcept concept : inheritedConcepts) {
             this.ac.getCurrentSource().addAffectedConcept(concept);
         }
-//        }
     }
 
     @Override

@@ -14,9 +14,28 @@ for which P1, P2 and P3 is it true that
     ( the person P2 is the parent of the person P3 )
 .
 
+[ grandparent of patient ]
+for which P1, P2 and P3 is it true that 
+    ( the patient P1 is the parent of the person P2 ) and
+    ( the person P2 is the parent of the person P3 )
+.
+
+[ grandparent of patient - long ]
+for which P1, P2 and P3 is it true that 
+    ( the person P1 is the parent of the person P2 ) and
+    ( the person P2 is the parent of the person P3 ) and
+    ( the person P1 is a patient )
+.
+
 [ close relation to patient ]
 for which P and PA is it true that 
     ( the person P is closely related to the patient PA )
+.
+
+[ close relation to patient - long ]
+for which P1 and P2 is it true that 
+    ( the person P1 is closely related to the person P2 ) and
+    ( the person P2 is a patient )
 .
 
 [ patient presents with lump ]

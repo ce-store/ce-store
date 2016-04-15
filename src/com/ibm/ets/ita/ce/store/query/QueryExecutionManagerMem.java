@@ -376,7 +376,7 @@ public class QueryExecutionManagerMem extends QueryExecutionManager {
 		addHeader(pVarId);
 		
 		if (objProps.isEmpty() && dataProps.isEmpty() && concatVals.isEmpty()) {
-			processForEmptyProperties(pClause, pInsts, pVarId);
+			result = processForEmptyProperties(pClause, pInsts, pVarId);
 		} else {		
 			//Normal processing - object and/or datatype properties are not empty
 			for (CePropertyInstance thisObjPi : objProps) {
@@ -409,9 +409,9 @@ public class QueryExecutionManagerMem extends QueryExecutionManager {
 				//If the number of mcls has not increased then there were no instances returned for this clause
 				result = (this.getMcls().size() == startingMclCount);
 			}
-		} else {
-			//Must always be false if no properties were processed
-			result = false;
+//		} else {
+//			//Must always be false if no properties were processed
+//			result = false;
 		}
 		
 		return result;
@@ -435,7 +435,9 @@ public class QueryExecutionManagerMem extends QueryExecutionManager {
 		return result;
 	}
 
-	private void processForEmptyProperties(CeClause pClause, ArrayList<CeInstance> pInsts, String pTargetHeader) {
+	private boolean processForEmptyProperties(CeClause pClause, ArrayList<CeInstance> pInsts, String pTargetHeader) {
+		boolean result = true;
+
 		if (pInsts != null) {
 			//Object and datatype properties are empty, so this is a simple "list all instances" query
 			for (CeInstance thisInst : pInsts) {
@@ -461,6 +463,7 @@ public class QueryExecutionManagerMem extends QueryExecutionManager {
 					
 					if (keepInst) {
 						saveSimpleInstance(pTargetHeader, thisInst);
+						result = false;
 					} else {
 						removeSimpleInstance(pTargetHeader, thisInst);
 					}
@@ -483,8 +486,10 @@ public class QueryExecutionManagerMem extends QueryExecutionManager {
 		} else {
 			reportError("Unexpected null target concept for query/rule clause: " + pClause.toString(), this.ac);
 		}
+
+		return result;
 	}
-	
+
 	private void processForObjectProperty(CeClause pClause, ArrayList<CeInstance> pInsts, String pSrcVarId, CePropertyInstance pObjPi) {
 		String propName = pObjPi.getRelatedProperty().getPropertyName();
 		String tgtVarId = pObjPi.getSingleOrFirstValue();
@@ -1179,7 +1184,7 @@ public class QueryExecutionManagerMem extends QueryExecutionManager {
 
 		mcl.addMatchedPair(this.ac, thisPair);
 		
-		addToMcls(mclId, mcl);		
+		addToMcls(mclId, mcl);
 	}
 
 	private void removeSimpleInstance(String pSrcVar, CeInstance pSrcInst) {
@@ -1228,7 +1233,7 @@ public class QueryExecutionManagerMem extends QueryExecutionManager {
 
 		mcl.addMatchedPair(this.ac, thisPair);
 		
-		getMcls().put(mclId, mcl);		
+		addToMcls(mclId, mcl);
 	}
 	
 	private void saveThisMatchedNormalValue(String pSrcVar, CeInstance pSrcInst, String pTgtVar, String pTgtVal, String pPropName) {
