@@ -420,6 +420,17 @@ public class CeSource extends CeModelEntity {
 		return this.affectedConcepts;
 	}
 
+	public HashSet<CeConcept> getAffectedConceptsPlusParents() {
+		HashSet<CeConcept> result = new HashSet<CeConcept>();
+
+		for (CeConcept thisCon : this.affectedConcepts) {
+			result.add(thisCon);
+			result.addAll(thisCon.retrieveAllParents(true));
+		}
+
+		return result;
+	}
+
 	public HashSet<CeProperty> getAffectedProperties() {
 		return this.affectedProperties;
 	}

@@ -766,7 +766,8 @@ public class ProcessorCe {
 
 				//Check at concept level
 				for (CeConcept premCon : thisRule.listAllPremiseConcepts()) {
-					CopyOnWriteArrayList<CeConcept> affCons = new CopyOnWriteArrayList<CeConcept>(pSource.getAffectedConcepts());
+					CopyOnWriteArrayList<CeConcept> affCons = new CopyOnWriteArrayList<CeConcept>(pSource.getAffectedConceptsPlusParents());
+
 					for (CeConcept affCon : affCons) {
 						if (affCon.equalsOrHasParent(premCon)) {
 							if (isReportMicroDebug()) {
@@ -897,7 +898,7 @@ public class ProcessorCe {
 
 	private void checkForConceptTriggerMatch(CeConcept pTargetConcept, CeInstance pTrigInst, CeSource pSource, String pExtraType, String pExtraName) {
 		//DSB 01/11/2013 - Created copy to avoid concurrentModification issues
-		ArrayList<CeConcept> copyCons = new ArrayList<CeConcept>(pSource.getAffectedConcepts());
+		ArrayList<CeConcept> copyCons = new ArrayList<CeConcept>(pSource.getAffectedConceptsPlusParents());
 
 		for (CeConcept candidateCon : copyCons) {
 			if (candidateCon.equalsOrHasParent(pTargetConcept)) {

@@ -97,19 +97,13 @@ public class CeRule extends CeQuery {
 			this.sentenceLookup.add(thisSen.getCeText(pAc));
 		}
 	}
-	
+
 	public void clearSentenceLookup() {
 		this.sentenceLookup = new HashSet<String>();
 	}
 
 	public boolean doesSentenceTextAlreadyExist(ActionContext pAc, String pCeText) {
 		boolean result = this.sentenceLookup.contains(pCeText);
-
-		if (result) {
-//			if (isReportDebug()) {
-//				reportDebug("Ignoring sentence due to duplication (for rule '" + getRuleName() + "'): " + pCeText, pAc);
-//			}
-		}
 
 		return result;
 	}
