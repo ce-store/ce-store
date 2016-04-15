@@ -163,8 +163,10 @@ public class CeGeneratorConclusion {
 	}
 	
 	private void processClauses(StringBuilder pSb, String pTgtVar, CeConclusionRow pRow) {
+		StringBuilder sb = new StringBuilder();
 		String connectorText = "";
 		boolean generatedStart = false;
+		boolean splitSentence = false;
 		CeConcept lastTgtCon = null;
 
 		for (CeClause thisClause : getAllChildConclusionClauses()) {
@@ -172,29 +174,36 @@ public class CeGeneratorConclusion {
 			if (clauseTv.equals(pTgtVar)) {
 				CeConcept thisTgtCon = thisClause.getTargetConcept();
 
-				if ((thisTgtCon != null) && (!thisTgtCon.equalsOrHasParent(lastTgtCon))) {
+				if ((lastTgtCon != null) && (!lastTgtCon.equalsOrHasParent(thisTgtCon))) {
 					//The concept is not compatible with the previous so a new sentence must be started
-					generateRationaleAndCloseSentence(pSb, pRow);
+					generateRationaleAndCloseSentence(sb, pRow);
+					sb.append(ContainerCeResult.CESEN_SEPARATOR);
 					connectorText = "";
 					generatedStart = false;
+					splitSentence = true;
 				}
 
 				lastTgtCon = thisTgtCon;
 
 				if (thisClause.isSimpleClause()) {
-					connectorText = generateCeConclusionForSimpleClause(pSb, thisClause, pRow, connectorText);
+					connectorText = generateCeConclusionForSimpleClause(sb, thisClause, pRow, connectorText);
 					generatedStart = true;
 				} else if (thisClause.isTargetConceptNegated()) {
 					reportWarning("Rendering of conclusions for negated target concept not yet implemented", this.ac);
 				} else {
-					connectorText = generateCeConclusionForNormalClause(pSb, thisClause, pRow, connectorText, generatedStart);
+					connectorText = generateCeConclusionForNormalClause(sb, thisClause, pRow, connectorText, generatedStart);
 					generatedStart = true;
 				}
-
 			}
 		}
 
-		generateRationaleAndCloseSentence(pSb, pRow);
+		generateRationaleAndCloseSentence(sb, pRow);
+		
+		if (splitSentence) {
+			pSb.append(ContainerCeResult.CESEN_SEPARATOR);
+		}
+		
+		pSb.append(sb);
 	}
 
 	private String generateCeConclusionForSimpleClause(StringBuilder pSb, CeClause pClause, CeConclusionRow pRow, String pConnectorText) {
