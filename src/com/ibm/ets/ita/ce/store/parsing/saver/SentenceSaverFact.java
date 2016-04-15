@@ -121,7 +121,6 @@ public class SentenceSaverFact extends SentenceSaver {
 				if (!pValue.isEmpty()) {
 					CeInstance relInst = this.ac.getModelBuilder().getOrCreateInstanceNamed(this.ac, pValue);
 					this.ac.getSessionCreations().recordNewInstance(relInst);
-					this.ac.getCurrentSource().addAffectedConcept(rangeConcept);
 					relInst.addConceptAndParents(rangeConcept);
 
 					if (this.ac.getCeConfig().isSavingCeSentences()) {
@@ -130,6 +129,12 @@ public class SentenceSaverFact extends SentenceSaver {
 
 					//Save the instance (regardless of whether it is new or not)
 					getModelBuilder().saveInstance(this.ac, relInst);
+
+					CeConcept[] directConcepts = relInst.getDirectConcepts();
+
+			        for (CeConcept concept : directConcepts) {
+			            this.ac.getCurrentSource().addAffectedConcept(concept);
+			        }
 				} else {
 					reportError("Property not saved as no name was specified for target instance.  For property '" + pPropInst.getPropertyName() + "' in sentence: " + getTargetFactSentence().getSentenceText(), this.ac);
 				}
@@ -190,14 +195,18 @@ public class SentenceSaverFact extends SentenceSaver {
 	}
 
 	private void saveInstance(CeConcept pConcept, CeInstance pInst) {
-		this.ac.getCurrentSource().addAffectedConcept(pConcept);
+        //Add the concept and parents and record this primary sentence
+        pInst.addConceptAndParents(pConcept);
+        if (this.ac.getCeConfig().isSavingCeSentences()) {
+            pInst.addPrimarySentence(this.sentenceInstance);
+        }
 
-		//Add the concept and parents and record this primary sentence
-		pInst.addConceptAndParents(pConcept);
-		if (this.ac.getCeConfig().isSavingCeSentences()) {
-			pInst.addPrimarySentence(this.sentenceInstance);
-		}
-	}
+        CeConcept[] directConcepts = pInst.getDirectConcepts();
+
+        for (CeConcept concept : directConcepts) {
+            this.ac.getCurrentSource().addAffectedConcept(concept);
+        }
+    }
 
 	@Override
 	public String toString() {
