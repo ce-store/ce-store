@@ -100,39 +100,14 @@ public class NewMatchedTriple {
         return rangeName;
     }
 
-//    public String getSentence() {
-//        StringBuilder sb = new StringBuilder();
-//
-//        appendToSbNoNl(sb, "the ");
-//        appendToSbNoNl(sb, domain.getConceptName());
-//        appendToSbNoNl(sb, " '");
-//        appendToSbNoNl(sb, getDomainName());
-//        appendToSbNoNl(sb, "' ");
-//
-//        if (property.isFunctionalNoun()) {
-//            appendToSbNoNl(sb, "has the ");
-//            appendToSbNoNl(sb, range.getConceptName());
-//            appendToSbNoNl(sb, getRangeName());
-//            appendToSbNoNl(sb, " as ");
-//            appendToSbNoNl(sb, getPropertyName());
-//            appendToSbNoNl(sb, ".");
-//        } else {
-//            appendToSbNoNl(sb, getPropertyName());
-//            appendToSbNoNl(sb, "the ");
-//            appendToSbNoNl(sb, range.getConceptName());
-//            appendToSbNoNl(sb, " '");
-//            appendToSbNoNl(sb, getRangeName());
-//            appendToSbNoNl(sb, "'.");
-//        }
-//
-////    	return "the " + domain.getConceptName() + " '" + getDomainName() + "' " + getPropertyName() + " the " + range.getConceptName() + " '" + getRangeName() + "'.";
-//        return sb.toString();
-//    }
-
     public ArrayList<String> getReferencedInstances() {
     	ArrayList<String> referencedInsts = new ArrayList<String>();
-    	referencedInsts.add(getDomainName());
-    	referencedInsts.add(getRangeName());
+    	if (domainInstance != null) {
+            referencedInsts.add(getDomainName());
+    	}
+    	if (rangeInstance != null) {
+            referencedInsts.add(getRangeName());
+    	}
     	return referencedInsts;
     }
 
