@@ -68,6 +68,7 @@ there is a concept template named 'interesting concept' that
     ( there is an interested party named \'party_~ UID ~\' that
         has the CE user \'~ U ~\' as user and
         has the value \'~ NOW ~\' as timestamp ) and
+    ( the thing T is an interesting thing ) and
     ( the interesting thing T has the interested party \'party_~ UID ~\' as interested party )
   .'
   as template string and
