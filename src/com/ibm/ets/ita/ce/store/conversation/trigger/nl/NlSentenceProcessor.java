@@ -321,8 +321,82 @@ public class NlSentenceProcessor {
             }
         }
 
-        // TODO: Extend this to work for multi word values
-        return potentialValues.get(0).getWordText();
+        System.out.println("Potential values: " + potentialValues);
+
+        if (potentialValues.size() == 0) {
+            return null;
+        } else if (potentialValues.size() == 1) {
+            return potentialValues.get(0).getWordText();
+        } else {
+            // If multiple potential values possible, check if they are next to each other
+            // If they are adjacent, use as whole value
+            // Else, pick first of longest adjacent words
+            ProcessedWord nextWord = null;
+            ArrayList<ArrayList<ProcessedWord>> adjacentWordsList = new ArrayList<ArrayList<ProcessedWord>>();
+            ArrayList<ProcessedWord> currentList = null;
+
+            // Build adjacent word list
+            for (ProcessedWord word : potentialValues) {
+                if (nextWord != null && currentList != null && word == nextWord) {
+                    currentList.add(word);
+                } else {
+                    currentList = new ArrayList<ProcessedWord>();
+                    currentList.add(word);
+                    adjacentWordsList.add(currentList);
+                }
+
+                nextWord = word.getNextProcessedWord();
+            }
+
+            System.out.println("Adjacent word list: " + adjacentWordsList);
+
+            // Check if any of the lists can be joined with common words
+            for (int i = 0; i < adjacentWordsList.size() - 1; ++i) {
+                ArrayList<ProcessedWord> list = adjacentWordsList.get(i);
+                ArrayList<ProcessedWord> nextList = adjacentWordsList.get(i + 1);
+                ArrayList<ProcessedWord> standardWords = new ArrayList<ProcessedWord>();
+
+                if (list.size() > 0 && nextList != null) {
+                    nextWord = list.get(list.size() - 1).getNextProcessedWord();
+
+                    // Pass over standard words
+                    while (nextWord.isStandardWord()) {
+                        standardWords.add(nextWord);
+                        nextWord = nextWord.getNextProcessedWord();
+                    }
+
+                    // If next word equals first word of next list then lists are joined by standard words and can be connected
+                    if (nextWord.equals(nextList.get(0))) {
+                        list.addAll(standardWords);
+                        list.addAll(nextList);
+                        nextList.clear();
+                    }
+                }
+            }
+
+            System.out.println("Adjacent word list: " + adjacentWordsList);
+
+            // Find longest list of adjacent words
+            ArrayList<ProcessedWord> longestList = null;
+            for (ArrayList<ProcessedWord> list : adjacentWordsList) {
+                if (longestList == null || list.size() > longestList.size()) {
+                    longestList = list;
+                }
+            }
+
+            // Build String value of adjacent words
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < longestList.size(); ++i) {
+                ProcessedWord word = longestList.get(i);
+                sb.append(word.getWordText());
+
+                if (i < longestList.size() - 1) {
+                    sb.append(" ");
+                }
+            }
+
+            return sb.toString();
+        }
     }
 
     public ArrayList<NewMatchedTriple> matchTriples(ArrayList<ProcessedWord> words, NlAnswerGenerator ag) {
@@ -441,7 +515,9 @@ public class NlSentenceProcessor {
 
                                     String value = findValueFromUngroundedWords(ungrounded);
 
-                                    matchedTriples.add(new NewMatchedTriple(instance, property, value));
+                                    if (value != null) {
+                                        matchedTriples.add(new NewMatchedTriple(instance, property, value));
+                                    }
                                 } else {
                                     // Relationship property
                                     matchedTriples.add(new NewMatchedTriple(instance, property, range, ac));
