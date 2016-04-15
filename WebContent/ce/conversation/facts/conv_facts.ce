@@ -7,3 +7,12 @@ there is a negative confirm reply named 'no' that
   has the value 'no' as word and
   has the value 'n' as word and
   has the value 'non' as word.
+  
+there is a common word list named 'common word list' that
+  has the value 'an' as common word and
+  has the value 'as' as common word and
+  has the value 'the' as common word and
+  has the value 'in' as common word and
+  has the value 'that' as common word and
+  has the value 'and' as common word and
+  has the value 'has' as common word.

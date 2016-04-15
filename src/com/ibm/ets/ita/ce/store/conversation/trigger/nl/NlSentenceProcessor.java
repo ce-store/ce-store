@@ -311,16 +311,18 @@ public class NlSentenceProcessor {
         return words.indexOf(w1) < words.indexOf(w2);
     }
 
+    // Look through ungrounded words and remove standard words/partial matches to find value
     private String findValueFromUngroundedWords(ArrayList<ProcessedWord> ungrounded) {
-
         ArrayList<ProcessedWord> potentialValues = new ArrayList<ProcessedWord>();
-        CeConcept commonWord = ac.getModelBuilder().getConceptNamed(ac, "common word");
-//        commonWord.
 
         for (ProcessedWord word : ungrounded) {
+            if (!word.isStandardWord() && !word.isLaterPartOfPartial()) {
+                potentialValues.add(word);
+            }
         }
 
-        return ungrounded.get(0).getWordText();
+        // TODO: Extend this to work for multi word values
+        return potentialValues.get(0).getWordText();
     }
 
     public ArrayList<NewMatchedTriple> matchTriples(ArrayList<ProcessedWord> words, NlAnswerGenerator ag) {

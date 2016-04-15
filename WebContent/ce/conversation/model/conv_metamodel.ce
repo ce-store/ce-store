@@ -20,7 +20,8 @@ conceptualise the concept C
 
 conceptualise a ~ scorable thing ~ ST.
 
-conceptualise a ~ common word list ~ CWL.
+conceptualise a ~ common word list ~ CWL that
+  has the value CW as ~ common word ~.
 conceptualise a ~ negation word list ~ NWL.
 
 [ synonyms ]
