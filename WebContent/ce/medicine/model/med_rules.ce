@@ -26,6 +26,13 @@ then
   ( the person W is the aunt of the person P2 )
 .
 
+[number of brothers]
+if
+  ( the person P1 is the brother of the person #P2 )
+then
+  ( the person P1 has #P2 as number of brothers )
+.
+
 [closeRelationInverse]
 if 
   ( the person P1 is closely related to the person P2 )

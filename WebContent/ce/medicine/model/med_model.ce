@@ -20,7 +20,8 @@ conceptualise a ~ person ~ P that
   ~ is the uncle of ~ the person P4 and
   ~ is the aunt of ~ the person P5 and
   ~ is the brother of ~ the person P6 and
-  ~ is closely related to ~ the person P7.
+  ~ is closely related to ~ the person P7 and
+  has the value NB as ~ number of brothers ~.
 
 conceptualise a ~ man ~ M that is a person.
 conceptualise a ~ woman ~ F that is a person. 
