@@ -121,12 +121,16 @@ public class CeGeneratorConclusion {
 		
 		return formattedRange;
 	}
-	
+
 	public void doRuleCeProcessing() {
 		calculateUniqueTargetVariables();
 
 		initialiseHeaders();
-		
+
+		if (hasCountVariable()) {
+			collapseRowsForCounting();
+		}
+
 		//Calculate the correct CE results for the rule - based on the conclusion clauses
 		for (ArrayList<String> queryRow : this.ceResult.getResultRows()) {
 			CeConclusionRow thisRow = new CeConclusionRow(this, queryRow);
@@ -137,11 +141,89 @@ public class CeGeneratorConclusion {
 
 				conclusionCe = ContainerCeResult.appendAdditionalSentence(conclusionCe, newCe);
 			}
-			
+
 			replaceCeInResultRow(thisRow, conclusionCe);			
 		}
 	}
-	
+
+	private boolean hasCountVariable() {
+		boolean result = false;
+
+		for (String thisHdr : this.ceResult.getHeaders()) {
+			if (thisHdr.startsWith("#")) {
+				result = true;
+				break;
+			}
+		}
+
+		return result;
+	}
+
+	private void collapseRowsForCounting() {
+		TreeMap<String, ArrayList<String>> newRowMap = new TreeMap<String, ArrayList<String>>();
+		TreeMap<String, Integer> countMap = new TreeMap<String, Integer>();
+		int ceIndex = this.ceResult.getIndexForHeader("CE");
+		int countIndex = -1;
+
+		for (ArrayList<String> thisRow : this.ceResult.getResultRows()) {
+			StringBuilder sbMain = new StringBuilder();
+
+			for (String thisHdr : this.ceResult.getHeaders()) {
+				int hdrIndex = this.ceResult.getIndexForHeader(thisHdr);
+
+				if (thisHdr.startsWith("#")) {
+					//This is the variable to be counted
+					countIndex = hdrIndex;
+				} else {
+					if (!thisHdr.equals(ContainerCeResult.HDR_CE)) {
+						String thisVal = thisRow.get(hdrIndex);
+
+						if (sbMain.length() > 0) {
+							sbMain.append("|");
+						}
+
+						sbMain.append(thisVal);
+					}
+				}
+			}
+
+			int rowCount = 0;
+			String thisKey = sbMain.toString();
+			StringBuilder sbRat = new StringBuilder();
+			boolean newRowCreated = false;
+
+			if (!newRowMap.containsKey(thisKey)) {
+				newRowMap.put(thisKey, thisRow);
+				newRowCreated = true;
+			}
+
+			ArrayList<String> newRow = newRowMap.get(thisKey);
+
+			if (!newRowCreated) {
+				sbRat.append(newRow.get(ceIndex));
+				sbRat.append(" and\n");
+			}
+
+			sbRat.append(thisRow.get(ceIndex));
+
+			newRow.set(ceIndex, sbRat.toString());
+
+			if (countMap.containsKey(thisKey)) {
+				rowCount = countMap.get(thisKey).intValue();
+			}
+
+			countMap.put(thisKey, new Integer(++rowCount));
+		}
+
+		for (String thisKey : newRowMap.keySet()) {
+			ArrayList<String> thisRow = newRowMap.get(thisKey);
+
+			thisRow.set(countIndex, countMap.get(thisKey).toString());
+		}
+
+		this.ceResult.replaceResultRowsWith(newRowMap.values());
+	}
+
 	private void initialiseHeaders() {
 		int ctr = 0;
 		
@@ -150,7 +232,6 @@ public class CeGeneratorConclusion {
 		for (String thisHdr : this.ceResult.getHeaders()) {
 			Integer idx = new Integer(ctr++);
 			this.hdrIndexes.put(thisHdr, idx);
-//			reportDebug("Header index: " + thisHdr + " -> " + idx);
 		}
 	}
 	

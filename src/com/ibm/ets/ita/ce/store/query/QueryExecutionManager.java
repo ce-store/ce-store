@@ -234,7 +234,7 @@ public abstract class QueryExecutionManager {
 			if (!this.suppressCeColumn) {
 				if (pQuery.isNormalQuery()) {
 					//DSB 01/05/2015 #1096
-					if (!pQuery.hasCountHeader()) {
+					if ((pQuery.isRule()) || (!pQuery.hasCountHeader())) {
 						//The CE only needs to be added if this is a normal (not count) query
 						addCeToResultSet(result, pQuery);
 					}

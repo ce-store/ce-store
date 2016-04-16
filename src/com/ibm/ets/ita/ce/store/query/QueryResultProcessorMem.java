@@ -926,7 +926,7 @@ public class QueryResultProcessorMem {
 		ArrayList<TreeMap<String, String>> processedRows = null;
 
 		//DSB 01/05/2015 #1096
-		if (pResult.hasCountHeader()) {
+		if ((!pQuery.isRule()) && (pResult.hasCountHeader())) {
 			processedRows = processRowsForCounts(pRows, pResult);
 		} else {
 			processedRows = pRows;

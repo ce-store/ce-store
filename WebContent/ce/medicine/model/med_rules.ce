@@ -79,3 +79,13 @@ if
 then
   ( the cancer scan B is recommended for the patient PA )
 .
+
+[recursion test rule]
+if
+  ( the person P1 is the aunt of the person P2 )
+then
+  ( the person P1 is closely related to the person P2 ) and
+  ( the lump P1 is related to the person P2 )
+.
+Note: This rule is nonsensical but is useful for checking that recursion does not
+occur for conclusions that generate multiple CE sentences per row.

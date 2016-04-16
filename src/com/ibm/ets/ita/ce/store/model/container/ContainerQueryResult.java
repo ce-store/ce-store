@@ -6,6 +6,7 @@ package com.ibm.ets.ita.ce.store.model.container;
  *******************************************************************************/
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 public abstract class ContainerQueryResult extends ContainerResult {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
@@ -55,6 +56,13 @@ public abstract class ContainerQueryResult extends ContainerResult {
 		}
 
 		return result;
+	}
+
+	public void replaceResultRowsWith(Collection<ArrayList<String>> pNewRows) {
+		ArrayList<ArrayList<String>> newRows = new ArrayList<ArrayList<String>>(pNewRows);
+
+		this.allRows = newRows;
+		this.resultRows = newRows;
 	}
 
 	public void addHeader(String pHeader, String pType) {
