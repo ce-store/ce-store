@@ -17,9 +17,9 @@ import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.formattedDurat
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.reportExecutionTiming;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.substituteNormalParameters;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.isReportMicroDebug;
-import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportMicroDebug;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportException;
+import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportMicroDebug;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportWarning;
 
 import java.io.BufferedReader;
@@ -71,7 +71,7 @@ public class ProcessorCe {
 	private static final String MMTYPE_RELCONCEPT = "relation concept";
 	private static final String MMTYPE_DATAPROP = "datatype property";
 	private static final String MMTYPE_OBJPROP = "object property";
-	
+
 	private static final String CON_CTE= "CE triggered event";
 
 	private String auditFilename = null;
@@ -84,15 +84,15 @@ public class ProcessorCe {
 
 	private ArrayList<BuilderSentence> validatedSentences = null;
 
-	protected SentenceParserCe sp = null; 
+	protected SentenceParserCe sp = null;
 
 	public ProcessorCe(ActionContext pAc, boolean pSuppressMessages, ContainerSentenceLoadResult pSenStats) {
-		this.ac = pAc;		
+		this.ac = pAc;
 		this.sp = new SentenceParserCe(this.ac, this);
 		this.suppressMessages = pSuppressMessages;
 		this.senStats = pSenStats;
 	}
-	
+
 	public ContainerSentenceLoadResult getSentenceStats() {
 		return this.senStats;
 	}
@@ -372,7 +372,7 @@ public class ProcessorCe {
 		}
 
 		//Cater for such cases as "there is a situation named th_cestore0000111" where
-		//the conclusion relies on a primary concept. Here we assume that there is 
+		//the conclusion relies on a primary concept. Here we assume that there is
 		//always a primary concept conclusion. I.e. the following will result in the
 		//conclusion that an instance of the primary concept has been created:
 		//  there is a sentence from syncoin message named 'sen_cestore0000006'
@@ -396,7 +396,7 @@ public class ProcessorCe {
 		if (pMode != StoreActions.MODE_VALIDATE) {
 			doPostSourceLoadActions(newSrc);
 		}
-		
+
 		return newSrc;
 	}
 
@@ -487,7 +487,7 @@ public class ProcessorCe {
 		CeQuery result = null;
 		BufferedReader br = bufferedReaderFromString(pCeQueryText);
 		this.sp.doParsing(br, StoreActions.MODE_NORMAL);
-		
+
 		try {
 			br.close();
 		} catch (IOException e) {
@@ -530,7 +530,7 @@ public class ProcessorCe {
 	private CeSource processSentencesForSource(BufferedReader pReader, int pSourceType, String pTxnName, String pExtraInfo, long pStartTime, int pMode, CeSource pSource) {
 		CeSource thisSrc = null;
 		String txnName = null;
-		
+
 		if (pTxnName.isEmpty()) {
 			txnName = "";
 		} else {
@@ -566,7 +566,7 @@ public class ProcessorCe {
 	private CeSource processSentencesForSource(StringBuilder pSb, int pSourceType, String pTxnName, String pExtraInfo, long pStartTime, int pMode, CeSource pSource) {
 		CeSource thisSrc = null;
 		String txnName = null;
-		
+
 		if (pTxnName.isEmpty()) {
 			txnName = "";
 		} else {
@@ -689,11 +689,11 @@ public class ProcessorCe {
 	private void doPostSourceLoadActions(CeSource pSource) {
 	  final String METHOD_NAME = "doPostSourceLoadActions";
 	  logger.entering(CLASS_NAME, METHOD_NAME, pSource);
-	  
+
 		//Generate any specific conceptual models defined by sources
 		StringBuilder sb = new StringBuilder();
 		metamodelProcessAnnotationsForSource(pSource, sb);
-		
+
 		linkSourceToConcepts(pSource, sb);
 		linkSourceToProperties(pSource, sb);
 
@@ -705,18 +705,21 @@ public class ProcessorCe {
 			generateMetamodelSentencesFor(pSource, sb);
 		}
 
+		//The sentences need to be updated before the notifications are sent
+		this.ac.getModelBuilder().updateSentenceListsFrom(this.ac);
+
 		//Send any notifications (by executing triggers)
 		sendNotifications(pSource);
 
 		//DSB 30/07/2014 - This is required, otherwise entities created by triggers don't get saved
 		this.ac.getModelBuilder().updateCreatedThingsFrom(this.ac);
-		
+
 		logger.exiting(CLASS_NAME, METHOD_NAME);
 	}
 
 	private void sendNotifications(CeSource pSource) {
 		final String METHOD_NAME = "sendNotifications";
-		
+
 		CeConcept trigConcept = this.ac.getModelBuilder().getConceptNamed(this.ac, CON_CTE);
 
 		if (trigConcept != null) {
@@ -882,7 +885,7 @@ public class ProcessorCe {
 					checkForConceptTriggerMatches(refCons, pTrigInst, pSource, "QUERY", targetQuery.getQueryName());
 
 					ArrayList<CeProperty> refProps = targetQuery.getAllReferencedPremiseProperties();
-					checkForPropertyTriggerMatches(refProps, pTrigInst, pSource, "QUERY", targetQuery.getQueryName());					
+					checkForPropertyTriggerMatches(refProps, pTrigInst, pSource, "QUERY", targetQuery.getQueryName());
 				} else {
 					reportWarning("Query named '" + queryName + "' could not be located during trigger execution for trigger event '" + pTrigInst.getInstanceName() + "'", this.ac);
 				}
@@ -1003,7 +1006,7 @@ public class ProcessorCe {
 	private void generateMetamodelSentencesFor(CeSource pSource, StringBuilder pSb) {
 	  final String METHOD_NAME = "generateMetamodelSentencesFor";
 	  logger.entering(CLASS_NAME, METHOD_NAME, new String[]{pSource.toString(), Integer.toString(pSb.length())});
-	  
+
 		long sTime = System.currentTimeMillis();
 
 		if (pSb.length() > 0) {
@@ -1027,7 +1030,7 @@ public class ProcessorCe {
 				mmSrc = CeSource.createNewInternalSource(this.ac, STEPNAME_POPMODEL, SRCID_POPMODEL);
 				mmSrc.setParentSource(this.ac, tempCurrentSource);
 			}
-			
+
 			CeSource otherSource = this.ac.getCurrentSource();
 
 			//DSB 07/03/2016 - To prevent issues with the source being overwritten and the various
@@ -1043,7 +1046,7 @@ public class ProcessorCe {
 			procCe.processNormalSentencesFromSbWithExistingSource(pSb, CeSource.SRCTYPE_ID_INTERNAL, STEPNAME_POPMODEL, "", sTime, StoreActions.MODE_NORMAL, mmSrc);
 			this.ac.setCurrentSource(otherSource);
 		}
-		
+
 		logger.exiting(CLASS_NAME, METHOD_NAME);
 	}
 
@@ -1070,18 +1073,18 @@ public class ProcessorCe {
 			pSrc.addDefinedModel(tgtCm);
 			tgtCm.addSource(pSrc);
 		}
-	
+
 		if (!tgtCm.metaModelHasBeenGenerated()) {
 			ceMetamodelConceptualModel(pSb, pCmName);
 			tgtCm.markAsMetaModelGenerated();
 		}
-	
+
 		return tgtCm;
 	}
 
 	private void metamodelProcessConceptToModelCe(CeSource pSrc, CeConcept pCon, StringBuilder pSb) {
 		String conName = pCon.getConceptName();
-		
+
 		for (CeConceptualModel thisCm : pSrc.getDefinedModels()) {
 			String cmName = thisCm.getModelName();
 			ceMetamodelConceptualModelDefinesConcept(pSb, cmName, conName);
@@ -1089,9 +1092,9 @@ public class ProcessorCe {
 		}
 
 		//Only generate the concept details meta-CE if not already done
-		if (!pCon.metaModelHasBeenGenerated()) {					
+		if (!pCon.metaModelHasBeenGenerated()) {
 			ceMetamodelEntityConceptMain(pSb, conName);
-			
+
 			for (CeAnnotation thisAnno : pCon.getAnnotations()) {
 				ceMetamodelEntityConceptAnnotation(pSb, conName, thisAnno.getText());
 			}

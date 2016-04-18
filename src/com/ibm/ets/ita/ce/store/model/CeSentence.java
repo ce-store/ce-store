@@ -79,7 +79,7 @@ public class CeSentence implements Comparable<CeSentence> {
 	/**
 	 * SL - added to support events
 	 *      TODO - work out how to get property and instance details in
-	 *      
+	 *
 	 * @param pAc
 	 * @param pType
 	 * @param pVal
@@ -111,22 +111,22 @@ public class CeSentence implements Comparable<CeSentence> {
 		CeSentence newSen = new CeSentence();
 
 		//Used for rule/query execution... the sentence must be parsed but should not be saved
-		
+
 		newSen.sentenceType = pType;
 		newSen.validity = pVal;
 		newSen.structuredCeTextList = new String[0];		//This is not needed since the sentence will not be saved
-		
+
 		if (pAc.getCeConfig().cacheCeText()) {
 			newSen.ceText = pAc.getModelBuilder().getCachedStringValueLevel2(pSenText);
 		}
 
 		return newSen;
 	}
-	
+
 	public int getId() {
 		return this.id;
 	}
-	
+
 	public String formattedId() {
 		return PREFIX_SEN + Integer.toString(this.id);
 	}
@@ -134,7 +134,7 @@ public class CeSentence implements Comparable<CeSentence> {
 	public int getSentenceType() {
 		return this.sentenceType;
 	}
-	
+
 	public boolean isFactSentence() {
 		return isFactSentenceNormal() || isFactSentenceQualified();
 	}
@@ -142,11 +142,11 @@ public class CeSentence implements Comparable<CeSentence> {
 	public boolean isFactSentenceNormal() {
 		return (this.sentenceType == BuilderSentence.SENTYPE_FACT_NORMAL);
 	}
-	
+
 	public boolean isFactSentenceQualified() {
 		return (this.sentenceType == BuilderSentence.SENTYPE_FACT_QUALIFIED);
 	}
-	
+
 	public boolean isModelSentence() {
 		return (this.sentenceType == BuilderSentence.SENTYPE_MODEL);
 	}
@@ -166,15 +166,15 @@ public class CeSentence implements Comparable<CeSentence> {
 	public boolean isAnnotationSentence() {
 		return (this.sentenceType == BuilderSentence.SENTYPE_ANNO);
 	}
-	
+
 	public boolean isCommandSentence() {
 		return (this.sentenceType == BuilderSentence.SENTYPE_CMD);
 	}
 
 	public String formattedSentenceType() {
-		return BuilderSentence.formattedSentenceType(this.sentenceType);		
+		return BuilderSentence.formattedSentenceType(this.sentenceType);
 	}
-	
+
 	public long getCreationDate() {
 		return this.creationDate;
 	}
@@ -193,13 +193,13 @@ public class CeSentence implements Comparable<CeSentence> {
 
 	public String getCeText(ActionContext pAc) {
 		String result = null;
-		
+
 		if (pAc.getCeConfig().cacheCeText()) {
 			result = this.ceText;
 		} else {
 			result = calculateCeText();
 		}
-		
+
 		return result;
 	}
 
@@ -213,7 +213,7 @@ public class CeSentence implements Comparable<CeSentence> {
 
 		//TODO: Is there a cleaner way?
 		String ratWords[] = result.split("\nbecause\n");
-		
+
 		if (ratWords.length > 1) {
 			result = ratWords[0] + ".";
 		}
@@ -226,7 +226,7 @@ public class CeSentence implements Comparable<CeSentence> {
 		String sepChar = "";
 		boolean lastLabelQuote = false;
 		boolean quoteStart = false;
-		
+
 		for (String thisPart : this.structuredCeTextList) {
 			if (!isLabelToken(thisPart)) {
 				if (lastLabelQuote) {
@@ -242,11 +242,11 @@ public class CeSentence implements Comparable<CeSentence> {
 					lastLabelQuote = false;
 				} else {
 					//This is a normal token so just append it
-					
+
 					if (isDotToken(thisPart)) {
 						sepChar = "";
 					}
-					
+
 					if (tokenStartsWithQuote(thisPart)) {
 						//Don't encode as this starts with a quote already (rationale fragments are not broken down)
 						result += sepChar + thisPart;
@@ -254,7 +254,7 @@ public class CeSentence implements Comparable<CeSentence> {
 						//A normal token so make sure it is encoded
 						result += sepChar + encodeForCe(thisPart);
 					}
-					
+
 					sepChar = " ";
 				}
 			} else {
@@ -266,42 +266,42 @@ public class CeSentence implements Comparable<CeSentence> {
 				}
 			}
 		}
-		
+
 		return result;
 	}
 
 	private static boolean tokenStartsWithQuote(String pToken) {
 		return pToken.startsWith("'") || pToken.startsWith("\"");
 	}
-	
+
 	public static boolean isLabelToken(String pToken) {
-		return 
+		return
 				(pToken.startsWith(LABEL_PREFIX) && pToken.endsWith(LABEL_SUFFIX)) ||
 				(pToken.startsWith(PROPDEF_PREFIX) && pToken.endsWith(PROPDEF_SUFFIX));
 	}
-	
+
 	private static boolean isQuoteLabelToken(String pToken) {
 		return pToken.equals(TokenizerFactSentence.SCELABEL_QUOTE);
 	}
-	
+
 	private static boolean isDotToken(String pToken) {
 		return pToken.equals(BuilderSentence.TOKEN_DOT);
 	}
 
 	public String getCeTextWithoutFullStop(ActionContext pAc) {
 		String result = getCeText(pAc);
-		
+
 		if ((result != null) && (!result.isEmpty())) {
 			result = result.substring(0, (result.length() - 1));
 		}
-		
+
 		return result;
 	}
 
 	public String[] getStructuredCeTextList() {
 		return this.structuredCeTextList;
 	}
-	
+
 	public String calculateCeTextWithoutRationale() {
 		String result = null;
 
@@ -320,7 +320,7 @@ public class CeSentence implements Comparable<CeSentence> {
 				if (nextTokenIsQuote) {
 					nextTokenIsQuote = false;
 					inQuote = !inQuote;
-					
+
 					if (inQuote) {
 						sb.append(" ");
 						sb.append(thisToken);
@@ -351,6 +351,13 @@ public class CeSentence implements Comparable<CeSentence> {
 						}
 					} else if (thisToken.startsWith("[")) {
 						//Just ignore these - they define property domain and range
+                    } else if (thisToken.equals("has") || thisToken.equals("as")) {
+                        sb.append(spaceBefore);
+                        sb.append(thisToken);
+                        sb.append(" ");
+
+                        spaceBefore = "";
+                        spaceAfter = "";
 					} else {
 						sb.append(spaceBefore);
 						sb.append(thisToken);
@@ -378,20 +385,20 @@ public class CeSentence implements Comparable<CeSentence> {
 			}
 		}
 	}
-	
+
 	public void addStructuredRationaleTokens(ArrayList<String> pCeTextList) {
 		if (pCeTextList != null) {
 			int existingSize = this.structuredCeTextList.length;
 			ArrayList<String> existingTokens = null;
-			
+
 			if (existingSize > 0) {
 				existingTokens = new ArrayList<String>(Arrays.asList(this.structuredCeTextList));
 			} else {
 				existingTokens = new ArrayList<String>();
 			}
-			
+
 			existingTokens.addAll(pCeTextList);
-			
+
 			this.structuredCeTextList = new String[existingTokens.size()];
 
 			int ctr = 0;
@@ -404,35 +411,35 @@ public class CeSentence implements Comparable<CeSentence> {
 	public CeRationaleReasoningStep getRationaleReasoningStep() {
 		return this.rationaleReasoningStep;
 	}
-	
+
 	public void setRationaleReasoningStep(CeRationaleReasoningStep pRs) {
 		this.rationaleReasoningStep = pRs;
 	}
-	
+
 	public String getRationaleText() {
 		return this.rationaleText;
 	}
-	
+
 	public void setRationaleText(String pRationaleText) {
 		this.rationaleText = pRationaleText;
 	}
-	
+
 	public String getRationaleRuleName() {
 		return this.rationaleRuleName;
 	}
-	
+
 	public void setRationaleRuleName(String pRationaleRuleName) {
 		this.rationaleRuleName = pRationaleRuleName;
 	}
-	
+
 	public CeSource getSource() {
 		return this.source;
 	}
-	
+
 	public CeSentence[] getAnnotationSentences() {
 		return this.annotationSentences;
 	}
-	
+
 	public void addAnnotation(CeSentence pAnnoSen) {
 		if (!hasAnnotationSentence(pAnnoSen)) {
 			int currLen = 0;
@@ -441,14 +448,14 @@ public class CeSentence implements Comparable<CeSentence> {
 			CeSentence[] newArray = new CeSentence[currLen + 1];
 			System.arraycopy(this.annotationSentences, 0, newArray, 0, currLen);
 			this.annotationSentences = newArray;
-	
+
 			this.annotationSentences[currLen] = pAnnoSen;
-		}		
+		}
 	}
-	
+
 	public boolean hasAnnotationSentence(CeSentence pAnnoSen) {
 		boolean result = false;
-		
+
 		for (CeSentence thisSen : this.annotationSentences) {
 			if (!result) {
 				if (thisSen == pAnnoSen) {
@@ -456,7 +463,7 @@ public class CeSentence implements Comparable<CeSentence> {
 				}
 			}
 		}
-		
+
 		return result;
 	}
 
@@ -467,7 +474,7 @@ public class CeSentence implements Comparable<CeSentence> {
 	public CeSentenceQualified[] getQualifiedSentences() {
 		return this.qualifiedSentences;
 	}
-	
+
 	public void addQualifiedSentence(CeSentenceQualified pQualSen) {
 		if (!hasQualifiedSentence(pQualSen)) {
 			int currLen = 0;
@@ -476,14 +483,14 @@ public class CeSentence implements Comparable<CeSentence> {
 			CeSentenceQualified[] newArray = new CeSentenceQualified[currLen + 1];
 			System.arraycopy(this.qualifiedSentences, 0, newArray, 0, currLen);
 			this.qualifiedSentences = newArray;
-	
-			this.qualifiedSentences[currLen] = pQualSen;			
+
+			this.qualifiedSentences[currLen] = pQualSen;
 		}
 	}
-	
+
 	public boolean hasQualifiedSentence(CeSentenceQualified pQualSen) {
 		boolean result = false;
-		
+
 		for (CeSentenceQualified thisSen : this.qualifiedSentences) {
 			if (!result) {
 				if (thisSen == pQualSen) {
@@ -491,24 +498,26 @@ public class CeSentence implements Comparable<CeSentence> {
 				}
 			}
 		}
-		
+
 		return result;
 	}
 
 	public boolean hasQualifiedSentences() {
 		return (this.qualifiedSentences.length > 0);
 	}
-	
+
 	public boolean hasRationale() {
 		return (!this.rationaleText.isEmpty());
 	}
-	
+
 	@Override
 	public boolean equals(Object pObj) {
-	  if (pObj==this)
-	    return true;
-	  if (!(pObj instanceof CeSentence))
-	    return false;
+	  if (pObj==this) {
+        return true;
+    }
+	  if (!(pObj instanceof CeSentence)) {
+        return false;
+    }
 		return pObj.hashCode() == hashCode();
 	}
 
@@ -526,33 +535,33 @@ public class CeSentence implements Comparable<CeSentence> {
 		//everything to the left of the first colon character should be removed to get the annotation text
 		String result = "";
 		int markerPos = getCeText(pAc).indexOf(":");
-		
+
 		if (markerPos > 0) {
 			result = getCeText(pAc).substring(markerPos + 1, getCeText(pAc).length());
 			result = result.trim();
 		} else {
 			result = getCeText(pAc);
 		}
-		
+
 		return result;
 	}
-	
+
 	@SuppressWarnings("static-method")
 	public boolean isQualified() {
 		return false;
 	}
-	
+
 	public CeConcept getTargetConcept() {
 		return this.targetConcept;
 	}
-	
+
 	@Override
 	public String toString() {
 		String result = "";
-		
+
 		result = "CeSentence '" + getId() + "' (" + formattedValidity() + "," + formattedSentenceType() + ") : " + calculateCeText();
-		
+
 		return result;
 	}
-	
+
 }

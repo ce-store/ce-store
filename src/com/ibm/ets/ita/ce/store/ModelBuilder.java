@@ -10,11 +10,11 @@ import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.appendToSb;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.isQuoteDelimited;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.timestampNow;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.isReportDebug;
-import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportDebug;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.isReportMicroDebug;
-import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportMicroDebug;
+import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportDebug;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportException;
+import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportMicroDebug;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportWarning;
 
 import java.util.ArrayList;
@@ -86,11 +86,11 @@ public class ModelBuilder implements PersistableStore {
 	private LinkedHashMap<String, CeQuery> allQueries = null;
 	private CeRationaleReasoningStep[] allReasoningSteps = new CeRationaleReasoningStep[0];
 	private HashMap<String, String> allValues = new HashMap<String, String>();
-	
+
 	private HashSet<String> cachedConceptFragmentNames = new HashSet<String>();
 	private HashSet<String> cachedPropertyFragmentNames = new HashSet<String>();
 	private HashSet<String> cachedInstanceFragmentNames = new HashSet<String>();
-	
+
 	//TODO: Need to remove or rename this
 	private ArrayList<String> tempWarnings = null;
 
@@ -136,7 +136,7 @@ public class ModelBuilder implements PersistableStore {
 		this.cachedConceptFragmentNames = new HashSet<String>();
 		this.cachedPropertyFragmentNames = new HashSet<String>();
 		this.cachedInstanceFragmentNames = new HashSet<String>();
-		
+
 		// Reset all of the counters that are used when allocating objects
 		CeRationalePart.resetCounter();
 		CeAnnotation.resetCounter();
@@ -166,7 +166,7 @@ public class ModelBuilder implements PersistableStore {
 	public InstanceRepository getInstanceRepository() {
 		return this.instanceRepository;
 	}
-	
+
 	protected void resetInstanceRepository(ActionContext pAc) {
 		this.instanceRepository.removeAllNonMetamodelInstances(pAc);
 	}
@@ -174,7 +174,7 @@ public class ModelBuilder implements PersistableStore {
 	public ArrayList<CeInstance> retrieveAllInstancesForConcept(CeConcept pConcept) {
 		return getInstanceRepository().getAllInstancesForConcept(pConcept);
 	}
-	
+
 	public ArrayList<CeInstance> retrieveInstancesForConceptCreatedSince(CeConcept pConcept, long pSinceTs) {
 		return getInstanceRepository().getAllInstancesForConceptCreatedSince(pConcept, pSinceTs);
 	}
@@ -182,65 +182,65 @@ public class ModelBuilder implements PersistableStore {
 	public ArrayList<CeInstance> retrieveAllExactInstancesForConcept(CeConcept pConcept) {
 		return getAllExactInstancesForConcept(pConcept);
 	}
-	
+
 	public ArrayList<CeInstance> retrieveAllInstances() {
 		ArrayList<CeInstance> result = new ArrayList<CeInstance>();
-		
+
 		for (CeConcept thisConcept : listAllConcepts()) {
 			result.addAll(retrieveAllInstancesForConcept(thisConcept));
 		}
-		
+
 		return result;
 	}
-	
+
 	private ArrayList<CeInstance> getAllExactInstancesForConcept(CeConcept pConcept) {
 		return getInstanceRepository().getAllExactInstancesForConcept(pConcept);
 	}
-	
+
 	public ArrayList<CeInstance> getAllInstancesForConceptNamed(ActionContext pAc, String pConceptName) {
 		CeConcept tgtConcept = getConceptNamed(pAc, pConceptName);
 		ArrayList<CeInstance> result = new ArrayList<CeInstance>();
-		
+
 		if (tgtConcept != null) {
 			result = getInstanceRepository().getAllInstancesForConcept(tgtConcept);
 		} else {
 			reportError("Unable to locate concept named '" + pConceptName + "'", pAc);
 		}
-		
+
 		return result;
 	}
 
 	public CeInstance getInstanceNamed(ActionContext pAc, String pInstanceName) {
 		InstanceRepository ir = getInstanceRepository();
 		CeInstance result = null;
-		
+
 		if (ir != null) {
 			result = ir.getInstanceNamed(pAc, pInstanceName);
 		}
-		
+
 		return result;
 	}
-	
+
 	public CeInstance getOrCreateInstanceNamed(ActionContext pAc, String pInstanceName) {
 		CeInstance result = getInstanceNamed(pAc, pInstanceName);
-		
+
 		if (result == null) {
 			//Existing instance not found, so create a new one and save it
 			result = CeInstance.createInstanceNamed(pAc, pInstanceName);
 			saveInstance(pAc, result);
 		}
-		
+
 		return result;
 	}
 
 	public long getTotalInstanceCount() {
 		long result = -1;
-		
+
 		result = getInstanceRepository().getTotalInstanceCount();
-		
+
 		return result;
 	}
-	
+
 	public int getInstanceCountForConcept(CeConcept pConcept) {
 		return getInstanceRepository().getInstanceCountForConcept(pConcept);
 	}
@@ -250,7 +250,7 @@ public class ModelBuilder implements PersistableStore {
 		this.cachedInstanceFragmentNames = new HashSet<String>();
 
 		InstanceRepository ir = getInstanceRepository();
-		
+
 		if (ir != null) {
 			ir.saveInstance(pAc, pInstance);
 		} else {
@@ -263,7 +263,7 @@ public class ModelBuilder implements PersistableStore {
 		this.cachedInstanceFragmentNames = new HashSet<String>();
 
 		InstanceRepository ir = getInstanceRepository();
-		
+
 		if (ir != null) {
 			ir.removeInstance(pInstance);
 		} else {
@@ -274,14 +274,14 @@ public class ModelBuilder implements PersistableStore {
 	public Collection<CeConcept> listAllConcepts() {
 		return this.allConcepts.values();
 	}
-	
+
 	public void saveConcept(CeConcept pConcept) {
 		//Clear the concept fragment cache
 		this.cachedConceptFragmentNames = new HashSet<String>();
 
 		this.allConcepts.put(pConcept.identityKey(), pConcept);
 	}
-	
+
 	private void clearSources() {
 		this.allSources = new LinkedHashMap<String, CeSource>();
 	}
@@ -299,7 +299,7 @@ public class ModelBuilder implements PersistableStore {
 			saveInvalidSentence(pAc, pSentence);
 		}
 	}
-	
+
 	private void saveValidSentence(ActionContext pAc, CeSentence pSentence) {
 		if (pSentence != null) {
 			if (pAc.getCeConfig().isSavingCeSentences()) {
@@ -321,7 +321,7 @@ public class ModelBuilder implements PersistableStore {
 		updateInstanceListFrom(pAc);
 	}
 
-	private void updateSentenceListsFrom(ActionContext pAc) {
+	public void updateSentenceListsFrom(ActionContext pAc) {
 		SessionCreations sc = pAc.getSessionCreations();
 
 		if (pAc.getCeConfig().isSavingCeSentences()) {
@@ -361,7 +361,7 @@ public class ModelBuilder implements PersistableStore {
 
 	private static synchronized void updateInstanceListFrom(ActionContext pAc) {
 		SessionCreations sc = pAc.getSessionCreations();
-		
+
 		//Update the concept instance lists for all new instances in this request
 		pAc.getModelBuilder().getInstanceRepository().updateConceptInstanceListsFor(sc.getNewInstances());
 		sc.clearSessionInstances();
@@ -370,7 +370,7 @@ public class ModelBuilder implements PersistableStore {
 	public HashMap<String, CeSource> getAllSources() {
 		return this.allSources;
 	}
-	
+
 	public HashSet<CeProperty> getAllProperties() {
 		return this.allProperties;
 	}
@@ -378,21 +378,21 @@ public class ModelBuilder implements PersistableStore {
 	public HashMap<String, CeConceptualModel> getAllConceptualModels() {
 		return this.allConceptualModels;
 	}
-	
+
 	public ArrayList<CeConceptualModel> listAllConceptualModels() {
 		ArrayList<CeConceptualModel> result = new ArrayList<CeConceptualModel>();
-		
+
 		for (CeConceptualModel thisCm : this.allConceptualModels.values()) {
 			result.add(thisCm);
 		}
-		
+
 		return result;
 	}
 
 	public CeConceptualModel getConceptualModel(String pCmName) {
 		return this.allConceptualModels.get(pCmName);
 	}
-	
+
 	public void saveConceptualModel(CeConceptualModel pCm) {
 		if (pCm != null) {
 			this.allConceptualModels.put(pCm.getModelName(), pCm);
@@ -427,7 +427,7 @@ public class ModelBuilder implements PersistableStore {
 				break break_position;
 			}
 		}
-		
+
 		return result;
 	}
 
@@ -471,14 +471,14 @@ public class ModelBuilder implements PersistableStore {
 
 		for (CeSource thisSource : this.allSources.values()) {
 			String thisAiName = thisSource.getAgentInstanceName();
-			
+
 			if (thisAiName != null) {
 				if (thisAiName.equals(pAgentInstName)) {
 					result.add(thisSource);
 				}
 			}
 		}
-		
+
 		return result;
 	}
 
@@ -536,14 +536,14 @@ public class ModelBuilder implements PersistableStore {
 		result.addAll(this.allInvalidSentences.getSentencesAsList());
 		return result;
 	}
-	
+
 	public ArrayList<CeSentence> listAllSentencesInSourcesNamed(String pSrcName) {
 		ArrayList<CeSentence> result = new ArrayList<CeSentence>();
-		
+
 		for (CeSource thisSrc : getSourcesByDetail(pSrcName)) {
 			result.addAll(thisSrc.listAllSentences());
 		}
-		
+
 		return result;
 	}
 
@@ -568,7 +568,7 @@ public class ModelBuilder implements PersistableStore {
 //				}
 //			}
 //		}
-		
+
 		return result;
 	}
 
@@ -578,13 +578,13 @@ public class ModelBuilder implements PersistableStore {
 				return thisProp;
 			}
 		}
-		
+
 		return null;
 	}
 
 	public ArrayList<CeProperty> listAllPropertiesReferringTo(CeConcept pConcept) {
 		ArrayList<CeProperty> result = new ArrayList<CeProperty>();
-		
+
 		for (CeProperty thisProp : this.allProperties) {
 			CeConcept thisRange = thisProp.getRangeConcept();
 			if (thisRange != null) {
@@ -593,10 +593,10 @@ public class ModelBuilder implements PersistableStore {
 				}
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	public boolean isThereAConceptNameStarting(ActionContext pAc, String pName) {
 		String tgtName = null;
 
@@ -607,12 +607,12 @@ public class ModelBuilder implements PersistableStore {
 		}
 
 		boolean result = this.cachedConceptFragmentNames.contains(tgtName);
-		
+
 		if (!result) {
 			for (CeConcept thisConcept : this.allConcepts.values()) {
 				String conName = null;
 
-				if (pAc.getCeConfig().isCaseSensitive()) {					
+				if (pAc.getCeConfig().isCaseSensitive()) {
 					conName = thisConcept.getConceptName();
 				} else {
 					conName = thisConcept.getConceptName().toLowerCase();
@@ -624,13 +624,13 @@ public class ModelBuilder implements PersistableStore {
 				}
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	public boolean isThereAnInstanceNameStarting(ActionContext pAc, String pName) {
 		boolean result = this.cachedInstanceFragmentNames.contains(pName);
-		
+
 		if (!result) {
 			for (CeInstance thisInstance : listAllInstances()) {
 				String instName = null;
@@ -650,13 +650,13 @@ public class ModelBuilder implements PersistableStore {
 				}
 			}
 		}
-		
+
 		return result;
 	}
 
 	public boolean isThereAPropertyNameStarting(String pName) {
 		boolean result = this.cachedPropertyFragmentNames.contains(pName);
-		
+
 		if (!result) {
 			for (CeProperty thisProperty : this.allProperties) {
 				if (thisProperty.getPropertyName().startsWith(pName)) {
@@ -665,14 +665,14 @@ public class ModelBuilder implements PersistableStore {
 				}
 			}
 		}
-		
+
 		return result;
 	}
 
 	public boolean isThereAConceptNameStartingButNotExactly(ActionContext pAc, String pName) {
 		return (getConceptNamed(pAc, pName) == null) && isThereAConceptNameStarting(pAc, pName);
 	}
-	
+
 	public boolean isThereADefinedPropertyNameStartingButNotExactly(String pName) {
 		for (CeProperty thisProp : getAllProperties()) {
 			if (!thisProp.isInferredProperty()) {
@@ -684,7 +684,7 @@ public class ModelBuilder implements PersistableStore {
 				}
 			}
 		}
-		
+
 		return false;
 	}
 
@@ -694,13 +694,13 @@ public class ModelBuilder implements PersistableStore {
 
 	public ArrayList<CeProperty> getPropertiesNamed(String pPropName) {
 		ArrayList<CeProperty> result = new ArrayList<CeProperty>();
-		
+
 		for (CeProperty thisProp : this.allProperties) {
 			if (thisProp.getPropertyName().equals(pPropName)) {
 				result.add(thisProp);
 			}
 		}
-		
+
 		return result;
 	}
 
@@ -708,7 +708,7 @@ public class ModelBuilder implements PersistableStore {
 		if (this.allRules == null) {
 			this.allRules = new LinkedHashMap<String, CeRule>();
 		}
-		
+
 		return this.allRules;
 	}
 
@@ -739,39 +739,39 @@ public class ModelBuilder implements PersistableStore {
 		//Now the new rule can be added
 		this.allRules.put(pRule.getRuleName(), pRule);
 	}
-	
+
 	public LinkedHashMap<String, CeQuery> getAllQueries() {
 		if (this.allQueries == null) {
 			this.allQueries = new LinkedHashMap<String, CeQuery>();
 		}
-		
+
 		return this.allQueries;
 	}
 
-	public CeQuery getQueryNamed(String pQueryName) {		
+	public CeQuery getQueryNamed(String pQueryName) {
 		//Lazy initialisation
 		if ((this.allQueries == null) || (this.allQueries.isEmpty())) {
 			getAllQueries();
 		}
-		
+
 		CeQuery result = null;
-		
+
 		for (CeQuery thisQuery : this.allQueries.values()) {
 			String thisQueryName = thisQuery.getQueryName();
-			
+
 			if ((thisQueryName != null) && (thisQueryName.equals(pQueryName))) {
 				result = thisQuery;
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	public void addQuery(CeQuery pQuery) {
 		if (this.allQueries == null) {
 			this.allQueries = new LinkedHashMap<String, CeQuery>();
 		}
-		
+
 		//Now the new query can be added
 		this.allQueries.put(pQuery.getQueryName(), pQuery);
 	}
@@ -785,7 +785,7 @@ public class ModelBuilder implements PersistableStore {
 
 		return ratList;
 	}
-	
+
 	public void addReasoningStep(CeRationaleReasoningStep pRs) {
 		int currLen = 0;
 
@@ -794,18 +794,18 @@ public class ModelBuilder implements PersistableStore {
 		System.arraycopy(this.allReasoningSteps, 0, newArray, 0, currLen);
 		this.allReasoningSteps = newArray;
 
-		this.allReasoningSteps[currLen] = pRs;			
+		this.allReasoningSteps[currLen] = pRs;
 	}
 
 	public ArrayList<CeRationaleReasoningStep> getReasoningStepsForRule(String pRuleName) {
 		ArrayList<CeRationaleReasoningStep> result = new ArrayList<CeRationaleReasoningStep>();
-		
+
 		for (CeRationaleReasoningStep thisRs : this.allReasoningSteps) {
 			if (thisRs.getRuleName().equals(pRuleName)) {
 				result.add(thisRs);
 			}
 		}
-		
+
 		return result;
 	}
 
@@ -817,7 +817,7 @@ public class ModelBuilder implements PersistableStore {
 				result.add(thisRs);
 			}
 		}
-		
+
 		return result;
 	}
 
@@ -839,13 +839,13 @@ public class ModelBuilder implements PersistableStore {
 				}
 			}
 		}
-		
+
 		return result;
 	}
 
 	public ArrayList<CeRationaleReasoningStep> getReasoningStepsForProperty(String pPropName, boolean pCheckPremise) {
 		ArrayList<CeRationaleReasoningStep> result = new ArrayList<CeRationaleReasoningStep>();
-		
+
 		for (CeRationaleReasoningStep thisRs : this.allReasoningSteps) {
 			if (pCheckPremise == false){
 				for (CeRationaleConclusion thisConc : thisRs.getConclusions()) {
@@ -861,7 +861,7 @@ public class ModelBuilder implements PersistableStore {
 				}
 			}
 		}
-		
+
 		return result;
 	}
 
@@ -883,13 +883,13 @@ public class ModelBuilder implements PersistableStore {
 				}
 			}
 		}
-		
+
 		return result;
 	}
 
 	public ArrayList<CeRationaleReasoningStep> getReasoningStepsForPropertyValue(String pInstName, String pPropName, String pValue, boolean pCheckPremise) {
 		ArrayList<CeRationaleReasoningStep> result = new ArrayList<CeRationaleReasoningStep>();
-		
+
 		for (CeRationaleReasoningStep thisRs : this.allReasoningSteps) {
 			if (pCheckPremise == false){
 				for (CeRationaleConclusion thisConc : thisRs.getConclusions()) {
@@ -905,7 +905,7 @@ public class ModelBuilder implements PersistableStore {
 				}
 			}
 		}
-		
+
 		return result;
 	}
 
@@ -915,10 +915,10 @@ public class ModelBuilder implements PersistableStore {
 
 		return valCount + invalCount;
 	}
-	
+
 	public ArrayList<CeSentence> listAllSentencesOfType(ActionContext pAc, int pSenType) {
 		ArrayList<CeSentence> result = null;
-		
+
 		switch (pSenType) {
 		case BuilderSentence.SENTYPE_FACT_NORMAL:
 			result = listAllNormalFactSentences();
@@ -945,7 +945,7 @@ public class ModelBuilder implements PersistableStore {
 			reportError("Unexpected sentence type '" + pSenType + "' encountered in ModelBuilder:getSentencesOfType()", pAc);
 			break;
 		}
-		
+
 		return result;
 	}
 
@@ -960,38 +960,38 @@ public class ModelBuilder implements PersistableStore {
 	public ArrayList<CeSentence> listAllModelSentences() {
 		return listAllSentencesOfTypeWith(BuilderSentence.SENTYPE_MODEL);
 	}
-	
+
 	public ArrayList<CeSentence> listAllFactSentences() {
 		ArrayList<CeSentence> result = new ArrayList<CeSentence>();
-		
+
 		result.addAll(listAllNormalFactSentences());
 		result.addAll(listAllQualifiedFactSentences());
-		
+
 		return result;
 	}
 
 	public ArrayList<CeSentence> listAllNormalFactSentences() {
-		return listAllSentencesOfTypeWith(BuilderSentence.SENTYPE_FACT_NORMAL);		
+		return listAllSentencesOfTypeWith(BuilderSentence.SENTYPE_FACT_NORMAL);
 	}
-	
+
 	public ArrayList<CeSentence> listAllQualifiedFactSentences() {
-		return listAllSentencesOfTypeWith(BuilderSentence.SENTYPE_FACT_QUALIFIED);		
+		return listAllSentencesOfTypeWith(BuilderSentence.SENTYPE_FACT_QUALIFIED);
 	}
 
 	public ArrayList<CeSentence> listAllRuleSentences() {
-		return listAllSentencesOfTypeWith(BuilderSentence.SENTYPE_RULE);		
+		return listAllSentencesOfTypeWith(BuilderSentence.SENTYPE_RULE);
 	}
-	
+
 	public ArrayList<CeSentence> listAllQuerySentences() {
-		return listAllSentencesOfTypeWith(BuilderSentence.SENTYPE_QUERY);		
+		return listAllSentencesOfTypeWith(BuilderSentence.SENTYPE_QUERY);
 	}
-	
+
 	public ArrayList<CeSentence> listAllRuleOrQuerySentences() {
 		ArrayList<CeSentence> result = new ArrayList<CeSentence>();
-			
+
 		result.addAll(listAllSentencesOfTypeWith(BuilderSentence.SENTYPE_RULE));
 		result.addAll(listAllSentencesOfTypeWith(BuilderSentence.SENTYPE_QUERY));
-		
+
 		return result;
 	}
 
@@ -1015,29 +1015,29 @@ public class ModelBuilder implements PersistableStore {
 	public ArrayList<CeInstance> listAllInstancesForConcept(CeConcept pConcept) {
 		return getInstanceRepository().getAllInstancesForConcept(pConcept);
 	}
-	
+
 	public ArrayList<CeInstance> listAllInstances() {
 		return getInstanceRepository().listAllInstances();
 	}
-		
+
 	public int countAllInstancesForConcept(CeConcept pConcept) {
 		return getInstanceRepository().getInstanceCountForConcept(pConcept);
 	}
 
 	public ArrayList<CePropertyValue> getPropertyValuesFromPremise(ActionContext pAc, CeRationalePremise pPrem) {
 		ArrayList<CePropertyValue> result = new ArrayList<CePropertyValue>();
-		
+
 		if (pPrem.hasPropertyDetails()) {
 			String instName = pPrem.getInstanceName();
 			CeInstance thisInst = getInstanceNamed(pAc, instName);
-			
+
 			String propName = pPrem.getPropertyName();
-			
+
 			if (thisInst != null) {
 				CePropertyInstance thisPi = thisInst.getPropertyInstanceNamed(propName);
-				
+
 				String tgtVal = pPrem.getValue();
-				
+
 				if (thisPi != null) {
 					for (CePropertyValue thisPv : thisPi.getPropertyValues()) {
 						if (thisPv.getValue().equals(tgtVal)) {
@@ -1049,17 +1049,17 @@ public class ModelBuilder implements PersistableStore {
 				reportWarning("Unable to get instance '" + instName + "' during premise processing for rationale", pAc);
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	protected void removeUnusedSentencesAndSources(ActionContext pAc) {
 		TreeMap<Integer, CeSentence> newSens = new TreeMap<Integer, CeSentence>();
 
 		//First delete all the fact sentences and sources
 		deleteAllFactAndAnnotationSentences();
 		deleteAllSources();
-		
+
 		//Next recreate all fact sentences that are still referenced by any concept, instance or property
 		for (CeConcept thisConcept : listAllConcepts()) {
 			//Process sentences directly related to this concept
@@ -1076,7 +1076,7 @@ public class ModelBuilder implements PersistableStore {
 						newSens.put(new Integer(thisPropSen.getId()), thisPropSen);
 					}
 				}
-			}			
+			}
 		}
 
 		//Process instances and related sentences
@@ -1101,7 +1101,7 @@ public class ModelBuilder implements PersistableStore {
 			CeSource thisSource = thisSen.getSource();
 			saveSource(thisSource);
 		}
-		
+
 		//Finally recreate any sentences that define source annotations
 		//TODO: Need to decide how to do this
 		for (CeSource thisSource : getAllSources().values()) {
@@ -1112,7 +1112,7 @@ public class ModelBuilder implements PersistableStore {
 			}
 		}
 	}
-	
+
 	private void deleteAllFactAndAnnotationSentences() {
 		int[] typesToRemove;
 
@@ -1140,7 +1140,7 @@ public class ModelBuilder implements PersistableStore {
 	public void deleteInstance(ActionContext pAc, CeInstance pInst) {
 		//Propogate on to the instance repository
 		getInstanceRepository().deleteInstance(pInst);
-		
+
 		if (isReportDebug()) {
 			reportDebug("Instance '" + pInst.getInstanceName() + "' has been deleted", pAc);
 		}
@@ -1175,17 +1175,17 @@ public class ModelBuilder implements PersistableStore {
 		//TODO: Improve the performance of this (by storing links to relevant concepts / instances on the sentence?)
 		boolean anyFailures = false;
 		boolean dontDelete = false;
-		
+
 		ArrayList<CeConcept> possibleCons = new ArrayList<CeConcept>();
 		ArrayList<CeProperty> possibleProps = new ArrayList<CeProperty>();
-		
+
 		CeSentence tgtSen = getSentence(pSenId);
-		
-		if (tgtSen != null) {			
+
+		if (tgtSen != null) {
 			//Now try to remove from each concept
 			ArrayList<CeConcept> allCons = new ArrayList<CeConcept>();
 			allCons.addAll(this.allConcepts.values());
-			
+
 			for (CeConcept thisCon : allCons) {
 				if (thisCon.hasSentence(tgtSen)) {
 					if (thisCon.hasPrimarySentence(tgtSen)) {
@@ -1202,11 +1202,11 @@ public class ModelBuilder implements PersistableStore {
 					}
 				}
 			}
-			
+
 			//Now try to remove from each instance
 			ArrayList<CeInstance> allInsts = new ArrayList<CeInstance>();
 			allInsts.addAll(this.getInstanceRepository().getAllInstances().values());
-			
+
 			for (CeInstance thisInst : allInsts) {
 				if (thisInst.deleteSentence(tgtSen)) {
 					if (!thisInst.hasAnySentences()) {
@@ -1215,13 +1215,13 @@ public class ModelBuilder implements PersistableStore {
 					}
 				}
 			}
-			
+
 			//Now try to remove from each property
 			ArrayList<CeProperty> allProps = new ArrayList<CeProperty>();
 			for (CeProperty thisProp : this.allProperties) {
 				allProps.add(thisProp);
 			}
-			
+
 			for (CeProperty thisProp : allProps) {
 				if (thisProp.hasSentence(tgtSen)) {
 					if (!thisProp.hasOtherSentences(tgtSen)) {
@@ -1232,7 +1232,7 @@ public class ModelBuilder implements PersistableStore {
 					}
 				}
 			}
-			
+
 			if (anyFailures) {
 				tempWarning("Sentence '" + tgtSen.getId() + "' has not been deleted as associated concept/property/instance(s) could not be deleted");
 			} else {
@@ -1246,10 +1246,10 @@ public class ModelBuilder implements PersistableStore {
 						thisProp.deleteSentence(tgtSen);
 					}
 				}
-				
+
 				//Now remove from the source
 				CeSource relSrc = tgtSen.getSource();
-				
+
 				if (relSrc != null) {
 					relSrc.removePrimarySentence(tgtSen);
 				}
@@ -1275,17 +1275,17 @@ public class ModelBuilder implements PersistableStore {
 		clearTempWarnings();
 
 		deleteSentence(pAc, pSenId);
-		
+
 		copyTempWarnings(pAc);
 	}
-	
+
 	public void deleteSource(ActionContext pAc, String pSrcId) {
 		CeSource tgtSrc = getSourceById(pSrcId);
-		
+
 		if (tgtSrc != null) {
 			int beforeCount = -1;
 			int afterCount = 0;
-						
+
 			while (beforeCount != afterCount) {
 				clearTempWarnings();
 
@@ -1293,16 +1293,16 @@ public class ModelBuilder implements PersistableStore {
 				//Create a new ArrayList to prevent concurrentModification exceptions
 				ArrayList<CeSentence> allSens = new ArrayList<CeSentence>();
 				allSens.addAll(tgtSrc.listAllSentences());
-				
+
 				for (CeSentence thisSen : allSens) {
 					deleteSentence(pAc, thisSen.formattedId());
 				}
-				
+
 				afterCount = tgtSrc.listAllSentences().size();
 			}
-			
+
 			copyTempWarnings(pAc);
-			
+
 			if (tgtSrc.listAllSentences().isEmpty()) {
 				this.allSources.remove(tgtSrc.getId());
 				if (isReportDebug()) {
@@ -1313,12 +1313,12 @@ public class ModelBuilder implements PersistableStore {
 			}
 		} else {
 			reportError("No source with id '" + pSrcId + "' was found, so nothing was deleted", pAc);
-		}		
+		}
 	}
-	
+
 	private boolean deleteConcept(ActionContext pAc, CeConcept pCon, CeSentence pSen) {
 		boolean result = false;
-		
+
 		//Clear the concept fragment names cache
 		this.cachedConceptFragmentNames = new HashSet<String>();
 
@@ -1330,18 +1330,18 @@ public class ModelBuilder implements PersistableStore {
 		} else {
 			result = true;
 			pCon.deleteSentence(pSen);
-			
+
 			for (CeConcept parCon : pCon.getDirectParents()) {
 				parCon.deleteDirectChild(pCon);
 			}
-			
+
 			this.allConcepts.remove(pCon.identityKey());
 
 			if (isReportDebug()) {
 				reportDebug("Concept '" + pCon.getConceptName() + "' has been deleted", pAc);
 			}
 		}
-		
+
 		return result;
 	}
 
@@ -1349,29 +1349,29 @@ public class ModelBuilder implements PersistableStore {
 		//Only delete this property if there are no instances that use it
 		boolean hasPropertyValues = false;
 		boolean result = false;
-		
+
 		for (CeInstance thisInst : getInstanceRepository().getAllInstancesForConcept(pProp.getDomainConcept())) {
 			if (!hasPropertyValues) {
-				CePropertyInstance mainPi = thisInst.getPropertyInstanceForProperty(pProp);	
+				CePropertyInstance mainPi = thisInst.getPropertyInstanceForProperty(pProp);
 				hasPropertyValues = (mainPi != null);
 
 				for (CeProperty thisProp : pProp.getInferredProperties()) {
 					if (!hasPropertyValues) {
-						CePropertyInstance infPi = thisInst.getPropertyInstanceForProperty(thisProp);	
+						CePropertyInstance infPi = thisInst.getPropertyInstanceForProperty(thisProp);
 						hasPropertyValues = (infPi != null);
 					}
 				}
 			}
 		}
-		
+
 		if (!hasPropertyValues) {
 			//There are no property instances so delete the property
 			result = true;
 			pProp.deleteSentence(pSen);
-			
+
 			CeConcept domConcept = pProp.getDomainConcept();
 			domConcept.deleteProperty(pProp);
-			
+
 			removeProperty(pProp);
 			if (isReportDebug()) {
 				reportDebug("Property '" + pProp.identityKey() + "' has been deleted", pAc);
@@ -1380,7 +1380,7 @@ public class ModelBuilder implements PersistableStore {
 			for (CeProperty thisProp : pProp.getInferredProperties()) {
 				domConcept = thisProp.getDomainConcept();
 				domConcept.deleteProperty(thisProp);
-				
+
 				removeProperty(thisProp);
 				if (isReportDebug()) {
 					reportDebug("Inferred property '" + thisProp.identityKey() + "' has been deleted", pAc);
@@ -1389,18 +1389,18 @@ public class ModelBuilder implements PersistableStore {
 		} else {
 			tempWarning("Property '" + pProp.identityKey() + "' was not deleted because there are instances that use this property");
 		}
-		
+
 		return result;
 	}
-	
+
 	private void clearTempWarnings() {
 		this.tempWarnings = new ArrayList<String>();
 	}
-	
+
 	private void tempWarning(String pText) {
 		this.tempWarnings.add(pText);
 	}
-	
+
 	private void copyTempWarnings(ActionContext pAc) {
 		for (String thisWarning : this.tempWarnings) {
 			reportWarning(thisWarning, pAc);
@@ -1412,16 +1412,16 @@ public class ModelBuilder implements PersistableStore {
 		if (this.uidMgr == null) {
 			initialiseUidManager(pAc);
 		}
-		
+
 		return sendUidRequest(pAc, pPrefix);
 	}
-	
+
 	public String showNextUidWithoutIncrementing(ActionContext pAc) {
 		//Lazy initialisation
 		if (this.uidMgr == null) {
 			initialiseUidManager(pAc);
 		}
-		
+
 		return showNextUid();
 	}
 
@@ -1430,43 +1430,43 @@ public class ModelBuilder implements PersistableStore {
 		if (this.uidMgr == null) {
 			initialiseUidManager(pAc);
 		}
-		
+
 		setNextUidTo(pUidVal);
 	}
 
 	public Properties getBatchOfUids(ActionContext pAc, long pBatchSize) {
 		Properties result = null;
-		
+
 		//Lazy initialisation
 		if (this.uidMgr == null) {
 			initialiseUidManager(pAc);
 		}
-		
+
 		if (this.uidMgr != null) {
 			result = this.uidMgr.getBatchOfUids(pBatchSize);
 		}
-		
+
 		return result;
 	}
-	
+
 	public void resetUids(ActionContext pAc, String pStartingUid) {
 		//Lazy initialisation - this does need to be done, otherwise any file based UID managers will not have their files deleted
 		if (this.uidMgr == null) {
 			initialiseUidManager(pAc);
 		}
-		
+
 		this.uidMgr.resetUidCounter(pStartingUid);
 	}
-	
+
 	private void initialiseUidManager(ActionContext pAc) {
 		String METHOD_NAME = "initialiseUidManager";
-		
+
 		StoreConfig conf = pAc.getCeConfig();
 		String uidClassName = conf.getUidClassName();
-		String uidFn = conf.getUidFilename();			
+		String uidFn = conf.getUidFilename();
 		boolean uidPrefixes = conf.isAllowingUidPrefixes();
 		long uidBatchSize = conf.getUidBatchSize();
-		
+
 		if ((uidClassName != null) && (!uidClassName.isEmpty())) {
 			try {
 				@SuppressWarnings("unchecked")
@@ -1488,14 +1488,14 @@ public class ModelBuilder implements PersistableStore {
 			if (isReportDebug()) {
 				reportDebug("Class name property not specified - resorting to default", pAc);
 			}
-			
+
 			this.uidMgr = new UidManagerDefault();
 			this.uidMgr.initialiseUidManager(isReportDebug(), isReportMicroDebug(), uidFn, uidPrefixes, uidBatchSize);
 		}
 
 		handleMessagesFrom(pAc, this.uidMgr);
 	}
-	
+
 	private String sendUidRequest(ActionContext pAc, String pPrefix) {
 		String result = this.uidMgr.getNextUid(pPrefix);
 
@@ -1503,7 +1503,7 @@ public class ModelBuilder implements PersistableStore {
 
 		return result;
 	}
-	
+
 	private String showNextUid() {
 		return this.uidMgr.showNextUid();
 	}
@@ -1531,7 +1531,7 @@ public class ModelBuilder implements PersistableStore {
 				reportDebug(thisDebug + extraBit, pAc);
 			}
 		}
-		
+
 		//Process micro debugs
 		if (isReportMicroDebug()) {
 			for (String thisDebug : pUm.getMicroDebugs()) {
@@ -1541,7 +1541,7 @@ public class ModelBuilder implements PersistableStore {
 
 		pUm.clearMessages();
 	}
-		
+
 	public String getCachedStringValueLevel1(String pValue) {
 		return getCachedStringValue(pValue, CACHELEVEL_1);
 	}
@@ -1561,7 +1561,7 @@ public class ModelBuilder implements PersistableStore {
 		//in v6 (limited to 64MB by default) we have chosen to stick with this
 		//custom implementation for now.
 		String result = null;
-		
+
 		if (pCacheLevel <= this.cacheLevel) {
 			result = this.allValues.get(pValue);
 
@@ -1572,7 +1572,7 @@ public class ModelBuilder implements PersistableStore {
 		} else {
 			result = pValue;
 		}
-				
+
 		return result;
 	}
 
@@ -1603,7 +1603,7 @@ public class ModelBuilder implements PersistableStore {
 		if (!pRules.isEmpty()) {
 			String srcId = null;
 			String srcDetail = null;
-			
+
 			if (pSrc == null) {
 				srcId = "(none)";
 				srcDetail = "";
@@ -1611,7 +1611,7 @@ public class ModelBuilder implements PersistableStore {
 				srcId = pSrc.getId();
 				srcDetail = pSrc.getDetail();
 			}
-			
+
 			updateCreatedThingsFrom(pAc);
 
 			if (isReportMicroDebug()) {
@@ -1621,7 +1621,7 @@ public class ModelBuilder implements PersistableStore {
 			int itCtr = 0;
 			int newSens = -1;
 //			int totalSens = 0;
-			
+
 			HashSet<String> genSentences = new HashSet<String>();
 			StringBuilder sb = new StringBuilder();
 
@@ -1629,7 +1629,7 @@ public class ModelBuilder implements PersistableStore {
 			//or there are no new sentences generated
 			while ((itCtr < pMaxIterations) && (newSens != 0)) {
 				newSens = executeSpecifiedRules(pAc, genSentences, pRules, itCtr, true, false, false);
-				
+
 //				totalSens += newSens;
 				++itCtr;
 
@@ -1641,7 +1641,7 @@ public class ModelBuilder implements PersistableStore {
 					}
 				}
 			}
-			
+
 //			if (isReportDebug()) {
 //				reportDebug("There were " + itCtr + " iterations", pAc);
 //			}
@@ -1651,17 +1651,17 @@ public class ModelBuilder implements PersistableStore {
 //			} else {
 //				reportDebug("(" + srcId + ") Total of " + Integer.toString(totalSens) + " new sentences generated by " + Integer.toString(itCtr) + " iterations of the rules", pAc);
 //			}
-			
+
 			if (sb.length() > 1) {
 				//Save the new sentences
 				StoreActions sa = StoreActions.createUsingDefaultConfig(pAc);
-				sa.loadSentencesFromAgent(sb, "ruleExecution for source " + srcId, "autoRunRules");	
-	
+				sa.loadSentencesFromAgent(sb, "ruleExecution for source " + srcId, "autoRunRules");
+
 				genSentences = new HashSet<String>();
 			}
 		}
 	}
-	
+
 	private static int executeSpecifiedRules(ActionContext pAc, HashSet<String> pGenSentences, ArrayList<CeRule> pRules, int pIterationCounter, boolean pGenRat, boolean pDblRatSens, boolean pRestateSens) {
 		int newOverallSentences = 0;
 		int totalSentences = 0;
@@ -1691,7 +1691,7 @@ public class ModelBuilder implements PersistableStore {
 							if ((pRestateSens) || (!thisRule.doesSentenceTextAlreadyExist(pAc, innerSen))) {
 								int beforeSize = pGenSentences.size();
 								pGenSentences.add(innerSen + NL + NL);
-								
+
 								if (pGenSentences.size() > beforeSize) {
 									++newSentencesForThisRule;
 								}
@@ -1701,7 +1701,7 @@ public class ModelBuilder implements PersistableStore {
 						if ((pRestateSens) || (!thisRule.doesSentenceTextAlreadyExist(pAc, thisSen))) {
 							int beforeSize = pGenSentences.size();
 							pGenSentences.add(thisSen + NL + NL);
-							
+
 							if (pGenSentences.size() > beforeSize) {
 								++newSentencesForThisRule;
 							}
@@ -1731,7 +1731,7 @@ public class ModelBuilder implements PersistableStore {
 
 		if (isReportMicroDebug()) {
 			String summaryText = "";
-			
+
 			summaryText += "matched rules: " + ruleCtr + ", ";
 			summaryText += "total sentences: " + totalSentences + ", ";
 			summaryText += "new sentences: " + newOverallSentences + ", ";
@@ -1744,14 +1744,14 @@ public class ModelBuilder implements PersistableStore {
 
 	public long calculateNextAvailableUid() {
 		long highest = -1;
-		
+
 		for (CeInstance thisInst : listAllInstances()) {
 			if (thisInst.getInstanceName().startsWith("#")) {
 				String possUid = thisInst.getInstanceName().replace("#", "");
-				
+
 				try {
 					long thisVal = Long.parseLong(possUid);
-					
+
 					if (thisVal > highest) {
 						highest = thisVal;
 					}
@@ -1760,17 +1760,17 @@ public class ModelBuilder implements PersistableStore {
 				}
 			}
 		}
-		
+
 		return (highest + 1);
 	}
-	
+
 	public static boolean isThisCeValid(ActionContext pAc, String pCeText) {
 		StoreActions sa = StoreActions.createUsingDefaultConfig(pAc);
 		ContainerSentenceLoadResult senStats = sa.validateCeSentence(pCeText);
-		
+
 		return (senStats.getInvalidSentenceCount() == 0);
 	}
-	
+
 	public boolean isCeStoreEmpty() {
 		return this.allConcepts.isEmpty();
 	}
