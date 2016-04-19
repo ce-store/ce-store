@@ -144,7 +144,10 @@ there is a concept template named 'list concept template' that
   has the value
 'There are ~ N ~ instances of ~ C ~.
 They are ~ V1 ~.'
-  as reply.
+  as positive reply and
+  has the value
+'There are ~ N ~ instances of ~ C ~.'
+  as negative reply.
 
 there is a property template named 'list property template' that
   has the value
@@ -155,7 +158,10 @@ there is a property template named 'list property template' that
   has the value
 'There are ~ N ~ relationships of ~ P ~.
 ~ CE ~'
-  as reply.
+  as positive reply and
+  has the value
+'There are ~ N ~ relationships of ~ P ~.'
+  as negative reply.
 
 
 there is a command word named 'count' that
