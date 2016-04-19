@@ -17,6 +17,8 @@ import java.util.TreeMap;
 import com.ibm.ets.ita.ce.store.ActionContext;
 import com.ibm.ets.ita.ce.store.conversation.processor.SentenceProcessor;
 import com.ibm.ets.ita.ce.store.conversation.trigger.general.Anaphor;
+import com.ibm.ets.ita.ce.store.conversation.trigger.general.Concept;
+import com.ibm.ets.ita.ce.store.conversation.trigger.general.Property;
 import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
 import com.ibm.ets.ita.ce.store.model.CeProperty;
@@ -622,7 +624,7 @@ public class ProcessedWord extends GeneralItem {
         return result;
     }
 
-    public void classify(ActionContext pAc, ArrayList<CeInstance> pComWordLists, ArrayList<CeInstance> pNegWordLists, CeInstance pCardInstance) {
+    public void classify(ActionContext pAc, ArrayList<CeInstance> pComWordLists, ArrayList<CeInstance> pNegWordLists, CeInstance pCardInstance, String sentence) {
         checkForMatchingConcept(pAc);
         checkForMatchingRelation(pAc);
         checkForMatchingInstances(pAc);
@@ -633,6 +635,7 @@ public class ProcessedWord extends GeneralItem {
 
         checkForStandardWords(pComWordLists, pNegWordLists);
         checkForAnaphoricReference(pAc, pCardInstance);
+        checkForMatchingCommandWords(pAc, sentence);
 
         String decText = getDeclutteredText();
 
@@ -1122,6 +1125,22 @@ public class ProcessedWord extends GeneralItem {
                 if (myText.equals(nwText)) {
                     this.isNegationWord = true;
                     break;
+                }
+            }
+        }
+    }
+
+    private void checkForMatchingCommandWords(ActionContext pAc, String sentence) {
+        System.out.println("Instance: " + matchingInstance);
+        if (matchingInstance != null && matchingInstance.isConceptNamed(pAc, Concept.COMMAND_WORD.toString())) {
+            System.out.println("Is command word");
+
+            String regex = matchingInstance.getSingleValueFromPropertyNamed(Property.REGEX.toString());
+            if (regex != null && !regex.isEmpty()) {
+                if (sentence.matches(regex)) {
+                    System.out.println("Matches regex");
+                } else {
+                    matchingInstance = null;
                 }
             }
         }

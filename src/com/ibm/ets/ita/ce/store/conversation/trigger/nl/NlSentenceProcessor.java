@@ -31,7 +31,7 @@ public class NlSentenceProcessor {
     public ArrayList<ProcessedWord> process(ConvSentence sentence, CeInstance cardInstance) {
 
         ArrayList<ProcessedWord> words = prepareWords(sentence);
-        classify(words, cardInstance);
+        classify(words, cardInstance, sentence);
 
         return words;
     }
@@ -66,14 +66,14 @@ public class NlSentenceProcessor {
     }
 
     // Classify all ProcessedWords
-    private void classify(ArrayList<ProcessedWord> words, CeInstance cardInstance) {
+    private void classify(ArrayList<ProcessedWord> words, CeInstance cardInstance, ConvSentence sentence) {
         ArrayList<CeInstance> commonWords = ac.getModelBuilder().getAllInstancesForConceptNamed(ac,
                 Concept.COMMON_WORDS.toString());
         ArrayList<CeInstance> negationWords = ac.getModelBuilder().getAllInstancesForConceptNamed(ac,
                 Concept.NEGATION_WORDS.toString());
 
         for (ProcessedWord word : words) {
-            word.classify(ac, commonWords, negationWords, cardInstance);
+            word.classify(ac, commonWords, negationWords, cardInstance, sentence.getSentenceText());
         }
 
         for (ProcessedWord word : words) {

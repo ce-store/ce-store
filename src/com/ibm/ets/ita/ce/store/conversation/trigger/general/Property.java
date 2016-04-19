@@ -12,10 +12,13 @@ public enum Property {
     INTERESTED_PARTY("interested party"),
     UNINTERESTED_PARTY("uninterested party"),
     MATCHING_THING("matching thing"),
+    REGEX("regex"),
     TEMPLATE("template"),
     TEMPLATE_STRING("template string"),
     RECIPIENT("recipient"),
     REPLY("reply"),
+    POSITIVE_REPLY("positive reply"),
+    NEGATIVE_REPLY("negative reply"),
     KEYWORD("keyword"),
     QUERY("query"),
     WORD("word");

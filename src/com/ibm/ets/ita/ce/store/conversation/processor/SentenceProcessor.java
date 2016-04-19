@@ -512,7 +512,7 @@ public class SentenceProcessor {
 
 		//Then classify the processed words
 		for (ProcessedWord thisWord : this.allProcessedWords) {
-			thisWord.classify(this.ac, cwls, nwls, this.cardInstance);
+			thisWord.classify(this.ac, cwls, nwls, this.cardInstance, convSentence.getSentenceText());
 		}
 	}
 

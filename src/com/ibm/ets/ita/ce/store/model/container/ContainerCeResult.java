@@ -95,7 +95,7 @@ public class ContainerCeResult extends ContainerQueryResult {
 		StringBuilder result = new StringBuilder();
 		int ctr = 0;
 
-		if ((this.instanceRows != null) && (!this.instanceRows.isEmpty())) {		
+		if ((this.instanceRows != null) && (!this.instanceRows.isEmpty())) {
 			for (ArrayList<CeInstance> thisInstRow : this.instanceRows) {
 				ctr = 0;
 				for (CeInstance thisInst : thisInstRow) {
@@ -109,6 +109,10 @@ public class ContainerCeResult extends ContainerQueryResult {
 		}
 
 		return result.toString();
+	}
+
+	public int size() {
+	    return this.resultRows.size();
 	}
 
 	public String getAllGeneratedCeText() {
@@ -201,7 +205,7 @@ public class ContainerCeResult extends ContainerQueryResult {
 	public static String[] splitSentences(String pSenText) {
 		return pSenText.split(Pattern.quote(CESEN_SEPARATOR));
 	}
-	
+
 	public static String appendAdditionalSentence(String pOriginalCe, String pNewCe) {
 		String result = "";
 

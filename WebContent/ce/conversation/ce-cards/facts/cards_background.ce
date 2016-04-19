@@ -172,6 +172,20 @@ there is a concept template named 'count template' that
   as reply.
 
 
+there is a command word named 'is' that
+  has the value 'is .*' as regex and
+  has the template 'is template' as template.
+
+there is a instance concept template named 'is template' that
+  has the value
+'for which V1 is it true that
+  ( there is a ~ C ~ named \'~ I ~\' )
+.'
+  as template string and
+  has the value 'Yes' as positive reply and
+  has the value 'No' as negative reply.
+
+
 there is a command word named 'describe associates' that
   has the template 'describe associates template' as template.
 

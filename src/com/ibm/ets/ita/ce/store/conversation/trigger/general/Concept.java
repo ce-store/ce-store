@@ -15,6 +15,7 @@ public enum Concept {
     PROPERTY_TEMPLATE("property template"),
     INSTANCE_TEMPLATE("instance template"),
     CONCEPT_TEMPLATE("concept template"),
+    INSTANCE_CONCEPT_TEMPLATE("instance concept template"),
     CONFIRM_REPLY("confirm reply"),
     POSITIVE_CONFIRM_REPLY("positive confirm reply"),
     NEGATIVE_CONFIRM_REPLY("negative confirm reply");

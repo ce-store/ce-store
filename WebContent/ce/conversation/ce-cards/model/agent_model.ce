@@ -23,8 +23,13 @@ conceptualise a ~ template ~ T that
 conceptualise a ~ property template ~ T that is a template.
 conceptualise a ~ instance template ~ T that is a template.
 conceptualise a ~ concept template ~ T that is a template.
+conceptualise a ~ instance concept template ~ T that 
+  is a template and
+  has the value P as ~ positive reply ~ and
+  has the value N as ~ negative reply ~.
 
 conceptualise a ~ command word ~ C that
+  has the value R as ~ regex ~ and
   has the template T as ~ template ~.
 
 -- OLD
