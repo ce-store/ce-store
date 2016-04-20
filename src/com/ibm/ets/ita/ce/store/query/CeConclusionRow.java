@@ -45,9 +45,9 @@ public class CeConclusionRow {
 		String newValKey = "";
 
 		for (String thisToken : repTokens) {
-			if (!newValKey.isEmpty()) {
-				newValKey += '_';
-			}
+//			if (!newValKey.isEmpty()) {
+//				newValKey += '_';
+//			}
 
 			if (thisToken.startsWith(TOKEN_VARIABLE)) {
 				String rawToken = thisToken.replace(TOKEN_VARIABLE, "");
