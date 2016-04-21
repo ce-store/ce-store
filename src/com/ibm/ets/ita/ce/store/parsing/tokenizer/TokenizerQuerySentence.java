@@ -37,6 +37,7 @@ public class TokenizerQuerySentence extends TokenizerSentence {
 	//DSB 01/05/2015 #1095
 	private static final String TOKEN_OR = "or";
 	private static final String TOKEN_ORDER = "order";	
+	private static final String TOKEN_LIMIT = "limit";	
 	private static final String TOKEN_BY = "by";
 	private static final String TOKEN_ASCENDING = "ascending";
 	private static final String TOKEN_DESCENDING = "descending";
@@ -47,6 +48,7 @@ public class TokenizerQuerySentence extends TokenizerSentence {
 	private boolean inPreamble = false;
 	private boolean inVariableList = false;
 	private boolean inOrderBy = false;	//DSB 01/05/2015 #1095
+	private boolean inLimit = false;
 
 	private String queryName = "";
 	private CeQuery targetQuery = null;
@@ -416,8 +418,11 @@ public class TokenizerQuerySentence extends TokenizerSentence {
 					//Ignore the "by token"
 				} else if (pToken.equals(TOKEN_COMMA)) {
 					//Ignore any commas
+				} else if (pToken.equals(TOKEN_LIMIT)) {
+					//Limit can follow order by
+					this.inOrderBy = false;
+					processLimitToken();
 				} else {
-					//This must be a variable name
 					if (pToken.equals(TOKEN_ASCENDING)) {
 						//Ascending is the default order so just ignore this token
 					} else if (pToken.equals(TOKEN_DESCENDING)) {
@@ -426,6 +431,10 @@ public class TokenizerQuerySentence extends TokenizerSentence {
 						this.targetQuery.addOrderToken(pToken);
 					}
 				}
+			} else if (this.inLimit) {
+				//We are in a "limit" suffix - this must be the number
+				this.targetQuery.setRowLimit(pToken);
+				inLimit = false;
 			} else {
 				//Outside square brackets and the variable list the token counter must be incremented
 				++result;
@@ -442,6 +451,8 @@ public class TokenizerQuerySentence extends TokenizerSentence {
 					} else if (pToken.equals(TOKEN_ORDER)) {
 						//DSB 01/05/2015 #1095
 						processOrderToken();
+					} else if (pToken.equals(TOKEN_LIMIT)) {
+						processLimitToken();
 					} else {
 						//No unexpected tokens should occur outside brackets
 						processUnexpectedToken(pToken);
@@ -481,6 +492,10 @@ public class TokenizerQuerySentence extends TokenizerSentence {
 	//DSB 01/05/2015 #1095
 	private void processOrderToken() {
 		this.inOrderBy = true;
+	}
+
+	private void processLimitToken() {
+		this.inLimit = true;
 	}
 
 	private void processClauses() {

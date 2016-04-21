@@ -33,6 +33,7 @@ public class CeQuery extends CeModelEntity {
 	private boolean orderAscending = true;		//DSB 01/05/2015 #1095
 	protected int lastSeqId = 0;
 	private boolean hasErrors = false;
+	private int rowLimit = -1;
 
 	private static final int TYPE_NORMAL = 1;
 	private static final int TYPE_COUNT = 2;
@@ -184,7 +185,27 @@ public class CeQuery extends CeModelEntity {
 	public void setSortOrderDescending() {
 		this.orderAscending = false;
 	}
-	
+
+	public boolean hasRowLimit() {
+		return this.rowLimit != -1;
+	}
+
+	public int getRowLimit() {
+		return this.rowLimit;
+	}
+
+	public void setRowLimit(String pLimit) {
+		try {
+			int intVal = new Integer(pLimit).intValue();
+
+			if (intVal > 0) {
+				this.rowLimit = intVal;
+			}
+		} catch(NumberFormatException e) {
+			//Nothing needed here - just ignore
+		}
+	}
+
 	public ArrayList<CeClause> getAllConcatenationClauses() {
 		ArrayList<CeClause> result = new ArrayList<CeClause>();
 

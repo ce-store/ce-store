@@ -8,6 +8,8 @@ package com.ibm.ets.ita.ce.store.model.container;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import com.ibm.ets.ita.ce.store.model.CeQuery;
+
 public abstract class ContainerQueryResult extends ContainerResult {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
 	
@@ -101,6 +103,20 @@ public abstract class ContainerQueryResult extends ContainerResult {
 	//DSB 01/05/2015 #1096
 	public boolean hasCountHeader() {
 		return this.types.contains(TYPE_COUNT);
+	}
+
+	public void trimToLimit(CeQuery pQuery) {
+		if (pQuery.hasRowLimit()) {
+			int limit = pQuery.getRowLimit();
+
+			if (this.resultRows.size() > limit) {
+				this.resultRows.subList(limit, this.resultRows.size()).clear();
+			}
+
+			if (this.allRows.size() > limit) {
+				this.allRows.subList(limit, this.allRows.size()).clear();
+			}
+		}
 	}
 
 }

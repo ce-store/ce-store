@@ -175,6 +175,8 @@ public abstract class QueryExecutionManager {
 			result.populateInstances(this.ac);
 		}
 
+		result.trimToLimit(pQuery);
+
 		return result;
 	}
 	

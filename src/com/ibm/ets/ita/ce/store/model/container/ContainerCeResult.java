@@ -11,6 +11,7 @@ import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.timestampNow;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
 
 import java.util.ArrayList;
+
 import java.util.regex.Pattern;
 
 import com.ibm.ets.ita.ce.store.ActionContext;
@@ -226,6 +227,18 @@ public class ContainerCeResult extends ContainerQueryResult {
 		}
 
 		return result;
+	}
+
+	public void trimToLimit(CeQuery pQuery) {
+		if (pQuery.hasRowLimit()) {
+			int limit = pQuery.getRowLimit();
+
+			if (this.instanceRows.size() > limit) {
+				this.instanceRows.subList(limit, this.instanceRows.size()).clear();
+			}
+
+			super.trimToLimit(pQuery);
+		}
 	}
 
 }
