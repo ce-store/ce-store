@@ -503,40 +503,42 @@ public class NlSentenceProcessor {
                     for (ProcessedWord instanceWord : instances) {
                         CeInstance instance = getMatchingInstance(instanceWord);
 
-                        if (appearsBefore(instanceWord, propertyWord, words)) {
-                            if (instance.isConcept(domain)) {
-                                System.out.println("\nMatch");
-                                System.out.println(instance);
-                                System.out.println(property);
-                                System.out.println(range);
+                        if (instance != null) {
+                            if (appearsBefore(instanceWord, propertyWord, words)) {
+                                if (instance.isConcept(domain)) {
+                                    System.out.println("\nMatch");
+                                    System.out.println(instance);
+                                    System.out.println(property);
+                                    System.out.println(range);
 
-                                if (range == null) {
-                                    // Value property
-                                    System.out.println("\nValue");
-                                    System.out.println(ungrounded);
+                                    if (range == null) {
+                                        // Value property
+                                        System.out.println("\nValue");
+                                        System.out.println(ungrounded);
 
-                                    String value = findValueFromUngroundedWords(ungrounded);
+                                        String value = findValueFromUngroundedWords(ungrounded);
 
-                                    if (value != null) {
-                                        matchedTriples.add(new NewMatchedTriple(instance, property, value));
+                                        if (value != null) {
+                                            matchedTriples.add(new NewMatchedTriple(instance, property, value));
+                                        }
+                                    } else {
+                                        // Relationship property
+                                        matchedTriples.add(new NewMatchedTriple(instance, property, range, ac));
                                     }
-                                } else {
-                                    // Relationship property
-                                    matchedTriples.add(new NewMatchedTriple(instance, property, range, ac));
+                                } else if (instance.isConcept(range)) {
+                                    matchedTriples.add(new NewMatchedTriple(domain, property, instance, ac));
                                 }
-                            } else if (instance.isConcept(range)) {
-                                matchedTriples.add(new NewMatchedTriple(domain, property, instance, ac));
-                            }
-                        } else {
-                            if (instance.isConcept(range)) {
-                                matchedTriples.add(new NewMatchedTriple(domain, property, instance, ac));
-                            } else if (instance.isConcept(domain)) {
-                                if (range == null) {
-                                    // Value property
+                            } else {
+                                if (instance.isConcept(range)) {
+                                    matchedTriples.add(new NewMatchedTriple(domain, property, instance, ac));
+                                } else if (instance.isConcept(domain)) {
+                                    if (range == null) {
+                                        // Value property
 
-                                } else {
-                                    // Relationship property
-                                    matchedTriples.add(new NewMatchedTriple(instance, property, range, ac));
+                                    } else {
+                                        // Relationship property
+                                        matchedTriples.add(new NewMatchedTriple(instance, property, range, ac));
+                                    }
                                 }
                             }
                         }

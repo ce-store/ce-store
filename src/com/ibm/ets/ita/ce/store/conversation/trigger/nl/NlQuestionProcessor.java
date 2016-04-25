@@ -161,18 +161,15 @@ public class NlQuestionProcessor {
         for (FinalItem propertyItem : finalItems) {
             if (propertyItem.isPropertyItem()) {
                 for (FinalItem instanceItem : finalItems) {
-                    System.out.println("  " + instanceItem + " " + instanceItem.isInstanceItem() + " " + !toRemoveItems.contains(instanceItem) + " " + !toRemoveItems.contains(propertyItem));
                     if (instanceItem.isInstanceItem() && !toRemoveItems.contains(instanceItem) && !toRemoveItems.contains(propertyItem)) {
                         Tuple<CeInstance, CeProperty> matchingConceptProperty = instanceHasOrIsReferredToByProperty(instanceItem, propertyItem);
 
                         if (matchingConceptProperty != null) {
-                            System.out.println("Instance has property");
                             // Instance has this property. Append results
                             toRemoveItems.add(instanceItem);
 
                             ExtractedItem extractedInstance = instanceItem.getFirstExtractedItem();
                             ProcessedWord word = extractedInstance.getStartWord();
-                            System.out.println("Word: " + word);
 
                             ExtractedItem extractedItem = new ExtractedItem(word, matchingConceptProperty.x);
                             propertyItem.addExtractedItem(extractedItem);
@@ -193,16 +190,9 @@ public class NlQuestionProcessor {
         ExtractedItem extractedProperty = propertyItem.getFirstExtractedItem();
         ArrayList<CeProperty> properties = extractedProperty.getPropertyList();
 
-        System.out.println("\nProperty: " + extractedProperty);
-        System.out.println(properties);
-
         ExtractedItem extractedInstance = instanceItem.getFirstExtractedItem();
         CeInstance instance = extractedInstance.getInstance();
         CeConcept[] instanceConcepts = instance.getDirectConcepts();
-
-        System.out.println("\nInstance: " + extractedInstance);
-        System.out.println(instance);
-        System.out.println(instanceConcepts);
 
         Tuple<CeInstance, CeProperty> matchingConceptProperty = null;
 
@@ -212,15 +202,12 @@ public class NlQuestionProcessor {
 
             if (matchingConceptProperty == null) {
                 for (CeConcept instanceConcept : instanceConcepts) {
-                    System.out.println("\nConcept: " + instanceConcept);
                     if (instanceConcept.equalsOrHasParent(propertyDomain)) {
-                        System.out.println("Domain match!!");
                         matchingConceptProperty = new Tuple<CeInstance, CeProperty>(instance, property);
                         break;
                     }
 
                     if (instanceConcept.equalsOrHasParent(propertyRange)) {
-                        System.out.println("Range match!!");
                         matchingConceptProperty = new Tuple<CeInstance, CeProperty>(instance, property);
                         break;
                     }

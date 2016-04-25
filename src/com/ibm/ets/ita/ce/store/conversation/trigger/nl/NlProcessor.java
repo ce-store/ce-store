@@ -187,10 +187,10 @@ public class NlProcessor extends GeneralProcessor {
                 String interestedUser = cardInst.getSingleValueFromPropertyNamed(Property.IS_FROM.toString());
 
                 String completedRecipient = substituteItemsIntoTemplate(recipient, null, matchingInstance,
-                        matchingConcept, interestedUser, text);
+                        matchingConcept, -1, interestedUser, text);
                 String completedTemplate = substituteItemsIntoTemplate(templateString, null, matchingInstance,
-                        matchingConcept, interestedUser, text);
-                String completedReply = substituteItemsIntoTemplate(reply, null, matchingInstance, matchingConcept,
+                        matchingConcept, -1, interestedUser, text);
+                String completedReply = substituteItemsIntoTemplate(reply, null, matchingInstance, matchingConcept, -1,
                         interestedUser, text);
 
                 cg.generateCard(Card.TELL.toString(), completedTemplate, th.getTriggerName(), completedRecipient,
@@ -357,7 +357,7 @@ public class NlProcessor extends GeneralProcessor {
 
     // Substitute mentioned instances, concepts, from user and original text
     // into agent template
-    private String substituteItemsIntoTemplate(String str, CeProperty property, CeInstance instance, CeConcept concept,
+    private String substituteItemsIntoTemplate(String str, CeProperty property, CeInstance instance, CeConcept concept, int number,
             String user, String originalText) {
         if (property != null) {
             str = str.replace("~ P ~", property.getPropertyName());
@@ -367,6 +367,9 @@ public class NlProcessor extends GeneralProcessor {
         }
         if (concept != null) {
             str = str.replace("~ C ~", concept.getConceptName());
+        }
+        if (number > -1) {
+            str = str.replace("~ M ~", new Integer(number).toString());
         }
         if (user != null) {
             str = str.replace("~ U ~", user);
@@ -500,6 +503,7 @@ public class NlProcessor extends GeneralProcessor {
         CeProperty matchingProperty = null;
         CeInstance matchingInstance = null;
         CeConcept matchingConcept = null;
+        int matchingNumber = 0;
 
         String reply = null;
         String positiveReply = null;
@@ -521,7 +525,8 @@ public class NlProcessor extends GeneralProcessor {
                             && matchingProperty == null) {
                         matchingProperty = sp.getMatchingProperty(word, ag);
                         matchedTemplate = true;
-                        System.out.println("Matching property: " + matchingProperty);
+                    } else if (word.isNumberWord()) {
+                        matchingNumber = new Integer(word.getWordText());
                     }
                 }
             } else if (template.isConceptNamed(ac, Concept.INSTANCE_TEMPLATE.toString())) {
@@ -561,7 +566,7 @@ public class NlProcessor extends GeneralProcessor {
             }
 
             if (matchedTemplate) {
-                completeQuery = substituteItemsIntoTemplate(query, matchingProperty, matchingInstance, matchingConcept,
+                completeQuery = substituteItemsIntoTemplate(query, matchingProperty, matchingInstance, matchingConcept, matchingNumber,
                         null, null);
 
                 reply = template.getSingleValueFromPropertyNamed(Property.REPLY.toString());
@@ -581,19 +586,21 @@ public class NlProcessor extends GeneralProcessor {
         }
 
         if (completeQuery != null) {
+            System.out.println("matching number: " + matchingNumber);
             // Execute query
             QueryHandler qh = new QueryHandler(this.ac);
             ContainerCeResult result = qh.executeUserSpecifiedCeQuery(completeQuery, null, null);
+            System.out.println("Result: " + result);
 
             if (reply != null && !reply.isEmpty()) {
-                completeReply = substituteItemsIntoTemplate(reply, matchingProperty, matchingInstance, matchingConcept,
+                completeReply = substituteItemsIntoTemplate(reply, matchingProperty, matchingInstance, matchingConcept, matchingNumber,
                         null, null);
             } else {
                 if (result.size() > 0) {
-                    completeReply = substituteItemsIntoTemplate(positiveReply, matchingProperty, matchingInstance, matchingConcept,
+                    completeReply = substituteItemsIntoTemplate(positiveReply, matchingProperty, matchingInstance, matchingConcept, matchingNumber,
                             null, null);
                 } else {
-                    completeReply = substituteItemsIntoTemplate(negativeReply, matchingProperty, matchingInstance, matchingConcept,
+                    completeReply = substituteItemsIntoTemplate(negativeReply, matchingProperty, matchingInstance, matchingConcept, matchingNumber,
                             null, null);
                 }
             }
@@ -621,20 +628,36 @@ public class NlProcessor extends GeneralProcessor {
                 String trimmedSplit = split.trim();
 
                 for (String header : headers) {
-                    if (trimmedSplit.equals(header)) {
+                    String[] countSplits = trimmedSplit.split(":");
+                    String potentialHeader = countSplits[0];
+                    int maxRows = -1;
+
+                    if (countSplits.length > 1) {
+                        System.out.println(countSplits);
+                        maxRows = new Integer(countSplits[1]);
+                    }
+
+                    if (potentialHeader.equals(header)) {
                         int index = result.getIndexForHeader(header);
 
                         StringBuilder replacement = new StringBuilder();
 
                         ArrayList<ArrayList<String>> resultRows = result.getResultRows();
-                        for (int i = 0; i < resultRows.size(); ++i) {
+
+                        if (maxRows < 0) {
+                            maxRows = resultRows.size();
+                        }
+
+                        for (int i = 0; i < maxRows; ++i) {
                             ArrayList<String> row = resultRows.get(i);
                             replacement.append(row.get(index));
 
                             if (i < resultRows.size() - 2) {
-                                replacement.append(", ");
+//                                replacement.append(", ");
+                                replacement.append("\n");
                             } else if (i < resultRows.size() - 1) {
-                                replacement.append(" and ");
+//                                replacement.append(" and ");
+                                replacement.append("\n");
                             }
                         }
 
@@ -663,51 +686,55 @@ public class NlProcessor extends GeneralProcessor {
                     if (instance.isConceptNamed(ac, Concept.COMMAND_WORD.toString())) {
                         ArrayList<CeInstance> templates = instance.getInstanceListFromPropertyNamed(ac,
                                 Property.TEMPLATE.toString());
+                        String regex = instance.getSingleValueFromPropertyNamed(Property.REGEX.toString());
 
-                        for (CeInstance template : templates) {
-                            if (template.isConceptNamed(ac, Concept.PROPERTY_TEMPLATE.toString())) {
-                                // Template requires property
-                                for (ProcessedWord matchingWord : words) {
-                                    if (matchingWord != word && matchingWord.isGroundedOnProperty()
-                                            && !instances.contains(instance)) {
+                        // If no regex or sentence matches regex, look at templates
+                        if (regex.isEmpty() || sentence.matches(regex)) {
+                            for (CeInstance template : templates) {
+                                if (template.isConceptNamed(ac, Concept.PROPERTY_TEMPLATE.toString())) {
+                                    // Template requires property
+                                    for (ProcessedWord matchingWord : words) {
+                                        if (matchingWord != word && matchingWord.isGroundedOnProperty()
+                                                && !instances.contains(instance)) {
+                                            instances.add(instance);
+                                        }
+                                    }
+                                } else if (template.isConceptNamed(ac, Concept.INSTANCE_CONCEPT_TEMPLATE.toString())) {
+                                    // Template requires instance and concept
+                                    boolean foundInstance = false;
+                                    boolean foundConcept = false;
+
+                                    for (ProcessedWord matchingWord : words) {
+                                        if (matchingWord != word && !instances.contains(instance)) {
+                                            foundInstance = foundInstance || matchingWord.isGroundedOnInstance();
+                                            foundConcept = foundConcept || matchingWord.isGroundedOnConcept();
+                                        }
+                                    }
+
+                                    if (foundInstance && foundConcept) {
                                         instances.add(instance);
                                     }
-                                }
-                            } else if (template.isConceptNamed(ac, Concept.INSTANCE_CONCEPT_TEMPLATE.toString())) {
-                                // Template requires instance and concept
-                                boolean foundInstance = false;
-                                boolean foundConcept = false;
-
-                                for (ProcessedWord matchingWord : words) {
-                                    if (matchingWord != word && !instances.contains(instance)) {
-                                        foundInstance = foundInstance || matchingWord.isGroundedOnInstance();
-                                        foundConcept = foundConcept || matchingWord.isGroundedOnConcept();
+                                } else if (template.isConceptNamed(ac, Concept.INSTANCE_TEMPLATE.toString())) {
+                                    // Template requires instance
+                                    for (ProcessedWord matchingWord : words) {
+                                        if (matchingWord != word && matchingWord.isGroundedOnInstance()
+                                                && !instances.contains(instance)) {
+                                            instances.add(instance);
+                                        }
                                     }
-                                }
-
-                                if (foundInstance && foundConcept) {
-                                    instances.add(instance);
-                                }
-                            } else if (template.isConceptNamed(ac, Concept.INSTANCE_TEMPLATE.toString())) {
-                                // Template requires instance
-                                for (ProcessedWord matchingWord : words) {
-                                    if (matchingWord != word && matchingWord.isGroundedOnInstance()
-                                            && !instances.contains(instance)) {
+                                } else if (template.isConceptNamed(ac, Concept.CONCEPT_TEMPLATE.toString())) {
+                                    // Template requires concept
+                                    for (ProcessedWord matchingWord : words) {
+                                        if (matchingWord != word && matchingWord.isGroundedOnConcept()
+                                                && !instances.contains(instance)) {
+                                            instances.add(instance);
+                                        }
+                                    }
+                                } else {
+                                    // Template has no requirements
+                                    if (!instances.contains(instance)) {
                                         instances.add(instance);
                                     }
-                                }
-                            } else if (template.isConceptNamed(ac, Concept.CONCEPT_TEMPLATE.toString())) {
-                                // Template requires concept
-                                for (ProcessedWord matchingWord : words) {
-                                    if (matchingWord != word && matchingWord.isGroundedOnConcept()
-                                            && !instances.contains(instance)) {
-                                        instances.add(instance);
-                                    }
-                                }
-                            } else {
-                                // Template has no requirements
-                                if (!instances.contains(instance)) {
-                                    instances.add(instance);
                                 }
                             }
                         }

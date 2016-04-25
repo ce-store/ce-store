@@ -506,8 +506,6 @@ public class ProcessedWord extends GeneralItem {
                 TreeMap<String, CeProperty> matchingRelations = nextWord.getMatchingRelations();
                 CeInstance instance = referredExactInstances.firstEntry().getValue();
 
-                System.out.println("Instance: " + instance);
-
                 System.out.println("\nNext word: " + nextWord);
                 System.out.println("Referred relations: " + referredRelations);
                 System.out.println("Matching relations: " + matchingRelations);
@@ -1131,9 +1129,7 @@ public class ProcessedWord extends GeneralItem {
     }
 
     private void checkForMatchingCommandWords(ActionContext pAc, String sentence) {
-        System.out.println("Instance: " + matchingInstance);
         if (matchingInstance != null && matchingInstance.isConceptNamed(pAc, Concept.COMMAND_WORD.toString())) {
-            System.out.println("Is command word");
 
             String regex = matchingInstance.getSingleValueFromPropertyNamed(Property.REGEX.toString());
             if (regex != null && !regex.isEmpty()) {
@@ -1315,8 +1311,11 @@ public class ProcessedWord extends GeneralItem {
         String strippedWord = stripDelimitingQuotesFrom(pLcWordText);
 
         ArrayList<CeInstance> possInsts = pAc.getIndexedEntityAccessor().calculateInstancesWithNameStarting(pAc, strippedWord + " ");
+        CeInstance possInst = pAc.getModelBuilder().getInstanceNamed(pAc, strippedWord);
 
-        if (!possInsts.isEmpty()) {
+        if (possInst != null) {
+            result = possInst;
+        } else if (!possInsts.isEmpty()) {
             ProcessedWord nextWord = getNextProcessedWord();
 
             reportMicroDebug("Partial match for instance '" + strippedWord + "'", pAc);
