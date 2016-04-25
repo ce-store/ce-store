@@ -445,12 +445,14 @@ public class NlSentenceProcessor {
                     // TODO: Try with all extracted
                     CeInstance instance = getMatchingInstance(instanceWord);
 
-                    if (instance.isConcept(domain)) {
-                        matchedDomains.add(instance);
-                    }
+                    if (instance != null) {
+                        if (instance.isConcept(domain)) {
+                            matchedDomains.add(instance);
+                        }
 
-                    if (instance.isConcept(range)) {
-                        matchedRanges.add(instance);
+                        if (instance.isConcept(range)) {
+                            matchedRanges.add(instance);
+                        }
                     }
                 }
 

@@ -210,18 +210,20 @@ public class NlQuestionProcessor {
             CeConcept propertyDomain = property.getDomainConcept();
             CeConcept propertyRange = property.getRangeConcept();
 
-            for (CeConcept instanceConcept : instanceConcepts) {
-                System.out.println("\nConcept: " + instanceConcept);
-                if (instanceConcept.equalsOrHasParent(propertyDomain)) {
-                    System.out.println("Domain match!!");
-                    matchingConceptProperty = new Tuple<CeInstance, CeProperty>(instance, property);
-                    break;
-                }
+            if (matchingConceptProperty == null) {
+                for (CeConcept instanceConcept : instanceConcepts) {
+                    System.out.println("\nConcept: " + instanceConcept);
+                    if (instanceConcept.equalsOrHasParent(propertyDomain)) {
+                        System.out.println("Domain match!!");
+                        matchingConceptProperty = new Tuple<CeInstance, CeProperty>(instance, property);
+                        break;
+                    }
 
-                if (instanceConcept.equalsOrHasParent(propertyRange)) {
-                    System.out.println("Range match!!");
-                    matchingConceptProperty = new Tuple<CeInstance, CeProperty>(instance, property);
-                    break;
+                    if (instanceConcept.equalsOrHasParent(propertyRange)) {
+                        System.out.println("Range match!!");
+                        matchingConceptProperty = new Tuple<CeInstance, CeProperty>(instance, property);
+                        break;
+                    }
                 }
             }
         }

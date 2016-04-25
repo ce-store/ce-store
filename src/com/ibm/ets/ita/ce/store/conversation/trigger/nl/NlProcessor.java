@@ -413,22 +413,20 @@ public class NlProcessor extends GeneralProcessor {
                     CeConcept propertyDomain = prop.getDomainConcept();
                     CeConcept propertyRange = prop.getRangeConcept();
 
-//                    System.out.println("\nDomain: " + propertyDomain);
-//                    System.out.println("Range: " + propertyRange + "\n");
+                    if (property == null) {
+                        for (CeConcept instanceConcept : instanceConcepts) {
+                            if (instanceConcept.equalsOrHasParent(propertyDomain)) {
+                                property = prop;
+                                break;
+                            }
 
-                    for (CeConcept instanceConcept : instanceConcepts) {
-                        if (instanceConcept.equalsOrHasParent(propertyDomain)) {
-                            property = prop;
-                            break;
-                        }
-
-                        if (instanceConcept.equalsOrHasParent(propertyRange)) {
-                            property = prop;
-                            break;
+                            if (instanceConcept.equalsOrHasParent(propertyRange)) {
+                                property = prop;
+                                break;
+                            }
                         }
                     }
                 }
-                System.out.println(property);
 
                 // Add value from property instance
                 CePropertyInstance propertyInstance = null;
@@ -444,17 +442,15 @@ public class NlProcessor extends GeneralProcessor {
 
                 if (propertyInstance != null) {
                     if (instance.hasPropertyInstanceForPropertyNamed(property.getPropertyName())) {
-                        HashSet<String> values = propertyInstance.getValueList();
+                        HashSet<CeInstance> values = propertyInstance.getValueInstanceList(ac);
 
-                        for (String value : values) {
-                            System.out.println(value + "\n");
-                            referencedItems.add(value);
+                        for (CeInstance value : values) {
+                            referencedItems.add(value.getInstanceName());
                         }
                     } else if (instance.hasReferringPropertyInstanceForPropertyNamed(propertyName)) {
                         CePropertyInstance[] referringInstances = instance.getReferringPropertyInstancesNamed(propertyName);
 
                         for (CePropertyInstance referringInstance : referringInstances) {
-                            System.out.println(referringInstance.getRelatedInstance().getInstanceName() + "\n");
                             referencedItems.add(referringInstance.getRelatedInstance().getInstanceName());
                         }
                     }
