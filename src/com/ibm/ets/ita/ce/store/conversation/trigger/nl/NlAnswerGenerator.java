@@ -285,11 +285,9 @@ public class NlAnswerGenerator {
             if (instance.hasPropertyInstanceForPropertyNamed(propertyName)) {
                 // Property exists on instance
                 propertyInstance = instance.getPropertyInstanceForProperty(property);
-                System.out.println("\nProperty Instance: " + propertyInstance);
 
                 String qualifier = computeQualifierFor(instance, allowConfigConcepts);
                 HashSet<String> values = propertyInstance.getValueList();
-                System.out.println(values);
 
                 if (values != null) {
                     int i = 0;

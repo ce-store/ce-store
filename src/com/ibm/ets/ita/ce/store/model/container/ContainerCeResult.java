@@ -162,7 +162,7 @@ public class ContainerCeResult extends ContainerQueryResult {
 
 		int ceHdrIndex = getHeaders().indexOf(HDR_CE);
 
-        if (ceHdrIndex > 0) {
+        if (ceHdrIndex > -1) {
 	        for (ArrayList<String> thisRow : this.resultRows) {
 	            result.add(thisRow.get(ceHdrIndex));
 	        }

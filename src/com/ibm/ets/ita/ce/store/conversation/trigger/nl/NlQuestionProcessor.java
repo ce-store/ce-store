@@ -103,7 +103,6 @@ public class NlQuestionProcessor {
                 for (ExtractedItem item : wordItems) {
                     if (!items.contains(item)) {
                         if (word.correctionRequired()) {
-                            System.out.println("Correction required - adding " + item);
                             items.add(item);
                         }
                     }

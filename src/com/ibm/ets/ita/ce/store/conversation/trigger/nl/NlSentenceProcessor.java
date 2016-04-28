@@ -321,8 +321,6 @@ public class NlSentenceProcessor {
             }
         }
 
-        System.out.println("Potential values: " + potentialValues);
-
         if (potentialValues.size() == 0) {
             return null;
         } else if (potentialValues.size() == 1) {
@@ -348,13 +346,16 @@ public class NlSentenceProcessor {
                 nextWord = word.getNextProcessedWord();
             }
 
-            System.out.println("Adjacent word list: " + adjacentWordsList);
-
             // Check if any of the lists can be joined with common words
             for (int i = 0; i < adjacentWordsList.size() - 1; ++i) {
                 ArrayList<ProcessedWord> list = adjacentWordsList.get(i);
                 ArrayList<ProcessedWord> nextList = adjacentWordsList.get(i + 1);
                 ArrayList<ProcessedWord> standardWords = new ArrayList<ProcessedWord>();
+
+                // Ignore empty lists
+                if (list.size() == 0 && i > 0) {
+                    list = adjacentWordsList.get(i - 1);
+                }
 
                 if (list.size() > 0 && nextList != null) {
                     nextWord = list.get(list.size() - 1).getNextProcessedWord();
@@ -373,8 +374,6 @@ public class NlSentenceProcessor {
                     }
                 }
             }
-
-            System.out.println("Adjacent word list: " + adjacentWordsList);
 
             // Find longest list of adjacent words
             ArrayList<ProcessedWord> longestList = null;
@@ -402,10 +401,6 @@ public class NlSentenceProcessor {
     public ArrayList<NewMatchedTriple> matchTriples(ArrayList<ProcessedWord> words, NlAnswerGenerator ag) {
         ArrayList<NewMatchedTriple> matchedTriples = new ArrayList<NewMatchedTriple>();
 
-        // TODO Auto-generated method stub
-        System.out.println("\nMatch triples");
-        System.out.println("Words: " + words);
-
         ArrayList<ProcessedWord> properties = new ArrayList<ProcessedWord>();
         ArrayList<ProcessedWord> instances = new ArrayList<ProcessedWord>();
         ArrayList<ProcessedWord> concepts = new ArrayList<ProcessedWord>();
@@ -423,11 +418,6 @@ public class NlSentenceProcessor {
                 ungrounded.add(word);
             }
         }
-
-        System.out.println("\nProperties: " + properties);
-        System.out.println("Instances: " + instances);
-        System.out.println("Concepts: " + concepts);
-        System.out.println("Ungrounded: " + ungrounded);
 
         // Loop through properties and try and match instances to them
         for (ProcessedWord propertyWord : properties) {
@@ -486,12 +476,10 @@ public class NlSentenceProcessor {
 
                             if ((concept.equals(domain) || concept.hasDirectParent(domain)) && instance.isConcept(range)
                                     && appearsBefore(conceptWord, instanceWord, words)) {
-                                System.out.println("Add <concept:property:instance>");
                                 matchedTriples.add(new NewMatchedTriple(concept, property, instance, ac));
                             } else if (instance.isConcept(domain)
                                     && (concept.equals(range) || concept.hasDirectParent(range))
                                     && appearsBefore(instanceWord, conceptWord, words)) {
-                                System.out.println("Add <instance:property:concept>");
                                 matchedTriples.add(new NewMatchedTriple(instance, property, concept, ac));
                             }
                         }
@@ -506,16 +494,8 @@ public class NlSentenceProcessor {
                         if (instance != null) {
                             if (appearsBefore(instanceWord, propertyWord, words)) {
                                 if (instance.isConcept(domain)) {
-                                    System.out.println("\nMatch");
-                                    System.out.println(instance);
-                                    System.out.println(property);
-                                    System.out.println(range);
-
                                     if (range == null) {
                                         // Value property
-                                        System.out.println("\nValue");
-                                        System.out.println(ungrounded);
-
                                         String value = findValueFromUngroundedWords(ungrounded);
 
                                         if (value != null) {

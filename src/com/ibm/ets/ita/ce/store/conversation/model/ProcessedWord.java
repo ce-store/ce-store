@@ -456,11 +456,8 @@ public class ProcessedWord extends GeneralItem {
                     if (!correctionRequired && potentialCorrections.size() > 0) {
                         correctionRequired = true;
 
-                        System.out.println("\nCorrection required for " + getWordText());
-                        System.out.println(correctionRequired());
                         for (CeInstance potentialCorrection : potentialCorrections) {
                             addReferredMaybeInstance(potentialCorrection);
-                            System.out.println("  Add maybe: " + potentialCorrection);
                         }
                     }
                 }
@@ -470,7 +467,6 @@ public class ProcessedWord extends GeneralItem {
 
     private boolean overwriteReferences(ActionContext ac, CeInstance instance, CeProperty property, ProcessedWord nextWord) {
         CeInstance referringInstance = instance.getSingleInstanceFromPropertyNamed(ac, property.getPropertyName());
-        System.out.println("Property: " + property);
 
         if (referringInstance != null) {
             // remove current matches for this word
@@ -499,16 +495,9 @@ public class ProcessedWord extends GeneralItem {
             ProcessedWord nextWord = getNextProcessedWord();
 
             if (nextWord.isGroundedOnProperty()) {
-                System.out.println("\nCheck for possessive anaphors");
-                System.out.println(this);
-
                 TreeMap<String, CeProperty> referredRelations = nextWord.getReferredExactRelations();
                 TreeMap<String, CeProperty> matchingRelations = nextWord.getMatchingRelations();
                 CeInstance instance = referredExactInstances.firstEntry().getValue();
-
-                System.out.println("\nNext word: " + nextWord);
-                System.out.println("Referred relations: " + referredRelations);
-                System.out.println("Matching relations: " + matchingRelations);
 
                 ArrayList<CeProperty> propertiesToRemove = new ArrayList<CeProperty>();
 
@@ -1133,9 +1122,7 @@ public class ProcessedWord extends GeneralItem {
 
             String regex = matchingInstance.getSingleValueFromPropertyNamed(Property.REGEX.toString());
             if (regex != null && !regex.isEmpty()) {
-                if (sentence.matches(regex)) {
-                    System.out.println("Matches regex");
-                } else {
+                if (!sentence.matches(regex)) {
                     matchingInstance = null;
                 }
             }

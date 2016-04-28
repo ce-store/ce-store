@@ -48,11 +48,10 @@ public class NlProcessor extends GeneralProcessor {
     public void process(CeInstance cardInst) {
         String nlText = cardInst.getSingleValueFromPropertyNamed(Property.CONTENT.toString());
         String modNlText = appendDotIfNeeded(nlText);
-        System.out.println("\nText: " + modNlText);
 
         // Test for valid CE
         if (isValidCe(modNlText)) {
-            // Valid CE
+            // Valid CE - auto confirm
             cg.generateTellCard(cardInst, modNlText, th.getTriggerName(), th.getTellServiceName());
         } else {
             // NL
@@ -77,16 +76,14 @@ public class NlProcessor extends GeneralProcessor {
                     CeInstance agent = matchingAgents.get(0);
                     sendToAgent(agent, words, matchingKeywords, cardInst, nlText);
                 } else {
-                    // No matching agents, find command words with matching
-                    // templates
+                    // No matching agents, find command words with matching  dtemplates
                     ArrayList<CeInstance> matchingCommands = findMatchingCommands(words, nlText);
-                    System.out.println("matching commands: " + matchingCommands);
 
                     if (!matchingCommands.isEmpty()) {
                         // Matching commands
                         if (matchingCommands.size() > 1) {
-                            // TODO: Confirm which command with user
-
+                            // Confirm which command with user
+                            askToConfirmCommand(cardInst, matchingCommands);
                         } else {
                             // Execute command query
                             CeInstance command = matchingCommands.get(0);
@@ -104,7 +101,7 @@ public class NlProcessor extends GeneralProcessor {
                         } else if (convText.isQuestion()) {
                             // Respond to NL question - eventually nothing
                             // should reach this point if all question words are
-                            // rewritten as templated command words
+                            // rewritten as command words
                             ArrayList<FinalItem> finalItems = qp.getFinalItems(words);
                             ArrayList<FinalItem> optionItems = qp.getOptionItems(words);
                             ArrayList<FinalItem> maybeItems = qp.getMaybeItems(words);
@@ -141,6 +138,31 @@ public class NlProcessor extends GeneralProcessor {
         }
 
         appendToSb(sb, Reply.AGENTS.toString());
+
+        appendToSbNoNl(sb, Reply.BE_SPECIFIC.toString());
+        String humanAgent = findHumanAgent(cardInst);
+        cg.generateCard(Card.GIST.toString(), sb.toString(), th.getTriggerName(), humanAgent, cardInst.getInstanceName(),
+                null);
+    }
+
+    // Multiple commands have matched on sentence. Ask user to be more specific
+    private void askToConfirmCommand(CeInstance cardInst, ArrayList<CeInstance> matchingCommands) {
+        StringBuilder sb = new StringBuilder();
+        appendToSbNoNl(sb, Reply.STATEMENT_MATCHES_MULTIPLE.toString());
+
+        for (int i = 0; i < matchingCommands.size(); ++i) {
+            CeInstance agent = matchingCommands.get(i);
+
+            appendToSbNoNl(sb, agent.getInstanceName());
+
+            if (i < matchingCommands.size() - 2) {
+                appendToSbNoNl(sb, ",");
+            } else if (i < matchingCommands.size() - 1) {
+                appendToSbNoNl(sb, " and ");
+            }
+        }
+
+        appendToSb(sb, Reply.COMMANDS.toString());
 
         appendToSbNoNl(sb, Reply.BE_SPECIFIC.toString());
         String humanAgent = findHumanAgent(cardInst);
@@ -292,9 +314,6 @@ public class NlProcessor extends GeneralProcessor {
         String cardType = Card.GIST.toString();
         ArrayList<String> referencedInsts = null;
 
-        System.out.println("\nSize: " + triples.size());
-        System.out.println(triples);
-
         if (triples.size() == 1) {
             NewMatchedTriple triple = triples.get(0);
 
@@ -390,7 +409,6 @@ public class NlProcessor extends GeneralProcessor {
     // Extract referenced items to set 'about' property in card
     private void extractReferencedItems(ArrayList<FinalItem> allFinalItems, ArrayList<String> referencedItems,
             ArrayList<CeInstance> referencedInsts) {
-        System.out.println("\nExtract referenced items");
         for (FinalItem item : allFinalItems) {
             ArrayList<ExtractedItem> extractedItems = item.getExtractedItems();
 
@@ -579,18 +597,13 @@ public class NlProcessor extends GeneralProcessor {
                     completeQuery = completeQuery.replace("~ C2 ~",
                             matchingProperty.getRangeConcept().getConceptName());
                 }
-
-                System.out.println("Completed query:");
-                System.out.println(completeQuery);
             }
         }
 
         if (completeQuery != null) {
-            System.out.println("matching number: " + matchingNumber);
             // Execute query
             QueryHandler qh = new QueryHandler(this.ac);
             ContainerCeResult result = qh.executeUserSpecifiedCeQuery(completeQuery, null, null);
-            System.out.println("Result: " + result);
 
             if (reply != null && !reply.isEmpty()) {
                 completeReply = substituteItemsIntoTemplate(reply, matchingProperty, matchingInstance, matchingConcept, matchingNumber,
@@ -604,8 +617,6 @@ public class NlProcessor extends GeneralProcessor {
                             null, null);
                 }
             }
-
-            System.out.println(completeReply);
 
             completeReply = completeReply.replace("~ N ~", new Integer(result.size()).toString());
 
@@ -633,7 +644,6 @@ public class NlProcessor extends GeneralProcessor {
                     int maxRows = -1;
 
                     if (countSplits.length > 1) {
-                        System.out.println(countSplits);
                         maxRows = new Integer(countSplits[1]);
                     }
 
