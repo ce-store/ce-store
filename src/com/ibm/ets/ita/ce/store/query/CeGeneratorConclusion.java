@@ -142,7 +142,7 @@ public class CeGeneratorConclusion {
 				conclusionCe = ContainerCeResult.appendAdditionalSentence(conclusionCe, newCe);
 			}
 
-			replaceCeInResultRow(thisRow, conclusionCe);			
+			replaceCeInResultRow(thisRow, conclusionCe);
 		}
 	}
 
@@ -176,13 +176,15 @@ public class CeGeneratorConclusion {
 					countIndex = hdrIndex;
 				} else {
 					if (!thisHdr.equals(ContainerCeResult.HDR_CE)) {
-						String thisVal = thisRow.get(hdrIndex);
+						if (this.uniqueTgtVars.containsKey(thisHdr)) {
+							String thisVal = thisRow.get(hdrIndex);
 
-						if (sbMain.length() > 0) {
-							sbMain.append("|");
+							if (sbMain.length() > 0) {
+								sbMain.append("|");
+							}
+
+							sbMain.append(thisVal);
 						}
-
-						sbMain.append(thisVal);
 					}
 				}
 			}
