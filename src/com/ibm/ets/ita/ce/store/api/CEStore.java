@@ -271,6 +271,14 @@ public interface CEStore {
 	ArrayList<CeInstance> listShadowInstances();
 	
 	/**
+	 * Unreferenced instances are instances that are not referenced by any other,
+	 * instance
+	 *
+	 * @return list of unreferenced instances.
+	 */
+	ArrayList<CeInstance> listUnreferencedInstances(boolean pIgnoreMetaModel);
+
+	/**
 	 * Remove all the instances for the named concept from the store. 
 	 * 
 	 * @param pConceptName the concept for which instances will be removed. 

@@ -34,6 +34,27 @@ function RendererInstances() {
 		gEp.ui.pane.general.updateWith(html, true);
 	};
 
+	this.renderUnreferencedInstanceList = function(pInstList) {
+		var html = '';
+
+		if (!gCe.utils.isNullOrEmpty(pInstList)) {
+			var list = [];
+
+			for (var key in pInstList) {
+				var thisInst = pInstList[key];
+
+				list.push(gEp.ui.links.instanceDetails(thisInst._id));
+			}
+
+			html += 'The following ' + pInstList.length + ' unreferenced instances exist:';
+			html += gEp.ui.htmlUnorderedListFor(list);
+		} else {
+			html += 'There are no shadow instances';
+		}
+
+		gEp.ui.pane.general.updateWith(html, true);
+	};
+
 	this.renderDiverseConceptInstanceList = function(pDciList) {
 		var html = '';
 

@@ -676,12 +676,12 @@ function CeStoreApi(pCe) {
 	// common code invoked by sendAjaxRequest and sendAjaxFormPost.
 	function setUpAjaxRequest(pType, pUrl, pStdVals, pCallbackFunction, pUserParms) {
 		var xhr = new XMLHttpRequest();
-		
+
 		if ((pUserParms === undefined) || (pUserParms === null)) {
 			console.warn('pUserParms is missing in setUpAjaxRequest (' + pType + '), for url:' + pUrl);
 			pUserParms = {};
 		}
-		
+
 		pUserParms.accept = pStdVals.accept;
 
 		xhr.open(pType, pUrl, true);
@@ -706,7 +706,7 @@ function CeStoreApi(pCe) {
 
 				if (processedResponse != null) {
 					ajaxSuccess(processedResponse, pCallbackFunction, pUserParms);
-				}				
+				}
 			} else if (this.status === 404) {
 				ajaxError404(pUrl, pUserParms);
 			} else if (this.status === 405) {
@@ -717,7 +717,7 @@ function CeStoreApi(pCe) {
 				ajaxErrorOther(xhr.response, e, this.status, pUrl, pUserParms);
 			}
 		};
-		
+
 		return xhr;
 	}
 	
@@ -1469,6 +1469,7 @@ function CeStoreApiSpecial(pCe) {
 	var REST_MULTINSTS = 'instances-for-multiple-concepts';
 	var REST_SHADOW_CONS = 'shadow-concepts';
 	var REST_SHADOW_INSTS = 'shadow-instances';
+	var REST_UNREF_INSTS = 'unreferenced-instances';
 	var REST_DCIS = 'diverse-concept-instances';
 	var REST_SEARCH = 'keyword-search';
 	var PARM_CONS = 'conceptNames';
@@ -1540,6 +1541,18 @@ function CeStoreApiSpecial(pCe) {
 		var httpParms = ce.api.defaultHttpParms(pStdVals);
 
 		var restPart = REST_SPECIAL + '/' + REST_SHADOW_INSTS;
+		var targetUrl = ce.api.constructUrlFrom(pStdVals.address, pStdVals.store, restPart, httpParms);
+		ce.api.sendAjaxGet(targetUrl, pStdVals, pCallbackFunction, pUserParms);
+	};
+
+	this.listUnreferencedInstances = function(pStdVals, pCallbackFunction, pUserParms) {
+		var httpParms = ce.api.defaultHttpParms(pStdVals);
+
+		if (pUserParms.ignoreMetaModel) {
+			httpParms.ignoreMetaModel = true;
+		}
+
+		var restPart = REST_SPECIAL + '/' + REST_UNREF_INSTS;
 		var targetUrl = ce.api.constructUrlFrom(pStdVals.address, pStdVals.store, restPart, httpParms);
 		ce.api.sendAjaxGet(targetUrl, pStdVals, pCallbackFunction, pUserParms);
 	};

@@ -162,6 +162,12 @@ function HandlerInstances() {
 		ren.renderShadowInstanceList(instList, pUserParms);
 	};
 
+	this.processUnreferencedInstanceList = function(pResponse, pUserParms) {
+		var instList = gCe.utils.getStructuredResponseFrom(pResponse);
+
+		ren.renderUnreferencedInstanceList(instList, pUserParms);
+	};
+
 	this.processMultiConceptInstanceList = function(pResponse, pUserParms) {
 		var mcInstList = gCe.utils.getStructuredResponseFrom(pResponse);
 		var html = '';

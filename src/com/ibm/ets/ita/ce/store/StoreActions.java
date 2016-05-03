@@ -943,6 +943,12 @@ public class StoreActions implements CEStore {
 		return qh.listShadowInstances();
 	}
 
+	@Override
+	public ArrayList<CeInstance> listUnreferencedInstances(boolean pIgnoreMetaModel) {
+		QueryHandler qh = new QueryHandler(this.ac);
+		return qh.listUnreferencedInstances(pIgnoreMetaModel);
+	}
+
 	//@Override
 	public TreeMap<CeInstance, ArrayList<CeConcept>> listDiverseConceptInstances() {
 		QueryHandler qh = new QueryHandler(this.ac);

@@ -310,7 +310,11 @@ public class CeInstance extends CeModelEntity {
 		return this.referringPropertyInstances.length;
 	}
 
-  public CePropertyInstance getReferringPropertyInstanceNamed(String pName) {
+	public boolean hasReferringPropertyInstances() {
+		return this.referringPropertyInstances.length > 0;
+	}
+
+	public CePropertyInstance getReferringPropertyInstanceNamed(String pName) {
     CePropertyInstance result = null;
 
     for (CePropertyInstance thisPi : this.referringPropertyInstances) {

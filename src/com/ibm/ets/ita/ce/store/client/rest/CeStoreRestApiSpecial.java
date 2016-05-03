@@ -1,5 +1,7 @@
 package com.ibm.ets.ita.ce.store.client.rest;
 
+import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.urlDecode;
+
 /*******************************************************************************
  * (C) Copyright IBM Corporation  2011, 2015
  * All Rights Reserved
@@ -32,11 +34,13 @@ public class CeStoreRestApiSpecial extends CeStoreRestApi {
 	private static final String REST_SEARCH = "keyword-search";
 	private static final String REST_SHADCON = "shadow-concepts";
 	private static final String REST_SHADINST = "shadow-instances";
+	private static final String REST_UNREFINST = "unreferenced-instances";
 	private static final String REST_DIVCONINST = "diverse-concept-instances";
 	private static final String REST_MULTINSTS = "instances-for-multiple-concepts";
 
 	private static final String PARM_SEARCHTERMS = "keywords";
 	private static final String PARM_CONNAMES = "conceptNames";
+	private static final String PARM_IGMETMOD = "ignoreMetaModel";
 
 	private CeStoreRestApiSpecial(WebActionContext pWc, ArrayList<String> pRestParts, HttpServletRequest pRequest) {
 		super(pWc, pRestParts, pRequest);
@@ -84,6 +88,15 @@ public class CeStoreRestApiSpecial extends CeStoreRestApi {
 				handler.processShadowConceptRequest();
 			} else if (specialType.equals(REST_SHADINST)) {
 				handler.processShadowInstanceRequest();
+			} else if (specialType.equals(REST_UNREFINST)) {
+				String immParm = urlDecode(pWc, pRequest.getParameter(PARM_IGMETMOD));
+				boolean igMetaModel = false;
+
+				if (immParm.equals("true")) {
+					igMetaModel = true;
+				}
+
+				handler.processUnreferencedInstanceRequest(igMetaModel);
 			} else if (specialType.equals(REST_DIVCONINST)) {
 				handler.processDiverseConceptInstanceRequest();
 			} else if (specialType.equals(REST_MULTINSTS)) {
@@ -161,6 +174,18 @@ public class CeStoreRestApiSpecial extends CeStoreRestApi {
 		if (isGet()) {
 			//List shadow instances
 			handleListShadowInstances();
+		} else {
+			reportUnsupportedMethodError();
+		}
+
+		return false;
+	}
+
+	private boolean processUnreferencedInstanceRequest(boolean pIgnoreMetaModel) {
+		//URL = /special/unreferenced-instances
+		if (isGet()) {
+			//List unreferenced instances
+			handleListUnreferencedInstances(pIgnoreMetaModel);
 		} else {
 			reportUnsupportedMethodError();
 		}
@@ -329,6 +354,16 @@ public class CeStoreRestApiSpecial extends CeStoreRestApi {
 		}
 	}
 
+	private void handleListUnreferencedInstances(boolean pIgnoreMetaModel) {
+		if (isJsonRequest()) {
+			jsonListUnreferencedInstances(pIgnoreMetaModel);
+		} else if (isTextRequest()) {
+			textListUnreferencedInstances();
+		} else {
+			reportUnsupportedFormatError();
+		}
+	}
+
 	private void jsonListShadowInstances() {
 		StoreActions sa = StoreActions.createUsingDefaultConfig(this.wc);
 		ArrayList<CeInstance> shadowInstances = sa.listShadowInstances();
@@ -336,7 +371,18 @@ public class CeStoreRestApiSpecial extends CeStoreRestApi {
 		setInstanceListAsStructuredResult(shadowInstances);
 	}
 
+	private void jsonListUnreferencedInstances(boolean pIgnoreMetaModel) {
+		StoreActions sa = StoreActions.createUsingDefaultConfig(this.wc);
+		ArrayList<CeInstance> unrefInstances = sa.listUnreferencedInstances(pIgnoreMetaModel);
+
+		setInstanceListAsStructuredResult(unrefInstances);
+	}
+
 	private void textListShadowInstances() {
+		reportNotYetImplementedError();
+	}
+
+	private void textListUnreferencedInstances() {
 		reportNotYetImplementedError();
 	}
 

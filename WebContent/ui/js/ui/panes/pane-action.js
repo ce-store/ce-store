@@ -115,6 +115,8 @@ function PaneAction() {
 		list.push([ 'gEp.handler.actions.listAllRationale', 'Show all rationale' ]);
 		list.push([ 'gEp.handler.actions.listShadowConcepts', 'List shadow concepts' ]);
 		list.push([ 'gEp.handler.actions.listShadowInstances', 'List shadow instances' ]);
+		list.push([ 'gEp.handler.actions.listUnreferencedInstances', 'List unreferenced instances' ]);
+		list.push([ 'gEp.handler.actions.listUnreferencedInstancesNoMetaModel', 'List unreferenced non-metamodel instances' ]);
 		list.push([ 'gEp.handler.actions.listDiverseConceptInstances', 'List diverse concept instances' ]);
 
 		return list;

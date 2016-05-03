@@ -11,6 +11,7 @@ import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportWarning;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.TreeMap;
@@ -525,7 +526,7 @@ public class QueryHandler extends RequestHandler {
 
 	public ArrayList<CeInstance> listShadowInstances() {
 		ArrayList<CeInstance> result = new ArrayList<CeInstance>();
-		
+
 		for (CeConcept thisConcept : this.mb.listAllConcepts()) {
 			for (CeInstance thisInst : this.mb.retrieveAllInstancesForConcept(thisConcept)) {
 				if (thisInst.isShadowEntity()) {
@@ -537,7 +538,27 @@ public class QueryHandler extends RequestHandler {
 				}
 			}
 		}
-		
+
+		return result;
+	}
+
+	public ArrayList<CeInstance> listUnreferencedInstances(boolean pIgnoreMetaModel) {
+		HashSet<CeInstance> instSet = new HashSet<CeInstance>();
+		ArrayList<CeInstance> result = null;
+
+		for (CeConcept thisConcept : this.mb.listAllConcepts()) {
+			for (CeInstance thisInst : this.mb.retrieveAllInstancesForConcept(thisConcept)) {
+				if (!thisInst.hasReferringPropertyInstances()) {
+					if (!pIgnoreMetaModel || (!thisInst.isMetaModelInstance())) {
+						instSet.add(thisInst);
+					}
+				}
+			}
+		}
+
+		result = new ArrayList<CeInstance>(instSet);
+		Collections.sort(result);
+
 		return result;
 	}
 

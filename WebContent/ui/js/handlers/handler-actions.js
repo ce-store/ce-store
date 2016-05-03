@@ -225,6 +225,18 @@ function HandlerActions() {
 		gCe.api.special.listShadowInstances(gEp.stdHttpParms(), cbf, {});
 	};
 
+	this.listUnreferencedInstances = function() {
+		var cbf = function(pResponseObject, userParms) { gEp.handler.instances.processUnreferencedInstanceList(pResponseObject, userParms); };
+
+		gCe.api.special.listUnreferencedInstances(gEp.stdHttpParms(), cbf, {});
+	};
+
+	this.listUnreferencedInstancesNoMetaModel = function() {
+		var cbf = function(pResponseObject, userParms) { gEp.handler.instances.processUnreferencedInstanceList(pResponseObject, userParms); };
+
+		gCe.api.special.listUnreferencedInstances(gEp.stdHttpParms(), cbf, { ignoreMetaModel: true });
+	};
+
 	this.listDiverseConceptInstances = function() {
 		var cbf = function(pResponseObject, userParms) { gEp.handler.instances.processDiverseConceptInstanceList(pResponseObject, userParms); };
 
