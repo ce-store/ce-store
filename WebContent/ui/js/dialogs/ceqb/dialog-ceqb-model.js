@@ -405,10 +405,20 @@ function DialogCeqbModel() {
 	};
 
 	this.isVariableNameValid = function(pVarId) {
-		var regx = /^([a-zA-Z0-9_-]+)$/;
-		var trimmedVarId = gCe.utils.replaceAll(pVarId, '\'', '');
+		var result = false;
 
-		return regx.test(trimmedVarId); 
+		if (gCe.utils.startsWith(pVarId, '\'') || gCe.utils.startsWith(pVarId, '"')) {
+			//A quoted value - anything is allowed
+			result = true;
+		} else {
+			//A non-quoted value - must be checked
+			var regx = /^([a-zA-Z0-9_-]+)$/;
+			var trimmedVarId = gCe.utils.replaceAll(pVarId, '\'', '');
+
+			result = regx.test(trimmedVarId); 
+		}
+
+		return result;
 	};
 
 	this.isVariableNameStillAvailable = function(pVarId) {
