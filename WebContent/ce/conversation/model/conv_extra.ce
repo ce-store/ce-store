@@ -12,6 +12,13 @@ Note: Everything defined in here is defined elsewhere but we cannot rely on
 conversation user having loaded in those standard models, hence they are
 repeated here to guarantee that they can support the conversational concepts.
 
+conceptualise a ~ CE user ~ U that
+  has at most one value S as ~ screen name ~.
+
+there is a CE user named 'User_TestUser1' that
+  has 'Test User 1' as screen name.
+
+
 conceptualise a ~ spatial thing ~ S that
   has the value LAT as ~ latitude ~ and
   has the value LON as ~ longitude ~.
