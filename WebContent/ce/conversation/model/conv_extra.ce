@@ -1,0 +1,52 @@
+-- --------------------------------------------------------------------------
+-- (C) Copyright IBM Corporation  2011, 2016
+-- All Rights Reserved
+-- --------------------------------------------------------------------------
+
+Model:   Conversation extra
+Version: 1.0
+Date:    12th May 2016
+Author:  Dave Braines
+
+Note: Everything defined in here is defined elsewhere but we cannot rely on
+conversation user having loaded in those standard models, hence they are
+repeated here to guarantee that they can support the conversational concepts.
+
+conceptualise a ~ spatial thing ~ S that
+  has the value LAT as ~ latitude ~ and
+  has the value LON as ~ longitude ~.
+
+conceptualise a ~ temporal thing ~ T that
+  has the timestamp TS as ~ timestamp ~.
+
+conceptualise a ~ spatio-temporal thing ~ S that
+  is a spatial thing and
+  is a temporal thing.
+
+conceptualise a ~ CE agent ~ A that
+  has at most one value CN as ~ class name ~ and
+  has at most one value D as ~ debug ~ and
+  has at most one value G as ~ generate rationale ~ and
+  has at most one value DR as ~ double rationale sentences ~ and
+  has at most one value NC as ~ does not generate CE ~ and
+  has at most one value CS as ~ send CE to store ~ and
+  has at most one value CF as ~ save CE to file ~ and
+  has at most one value CI as ~ save CE individually ~ and
+  has at most one value RE as ~ restate existing sentences ~ and
+  has at most one value FN as ~ CE filename ~ and
+  has at most one value MS as ~ maximum CE sentences ~ and
+  has at most one value MI as ~ maximum iterations ~ and
+  has at most one value SC as ~ source concept ~ and
+  has at most one value SP as ~ source property ~ and
+  has at most one value SR as ~ source range ~ and
+  has at most one value TC as ~ target concept ~ and
+  has at most one value TP as ~ target property ~ and
+  has at most one value TR as ~ target range ~ and
+  has at most one value TS as ~ target source ~.
+
+conceptualise a ~ CE triggered event ~ T that
+  has at most one value NC as ~ class to notify ~ and
+  has the value CN as ~ concept name ~ and
+  has the value PN as ~ property name ~ and
+  has the value AQ as ~ affected query name ~ and
+  has the value AR as ~ affected rule name ~.
