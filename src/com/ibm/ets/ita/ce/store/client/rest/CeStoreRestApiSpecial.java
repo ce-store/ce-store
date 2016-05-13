@@ -39,6 +39,7 @@ public class CeStoreRestApiSpecial extends CeStoreRestApi {
 	private static final String REST_MULTINSTS = "instances-for-multiple-concepts";
 
 	private static final String PARM_SEARCHTERMS = "keywords";
+	private static final String PARM_CASESEN = "caseSensitive";
 	private static final String PARM_CONNAMES = "conceptNames";
 	private static final String PARM_IGMETMOD = "ignoreMetaModel";
 
@@ -297,12 +298,19 @@ public class CeStoreRestApiSpecial extends CeStoreRestApi {
 
 	private void handleKeywordSearch() {
 		String keyWords = getUrlParameterValueNamed(PARM_SEARCHTERMS);
+		boolean retInsts = getBooleanParameterNamed(PARM_RETINSTS);
+		String caseSenVal = getParameterNamed(PARM_CASESEN);
+		boolean caseSen = this.wc.getCeConfig().isCaseSensitive();
+
+		if (caseSenVal != null) {
+			caseSen = getBooleanParameterNamed(PARM_CASESEN);
+		}
 
 		if ((keyWords != null) && (!keyWords.isEmpty())) {
 			if (isJsonRequest()) {
-				jsonKeywordSearch(keyWords);
+				jsonKeywordSearch(keyWords, retInsts, caseSen);
 			} else if (isTextRequest()) {
-				textKeywordSearch(keyWords);
+				textKeywordSearch(keyWords, retInsts);
 			} else {
 				reportUnsupportedFormatError();
 			}
@@ -311,14 +319,14 @@ public class CeStoreRestApiSpecial extends CeStoreRestApi {
 		}
 	}
 
-	private void jsonKeywordSearch(String pKeywords) {
+	private void jsonKeywordSearch(String pKeywords, boolean pRetInsts, boolean pCaseSensitive) {
 		//TODO: Need to support concept and property names
 		StoreActions sa = StoreActions.createUsingDefaultConfig(this.wc);
-		ArrayList<ContainerSearchResult> resList = sa.keywordSearch(pKeywords, "", "");
-		setSearchListAsStructuredResult(resList, pKeywords, "", "");
+		ArrayList<ContainerSearchResult> resList = sa.keywordSearch(pKeywords, "", "", pCaseSensitive);
+		setSearchListAsStructuredResult(resList, pKeywords, "", "", pRetInsts);
 	}
 
-	private void textKeywordSearch(String pKeywords) {
+	private void textKeywordSearch(String pKeywords, boolean pRetInsts) {
 		//TODO: Implement this
 		reportNotYetImplementedError("keyword search using '" + pKeywords + "'");
 	}
@@ -459,8 +467,8 @@ public class CeStoreRestApiSpecial extends CeStoreRestApi {
 		}
 	}
 
-	private void setSearchListAsStructuredResult(ArrayList<ContainerSearchResult> pResults, String pSearchTerms, String pConceptName, String pPropertyName) {
-		getWebActionResponse().setStructuredResult(CeWebContainerResult.generateKeywordSearchResultFrom(this.wc, pResults, pSearchTerms, pConceptName, pPropertyName));		
+	private void setSearchListAsStructuredResult(ArrayList<ContainerSearchResult> pResults, String pSearchTerms, String pConceptName, String pPropertyName, boolean pRetInsts) {
+		getWebActionResponse().setStructuredResult(CeWebContainerResult.generateKeywordSearchResultFrom(this.wc, pResults, pSearchTerms, pConceptName, pPropertyName, pRetInsts));
 	}
 
 	private void setMultipleConceptInstanceListAsStructuredResult(TreeMap<String, ArrayList<CeInstance>> pList, int pNumSteps, boolean pRelInsts, boolean pRefInsts, String[] pLimRels) {

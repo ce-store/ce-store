@@ -784,9 +784,9 @@ public class StoreActions implements CEStore {
 	}
 
 	@Override
-	public ArrayList<ContainerSearchResult> keywordSearch(String pTerms, String pConceptName, String pPropertyName) {
+	public ArrayList<ContainerSearchResult> keywordSearch(String pTerms, String pConceptName, String pPropertyName, boolean pCaseSensitive) {
 		QueryHandler qh = new QueryHandler(this.ac);
-		return qh.keywordSearch(pTerms, pConceptName, pPropertyName);
+		return qh.keywordSearch(pTerms, pConceptName, pPropertyName, pCaseSensitive);
 	}
 
 	//@Override

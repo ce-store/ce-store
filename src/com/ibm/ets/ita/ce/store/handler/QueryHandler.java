@@ -769,18 +769,18 @@ public class QueryHandler extends RequestHandler {
 		return result;
 	}
 
-	public ArrayList<ContainerSearchResult> keywordSearch(String pTerms, String pConceptName, String pPropertyName) {
+	public ArrayList<ContainerSearchResult> keywordSearch(String pTerms, String pConceptName, String pPropertyName, boolean pCaseSensitive) {
 		ArrayList<ContainerSearchResult> searchArray = null;
 
-		searchArray = executeMemorySearch(pTerms, pConceptName, pPropertyName);
+		searchArray = executeMemorySearch(pTerms, pConceptName, pPropertyName, pCaseSensitive);
 
 		return searchArray;
 	}
-	
-	private ArrayList<ContainerSearchResult> executeMemorySearch(String pTerms, String pConceptName, String pPropertyName) {
+
+	private ArrayList<ContainerSearchResult> executeMemorySearch(String pTerms, String pConceptName, String pPropertyName, boolean pCaseSensitive) {
 		HashSet<ContainerSearchResult> result = new HashSet<ContainerSearchResult>();
 		ArrayList<CeInstance> instsToSearch = null;
-		
+
 		if ((pConceptName != null) && (!pConceptName.isEmpty())) {
 			CeConcept targetConcept = this.mb.getConceptNamed(this.ac, pConceptName);
 			if (targetConcept != null) {
@@ -792,55 +792,67 @@ public class QueryHandler extends RequestHandler {
 		} else {
 			instsToSearch = this.mb.retrieveAllInstances();
 		}
-		
+
 		if (!instsToSearch.isEmpty()) {
 			for (CeInstance thisInst : instsToSearch) {
 				if ((pPropertyName == null) || (pPropertyName.isEmpty())) {
 					for (CePropertyInstance thisPi : thisInst.getPropertyInstances()) {
-						searchPropertyInstanceFor(thisInst, thisPi, pTerms, result);
+						searchPropertyInstanceFor(thisInst, thisPi, pTerms, result, pCaseSensitive);
 					}
 				} else {
 					CePropertyInstance tgtPi = thisInst.getPropertyInstanceNamed(pPropertyName);
-					
+
 					if (tgtPi != null) {
-						searchPropertyInstanceFor(thisInst, tgtPi, pTerms, result);
+						searchPropertyInstanceFor(thisInst, tgtPi, pTerms, result, pCaseSensitive);
 					}
 				}
 			}
 		} else {
 			reportWarning("No searchable instances were located (no instances with searchable properties defined)", this.ac);
 		}
-		
+
 		ArrayList<ContainerSearchResult>resArray = new ArrayList<ContainerSearchResult>();
-		
+
 		resArray.addAll(result);
-		
+
 		return resArray;
 	}
-	
-	private static void searchPropertyInstanceFor(CeInstance pInst, CePropertyInstance pPi, String pTerms, HashSet<ContainerSearchResult> pResult) {
+
+	private static void searchPropertyInstanceFor(CeInstance pInst, CePropertyInstance pPi, String pTerms, HashSet<ContainerSearchResult> pResult, boolean pCaseSensitive) {
 		HashSet<String> uvList = pPi.getValueList();
+
 		for (String thisVal : uvList) {
-			if (thisVal.contains(pTerms)) {
+			String srcVal = null;
+			String tgtVal = null;
+
+			if (pCaseSensitive) {
+				srcVal = thisVal;
+				tgtVal = pTerms;
+			} else {
+				srcVal = thisVal.toLowerCase();
+				tgtVal = pTerms.toLowerCase();
+			}
+
+			if (srcVal.contains(tgtVal)) {
 				for (CeConcept instDirConcept : pInst.getDirectConcepts()) {
 					ContainerSearchResult csr = new ContainerSearchResult();
 					csr.setConceptName(instDirConcept.getConceptName());
 					csr.setInstanceName(pInst.getInstanceName());
 					csr.setPropertyName(pPi.getPropertyName());
 					csr.setPropertyValue(thisVal);
-					
+
 					if (pPi.getRelatedProperty().isDatatypeProperty()) {
 						csr.setPropertyType("value");
 					} else {
 						csr.setPropertyType("instance");
 					}
-						
+
 					pResult.add(csr);
 				}
 			}
 		}
 	}
-	
+
 	public ArrayList<ContainerCommonValues> listCommonPropertyValues(CeProperty pProp) {
 		ArrayList<ContainerCommonValues> commonVals = new ArrayList<ContainerCommonValues>();
 		

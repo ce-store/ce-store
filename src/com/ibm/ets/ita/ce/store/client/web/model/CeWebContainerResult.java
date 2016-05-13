@@ -24,6 +24,7 @@ public class CeWebContainerResult extends CeWebObject {
 	//JSON Response Keys
 	private static final String KEY_HEADERS = "headers";
 	private static final String KEY_RESULTS = "results";
+	private static final String KEY_ROWS = "rows";
 	private static final String KEY_INSTANCES = "instances";
 	private static final String KEY_TYPES = "types";
 
@@ -147,44 +148,66 @@ public class CeWebContainerResult extends CeWebObject {
 	//		KEY_PROP_NAME
 	//		KEY_PROP_VAL
 	//		KEY_PROP_TYPE
-	public static CeStoreJsonObject generateKeywordSearchResultFrom(ActionContext pAc, ArrayList<ContainerSearchResult> pResults, String pSearchTerms, String pConceptName, String pPropertyName) {
+	public static CeStoreJsonObject generateKeywordSearchResultFrom(ActionContext pAc, ArrayList<ContainerSearchResult> pResults, String pSearchTerms, String pConceptName, String pPropertyName, boolean pRetInsts) {
 		CeStoreJsonObject jObj = new CeStoreJsonObject();
-		
+
 		if (pResults != null) {
 			if (!pResults.isEmpty()) {
+				CeStoreJsonObject jObjResult = processKeywordSearchRows(pAc, pResults, pRetInsts);
+
 				putStringValueIn(jObj, KEY_SEARCHTERMS, pSearchTerms);
 				putStringValueIn(jObj, KEY_SEARCHCON, pConceptName);
 				putStringValueIn(jObj, KEY_SEARCHPROP, pPropertyName);
-				putArrayValueIn(jObj, KEY_SEARCHRESULTS, processKeywordSearchRows(pAc, pResults));
+				putArrayValueIn(jObj, KEY_SEARCHRESULTS, (CeStoreJsonArray)jObjResult.get(pAc, KEY_ROWS));
+
+				if (pRetInsts) {
+					putObjectValueIn(jObj, KEY_INSTANCES, (CeStoreJsonObject)jObjResult.get(pAc, KEY_INSTANCES));
+				}
+
 			} else {
 				reportEmptyKeywordSearchResult(pAc, pSearchTerms, pConceptName, pPropertyName);
 			}
 		} else {
 			reportError("Unexpected null keyword search result encountered during details JSON rendering", pAc);
 		}
-		
+
 		return jObj;
 	}
 
-	private static CeStoreJsonArray processKeywordSearchRows(ActionContext pAc, ArrayList<ContainerSearchResult> pResults) {
+	private static CeStoreJsonObject processKeywordSearchRows(ActionContext pAc, ArrayList<ContainerSearchResult> pResults, boolean pRetInsts) {
+		CeStoreJsonObject jObjMain = new CeStoreJsonObject();
+		CeStoreJsonObject jObjInsts = new CeStoreJsonObject();
 		CeStoreJsonArray jArr = new CeStoreJsonArray();
-		
+
 		for (ContainerSearchResult thisRes : pResults) {
-			CeStoreJsonObject jObj = new CeStoreJsonObject();
-			
+			CeStoreJsonObject jObjRow = new CeStoreJsonObject();
 			CeInstance resInst = pAc.getModelBuilder().getInstanceNamed(pAc, thisRes.getInstanceName());
-			
-			putStringValueIn(jObj, KEY_DOMAIN_NAME, thisRes.getConceptName());
-			putStringValueIn(jObj, KEY_INSTANCE_NAME, thisRes.getInstanceName());
-			putStringValueIn(jObj, KEY_INSTANCE_LABEL, resInst.calculateLabel(pAc));
-			putStringValueIn(jObj, KEY_PROP_NAME, thisRes.getPropertyName());
-			putStringValueIn(jObj, KEY_PROP_VAL, thisRes.getPropertyValue());
-			putStringValueIn(jObj, KEY_PROP_TYPE, thisRes.getPropertyType());
-			
-			jArr.add(jObj);
+
+			putStringValueIn(jObjRow, KEY_DOMAIN_NAME, thisRes.getConceptName());
+			putStringValueIn(jObjRow, KEY_INSTANCE_NAME, thisRes.getInstanceName());
+			putStringValueIn(jObjRow, KEY_INSTANCE_LABEL, resInst.calculateLabel(pAc));
+			putStringValueIn(jObjRow, KEY_PROP_NAME, thisRes.getPropertyName());
+			putStringValueIn(jObjRow, KEY_PROP_VAL, thisRes.getPropertyValue());
+			putStringValueIn(jObjRow, KEY_PROP_TYPE, thisRes.getPropertyType());
+
+			if (pRetInsts) {
+				CeInstance thisInst = pAc.getModelBuilder().getInstanceNamed(pAc, thisRes.getInstanceName());
+
+				if (thisInst != null) {
+					CeWebInstance cwi = new CeWebInstance(pAc);
+
+					//TODO: Get the values for these defaulted parameters from command line parameters
+					jObjInsts.put(thisInst.getInstanceName(), cwi.generateSummaryDetailsJsonFor(thisInst, 0, false, false, null, false));
+				}
+			}
+
+			jArr.add(jObjRow);
 		}
-		
-		return jArr;
+
+		jObjMain.put(KEY_ROWS, jArr);
+		jObjMain.put(KEY_INSTANCES, jObjInsts);
+
+		return jObjMain;
 	}
 
 	private static void reportEmptyKeywordSearchResult(ActionContext pAc, String pSearchTerms, String pConName, String pPropName) {
