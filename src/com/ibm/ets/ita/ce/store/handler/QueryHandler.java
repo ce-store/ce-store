@@ -769,46 +769,49 @@ public class QueryHandler extends RequestHandler {
 		return result;
 	}
 
-	public ArrayList<ContainerSearchResult> keywordSearch(String pTerms, String pConceptName, String pPropertyName, boolean pCaseSensitive) {
+	public ArrayList<ContainerSearchResult> keywordSearch(String pTerms, String[] pConceptNames, String[] pPropertyNames, boolean pCaseSensitive) {
 		ArrayList<ContainerSearchResult> searchArray = null;
 
-		searchArray = executeMemorySearch(pTerms, pConceptName, pPropertyName, pCaseSensitive);
+		searchArray = executeMemorySearch(pTerms, pConceptNames, pPropertyNames, pCaseSensitive);
 
 		return searchArray;
 	}
 
-	private ArrayList<ContainerSearchResult> executeMemorySearch(String pTerms, String pConceptName, String pPropertyName, boolean pCaseSensitive) {
+	private ArrayList<ContainerSearchResult> executeMemorySearch(String pTerms, String[] pConceptNames, String[] pPropertyNames, boolean pCaseSensitive) {
 		HashSet<ContainerSearchResult> result = new HashSet<ContainerSearchResult>();
 		ArrayList<CeInstance> instsToSearch = null;
 
-		if ((pConceptName != null) && (!pConceptName.isEmpty())) {
-			CeConcept targetConcept = this.mb.getConceptNamed(this.ac, pConceptName);
-			if (targetConcept != null) {
-				instsToSearch = this.mb.retrieveAllInstancesForConcept(targetConcept);
-			} else {
-				reportWarning("Specified concept '" + pConceptName + "' could not be located, so search was carried out against all concepts", this.ac);
-				instsToSearch = this.mb.retrieveAllInstances();
-			}
-		} else {
+		if (pConceptNames == null|| pConceptNames.length == 0) {
 			instsToSearch = this.mb.retrieveAllInstances();
+		} else {
+			for (String conName : pConceptNames) {
+				CeConcept targetConcept = this.mb.getConceptNamed(this.ac, conName);
+
+				if (targetConcept != null) {
+					instsToSearch = this.mb.retrieveAllInstancesForConcept(targetConcept);
+				} else {
+					reportWarning("Specified concept '" + conName + "' could not be located when searching", this.ac);
+				}
+			}
+			
 		}
 
-		if (!instsToSearch.isEmpty()) {
+		if ((instsToSearch != null) && (!instsToSearch.isEmpty())) {
 			for (CeInstance thisInst : instsToSearch) {
-				if ((pPropertyName == null) || (pPropertyName.isEmpty())) {
+				if ((pPropertyNames == null) || (pPropertyNames.length == 0)) {
 					for (CePropertyInstance thisPi : thisInst.getPropertyInstances()) {
 						searchPropertyInstanceFor(thisInst, thisPi, pTerms, result, pCaseSensitive);
 					}
 				} else {
-					CePropertyInstance tgtPi = thisInst.getPropertyInstanceNamed(pPropertyName);
+					for (String propName : pPropertyNames) {
+						CePropertyInstance tgtPi = thisInst.getPropertyInstanceNamed(propName);
 
-					if (tgtPi != null) {
-						searchPropertyInstanceFor(thisInst, tgtPi, pTerms, result, pCaseSensitive);
+						if (tgtPi != null) {
+							searchPropertyInstanceFor(thisInst, tgtPi, pTerms, result, pCaseSensitive);
+						}
 					}
 				}
 			}
-		} else {
-			reportWarning("No searchable instances were located (no instances with searchable properties defined)", this.ac);
 		}
 
 		ArrayList<ContainerSearchResult>resArray = new ArrayList<ContainerSearchResult>();

@@ -716,12 +716,12 @@ public interface CEStore {
 	 * search terms. Returns an object containing the matches in terms of the concept/instance/property/value. 
 	 * 
 	 * @param pTerms the strings to search for
-	 * @param pConceptName the name of the concept to search. If null all concepts are searched. 
-	 * @param pPropertyName the name of the property to search. If null all properties are searched. 
+	 * @param pConceptNames the names of the concepts to search. If null all concepts are searched. 
+	 * @param pPropertyNames the names of the properties to search. If null all properties are searched. 
 	 * @param pCaseSensitive whether the search is case sensitive or not
 	 * @return Object containing the matches in terms of the concept/instance/property/value. 
 	 */
-	ArrayList<ContainerSearchResult> keywordSearch(String pTerms, String pConceptName, String pPropertyName, boolean pCaseSensitive);
+	ArrayList<ContainerSearchResult> keywordSearch(String pTerms, String[] pConceptNames, String[] pPropertyNames, boolean pCaseSensitive);
 	
 	/**
 	 * Get a single Unique Identifier 

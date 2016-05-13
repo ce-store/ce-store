@@ -330,6 +330,17 @@ public abstract class CeStoreRestApi extends ApiHandler {
 		return result;
 	}
 
+	protected String[] getListParameterNamed(String pParmName) {
+		String rawVal = getParameterNamed(pParmName);
+		String[] listVals = null;
+
+		if (rawVal != null) {
+			listVals = rawVal.split(",");
+		}
+
+		return listVals;
+	}
+
 	protected boolean getBooleanParameterNamed(String pParmName) {
 		String parmVal = getParameterNamed(pParmName);
 		return new Boolean(parmVal).booleanValue();
