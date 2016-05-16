@@ -119,6 +119,17 @@ function CeStoreUtils(pMsg) {
 		return result;
 	};
 
+	this.replaceAllCaseInsensitive = function(pOrig, pSource, pTarget) {
+		//Replace all occurrences of pSource with pTarget in pOrig, returning the updated result
+		var result = pOrig;
+
+		if (pOrig !== null) {
+			result = pOrig.replace(new RegExp(pSource, 'ig'), pTarget);
+		}
+
+		return result;
+	};
+
 	this.isArray = function(pVal) {
 		return Object.prototype.toString.call(pVal) === '[object Array]';
 	};

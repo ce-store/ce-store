@@ -769,15 +769,15 @@ public class QueryHandler extends RequestHandler {
 		return result;
 	}
 
-	public ArrayList<ContainerSearchResult> keywordSearch(String pTerms, String[] pConceptNames, String[] pPropertyNames, boolean pCaseSensitive) {
+	public ArrayList<ContainerSearchResult> keywordSearch(ArrayList<String> pSearchTerms, String[] pConceptNames, String[] pPropertyNames, boolean pCaseSensitive) {
 		ArrayList<ContainerSearchResult> searchArray = null;
 
-		searchArray = executeMemorySearch(pTerms, pConceptNames, pPropertyNames, pCaseSensitive);
+		searchArray = executeMemorySearch(pSearchTerms, pConceptNames, pPropertyNames, pCaseSensitive);
 
 		return searchArray;
 	}
 
-	private ArrayList<ContainerSearchResult> executeMemorySearch(String pTerms, String[] pConceptNames, String[] pPropertyNames, boolean pCaseSensitive) {
+	private ArrayList<ContainerSearchResult> executeMemorySearch(ArrayList<String> pSearchTerms, String[] pConceptNames, String[] pPropertyNames, boolean pCaseSensitive) {
 		HashSet<ContainerSearchResult> result = new HashSet<ContainerSearchResult>();
 		ArrayList<CeInstance> instsToSearch = null;
 
@@ -793,27 +793,29 @@ public class QueryHandler extends RequestHandler {
 					reportWarning("Specified concept '" + conName + "' could not be located when searching", this.ac);
 				}
 			}
-			
+
 		}
 
-		if ((instsToSearch != null) && (!instsToSearch.isEmpty())) {
-			for (CeInstance thisInst : instsToSearch) {
-				if ((pPropertyNames == null) || (pPropertyNames.length == 0)) {
-					for (CePropertyInstance thisPi : thisInst.getPropertyInstances()) {
-						searchPropertyInstanceFor(thisInst, thisPi, pTerms, result, pCaseSensitive);
-					}
-				} else {
-					for (String propName : pPropertyNames) {
-						CePropertyInstance tgtPi = thisInst.getPropertyInstanceNamed(propName);
+		for (String thisTerm : pSearchTerms) {
+			if ((instsToSearch != null) && (!instsToSearch.isEmpty())) {
+				for (CeInstance thisInst : instsToSearch) {
+					if ((pPropertyNames == null) || (pPropertyNames.length == 0)) {
+						for (CePropertyInstance thisPi : thisInst.getPropertyInstances()) {
+							searchPropertyInstanceFor(thisInst, thisPi, thisTerm, result, pCaseSensitive);
+						}
+					} else {
+						for (String propName : pPropertyNames) {
+							CePropertyInstance tgtPi = thisInst.getPropertyInstanceNamed(propName);
 
-						if (tgtPi != null) {
-							searchPropertyInstanceFor(thisInst, tgtPi, pTerms, result, pCaseSensitive);
+							if (tgtPi != null) {
+								searchPropertyInstanceFor(thisInst, tgtPi, thisTerm, result, pCaseSensitive);
+							}
 						}
 					}
 				}
 			}
-		}
 
+		}
 		ArrayList<ContainerSearchResult>resArray = new ArrayList<ContainerSearchResult>();
 
 		resArray.addAll(result);

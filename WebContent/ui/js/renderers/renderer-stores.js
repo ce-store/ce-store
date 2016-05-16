@@ -47,14 +47,14 @@ function RendererStores() {
 		if (!gCe.utils.isNullOrEmpty(pRows)) {
 			var html = '';
 
-			html += 'There are ' + pRows.length + ' matches for the search term \'' + pTerms + '\':';
+			html += 'There are ' + pRows.length + ' matches for the search \'' + pTerms + '\':';
 			html += '<br/><br/>';
 
 			html += gEp.ui.htmlTableFor(pHdrs, pRows, gEp.ui.DEFAULT_STYLE, null);
-			
+
 			gEp.ui.pane.general.updateWith(html, true);
 		} else {
-			gCe.msg.error('No occurrences of the term \'' + pTerms + '\' were found.');
+			gCe.msg.error('No occurrences matching the search \'' + pTerms + '\' were found.');
 		}
 	};
 

@@ -99,3 +99,7 @@ canvas {
 	background-color: beige;
 	border: 1px solid black;
 }
+
+span.searchterm {
+ background-color: lightgreen;
+}

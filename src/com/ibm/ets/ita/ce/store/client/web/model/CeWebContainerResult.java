@@ -11,6 +11,7 @@ import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
 import java.util.ArrayList;
 
 import com.ibm.ets.ita.ce.store.ActionContext;
+import com.ibm.ets.ita.ce.store.client.rest.CeStoreRestApiSpecial;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonArray;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
@@ -148,14 +149,14 @@ public class CeWebContainerResult extends CeWebObject {
 	//		KEY_PROP_NAME
 	//		KEY_PROP_VAL
 	//		KEY_PROP_TYPE
-	public static CeStoreJsonObject generateKeywordSearchResultFrom(ActionContext pAc, ArrayList<ContainerSearchResult> pResults, String pSearchTerms, String[] pConceptNames, String[] pPropertyNames, boolean pRetInsts, int pNumSteps, boolean pRelInsts, boolean pRefInsts, String[] pLimRels, boolean pSuppPropTypes) {
+	public static CeStoreJsonObject generateKeywordSearchResultFrom(ActionContext pAc, ArrayList<ContainerSearchResult> pResults, ArrayList<String> pSearchTerms, String[] pConceptNames, String[] pPropertyNames, boolean pRetInsts, int pNumSteps, boolean pRelInsts, boolean pRefInsts, String[] pLimRels, boolean pSuppPropTypes) {
 		CeStoreJsonObject jObj = new CeStoreJsonObject();
 
 		if (pResults != null) {
 			if (!pResults.isEmpty()) {
 				CeStoreJsonObject jObjResult = processKeywordSearchRows(pAc, pResults, pRetInsts, pNumSteps, pRelInsts, pRefInsts, pLimRels, pSuppPropTypes);
 
-				putStringValueIn(jObj, KEY_SEARCHTERMS, pSearchTerms);
+				putAllStringValuesIn(jObj, KEY_SEARCHTERMS, pSearchTerms);
 				putAllStringValuesIn(jObj, KEY_SEARCHCONS, pConceptNames);
 				putAllStringValuesIn(jObj, KEY_SEARCHPROPS, pPropertyNames);
 				putArrayValueIn(jObj, KEY_SEARCHRESULTS, (CeStoreJsonArray)jObjResult.get(pAc, KEY_ROWS));
@@ -210,7 +211,7 @@ public class CeWebContainerResult extends CeWebObject {
 		return jObjMain;
 	}
 
-	private static void reportEmptyKeywordSearchResult(ActionContext pAc, String pSearchTerms, String[] pConNames, String[] pPropNames) {
+	private static void reportEmptyKeywordSearchResult(ActionContext pAc, ArrayList<String> pSearchTerms, String[] pConNames, String[] pPropNames) {
 		String extraBit = "";
 		
 		if ((pConNames != null) && (pConNames.length == 0)) {
@@ -237,9 +238,9 @@ public class CeWebContainerResult extends CeWebObject {
 			extraBit = " and property named " + propNameList;
 		}
 
-		pAc.getActionResponse().addLineToMessage("Nothing matched your search term of '" + pSearchTerms + "'" + extraBit);
+		pAc.getActionResponse().addLineToMessage("Nothing matched your search term of '" + CeStoreRestApiSpecial.generateSearchTermSummaryFrom(pSearchTerms) + "'" + extraBit);
 	}
-	
+
 	//Common Values response:
 	//	[]
 	//		KEY_PROP_VAL

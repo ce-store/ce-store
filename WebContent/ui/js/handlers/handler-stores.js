@@ -116,32 +116,39 @@ function HandlerStores() {
 
 		var hdrs = [ '#', 'Instance', 'Property', 'Value' ];
 		var rows = [];
-		var rawTerms = pUserParms.terms;
+		var rawTerms = null;
 		var highlightedTerms = '<font style="background-color:lightgreen">' + rawTerms + '</font>';
-		
+
 		if (!gCe.utils.isNullOrEmpty(sr) && !gCe.utils.isNullOrEmpty(sr.search_results)) {
 			var ctr = 0;
+			rawTerms = sr.search_terms;
+
 			for (var idx in sr.search_results) {
 				var thisRow = sr.search_results[idx];
-				
+
 				var instLink = gEp.ui.links.instanceDetails(thisRow.instance_name, thisRow.instance_label);
 				var conLink = gEp.ui.links.conceptDetails(thisRow.domain_name);
 				var instDetails = instLink + '<br>(' + conLink + ')';
-				
+
 				var propDetails = gEp.ui.links.propertyDetails(thisRow.property_name);
 				var valDetails = gCe.utils.replaceAll(thisRow.property_value, rawTerms, highlightedTerms);
-				
+
+				for (var key in rawTerms) {
+					var thisTerm = rawTerms[key];
+					valDetails = gCe.utils.replaceAllCaseInsensitive(valDetails, thisTerm, '<span class="searchterm">' + thisTerm + '</span>')
+				}
+
 				if (thisRow.property_type !== 'value') {
 					var linkDetails = gEp.ui.links.instanceDetails(thisRow.property_value, 'link');
 					valDetails += ' [' + linkDetails + ']';
 				}
-				
+
 				var thisResult = [ ++ctr, instDetails, propDetails, valDetails ];
 
 				rows.push(thisResult);
 			}
 		}
-		
+
 		ren.renderSearchResult(hdrs, rows, rawTerms);
 	};
 

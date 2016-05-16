@@ -10,6 +10,8 @@ import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.urlDecode;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -299,7 +301,7 @@ public class CeStoreRestApiSpecial extends CeStoreRestApi {
 	}
 
 	private void handleKeywordSearch() {
-		String keyWords = getUrlParameterValueNamed(PARM_SEARCHTERMS);
+		String rawSearchTerms = getUrlParameterValueNamed(PARM_SEARCHTERMS);
 		String[] conNames = getListParameterNamed(PARM_RESTRICTCONNAMES);
 		String[] propNames = getListParameterNamed(PARM_RESTRICTPROPNAMES);
 		int numSteps = getNumericUrlParameterValueNamed(CeStoreRestApiInstance.PARM_STEPS, -1);
@@ -311,11 +313,13 @@ public class CeStoreRestApiSpecial extends CeStoreRestApi {
 		boolean retInsts = getBooleanParameterNamed(PARM_RETINSTS);
 		boolean caseSen = getBooleanParameterNamed(PARM_CASESEN, this.wc.getCeConfig().isCaseSensitive());
 
-		if ((keyWords != null) && (!keyWords.isEmpty())) {
+		ArrayList<String> searchTerms = extractKeywordListFrom(rawSearchTerms);
+
+		if (!searchTerms.isEmpty()) {
 			if (isJsonRequest()) {
-				jsonKeywordSearch(keyWords, conNames, propNames, retInsts, caseSen, numSteps, relInsts, refInsts, limRels, suppPropTypes);
+				jsonKeywordSearch(searchTerms, conNames, propNames, retInsts, caseSen, numSteps, relInsts, refInsts, limRels, suppPropTypes);
 			} else if (isTextRequest()) {
-				textKeywordSearch(keyWords, conNames, propNames, retInsts, caseSen);
+				textKeywordSearch(searchTerms, conNames, propNames, retInsts, caseSen);
 			} else {
 				reportUnsupportedFormatError();
 			}
@@ -324,15 +328,43 @@ public class CeStoreRestApiSpecial extends CeStoreRestApi {
 		}
 	}
 
-	private void jsonKeywordSearch(String pKeywords, String[] pConNames, String[] pPropNames, boolean pRetInsts, boolean pCaseSensitive, int pNumSteps, boolean pRelInsts, boolean pRefInsts, String[] pLimRels, boolean pSuppPropTypes) {
+	private void jsonKeywordSearch(ArrayList<String> pSearchTerms, String[] pConNames, String[] pPropNames, boolean pRetInsts, boolean pCaseSensitive, int pNumSteps, boolean pRelInsts, boolean pRefInsts, String[] pLimRels, boolean pSuppPropTypes) {
 		StoreActions sa = StoreActions.createUsingDefaultConfig(this.wc);
-		ArrayList<ContainerSearchResult> resList = sa.keywordSearch(pKeywords, pConNames, pPropNames, pCaseSensitive);
-		setSearchListAsStructuredResult(resList, pKeywords, pConNames, pPropNames, pRetInsts, pNumSteps, pRelInsts, pRefInsts, pLimRels, pSuppPropTypes);
+		ArrayList<ContainerSearchResult> resList = sa.keywordSearch(pSearchTerms, pConNames, pPropNames, pCaseSensitive);
+		setSearchListAsStructuredResult(resList, pSearchTerms, pConNames, pPropNames, pRetInsts, pNumSteps, pRelInsts, pRefInsts, pLimRels, pSuppPropTypes);
 	}
 
-	private void textKeywordSearch(String pKeywords, String[] pConNames, String[] pPropNames, boolean pRetInsts, boolean pCaseSen) {
+	private void textKeywordSearch(ArrayList<String> pSearchTerms, String[] pConNames, String[] pPropNames, boolean pRetInsts, boolean pCaseSen) {
 		//TODO: Implement this
-		reportNotYetImplementedError("keyword search using '" + pKeywords + "'");
+		String searchTermSummary = generateSearchTermSummaryFrom(pSearchTerms);
+		reportNotYetImplementedError("keyword search using '" + searchTermSummary + "'");
+	}
+
+	private ArrayList<String> extractKeywordListFrom(String pSearchTerms) {
+		ArrayList<String> result = new ArrayList<String>();
+
+		Matcher m = Pattern.compile("([^\"]\\S*|\".+?\")\\s*").matcher(pSearchTerms);
+		while (m.find()) {
+			result.add(m.group(1).replace("\"", ""));
+		}
+
+		return result;
+	}
+
+	public static String generateSearchTermSummaryFrom(ArrayList<String> pSearchTerms) {
+		String result = "";
+		String sep = "";
+
+		for (String thisTerm : pSearchTerms) {
+			if (thisTerm.contains(" ")) {
+				result += sep + "\"" + thisTerm + "\"";
+			} else {
+				result += sep + thisTerm;
+			}
+
+			sep = ", ";
+		}
+		return result;
 	}
 
 	private void handleListShadowConcepts() {
@@ -466,7 +498,7 @@ public class CeStoreRestApiSpecial extends CeStoreRestApi {
 		}
 	}
 
-	private void setSearchListAsStructuredResult(ArrayList<ContainerSearchResult> pResults, String pSearchTerms, String[] pConceptNames, String[] pPropertyNames, boolean pRetInsts, int pNumSteps, boolean pRelInsts, boolean pRefInsts, String []pLimRels, boolean pSuppPropTypes) {
+	private void setSearchListAsStructuredResult(ArrayList<ContainerSearchResult> pResults, ArrayList<String> pSearchTerms, String[] pConceptNames, String[] pPropertyNames, boolean pRetInsts, int pNumSteps, boolean pRelInsts, boolean pRefInsts, String []pLimRels, boolean pSuppPropTypes) {
 		getWebActionResponse().setStructuredResult(CeWebContainerResult.generateKeywordSearchResultFrom(this.wc, pResults, pSearchTerms, pConceptNames, pPropertyNames, pRetInsts, pNumSteps, pRelInsts, pRefInsts, pLimRels, pSuppPropTypes));
 	}
 
