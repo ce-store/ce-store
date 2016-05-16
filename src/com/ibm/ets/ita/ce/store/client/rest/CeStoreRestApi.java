@@ -603,12 +603,7 @@ public abstract class CeStoreRestApi extends ApiHandler {
 		boolean relInsts = getBooleanParameterNamed(CeStoreRestApiInstance.PARM_RELINSTS, true);
 		boolean refInsts = getBooleanParameterNamed(CeStoreRestApiInstance.PARM_REFINSTS, true);
 		boolean suppPropTypes = getBooleanParameterNamed(CeStoreRestApiInstance.PARM_SPTS, false);
-		String limRelsText = getParameterNamed(CeStoreRestApiInstance.PARM_LIMRELS);
-		String[] limRels = null;
-		
-		if (limRelsText != null) {
-			limRels = limRelsText.split(",");
-		}
+		String[] limRels = getListParameterNamed(CeStoreRestApiInstance.PARM_LIMRELS);
 
 		getWebActionResponse().setStructuredResult(CeWebContainerResult.generateNormalCeQueryResultFrom(this.wc, pCeResult, pReturnInstances, numSteps, relInsts, refInsts, limRels, suppPropTypes));
 	}

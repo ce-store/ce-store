@@ -520,12 +520,7 @@ public class CeStoreRestApiInstance extends CeStoreRestApi {
 		boolean relInsts = getBooleanParameterNamed(PARM_RELINSTS, true);
 		boolean refInsts = getBooleanParameterNamed(PARM_REFINSTS, true);
 		boolean suppPropTypes = getBooleanParameterNamed(PARM_SPTS, false);
-		String limRelsText = getParameterNamed(PARM_LIMRELS);
-		String[] limRels = null;
-		
-		if (limRelsText != null) {
-			limRels = limRelsText.split(",");
-		}
+		String[] limRels = getListParameterNamed(PARM_LIMRELS);
 
 		if (isDefaultStyle() || isFullStyle()) {
 			getWebActionResponse().setStructuredResult(instWeb.generateFullDetailsJsonFor(pInstance, numSteps, relInsts, refInsts, limRels, suppPropTypes));
