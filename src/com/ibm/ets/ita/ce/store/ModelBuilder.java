@@ -556,19 +556,6 @@ public class ModelBuilder implements PersistableStore {
 
 		result = this.allConcepts.get(pName);
 
-//		if (!pAc.getCeConfig().isCaseSensitive()) {
-//			if (result == null) {
-//				String lcName = pName.toLowerCase();
-//
-//				for (CeConcept thisCon : pAc.getModelBuilder().listAllConcepts()) {
-//					if (thisCon.getConceptName().toLowerCase().equals(lcName)) {
-//						result = thisCon;
-//						break;
-//					}
-//				}
-//			}
-//		}
-		
 		return result;
 	}
 
@@ -596,7 +583,7 @@ public class ModelBuilder implements PersistableStore {
 		
 		return result;
 	}
-	
+
 	public boolean isThereAConceptNameStarting(ActionContext pAc, String pName) {
 		String tgtName = null;
 
@@ -607,12 +594,12 @@ public class ModelBuilder implements PersistableStore {
 		}
 
 		boolean result = this.cachedConceptFragmentNames.contains(tgtName);
-		
+
 		if (!result) {
 			for (CeConcept thisConcept : this.allConcepts.values()) {
 				String conName = null;
 
-				if (pAc.getCeConfig().isCaseSensitive()) {					
+				if (pAc.getCeConfig().isCaseSensitive()) {
 					conName = thisConcept.getConceptName();
 				} else {
 					conName = thisConcept.getConceptName().toLowerCase();
@@ -624,10 +611,10 @@ public class ModelBuilder implements PersistableStore {
 				}
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	public boolean isThereAnInstanceNameStarting(ActionContext pAc, String pName) {
 		boolean result = this.cachedInstanceFragmentNames.contains(pName);
 		

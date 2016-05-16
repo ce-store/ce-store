@@ -32,20 +32,37 @@ public class IndexedEntityAccessor {
 		this.mb = pMb;
 	}
 
-	public ArrayList<CeConcept> calculateConceptsWithNameStarting(String pName) {
-		ArrayList<CeConcept> result = this.cachedConceptsStartingWith.get(pName);
-		
+	public ArrayList<CeConcept> calculateConceptsWithNameStarting(ActionContext pAc, String pName) {
+		ArrayList<CeConcept> result = null;
+		String tgtName = null;
+
+		if (pAc.getCeConfig().isCaseSensitive()) {
+			tgtName = pName;
+		} else {
+			tgtName = pName.toLowerCase();
+		}
+
+		result = this.cachedConceptsStartingWith.get(tgtName);
+
 		if (result == null) {
 			//There is nothing in the cached so calculate the values
 			result = new ArrayList<CeConcept>();
 
 			for (CeConcept thisCon : this.mb.listAllConcepts()) {
-				if (thisCon.getConceptName().startsWith(pName)) {
+				String conName = null;
+
+				if (pAc.getCeConfig().isCaseSensitive()) {
+					conName = thisCon.getConceptName();
+				} else {
+					conName = thisCon.getConceptName().toLowerCase();
+				}
+
+				if (conName.startsWith(tgtName)) {
 					result.add(thisCon);
 				}
 			}
 
-			this.cachedConceptsStartingWith.put(pName, result);
+			this.cachedConceptsStartingWith.put(tgtName, result);
 		}
 		
 		return result;

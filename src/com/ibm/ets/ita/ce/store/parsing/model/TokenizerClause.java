@@ -96,7 +96,7 @@ public abstract class TokenizerClause {
 
 	protected ArrayList<CeConcept> getConceptsWithNameStarting(String pConName) {
 		//Convenience method
-		return this.ac.getIndexedEntityAccessor().calculateConceptsWithNameStarting(pConName + " ");
+		return this.ac.getIndexedEntityAccessor().calculateConceptsWithNameStarting(this.ac, pConName + " ");
 	}
 
 	protected String getCurrentToken() {
@@ -120,7 +120,7 @@ public abstract class TokenizerClause {
 		while (carryOn) {
 			if (rts > this.finalTokenPos) {
 				String thisWord = getCurrentToken();
-				
+
 				if (conName == null) {
 					conName = thisWord;
 				} else {
@@ -130,7 +130,7 @@ public abstract class TokenizerClause {
 
 				matchedCon = getConceptNamed(conName);
 				conList = getConceptsWithNameStarting(conName);
-				
+
 				if (matchedCon != null) {
 					//A concept is matched
 					if (conList.isEmpty()) {
@@ -167,7 +167,7 @@ public abstract class TokenizerClause {
 
 		return conName;
 	}
-	
+
 	private boolean isConceptMatchedLater(ArrayList<String> pTokens, int pPos, String pConNameSoFar) {
 		boolean result = false;
 
