@@ -781,6 +781,23 @@ public class QueryHandler extends RequestHandler {
 		HashSet<ContainerSearchResult> result = new HashSet<ContainerSearchResult>();
 		ArrayList<CeInstance> instsToSearch = null;
 
+		ArrayList<String> normalSearchTerms = new ArrayList<String>();
+		ArrayList<String> mandatorySearchTerms = new ArrayList<String>();
+		ArrayList<String> negatedSearchTerms = new ArrayList<String>();
+
+		for (String thisTerm : pSearchTerms) {
+			if (thisTerm.startsWith("+")) {
+				String trimmedTerm = thisTerm.substring(1, thisTerm.length());
+				normalSearchTerms.add(trimmedTerm);
+				mandatorySearchTerms.add(trimmedTerm);
+			} else if (thisTerm.startsWith("-")) {
+				String trimmedTerm = thisTerm.substring(1, thisTerm.length());
+				negatedSearchTerms.add(trimmedTerm);
+			} else {
+				normalSearchTerms.add(thisTerm);
+			}
+		}
+
 		if (pConceptNames == null|| pConceptNames.length == 0) {
 			instsToSearch = this.mb.retrieveAllInstances();
 		} else {
@@ -793,10 +810,9 @@ public class QueryHandler extends RequestHandler {
 					reportWarning("Specified concept '" + conName + "' could not be located when searching", this.ac);
 				}
 			}
-
 		}
 
-		for (String thisTerm : pSearchTerms) {
+		for (String thisTerm : normalSearchTerms) {
 			if ((instsToSearch != null) && (!instsToSearch.isEmpty())) {
 				for (CeInstance thisInst : instsToSearch) {
 					if ((pPropertyNames == null) || (pPropertyNames.length == 0)) {
@@ -814,11 +830,55 @@ public class QueryHandler extends RequestHandler {
 					}
 				}
 			}
-
 		}
+
 		ArrayList<ContainerSearchResult>resArray = new ArrayList<ContainerSearchResult>();
 
-		resArray.addAll(result);
+		if (mandatorySearchTerms.isEmpty() && negatedSearchTerms.isEmpty()) {
+			resArray.addAll(result);
+		} else {
+			for (ContainerSearchResult thisRes : result) {
+				boolean keepThis = true;
+				String propVal = thisRes.getPropertyValue();
+				String tgtVal = null;
+
+				if (!pCaseSensitive) {
+					propVal = propVal.toLowerCase();
+				}
+
+				for (String manTerm : mandatorySearchTerms) {
+					if (keepThis) {
+						if (pCaseSensitive) {
+							tgtVal = manTerm;
+						} else {
+							tgtVal = manTerm.toLowerCase();
+						}
+	
+						if (!propVal.contains(tgtVal)) {
+							keepThis = false;
+						}
+					}
+				}
+
+				for (String negTerm : negatedSearchTerms) {
+					if (keepThis) {
+						if (pCaseSensitive) {
+							tgtVal = negTerm;
+						} else {
+							tgtVal = negTerm.toLowerCase();
+						}
+
+						if (propVal.contains(tgtVal)) {
+							keepThis = false;
+						}
+					}
+				}
+
+				if (keepThis) {
+					resArray.add(thisRes);
+				}
+			}
+		}
 
 		return resArray;
 	}

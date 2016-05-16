@@ -301,7 +301,7 @@ public class CeStoreRestApiSpecial extends CeStoreRestApi {
 	}
 
 	private void handleKeywordSearch() {
-		String rawSearchTerms = getUrlParameterValueNamed(PARM_SEARCHTERMS);
+		String rawSearchTerms = getUrlParameterValueNoDecodeNamed(PARM_SEARCHTERMS);
 		String[] conNames = getListParameterNamed(PARM_RESTRICTCONNAMES);
 		String[] propNames = getListParameterNamed(PARM_RESTRICTPROPNAMES);
 		int numSteps = getNumericUrlParameterValueNamed(CeStoreRestApiInstance.PARM_STEPS, -1);

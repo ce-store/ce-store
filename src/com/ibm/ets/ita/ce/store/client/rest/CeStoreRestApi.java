@@ -361,6 +361,10 @@ public abstract class CeStoreRestApi extends ApiHandler {
 		return urlDecode(this.wc, this.request.getParameter(pKeyName));
 	}
 
+	protected String getUrlParameterValueNoDecodeNamed(String pKeyName) {
+		return this.request.getParameter(pKeyName);
+	}
+
 	protected Set<String> getUrlParameterValuesNamed(String pKeyName) {
 		Set<String> valueSet;
 		String[] valueArray = this.request.getParameterValues(pKeyName);

@@ -121,7 +121,28 @@ function HandlerStores() {
 
 		if (!gCe.utils.isNullOrEmpty(sr) && !gCe.utils.isNullOrEmpty(sr.search_results)) {
 			var ctr = 0;
+			var finalTerms = [];
 			rawTerms = sr.search_terms;
+
+			for (var key in rawTerms) {
+				var thisTerm = rawTerms[key];
+				var trimmedTerm = null;
+
+				if (gCe.utils.startsWith(thisTerm, '+')) {
+					//Remove the + from mandarory terms
+					trimmedTerm = thisTerm.substring(1);
+				} else if (gCe.utils.startsWith(thisTerm, '-')) {
+					//Ignore negated terms (they cannot be returned)
+					trimmedTerm = null;
+				} else {
+					//Normal terms are just dealt with plain
+					trimmedTerm = thisTerm;
+				}
+
+				if (trimmedTerm != null) {
+					finalTerms.push(trimmedTerm);
+				}
+			}
 
 			for (var idx in sr.search_results) {
 				var thisRow = sr.search_results[idx];
@@ -133,8 +154,8 @@ function HandlerStores() {
 				var propDetails = gEp.ui.links.propertyDetails(thisRow.property_name);
 				var valDetails = gCe.utils.replaceAll(thisRow.property_value, rawTerms, highlightedTerms);
 
-				for (var key in rawTerms) {
-					var thisTerm = rawTerms[key];
+				for (var key in finalTerms) {
+					var thisTerm = finalTerms[key];
 					valDetails = gCe.utils.replaceAllCaseInsensitive(valDetails, thisTerm, '<span class="searchterm">' + thisTerm + '</span>')
 				}
 
