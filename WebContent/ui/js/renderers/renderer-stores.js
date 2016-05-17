@@ -53,8 +53,6 @@ function RendererStores() {
 			html += gEp.ui.htmlTableFor(pHdrs, pRows, gEp.ui.DEFAULT_STYLE, null);
 
 			gEp.ui.pane.general.updateWith(html, true);
-		} else {
-			gCe.msg.error('No occurrences matching the search \'' + pTerms + '\' were found.');
 		}
 	};
 

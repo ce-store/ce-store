@@ -781,20 +781,41 @@ public class QueryHandler extends RequestHandler {
 		HashSet<ContainerSearchResult> result = new HashSet<ContainerSearchResult>();
 		ArrayList<CeInstance> instsToSearch = null;
 
-		ArrayList<String> normalSearchTerms = new ArrayList<String>();
 		ArrayList<String> mandatorySearchTerms = new ArrayList<String>();
+		ArrayList<String> optionalSearchTerms = new ArrayList<String>();
 		ArrayList<String> negatedSearchTerms = new ArrayList<String>();
 
+		int termType = 0;
+
 		for (String thisTerm : pSearchTerms) {
-			if (thisTerm.startsWith("+")) {
-				String trimmedTerm = thisTerm.substring(1, thisTerm.length());
-				normalSearchTerms.add(trimmedTerm);
-				mandatorySearchTerms.add(trimmedTerm);
-			} else if (thisTerm.startsWith("-")) {
-				String trimmedTerm = thisTerm.substring(1, thisTerm.length());
-				negatedSearchTerms.add(trimmedTerm);
+			if (thisTerm.equals("AND")) {
+				termType = 0;
+			} else if (thisTerm.equals("OR")) {
+				termType = 1;
+			} else if (thisTerm.equals("NOT")) {
+				termType = 2;
 			} else {
-				normalSearchTerms.add(thisTerm);
+				if (termType == 0) {
+					//Add to mandatory terms
+					mandatorySearchTerms.add(thisTerm);
+				} else if (termType == 1) {
+					//Add to optional terms
+					optionalSearchTerms.add(thisTerm);
+
+					//Also move the last mandatory term to be optional
+					if (!mandatorySearchTerms.isEmpty()) {
+						int lastPos = mandatorySearchTerms.size() - 1;
+						String lastTerm = mandatorySearchTerms.get(lastPos);
+						mandatorySearchTerms.remove(lastPos);
+						optionalSearchTerms.add(lastTerm);
+					}
+				} else if (termType == 2) {
+					//Add to negated terms
+					negatedSearchTerms.add(thisTerm);
+				}
+
+				//Reset the term type to default
+				termType = 0;
 			}
 		}
 
@@ -812,7 +833,14 @@ public class QueryHandler extends RequestHandler {
 			}
 		}
 
-		for (String thisTerm : normalSearchTerms) {
+		//If there is no optional search term use the first mandatory term instead
+		if (optionalSearchTerms.isEmpty()) {
+			if (!mandatorySearchTerms.isEmpty()) {
+				optionalSearchTerms.add(mandatorySearchTerms.get(0));
+			}
+		}
+
+		for (String thisTerm : optionalSearchTerms) {
 			if ((instsToSearch != null) && (!instsToSearch.isEmpty())) {
 				for (CeInstance thisInst : instsToSearch) {
 					if ((pPropertyNames == null) || (pPropertyNames.length == 0)) {
@@ -880,6 +908,8 @@ public class QueryHandler extends RequestHandler {
 			}
 		}
 
+		Collections.sort(resArray);
+
 		return resArray;
 	}
 
@@ -899,7 +929,7 @@ public class QueryHandler extends RequestHandler {
 			}
 
 			if (srcVal.contains(tgtVal)) {
-				for (CeConcept instDirConcept : pInst.getDirectConcepts()) {
+				for (CeConcept instDirConcept : pInst.getAllLeafConcepts()) {
 					ContainerSearchResult csr = new ContainerSearchResult();
 					csr.setConceptName(instDirConcept.getConceptName());
 					csr.setInstanceName(pInst.getInstanceName());

@@ -5,7 +5,7 @@ package com.ibm.ets.ita.ce.store.model.container;
  * All Rights Reserved
  *******************************************************************************/
 
-public class ContainerSearchResult {
+public class ContainerSearchResult implements Comparable<ContainerSearchResult> {
 
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
 
@@ -75,6 +75,11 @@ public class ContainerSearchResult {
 		}
 
 		return result;
+	}
+
+	@Override
+	public int compareTo(ContainerSearchResult pOther) {
+		return identityKey().compareTo(pOther.identityKey());
 	}
 
 	@Override

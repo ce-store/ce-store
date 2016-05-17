@@ -128,19 +128,8 @@ function HandlerStores() {
 				var thisTerm = rawTerms[key];
 				var trimmedTerm = null;
 
-				if (gCe.utils.startsWith(thisTerm, '+')) {
-					//Remove the + from mandarory terms
-					trimmedTerm = thisTerm.substring(1);
-				} else if (gCe.utils.startsWith(thisTerm, '-')) {
-					//Ignore negated terms (they cannot be returned)
-					trimmedTerm = null;
-				} else {
-					//Normal terms are just dealt with plain
-					trimmedTerm = thisTerm;
-				}
-
-				if (trimmedTerm != null) {
-					finalTerms.push(trimmedTerm);
+				if ((thisTerm != 'OR') && (thisTerm != 'AND') && (thisTerm != 'NOT')) {
+					finalTerms.push(thisTerm);
 				}
 			}
 
@@ -152,7 +141,7 @@ function HandlerStores() {
 				var instDetails = instLink + '<br>(' + conLink + ')';
 
 				var propDetails = gEp.ui.links.propertyDetails(thisRow.property_name);
-				var valDetails = gCe.utils.replaceAll(thisRow.property_value, rawTerms, highlightedTerms);
+				var valDetails = thisRow.property_value;
 
 				for (var key in finalTerms) {
 					var thisTerm = finalTerms[key];

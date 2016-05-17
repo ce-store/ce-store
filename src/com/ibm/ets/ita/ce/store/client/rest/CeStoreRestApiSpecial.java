@@ -344,8 +344,9 @@ public class CeStoreRestApiSpecial extends CeStoreRestApi {
 		ArrayList<String> result = new ArrayList<String>();
 
 		Matcher m = Pattern.compile("([^\"]\\S*|\".+?\")\\s*").matcher(pSearchTerms);
+//		Matcher m = Pattern.compile("([\\|-]?\".+?\"|[\\|-]?[^\"]+?\\s|[\\|-]?[^\"]+?$)").matcher(pSearchTerms);
 		while (m.find()) {
-			result.add(m.group(1).replace("\"", ""));
+			result.add(m.group(1).replace("\"", "").trim());
 		}
 
 		return result;
