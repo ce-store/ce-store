@@ -47,11 +47,11 @@ public class BuilderSentenceCommand extends BuilderSentence {
 	private static final String CMD_AGENT = "agent";
 	private static final String CMD_ID = "id";
 	private static final String CMD_SHOW = "show";
-	private static final String CMD_SET = "set";
+//	private static final String CMD_SET = "set";
 	private static final String CMD_NEXT = "next";
 	private static final String CMD_VALUE = "value";
 	private static final String CMD_TO = "to";
-	private static final String CMD_AVAIL = "available";
+//	private static final String CMD_AVAIL = "available";
 	private static final String CMD_PREPARE = "prepare";
 	private static final String CMD_FOR = "for";
 	private static final String CMD_CACHED = "cached";
@@ -400,24 +400,24 @@ public class BuilderSentenceCommand extends BuilderSentence {
 		return result;
 	}
 
-	public boolean isCmdSetNextUidValue() {
-		boolean result = false;
-
-		int tokLen = this.rawTokens.size();
-		if (tokLen == 7) {
-			//No need to check first token as it must be 'perform' for this to be a command sentence
-			result = ((this.rawTokens.get(1).equals(CMD_SET)) && (this.rawTokens.get(2).equals(CMD_NEXT)) && (this.rawTokens.get(3).equals(CMD_UID)) && (this.rawTokens.get(4).equals(CMD_VALUE)) && (this.rawTokens.get(5).equals(CMD_TO)));
-			this.cmdStartingUid = stripDelimitingQuotesFrom(this.rawTokens.get(6));
-		} else if (tokLen == 8) {
-			//No need to check first token as it must be 'perform' for this to be a command sentence
-			result = ((this.rawTokens.get(1).equals(CMD_SET)) && (this.rawTokens.get(2).equals(CMD_NEXT)) && (this.rawTokens.get(3).equals(CMD_UID)) && (this.rawTokens.get(4).equals(CMD_VALUE)) && (this.rawTokens.get(5).equals(CMD_TO)) && (this.rawTokens.get(6).equals(CMD_NEXT)) && (this.rawTokens.get(7).equals(CMD_AVAIL)));
-			this.cmdStartingUid = UID_NEXTAVAIL;
-		} else {
-			result = false;
-		}
-
-		return result;
-	}
+//	public boolean isCmdSetNextUidValue() {
+//		boolean result = false;
+//
+//		int tokLen = this.rawTokens.size();
+//		if (tokLen == 7) {
+//			//No need to check first token as it must be 'perform' for this to be a command sentence
+//			result = ((this.rawTokens.get(1).equals(CMD_SET)) && (this.rawTokens.get(2).equals(CMD_NEXT)) && (this.rawTokens.get(3).equals(CMD_UID)) && (this.rawTokens.get(4).equals(CMD_VALUE)) && (this.rawTokens.get(5).equals(CMD_TO)));
+//			this.cmdStartingUid = stripDelimitingQuotesFrom(this.rawTokens.get(6));
+//		} else if (tokLen == 8) {
+//			//No need to check first token as it must be 'perform' for this to be a command sentence
+//			result = ((this.rawTokens.get(1).equals(CMD_SET)) && (this.rawTokens.get(2).equals(CMD_NEXT)) && (this.rawTokens.get(3).equals(CMD_UID)) && (this.rawTokens.get(4).equals(CMD_VALUE)) && (this.rawTokens.get(5).equals(CMD_TO)) && (this.rawTokens.get(6).equals(CMD_NEXT)) && (this.rawTokens.get(7).equals(CMD_AVAIL)));
+//			this.cmdStartingUid = UID_NEXTAVAIL;
+//		} else {
+//			result = false;
+//		}
+//
+//		return result;
+//	}
 
 	public boolean isCmdPrepareForCachedCeLoad() {
 		boolean result = false;
@@ -522,20 +522,20 @@ public class BuilderSentenceCommand extends BuilderSentence {
 		} else if (isCmdShowNextUidValue()) {
 			String nextUidValue = sa.showNextUidWithoutIncrementing();
 			reportWarning("Next UID value is '" + nextUidValue + "'", pAc);
-		} else if (isCmdSetNextUidValue()) {
-			long nextUidValue = getCmdNextUid();
-
-			if (nextUidValue == -1) {
-				reportWarning("Calculation of next available UID is no longer supported.  Please remove this call", pAc);
-				nextUidValue = pAc.getModelBuilder().calculateNextAvailableUid();
-				if (isReportMicroDebug()) {
-					reportMicroDebug("The next available UID has been calculated as " + nextUidValue, pAc);
-				}
-			}
-			pAc.getModelBuilder().setNextUidValueTo(pAc, nextUidValue);
-			if (isReportMicroDebug()) {
-				reportMicroDebug("Next UID value has been set to '" + nextUidValue + "'", pAc);
-			}
+//		} else if (isCmdSetNextUidValue()) {
+//			long nextUidValue = getCmdNextUid();
+//
+//			if (nextUidValue == -1) {
+//				reportWarning("Calculation of next available UID is no longer supported.  Please remove this call", pAc);
+//				nextUidValue = pAc.getModelBuilder().calculateNextAvailableUid();
+//				if (isReportMicroDebug()) {
+//					reportMicroDebug("The next available UID has been calculated as " + nextUidValue, pAc);
+//				}
+//			}
+//			pAc.getModelBuilder().setNextUidValueTo(pAc, nextUidValue);
+//			if (isReportMicroDebug()) {
+//				reportMicroDebug("Next UID value has been set to '" + nextUidValue + "'", pAc);
+//			}
 		} else if (isCmdPrepareForCachedCeLoad()) {
 			pAc.markAsCachedCeLoading();
 			sa.resetStore("1");
@@ -571,7 +571,7 @@ public class BuilderSentenceCommand extends BuilderSentence {
 		isCmdResetStore();
 		isCmdRunAgent();
 		isCmdShowNextUidValue();
-		isCmdSetNextUidValue();
+//		isCmdSetNextUidValue();
 		isCmdPrepareForCachedCeLoad();
 		isCmdSaveStore();
 		isCmdLoadStore();

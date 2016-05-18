@@ -24,6 +24,7 @@ import com.ibm.ets.ita.ce.store.model.CeClause;
 import com.ibm.ets.ita.ce.store.model.CePropertyInstance;
 import com.ibm.ets.ita.ce.store.model.CeQuery;
 import com.ibm.ets.ita.ce.store.model.container.ContainerCeResult;
+import com.ibm.ets.ita.ce.store.model.container.ContainerQueryResult;
 
 public class QueryResultProcessorMem {
 
@@ -277,58 +278,27 @@ public class QueryResultProcessorMem {
 		ContainerCeResult result = new ContainerCeResult();
 		result.setTargetQuery(this.targetQuery);
 		result.setQuery(this.targetQuery.getCeText());
-				
+
 		if (this.targetQuery.isCountQuery()) {
-			reportCountResults(pResultRows, result);			
+			reportCountResults(pResultRows, result);
 		} else {
-			reportNormalResults(this.targetQuery, pResultRows, result);			
+			reportNormalResults(this.targetQuery, pResultRows, result);
 		}
-		
+
 		return result;
 	}
-	
-//	private ArrayList<TreeMap<String, String>> oldCalculateResultRows() {
-//		ArrayList<TreeMap<String, String>> resultRows = null;
-//		
-//		boolean noMatches = processHeaders();
-//
-//		if (noMatches) {
-//			resultRows = new ArrayList<TreeMap<String, String>>();
-//		} else {
-//			MatchedClauseList tgtMcl = largestNormalMcl();
-//			
-//			if (tgtMcl == null) {
-//				tgtMcl = firstMcl();
-//			}
-//			
-//			if (tgtMcl != null) {
-//				if (isSingleGraph()) {
-//					resultRows = processAllMclsFromSingleGraph(tgtMcl);
-//				} else {
-//					if (isReportMicroDebug()) {
-//						reportMicroDebug("This is not a single graph (" + this.targetQuery.getQueryName() + ")", this.ac);
-//					}
-//					resultRows = processAllMclsFromMultipleGraphs();
-//				}
-//				doPostProcessing(resultRows);
-//				reportDebugStats(resultRows);
-//			}
-//		}
-//
-//		return resultRows;
-//	}
-	
+
 	private boolean isSingleGraph() {
 		return this.calculateGraphHeaderList(true).size() == 1;
 	}
-	
+
 	private void reportDebugStats(ArrayList<TreeMap<String, String>> pResult) {
 		if (isReportMicroDebug()) {
 			reportMicroDebug("Iteration counter = " + new Integer(this.itCounter).toString() + " (Truncation steps)", this.ac);
 			reportMicroDebug("Result = " + new Integer(pResult.size()).toString(), this.ac);
 		}
 	}
-	
+
 	private void doPostProcessing(ArrayList<TreeMap<String, String>> pResult) {
 		removeEqualsAndNotEquals(pResult);
 	}
@@ -785,7 +755,7 @@ public class QueryResultProcessorMem {
 		
 		for (String thisHdr : pResult.getHeaders()) {
 			if (CeQuery.isCountHeader(thisHdr)) {
-				String rawHdr = thisHdr.replace("#", "");
+				String rawHdr = thisHdr.replace(ContainerQueryResult.COUNT_INDICATOR, "");
 
 				if (!doneCountVariable) {
 					TreeMap<String, TreeMap<String, String>> tempMap = new TreeMap<String, TreeMap<String,String>>();
@@ -840,7 +810,7 @@ public class QueryResultProcessorMem {
 
 		for (String thisHdr : pResult.getHeaders()) {
 			if (CeQuery.isSumHeader(thisHdr)) {
-				String rawHdr = thisHdr.replace("@", "");
+				String rawHdr = thisHdr.replace(ContainerQueryResult.SUM_INDICATOR, "");
 
 				if (!doneSumVariable) {
 					TreeMap<String, TreeMap<String, String>> tempMap = new TreeMap<String, TreeMap<String,String>>();

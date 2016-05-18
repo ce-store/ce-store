@@ -12,15 +12,15 @@ import com.ibm.ets.ita.ce.store.model.CeQuery;
 
 public abstract class ContainerQueryResult extends ContainerResult {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
-	
-	private static final String COUNT_INDICATOR = "#";
-	private static final String SUM_INDICATOR = "@";
+
+	public static final String COUNT_INDICATOR = "#";
+	public static final String SUM_INDICATOR = "@";
 	private static final String TYPE_COUNT = "C";
 	private static final String TYPE_SUM = "S";
 
 	private String query = "";
-	private ArrayList<String> headers = new ArrayList<String>();
-	private ArrayList<String> types = new ArrayList<String>();
+	protected ArrayList<String> headers = new ArrayList<String>();
+	protected ArrayList<String> types = new ArrayList<String>();
 	protected ArrayList<ArrayList<String>> resultRows = new ArrayList<ArrayList<String>>();
 
 	//TODO: This is inefficient.  Must get rid of it and use a single TreeMap (for result/all rows)

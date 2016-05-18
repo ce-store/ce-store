@@ -1729,35 +1729,35 @@ public class ModelBuilder implements PersistableStore {
 		return newOverallSentences;
 	}
 
-	public long calculateNextAvailableUid() {
-		long highest = -1;
-		
-		for (CeInstance thisInst : listAllInstances()) {
-			if (thisInst.getInstanceName().startsWith("#")) {
-				String possUid = thisInst.getInstanceName().replace("#", "");
-				
-				try {
-					long thisVal = Long.parseLong(possUid);
-					
-					if (thisVal > highest) {
-						highest = thisVal;
-					}
-				} catch(NumberFormatException e) {
-					//Just ignore the exception
-				}
-			}
-		}
-		
-		return (highest + 1);
-	}
-	
+//	public long calculateNextAvailableUid() {
+//		long highest = -1;
+//		
+//		for (CeInstance thisInst : listAllInstances()) {
+//			if (thisInst.getInstanceName().startsWith("#")) {
+//				String possUid = thisInst.getInstanceName().replace("#", "");
+//				
+//				try {
+//					long thisVal = Long.parseLong(possUid);
+//					
+//					if (thisVal > highest) {
+//						highest = thisVal;
+//					}
+//				} catch(NumberFormatException e) {
+//					//Just ignore the exception
+//				}
+//			}
+//		}
+//		
+//		return (highest + 1);
+//	}
+
 	public static boolean isThisCeValid(ActionContext pAc, String pCeText) {
 		StoreActions sa = StoreActions.createUsingDefaultConfig(pAc);
 		ContainerSentenceLoadResult senStats = sa.validateCeSentence(pCeText);
-		
+
 		return (senStats.getInvalidSentenceCount() == 0);
 	}
-	
+
 	public boolean isCeStoreEmpty() {
 		return this.allConcepts.isEmpty();
 	}

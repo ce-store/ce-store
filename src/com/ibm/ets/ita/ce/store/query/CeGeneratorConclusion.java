@@ -23,6 +23,7 @@ import com.ibm.ets.ita.ce.store.model.CeProperty;
 import com.ibm.ets.ita.ce.store.model.CePropertyInstance;
 import com.ibm.ets.ita.ce.store.model.CeRule;
 import com.ibm.ets.ita.ce.store.model.container.ContainerCeResult;
+import com.ibm.ets.ita.ce.store.model.container.ContainerQueryResult;
 
 public class CeGeneratorConclusion {
 
@@ -129,6 +130,8 @@ public class CeGeneratorConclusion {
 
 		if (hasCountVariable()) {
 			collapseRowsForCounting();
+		} else if (hasSumVariable()) {
+			collapseRowsForSumming();
 		}
 
 		//Calculate the correct CE results for the rule - based on the conclusion clauses
@@ -144,13 +147,46 @@ public class CeGeneratorConclusion {
 
 			replaceCeInResultRow(thisRow, conclusionCe);
 		}
+
+		if (this.ceResult.hasCountHeader() || this.ceResult.hasSumHeader()) {
+			ArrayList<String> hdrsToRemove = new ArrayList<String>();
+
+			//To suppress the rendering of non-relevant columns simply remove them from the hdrIndexes list
+			for (String thisHdr : this.hdrIndexes.keySet()) {
+				if ((!thisHdr.startsWith(ContainerQueryResult.COUNT_INDICATOR)) && (!thisHdr.startsWith(ContainerQueryResult.SUM_INDICATOR))) {
+					if (!thisHdr.equals(ContainerCeResult.HDR_CE)) {
+						if (!this.uniqueTgtVars.containsKey(thisHdr)) {
+							hdrsToRemove.add(thisHdr);
+						}
+					}
+				}
+			}
+
+			for (String thisHdr : hdrsToRemove) {
+				this.hdrIndexes.remove(thisHdr);
+				this.ceResult.removeColumn(thisHdr);
+			}
+		}
 	}
 
 	private boolean hasCountVariable() {
 		boolean result = false;
 
 		for (String thisHdr : this.ceResult.getHeaders()) {
-			if (thisHdr.startsWith("#")) {
+			if (thisHdr.startsWith(ContainerQueryResult.COUNT_INDICATOR)) {
+				result = true;
+				break;
+			}
+		}
+
+		return result;
+	}
+
+	private boolean hasSumVariable() {
+		boolean result = false;
+
+		for (String thisHdr : this.ceResult.getHeaders()) {
+			if (thisHdr.startsWith(ContainerQueryResult.SUM_INDICATOR)) {
 				result = true;
 				break;
 			}
@@ -171,7 +207,7 @@ public class CeGeneratorConclusion {
 			for (String thisHdr : this.ceResult.getHeaders()) {
 				int hdrIndex = this.ceResult.getIndexForHeader(thisHdr);
 
-				if (thisHdr.startsWith("#")) {
+				if (thisHdr.startsWith(ContainerQueryResult.COUNT_INDICATOR)) {
 					//This is the variable to be counted
 					countIndex = hdrIndex;
 				} else {
@@ -221,6 +257,82 @@ public class CeGeneratorConclusion {
 			ArrayList<String> thisRow = newRowMap.get(thisKey);
 
 			thisRow.set(countIndex, countMap.get(thisKey).toString());
+		}
+
+		this.ceResult.replaceResultRowsWith(newRowMap.values());
+	}
+
+	private void collapseRowsForSumming() {
+		TreeMap<String, ArrayList<String>> newRowMap = new TreeMap<String, ArrayList<String>>();
+		TreeMap<String, Long> sumMap = new TreeMap<String, Long>();
+		int ceIndex = this.ceResult.getIndexForHeader("CE");
+		int sumIndex = -1;
+		String sumText = null;
+		long sumVal = 0;
+
+		for (ArrayList<String> thisRow : this.ceResult.getResultRows()) {
+			StringBuilder sbMain = new StringBuilder();
+
+			for (String thisHdr : this.ceResult.getHeaders()) {
+				int hdrIndex = this.ceResult.getIndexForHeader(thisHdr);
+
+				if (thisHdr.startsWith(ContainerQueryResult.SUM_INDICATOR)) {
+					//This is the variable to be summed
+					sumIndex = hdrIndex;
+					sumText = thisRow.get(sumIndex);
+
+					try {
+						sumVal = new Long(sumText).longValue();
+					} catch (NumberFormatException e) {
+						reportWarning("Unable to sum '" + sumText + "' during rule processing", this.ac);
+					}
+				} else {
+					if (!thisHdr.equals(ContainerCeResult.HDR_CE)) {
+						if (this.uniqueTgtVars.containsKey(thisHdr)) {
+							String thisVal = thisRow.get(hdrIndex);
+
+							if (sbMain.length() > 0) {
+								sbMain.append("|");
+							}
+
+							sbMain.append(thisVal);
+						}
+					}
+				}
+			}
+
+			long rowSum = 0;
+			String thisKey = sbMain.toString();
+			StringBuilder sbRat = new StringBuilder();
+			boolean newRowCreated = false;
+
+			if (!newRowMap.containsKey(thisKey)) {
+				newRowMap.put(thisKey, thisRow);
+				newRowCreated = true;
+			}
+
+			ArrayList<String> newRow = newRowMap.get(thisKey);
+
+			if (!newRowCreated) {
+				sbRat.append(newRow.get(ceIndex));
+				sbRat.append(" and\n");
+			}
+
+			sbRat.append(thisRow.get(ceIndex));
+
+			newRow.set(ceIndex, sbRat.toString());
+
+			if (sumMap.containsKey(thisKey)) {
+				rowSum = sumMap.get(thisKey).longValue();
+			}
+
+			sumMap.put(thisKey, new Long(rowSum + sumVal));
+		}
+
+		for (String thisKey : newRowMap.keySet()) {
+			ArrayList<String> thisRow = newRowMap.get(thisKey);
+
+			thisRow.set(sumIndex, sumMap.get(thisKey).toString());
 		}
 
 		this.ceResult.replaceResultRowsWith(newRowMap.values());
@@ -506,7 +618,7 @@ public class CeGeneratorConclusion {
 		String parts[] = pTgtVar.split("_");
 		
 		for (String thisPart : parts) {
-			if (!thisPart.startsWith("$") && !thisPart.startsWith("#")) {
+			if (!thisPart.startsWith(CeConclusionRow.TOKEN_VARIABLE) && !thisPart.startsWith(CeConclusionRow.TOKEN_CONSTANT)) {
 				if (!result.isEmpty()) {
 					result += "_";
 				}
@@ -516,11 +628,11 @@ public class CeGeneratorConclusion {
 
 		return result;
 	}
-	
+
 	private static String trimHashFrom(String pCvt) {
-		return pCvt.replaceFirst("#", "");
+		return pCvt.replaceFirst(CeConclusionRow.TOKEN_CONSTANT, "");
 	}
-	
+
 	private String calculatePiVal(CePropertyInstance pPi, CeConclusionRow pRow) {
 		String piVal = "";
 		

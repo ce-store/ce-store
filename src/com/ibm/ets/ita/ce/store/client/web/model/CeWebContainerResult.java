@@ -60,7 +60,7 @@ public class CeWebContainerResult extends CeWebObject {
 		if (pCeResult != null) {
 			ArrayList<ArrayList<String>> queryResults = pCeResult.getResultRows();
 			int ceIndex = pCeResult.getIndexForHeader("CE");
-			
+
 			if (ceIndex > -1) {
 				for (ArrayList<String> thisRow : queryResults) {
 					String oldCe = thisRow.get(ceIndex);
@@ -88,7 +88,7 @@ public class CeWebContainerResult extends CeWebObject {
 			putLongValueIn(jObj, KEY_QUERY_TIME, pCeResult.getExecutionTime());
 			putAllStringValuesIn(jObj, KEY_HEADERS, pCeResult.getHeaders());
 			putAllStringValuesIn(jObj, KEY_TYPES, pCeResult.getTypes());
-			
+
 			putAllArrayStringValuesIn(jObj, KEY_RESULTS, queryResults);	
 
 			if (pReturnInstances) {

@@ -15,8 +15,8 @@ public class CeConclusionRow {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
 
 	private static final String TOKEN_NEW = "{{NEW}}";
-	private static final String TOKEN_VARIABLE = "$";
-	private static final String TOKEN_CONSTANT = "#";
+	public static final String TOKEN_VARIABLE = "$";
+	public static final String TOKEN_CONSTANT = "#";
 
 	private CeGeneratorConclusion parent = null;
 	private ArrayList<String> queryRow = null;

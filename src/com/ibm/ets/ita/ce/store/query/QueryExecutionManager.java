@@ -205,18 +205,18 @@ public abstract class QueryExecutionManager {
 		//Ensure that the query manager is reset (it might be used for multiple queries/rules)
 		resetQueryExecutionManager();
 		this.targetQuery = pQueryOrRule;
-		
+
 		//Execute this query or rule (in both cases they are executed as a query)
 		ContainerCeResult result = executeQueryForIds(pQueryOrRule);
-		
+
 		//This may be a rule being execute in query mode, in which case the correct
 		//Rule CE needs to be generated
 		if (pQueryOrRule.isRule()) {
 			CeGeneratorConclusion cgc = new CeGeneratorConclusion(this.ac, (CeRule)pQueryOrRule, result, this.generateRationale, this.doubleRationale);
-			
+
 			cgc.doRuleCeProcessing();
 		}
-		
+
 		reportExecutionTiming(this.ac, sTime, "[0] doStandardExecutionProcessing", CLASS_NAME, METHOD_NAME);
 
 		return result;

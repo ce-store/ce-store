@@ -14,6 +14,7 @@ import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.ibm.ets.ita.ce.store.ActionContext;
+import com.ibm.ets.ita.ce.store.model.container.ContainerQueryResult;
 
 public class CeQuery extends CeModelEntity {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
@@ -404,18 +405,18 @@ public class CeQuery extends CeModelEntity {
 	}
 
 	public static boolean isCountHeader(String pHdr) {
-		return pHdr.startsWith("#");
+		return pHdr.startsWith(ContainerQueryResult.COUNT_INDICATOR);
 	}
 
 	public static boolean isSumHeader(String pHdr) {
-		return pHdr.startsWith("@");
+		return pHdr.startsWith(ContainerQueryResult.SUM_INDICATOR);
 	}
 
 	public boolean hasCountHeader() {
 		boolean result = false;
 
 		for (String thisHdr : this.responseVariableIds) {
-			if (thisHdr.startsWith("#")) {
+			if (thisHdr.startsWith(ContainerQueryResult.COUNT_INDICATOR)) {
 				result = true;
 			}
 		}
@@ -427,7 +428,7 @@ public class CeQuery extends CeModelEntity {
 		boolean result = false;
 
 		for (String thisHdr : this.responseVariableIds) {
-			if (thisHdr.startsWith("@")) {
+			if (thisHdr.startsWith(ContainerQueryResult.SUM_INDICATOR)) {
 				result = true;
 			}
 		}

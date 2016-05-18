@@ -241,4 +241,28 @@ public class ContainerCeResult extends ContainerQueryResult {
 		}
 	}
 
+	public void removeColumn(String pColName) {
+		int colIdx = getIndexForHeader(pColName);
+
+		if (colIdx > -1) {
+			this.headers.remove(colIdx);
+			this.types.remove(colIdx);
+
+			for (ArrayList<String> thisRow : this.allRows) {
+				thisRow.remove(colIdx);
+			}
+
+			if (this.allRows != this.resultRows) {
+				for (ArrayList<String> thisRow : this.resultRows) {
+					thisRow.remove(colIdx);
+				}
+			}
+
+			for (ArrayList<CeInstance> thisRow : this.instanceRows) {
+				thisRow.remove(colIdx);
+			}
+
+		}
+	}
+
 }
