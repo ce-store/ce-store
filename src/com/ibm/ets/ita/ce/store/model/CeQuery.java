@@ -403,21 +403,35 @@ public class CeQuery extends CeModelEntity {
 		return result;
 	}
 
-	//DSB 01/05/2015 #1096
 	public static boolean isCountHeader(String pHdr) {
 		return pHdr.startsWith("#");
 	}
-	
-	//DSB 01/05/2015 #1096
+
+	public static boolean isSumHeader(String pHdr) {
+		return pHdr.startsWith("@");
+	}
+
 	public boolean hasCountHeader() {
 		boolean result = false;
-		
+
 		for (String thisHdr : this.responseVariableIds) {
 			if (thisHdr.startsWith("#")) {
 				result = true;
 			}
 		}
-		
+
+		return result;
+	}
+
+	public boolean hasSumHeader() {
+		boolean result = false;
+
+		for (String thisHdr : this.responseVariableIds) {
+			if (thisHdr.startsWith("@")) {
+				result = true;
+			}
+		}
+
 		return result;
 	}
 

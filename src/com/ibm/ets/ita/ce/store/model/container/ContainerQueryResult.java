@@ -13,8 +13,10 @@ import com.ibm.ets.ita.ce.store.model.CeQuery;
 public abstract class ContainerQueryResult extends ContainerResult {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
 	
-	private static final String COUNT_INDICATOR = "#";	//DSB 01/05/2015 #1096
-	private static final String TYPE_COUNT = "C";	//DSB 01/05/2015 #1096
+	private static final String COUNT_INDICATOR = "#";
+	private static final String SUM_INDICATOR = "@";
+	private static final String TYPE_COUNT = "C";
+	private static final String TYPE_SUM = "S";
 
 	private String query = "";
 	private ArrayList<String> headers = new ArrayList<String>();
@@ -73,6 +75,9 @@ public abstract class ContainerQueryResult extends ContainerResult {
 			if (pHeader.startsWith(COUNT_INDICATOR)) {
 				this.headers.add(pHeader);
 				this.types.add(TYPE_COUNT);
+			} else if (pHeader.startsWith(SUM_INDICATOR)) {
+					this.headers.add(pHeader);
+					this.types.add(TYPE_SUM);
 			} else {
 				this.headers.add(pHeader);
 				this.types.add(pType);
@@ -100,9 +105,12 @@ public abstract class ContainerQueryResult extends ContainerResult {
 		this.allRows.add(pRow);
 	}
 
-	//DSB 01/05/2015 #1096
 	public boolean hasCountHeader() {
 		return this.types.contains(TYPE_COUNT);
+	}
+
+	public boolean hasSumHeader() {
+		return this.types.contains(TYPE_SUM);
 	}
 
 	public void trimToLimit(CeQuery pQuery) {

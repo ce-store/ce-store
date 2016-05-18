@@ -221,23 +221,22 @@ public abstract class QueryExecutionManager {
 
 		return result;
 	}
-	
+
 	private ContainerCeResult executeQueryForIds(CeQuery pQuery) {
 		final String METHOD_NAME = "executeQueryForIds";
-		
+
 		long sTime = System.currentTimeMillis();
 		ContainerCeResult result = null;
-		
+
 		logQuery(pQuery.getCeText() + NL + NL);
 
 		if (!pQuery.listAllChildPremiseClauses().isEmpty()) {
 			result = performQueryExecution(pQuery);
-			
+
 			if (!this.suppressCeColumn) {
 				if (pQuery.isNormalQuery()) {
-					//DSB 01/05/2015 #1096
-					if ((pQuery.isRule()) || (!pQuery.hasCountHeader())) {
-						//The CE only needs to be added if this is a normal (not count) query
+					if ((pQuery.isRule()) || !((pQuery.hasCountHeader()) || (pQuery.hasSumHeader()))) {
+						//The CE only needs to be added if this is a normal (not count or sum) query
 						addCeToResultSet(result, pQuery);
 					}
 				}
@@ -256,7 +255,7 @@ public abstract class QueryExecutionManager {
 				if (!pQuery.hasNegatedHeader(this.ac, thisHdr)) {
 					result.addHeader(thisHdr, pQuery.getTypeForHeader(thisHdr));
 				}
-			}			
+			}
 		} else {
 			if (!pQuery.isCountQuery()) {
 				for (String thisHdr : pQuery.getResponseVariableIds()) {

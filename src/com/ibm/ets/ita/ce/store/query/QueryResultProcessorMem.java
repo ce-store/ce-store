@@ -631,177 +631,17 @@ public class QueryResultProcessorMem {
 		tgtList.add(pSecondVal);
 	}
 
-//	private void debugMcls() {
-//		if (isReportDebug()) {
-//			for (String mclKey : this.mcls.keySet()) {
-//				MatchedClauseList thisMcl = this.mcls.get(mclKey);
-//				
-//				String mpText = "[MCL=" + mclKey + "] ";
-//				for (String mpKey : thisMcl.getMatchedPairs().keySet()) {
-//					mpText += "{'" + mpKey + "'} -> ";
-//					String commaSep = "";
-//					for (String thisMpVal : thisMcl.getMatchedPairs().get(mpKey)) {
-//						mpText += commaSep + "'" + thisMpVal + "'";
-//						commaSep = ", ";
-//					}
-//				}
-//				
-//				reportDebug(mpText, this.ac);
-//			}
-//		}
-//	}
-	
-//	private void debugResult(ArrayList<TreeMap<String, String>> pResult) {
-//		int rowCtr = 0;
-//		
-//		if (isReportDebug()) {
-//			for (TreeMap<String, String> thisRow : pResult) {
-//				String rowText = "";
-//				String commaSep = "";
-//				for (String thisKey : thisRow.keySet()) {
-//					String thisVal = thisRow.get(thisKey);
-//					rowText += commaSep + thisKey + "='" + thisVal + "'";
-//					commaSep = ", ";
-//				}
-//				reportDebug("Row " + Integer.toString(++rowCtr) + ": " + rowText, this.ac);
-//			}
-//		}
-//	}
-	
-//	@SuppressWarnings("unchecked")
-//	private void rowGenerationFor(ArrayList<String> pPair, MatchedClauseList pMcl, TreeMap<String, String> pRow, ArrayList<MatchedClauseList> pDoneMcls, ArrayList<TreeMap<String, String>> pResult) {
-//		String srcVarId = pMcl.getSrcVarId();
-//		String tgtVarId = pMcl.getTgtVarId();
-//		
-//		String srcVal = pPair.get(0);
-//		String tgtVal = pPair.get(1);
-//		
-//		String rowDebugInfo = "";
-//		
-////		if (isReportDebug()) {
-////			rowDebugInfo = "srcVarId='" + srcVarId + "', srcVal='" + srcVal + "', tgtVarId='" + tgtVarId + "', tgtVal='" + tgtVal + "'";		
-////			reportDebug(rowDebugInfo, this.ac);
-////		}
-//
-//		TreeMap<String, String> clonedRow = null;
-//		ArrayList<MatchedClauseList> clonedDoneMcls = null;
-//
-//		boolean overwriteSource = testForOverwrite("source", srcVarId, srcVal, pRow);
-//		boolean overwriteTarget = testForOverwrite("target", tgtVarId, tgtVal, pRow);
-//
-//		if (overwriteSource && overwriteTarget) {
-//			rowDebugInfo = "srcVarId='" + srcVarId + "', srcVal='" + srcVal + "', tgtVarId='" + tgtVarId + "', tgtVal='" + tgtVal + "'";		
-//			reportWarning("Unfixed error in rule executor - overwriting source and target values (" + rowDebugInfo + ")", this.ac);
-//		}
-//
-//		if (!srcVarId.isEmpty()) {
-//			if (overwriteSource) {
-//				//About to overwrite a value so clone instead
-//				if (clonedRow == null) {
-//					clonedRow = (TreeMap<String, String>)pRow.clone();
-//					reportMicroDebug("Cloning due to overwriteSource - " + rowDebugInfo + ")", this.ac);
-//				}
-//				clonedRow.put(srcVarId, srcVal);
-//				//Get the old source value as it is not being changed here
-//				srcVal = pRow.get(srcVarId);
-//			} else {
-//				//Not an overwrite so proceed as normal
-//				pRow.put(srcVarId, srcVal);
-//			}
-//		}
-//
-//		if (!tgtVarId.isEmpty()) {
-//			if (!pMcl.isSpecialOperatorMcl()) {
-//				if (overwriteTarget) {
-//					//About to overwrite a value so clone instead
-//					if (clonedRow == null) {
-//						clonedRow = (TreeMap<String, String>)pRow.clone();
-//						reportMicroDebug("Cloning due to overwriteTarget - " + rowDebugInfo + ")", this.ac);
-//					}
-//					clonedRow.put(tgtVarId, tgtVal);
-//					//Get the old target value as it is not being changed here
-//					tgtVal = pRow.get(tgtVarId);
-//				} else {
-//					//Not an overwrite so proceed as normal
-//					pRow.put(tgtVarId, tgtVal);
-//				}
-//			} else {
-//				//A special operator so proceed as normal
-//				pRow.put(tgtVarId, tgtVal);
-//			}
-//		}
-//
-//		if (clonedRow != null) {
-//			clonedDoneMcls = (ArrayList<MatchedClauseList>)pDoneMcls.clone();
-//		}
-//		
-//		pDoneMcls.add(pMcl);
-//
-//		//Always process the linked MCLs for the main row
-//		rowGenerationForLinkedMcls(pMcl, pRow, pDoneMcls, pResult, srcVal, tgtVal);
-//		
-//		//Also process the linked MCLs for the cloned row if there is one
-//		if (clonedRow != null) {
-//			rowGenerationForLinkedMcls(pMcl, clonedRow, clonedDoneMcls, pResult, srcVal, tgtVal);
-//			pResult.add(clonedRow);
-//		}
-//	}
-
-//	private void rowGenerationForLinkedMcls(MatchedClauseList pMcl, TreeMap<String, String> pRow, ArrayList<MatchedClauseList> pDoneMcls, ArrayList<TreeMap<String, String>> pResult, String pSrcVal, String pTgtVal) {
-//		//Linked MCLs (source)
-//		for (MatchedClauseList linkedMcl : pMcl.getLinkedMclsForSourceVarExcluding(pDoneMcls)) {
-//			//DSB 25/04/2014 - Ensure that special linked MCLs are not processed (to avoid result duplication)
-//			if (!linkedMcl.isSimpleSpecialOperatorMcl()) {
-//	 			for (ArrayList<String> matchedRow : linkedMcl.rowsMatchingSourceValue(pSrcVal)) {
-//					rowGenerationFor(matchedRow, linkedMcl, pRow, pDoneMcls, pResult);
-//				}
-//				for (ArrayList<String> matchedRow : linkedMcl.rowsMatchingTargetValue(pSrcVal)) {
-//					rowGenerationFor(matchedRow, linkedMcl, pRow, pDoneMcls, pResult);
-//				}
-//			}
-//		}
-//
-//		//Linked MCLs (target)
-//		for (MatchedClauseList linkedMcl : pMcl.getLinkedMclsForTargetVarExcluding(pDoneMcls)) {
-//			//DSB 25/04/2014 - Ensure that special linked MCLs are not processed (to avoid result duplication)
-//			if (!linkedMcl.isSimpleSpecialOperatorMcl()) {
-//	 			for (ArrayList<String> matchedRow : linkedMcl.rowsMatchingSourceValue(pTgtVal)) {
-//					rowGenerationFor(matchedRow, linkedMcl, pRow, pDoneMcls, pResult);
-//				}
-//				for (ArrayList<String> matchedRow : linkedMcl.rowsMatchingTargetValue(pTgtVal)) {
-//					rowGenerationFor(matchedRow, linkedMcl, pRow, pDoneMcls, pResult);
-//				}
-//			}
-//		}
-//	}
-
-//	private boolean testForOverwrite(String pContext, String pVarId, String pVal, TreeMap<String, String> pRow) {
-//		boolean result = false;
-//		
-//		if (pRow.containsKey(pVarId)) {
-//			String currentVal = pRow.get(pVarId);
-//			if (!pVal.equals(currentVal)) {
-//				if (isReportMicroDebug()) {
-//					reportMicroDebug("Overwriting " + pContext + " value (" + pVarId + " -> " + currentVal + ") with value '" + pVal + "' during query row generation", this.ac);
-//				}
-//				result = true;
-//			}
-//		}
-//		
-//		return result;
-//	}
-	
 	private void removeEqualsAndNotEquals(ArrayList<TreeMap<String, String>> pResult) {
 		for (CeClause thisClause : this.targetQuery.getDirectPremiseClauses()) {
 			testEqualsAndNotEqualsForClause(thisClause, pResult);			
 		}
 	}
-	
+
 	private void testEqualsAndNotEqualsForClause(CeClause pClause, ArrayList<TreeMap<String, String>> pResult) {
 		for (CePropertyInstance thisPi : pClause.getAllProperties()) {
 			if (thisPi.isSpecialOperatorPropertyInstance()) {
 				String srcVarId = thisPi.getClauseVariableId();
-				
+
 				if (thisPi.hadQuotesOriginally(this.ac)) {
 					//This is a fixed value
 					String tgtVal = thisPi.getSingleOrFirstValue();
@@ -822,7 +662,7 @@ public class QueryResultProcessorMem {
 			}
 		}
 	}
-	
+
 	private static void deleteMatchingRowsForValueFrom(ArrayList<TreeMap<String, String>> pResult, String pSrcVarId, String pTgtVal) {
 		ArrayList<TreeMap<String, String>> copyRows = new ArrayList<TreeMap<String, String>>();
 		copyRows.addAll(pResult);
@@ -881,7 +721,6 @@ public class QueryResultProcessorMem {
 		TreeSet<String> tempSet = new TreeSet<String>();
 
 		for (MatchedClauseList thisMcl : this.mcls.values()) {
-			//DSB 25/04/2014 - Filter out simple special operator clauses
 			if (!thisMcl.isSimpleSpecialOperatorMcl()) {
 				String srcVar = thisMcl.getSrcVarId();
 				String tgtVar = thisMcl.getTgtVarId();
@@ -898,18 +737,17 @@ public class QueryResultProcessorMem {
 
 		return tempSet;
 	}
-	
+
 	private static void reportCountResults(ArrayList<TreeMap<String, String>> pRows, ContainerCeResult pResult) {
 		ArrayList<String> countResLine = new ArrayList<String>();
-		
 		int rowSize = 0;
-		
+
 		if (pRows != null) {
 			rowSize = pRows.size();
 		}
-		
+
 		countResLine.add(Integer.toString(rowSize));
-		
+
 		pResult.addHeader(QueryExecutionManager.HDR_COUNT, QueryExecutionManager.HDR_COUNT);
 		pResult.addResultRow(countResLine);		
 	}
@@ -922,18 +760,17 @@ public class QueryResultProcessorMem {
 			}
 		}
 
-		//DSB 01/05/2015 #1096
 		ArrayList<TreeMap<String, String>> processedRows = null;
 
-		//DSB 01/05/2015 #1096
 		if ((!pQuery.isRule()) && (pResult.hasCountHeader())) {
 			processedRows = processRowsForCounts(pRows, pResult);
+		} else if ((!pQuery.isRule()) && (pResult.hasSumHeader())) {
+			processedRows = processRowsForSums(pRows, pResult);
 		} else {
 			processedRows = pRows;
 		}
 
 		if (pRows != null) {
-			//DSB 01/05/2015 #1095
 			if (pQuery.needsSorting()) {
 				addSortedRows(pQuery, processedRows, pResult);
 			} else {
@@ -942,7 +779,6 @@ public class QueryResultProcessorMem {
 		}
 	}
 
-	//DSB 01/05/2015 #1096
 	private ArrayList<TreeMap<String, String>> processRowsForCounts(ArrayList<TreeMap<String, String>> pRows, ContainerCeResult pResult) {
 		ArrayList<TreeMap<String, String>> result = new ArrayList<TreeMap<String, String>>();
 		boolean doneCountVariable = false;
@@ -998,41 +834,97 @@ public class QueryResultProcessorMem {
 		return result;
 	}
 
-	//DSB 01/05/2015 #1095
-	private void addSortedRows(CeQuery pQuery, ArrayList<TreeMap<String, String>> pRows, ContainerCeResult pResult) {
-//		final String METHOD_NAME = "addSortedRows";
+	private ArrayList<TreeMap<String, String>> processRowsForSums(ArrayList<TreeMap<String, String>> pRows, ContainerCeResult pResult) {
+		ArrayList<TreeMap<String, String>> result = new ArrayList<TreeMap<String, String>>();
+		boolean doneSumVariable = false;
 
+		for (String thisHdr : pResult.getHeaders()) {
+			if (CeQuery.isSumHeader(thisHdr)) {
+				String rawHdr = thisHdr.replace("@", "");
+
+				if (!doneSumVariable) {
+					TreeMap<String, TreeMap<String, String>> tempMap = new TreeMap<String, TreeMap<String,String>>();
+					doneSumVariable = true;
+
+					for (TreeMap<String, String> thisRow : pRows) {
+						TreeMap<String, String> newRow = new TreeMap<String, String>();
+						String newKey = "";
+						TreeMap<String, String> existingRow = tempMap.get(newKey);
+
+						for (String rowHdr : thisRow.keySet()) {
+							if (pResult.getHeaders().contains(rowHdr)) {
+								if (!rawHdr.equals(rowHdr)) {
+									String thisVal = thisRow.get(rowHdr);
+
+									newRow.put(rowHdr, thisVal);
+									if (!newKey.isEmpty()) {
+										newKey += ", ";
+									}
+									newKey += rowHdr + "=" + thisVal;
+								}
+							}
+						}
+
+						existingRow = tempMap.get(newKey);
+						String txtVal = thisRow.get(rawHdr);
+						long thisVal = 0;
+						long currSum = 0;
+
+						try {
+							thisVal = new Long(txtVal).longValue();
+						} catch(NumberFormatException e) {
+							reportWarning("Unable to convert '" + txtVal + "' to number for summing", this.ac);
+						}
+
+						if (existingRow == null) {
+							existingRow = newRow;
+							tempMap.put(newKey, existingRow);
+							currSum = 0;
+						} else {
+							currSum = new Long(existingRow.get(thisHdr)).longValue();
+						}
+
+						String newSumVal = new Long(currSum + thisVal).toString();
+						existingRow.put(thisHdr, newSumVal);
+					}
+
+					for (TreeMap<String, String> newRow : tempMap.values()) {
+						result.add(newRow);
+					}
+				} else {
+					reportWarning("More than one sum variable is not yet supported.  The request to sum '" + thisHdr + "' will be ignored", this.ac);
+				}
+			}
+		}
+
+		return result;
+	}
+
+	private void addSortedRows(CeQuery pQuery, ArrayList<TreeMap<String, String>> pRows, ContainerCeResult pResult) {
 		ArrayList<TreeMap<String, String>> sortedRows = null;
 		TreeMap<String, TreeMap<String, String>> tempRows = new TreeMap<String, TreeMap<String,String>>();
-		
+
 		int ctr = 0;
 		for (TreeMap<String, String> thisRow : pRows) {
 			String sortedKey = "";
 			for (String sortHdr : pQuery.getOrderTokens()) {
-				//DSB - 10/09/2015 - Try to sort all values as integers rather than just counts
-//				if (sortHdr.startsWith("#")) {
-					//the value is a count so pad with zeros to ensure correct sorting
-					try {
-						Integer countNum = new Integer(thisRow.get(sortHdr));
-						sortedKey += String.format("%12d", countNum);
-						//TODO: Improve this to handle numbers larger than 999999999999
-					} catch (NumberFormatException e) {
-						sortedKey += thisRow.get(sortHdr);
-//						reportException(e, this.ac, logger, CLASS_NAME, METHOD_NAME);
-					}
-//				} else {
-//					sortedKey += thisRow.get(sortHdr);
-//				}
+				try {
+					Integer countNum = new Integer(thisRow.get(sortHdr));
+					sortedKey += String.format("%12d", countNum);
+					//TODO: Improve this to handle numbers larger than 999999999999
+				} catch (NumberFormatException e) {
+					sortedKey += thisRow.get(sortHdr);
+				}
 			}
-			
+
 			//Add a counter to the end to ensure keys are unique
 			sortedKey += "_" + ctr++;
-			
+
 			tempRows.put(sortedKey, thisRow);
 		}
-		
+
 		sortedRows = new ArrayList<TreeMap<String, String>>(tempRows.values());
-				
+
 		if (!pQuery.isSortOrderAscending()) {
 			Collections.reverse(sortedRows);
 		}
@@ -1041,7 +933,6 @@ public class QueryResultProcessorMem {
 		addUnsortedRows(pQuery, sortedRows, pResult);
 	}
 
-	//DSB 01/05/2015 #1095
 	private static void addUnsortedRows(CeQuery pQuery, ArrayList<TreeMap<String, String>> pRows, ContainerCeResult pResult) {
 		//Add each row
 		for (TreeMap<String, String> thisRow : pRows) {
