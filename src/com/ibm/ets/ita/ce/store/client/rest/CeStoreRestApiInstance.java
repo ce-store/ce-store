@@ -30,6 +30,7 @@ public class CeStoreRestApiInstance extends CeStoreRestApi {
 	public static final String PARM_RELINSTS = "relatedInstances";
 	public static final String PARM_REFINSTS = "referringInstances";
 	public static final String PARM_LIMRELS = "limitRelationships";
+	public static final String PARM_ONLYPROPS = "onlyProperties";
 	public static final String PARM_SPTS = "suppressPropertyTypes";
 
 	private static final String TYPE_INST = "instance";
@@ -521,11 +522,12 @@ public class CeStoreRestApiInstance extends CeStoreRestApi {
 		boolean refInsts = getBooleanParameterNamed(PARM_REFINSTS, true);
 		boolean suppPropTypes = getBooleanParameterNamed(PARM_SPTS, false);
 		String[] limRels = getListParameterNamed(PARM_LIMRELS);
+		String[] onlyProps = getListParameterNamed(PARM_ONLYPROPS);
 
 		if (isDefaultStyle() || isFullStyle()) {
-			getWebActionResponse().setStructuredResult(instWeb.generateFullDetailsJsonFor(pInstance, numSteps, relInsts, refInsts, limRels, suppPropTypes));
+			getWebActionResponse().setStructuredResult(instWeb.generateFullDetailsJsonFor(pInstance, onlyProps, numSteps, relInsts, refInsts, limRels, suppPropTypes));
 		} else {
-			getWebActionResponse().setStructuredResult(instWeb.generateSummaryDetailsJsonFor(pInstance, numSteps, relInsts, refInsts, limRels, suppPropTypes));
+			getWebActionResponse().setStructuredResult(instWeb.generateSummaryDetailsJsonFor(pInstance, onlyProps, numSteps, relInsts, refInsts, limRels, suppPropTypes));
 		}
 	}
 

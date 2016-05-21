@@ -309,6 +309,7 @@ public class CeStoreRestApiSpecial extends CeStoreRestApi {
 		boolean refInsts = getBooleanParameterNamed(CeStoreRestApiInstance.PARM_REFINSTS, true);
 		boolean suppPropTypes = getBooleanParameterNamed(CeStoreRestApiInstance.PARM_SPTS, false);
 		String[] limRels = getListParameterNamed(CeStoreRestApiInstance.PARM_LIMRELS);
+		String[] onlyProps = getListParameterNamed(CeStoreRestApiInstance.PARM_ONLYPROPS);
 
 		boolean retInsts = getBooleanParameterNamed(PARM_RETINSTS);
 		boolean caseSen = getBooleanParameterNamed(PARM_CASESEN, this.wc.getCeConfig().isCaseSensitive());
@@ -317,7 +318,7 @@ public class CeStoreRestApiSpecial extends CeStoreRestApi {
 
 		if (!searchTerms.isEmpty()) {
 			if (isJsonRequest()) {
-				jsonKeywordSearch(searchTerms, conNames, propNames, retInsts, caseSen, numSteps, relInsts, refInsts, limRels, suppPropTypes);
+				jsonKeywordSearch(searchTerms, conNames, propNames, retInsts, caseSen, onlyProps, numSteps, relInsts, refInsts, limRels, suppPropTypes);
 			} else if (isTextRequest()) {
 				textKeywordSearch(searchTerms, conNames, propNames, retInsts, caseSen);
 			} else {
@@ -328,10 +329,10 @@ public class CeStoreRestApiSpecial extends CeStoreRestApi {
 		}
 	}
 
-	private void jsonKeywordSearch(ArrayList<String> pSearchTerms, String[] pConNames, String[] pPropNames, boolean pRetInsts, boolean pCaseSensitive, int pNumSteps, boolean pRelInsts, boolean pRefInsts, String[] pLimRels, boolean pSuppPropTypes) {
+	private void jsonKeywordSearch(ArrayList<String> pSearchTerms, String[] pConNames, String[] pPropNames, boolean pRetInsts, boolean pCaseSensitive, String[] pOnlyProps, int pNumSteps, boolean pRelInsts, boolean pRefInsts, String[] pLimRels, boolean pSuppPropTypes) {
 		StoreActions sa = StoreActions.createUsingDefaultConfig(this.wc);
 		ArrayList<ContainerSearchResult> resList = sa.keywordSearch(pSearchTerms, pConNames, pPropNames, pCaseSensitive);
-		setSearchListAsStructuredResult(resList, pSearchTerms, pConNames, pPropNames, pRetInsts, pNumSteps, pRelInsts, pRefInsts, pLimRels, pSuppPropTypes);
+		setSearchListAsStructuredResult(resList, pSearchTerms, pConNames, pPropNames, pRetInsts, pOnlyProps, pNumSteps, pRelInsts, pRefInsts, pLimRels, pSuppPropTypes);
 	}
 
 	private void textKeywordSearch(ArrayList<String> pSearchTerms, String[] pConNames, String[] pPropNames, boolean pRetInsts, boolean pCaseSen) {
@@ -499,14 +500,15 @@ public class CeStoreRestApiSpecial extends CeStoreRestApi {
 		}
 	}
 
-	private void setSearchListAsStructuredResult(ArrayList<ContainerSearchResult> pResults, ArrayList<String> pSearchTerms, String[] pConceptNames, String[] pPropertyNames, boolean pRetInsts, int pNumSteps, boolean pRelInsts, boolean pRefInsts, String []pLimRels, boolean pSuppPropTypes) {
-		getWebActionResponse().setStructuredResult(CeWebContainerResult.generateKeywordSearchResultFrom(this.wc, pResults, pSearchTerms, pConceptNames, pPropertyNames, pRetInsts, pNumSteps, pRelInsts, pRefInsts, pLimRels, pSuppPropTypes));
+	private void setSearchListAsStructuredResult(ArrayList<ContainerSearchResult> pResults, ArrayList<String> pSearchTerms, String[] pConceptNames, String[] pPropertyNames, boolean pRetInsts, String[] pOnlyProps, int pNumSteps, boolean pRelInsts, boolean pRefInsts, String []pLimRels, boolean pSuppPropTypes) {
+		getWebActionResponse().setStructuredResult(CeWebContainerResult.generateKeywordSearchResultFrom(this.wc, pResults, pSearchTerms, pConceptNames, pPropertyNames, pRetInsts, pOnlyProps, pNumSteps, pRelInsts, pRefInsts, pLimRels, pSuppPropTypes));
 	}
 
 	private void setMultipleConceptInstanceListAsStructuredResult(TreeMap<String, ArrayList<CeInstance>> pList, int pNumSteps, boolean pRelInsts, boolean pRefInsts, String[] pLimRels) {
 		boolean suppPropTypes = getBooleanParameterNamed(CeStoreRestApiInstance.PARM_SPTS, false);
+		String[] onlyProps = getListParameterNamed(CeStoreRestApiInstance.PARM_ONLYPROPS);
 
-		getWebActionResponse().setStructuredResult(CeWebSpecial.generateMultipleConceptInstanceListFrom(this.wc, this, pList, pNumSteps, pRelInsts, pRefInsts, pLimRels, suppPropTypes));
+		getWebActionResponse().setStructuredResult(CeWebSpecial.generateMultipleConceptInstanceListFrom(this.wc, this, pList, onlyProps, pNumSteps, pRelInsts, pRefInsts, pLimRels, suppPropTypes));
 	}
 
 	private void setDiverseConceptInstanceListAsStructuredResult(TreeMap<CeInstance, ArrayList<CeConcept>> pInstList) {

@@ -192,7 +192,7 @@ public class CeWebConcept extends CeWebObject {
 		
 		if (mmInst != null) {
 			CeWebInstance webInst = new CeWebInstance(this.ac);
-			CeStoreJsonObject metaModelInstanceJSON = webInst.generateSummaryDetailsJsonFor(mmInst, 0, false, false, null, false);
+			CeStoreJsonObject metaModelInstanceJSON = webInst.generateSummaryDetailsJsonFor(mmInst, null, 0, false, false, null, false);
 			putObjectValueIn(pJsonObj, KEY_META_INSTANCE, metaModelInstanceJSON);
 		} else {
 			reportWarning("No meta-model instance was found for concept named '" + pCon.getConceptName() + "' - this might be a shadow concept", this.ac);

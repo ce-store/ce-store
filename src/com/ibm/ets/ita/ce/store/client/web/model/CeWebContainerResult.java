@@ -28,6 +28,7 @@ public class CeWebContainerResult extends CeWebObject {
 	private static final String KEY_ROWS = "rows";
 	private static final String KEY_INSTANCES = "instances";
 	private static final String KEY_TYPES = "types";
+	private static final String KEY_NUMROWS = "number_of_rows";
 
 	private static final String KEY_QUERY_TEXT = "query";
 	private static final String KEY_QUERY_TIME = "query_time";
@@ -54,7 +55,7 @@ public class CeWebContainerResult extends CeWebObject {
 	//	KEY_HEADERS[]
 	//	KEY_TYPES[]
 	//	KEY_RESULTS[[]]
-	public static CeStoreJsonObject generateNormalCeQueryResultFrom(ActionContext pAc, ContainerCeResult pCeResult, boolean pReturnInstances, int pNumSteps, boolean pRelInsts, boolean pRefInsts, String[] pLimRels, boolean pSuppPropTypes) {
+	public static CeStoreJsonObject generateNormalCeQueryResultFrom(ActionContext pAc, ContainerCeResult pCeResult, boolean pSuppressResult, boolean pReturnInstances, String[] pOnlyProps, int pNumSteps, boolean pRelInsts, boolean pRefInsts, String[] pLimRels, boolean pSuppPropTypes) {
 		CeStoreJsonObject jObj = new CeStoreJsonObject();
 
 		if (pCeResult != null) {
@@ -86,13 +87,16 @@ public class CeWebContainerResult extends CeWebObject {
 
 			putStringValueIn(jObj, KEY_QUERY_TEXT, pCeResult.getQuery());
 			putLongValueIn(jObj, KEY_QUERY_TIME, pCeResult.getExecutionTime());
-			putAllStringValuesIn(jObj, KEY_HEADERS, pCeResult.getHeaders());
-			putAllStringValuesIn(jObj, KEY_TYPES, pCeResult.getTypes());
+			putLongValueIn(jObj, KEY_NUMROWS, queryResults.size());
 
-			putAllArrayStringValuesIn(jObj, KEY_RESULTS, queryResults);	
+			if (!pSuppressResult) {
+				putAllStringValuesIn(jObj, KEY_HEADERS, pCeResult.getHeaders());
+				putAllStringValuesIn(jObj, KEY_TYPES, pCeResult.getTypes());
+				putAllArrayStringValuesIn(jObj, KEY_RESULTS, queryResults);	
+			}
 
 			if (pReturnInstances) {
-				createInstanceResultsFor(pAc, jObj, KEY_INSTANCES, queryResults, pCeResult.getTypes(), pNumSteps, pRelInsts, pRefInsts, pLimRels, pSuppPropTypes);
+				createInstanceResultsFor(pAc, jObj, KEY_INSTANCES, queryResults, pCeResult.getTypes(), pOnlyProps, pNumSteps, pRelInsts, pRefInsts, pLimRels, pSuppPropTypes);
 			}
 		} else {
 			reportError("Unexpected null container CE result encountered during details JSON rendering", pAc);
@@ -101,7 +105,7 @@ public class CeWebContainerResult extends CeWebObject {
 		return jObj;
 	}
 
-	private static void createInstanceResultsFor(ActionContext pAc, CeStoreJsonObject pObj, String pKey, ArrayList<ArrayList<String>> pResults, ArrayList<String> pTypes, int pNumSteps, boolean pRelInsts, boolean pRefInsts, String[] pLimRels, boolean pSuppPropTypes) {
+	private static void createInstanceResultsFor(ActionContext pAc, CeStoreJsonObject pObj, String pKey, ArrayList<ArrayList<String>> pResults, ArrayList<String> pTypes, String[] pOnlyProps, int pNumSteps, boolean pRelInsts, boolean pRefInsts, String[] pLimRels, boolean pSuppPropTypes) {
 		CeStoreJsonObject jInsts = new CeStoreJsonObject();
 
 		for (ArrayList<String> thisRow : pResults) {
@@ -114,7 +118,7 @@ public class CeWebContainerResult extends CeWebObject {
 						CeInstance thisInst = pAc.getModelBuilder().getInstanceNamed(pAc,  thisId);
 
 						CeWebInstance webInst = new CeWebInstance(pAc);
-						CeStoreJsonObject jInst = webInst.generateSummaryDetailsJsonFor(thisInst, pNumSteps, pRelInsts, pRefInsts, pLimRels, pSuppPropTypes);
+						CeStoreJsonObject jInst = webInst.generateSummaryDetailsJsonFor(thisInst, pOnlyProps, pNumSteps, pRelInsts, pRefInsts, pLimRels, pSuppPropTypes);
 
 						jInsts.put(thisInst.getInstanceName(), jInst);
 					}
@@ -149,12 +153,12 @@ public class CeWebContainerResult extends CeWebObject {
 	//		KEY_PROP_NAME
 	//		KEY_PROP_VAL
 	//		KEY_PROP_TYPE
-	public static CeStoreJsonObject generateKeywordSearchResultFrom(ActionContext pAc, ArrayList<ContainerSearchResult> pResults, ArrayList<String> pSearchTerms, String[] pConceptNames, String[] pPropertyNames, boolean pRetInsts, int pNumSteps, boolean pRelInsts, boolean pRefInsts, String[] pLimRels, boolean pSuppPropTypes) {
+	public static CeStoreJsonObject generateKeywordSearchResultFrom(ActionContext pAc, ArrayList<ContainerSearchResult> pResults, ArrayList<String> pSearchTerms, String[] pConceptNames, String[] pPropertyNames, boolean pRetInsts, String[] pOnlyProps, int pNumSteps, boolean pRelInsts, boolean pRefInsts, String[] pLimRels, boolean pSuppPropTypes) {
 		CeStoreJsonObject jObj = new CeStoreJsonObject();
 
 		if (pResults != null) {
 			if (!pResults.isEmpty()) {
-				CeStoreJsonObject jObjResult = processKeywordSearchRows(pAc, pResults, pRetInsts, pNumSteps, pRelInsts, pRefInsts, pLimRels, pSuppPropTypes);
+				CeStoreJsonObject jObjResult = processKeywordSearchRows(pAc, pResults, pRetInsts, pOnlyProps, pNumSteps, pRelInsts, pRefInsts, pLimRels, pSuppPropTypes);
 
 				putAllStringValuesIn(jObj, KEY_SEARCHTERMS, pSearchTerms);
 				putAllStringValuesIn(jObj, KEY_SEARCHCONS, pConceptNames);
@@ -175,7 +179,7 @@ public class CeWebContainerResult extends CeWebObject {
 		return jObj;
 	}
 
-	private static CeStoreJsonObject processKeywordSearchRows(ActionContext pAc, ArrayList<ContainerSearchResult> pResults, boolean pRetInsts, int pNumSteps, boolean pRelInsts, boolean pRefInsts, String[] pLimRels, boolean pSuppPropTypes) {
+	private static CeStoreJsonObject processKeywordSearchRows(ActionContext pAc, ArrayList<ContainerSearchResult> pResults, boolean pRetInsts, String[] pOnlyProps, int pNumSteps, boolean pRelInsts, boolean pRefInsts, String[] pLimRels, boolean pSuppPropTypes) {
 		CeStoreJsonObject jObjMain = new CeStoreJsonObject();
 		CeStoreJsonObject jObjInsts = new CeStoreJsonObject();
 		CeStoreJsonArray jArr = new CeStoreJsonArray();
@@ -198,7 +202,7 @@ public class CeWebContainerResult extends CeWebObject {
 					CeWebInstance cwi = new CeWebInstance(pAc);
 
 					//TODO: Get the values for these defaulted parameters from command line parameters
-					jObjInsts.put(thisInst.getInstanceName(), cwi.generateSummaryDetailsJsonFor(thisInst, pNumSteps, pRelInsts, pRefInsts, pLimRels, pSuppPropTypes));
+					jObjInsts.put(thisInst.getInstanceName(), cwi.generateSummaryDetailsJsonFor(thisInst, pOnlyProps, pNumSteps, pRelInsts, pRefInsts, pLimRels, pSuppPropTypes));
 				}
 			}
 

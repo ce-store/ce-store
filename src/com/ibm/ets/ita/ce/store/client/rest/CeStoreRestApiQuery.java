@@ -23,6 +23,7 @@ public class CeStoreRestApiQuery extends CeStoreRestApi {
 
 	private static final String TYPE_QUERY = "query";
 	private static final String PARM_SUPPCE = "suppressCe";
+	private static final String PARM_SUPPRES = "suppressResult";
 
 	public CeStoreRestApiQuery(WebActionContext pWc, ArrayList<String> pRestParts, HttpServletRequest pRequest) {
 		super(pWc, pRestParts, pRequest);
@@ -182,9 +183,10 @@ public class CeStoreRestApiQuery extends CeStoreRestApi {
 
 	private void jsonExecuteQuery(CeQuery pTgtQuery) {
 		boolean returnInstances = getBooleanUrlParameterValueNamed(PARM_RETINSTS, false);
+		boolean suppressResult = getBooleanUrlParameterValueNamed(PARM_SUPPRES, false);
 		ContainerCeResult result = actionExecuteQuery(pTgtQuery);
 
-		setCeResultAsStructuredResult(result, returnInstances);
+		setCeResultAsStructuredResult(result, suppressResult, returnInstances);
 	}
 
 	private void textExecuteQuery(CeQuery pTgtQuery) {

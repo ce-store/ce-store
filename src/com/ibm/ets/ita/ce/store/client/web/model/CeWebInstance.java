@@ -6,6 +6,7 @@ package com.ibm.ets.ita.ce.store.client.web.model;
  *******************************************************************************/
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.TreeMap;
@@ -44,13 +45,13 @@ public class CeWebInstance extends CeWebObject {
         super(pAc);
     }
 
-    public CeStoreJsonObject generateFullDetailsJsonFor(CeInstance pInst, int pNumSteps, boolean pRelInsts, boolean pRefInsts, String[] pLimRels, boolean pSuppPropTypes) {
+    public CeStoreJsonObject generateFullDetailsJsonFor(CeInstance pInst, String[] pOnlyProps, int pNumSteps, boolean pRelInsts, boolean pRefInsts, String[] pLimRels, boolean pSuppPropTypes) {
         CeStoreJsonObject mainObj = new CeStoreJsonObject();
 
         if (pNumSteps <= 0) {
-            mainObj = normalFullDetailsJsonFor(pInst, pSuppPropTypes);
+            mainObj = normalFullDetailsJsonFor(pInst, pOnlyProps, pSuppPropTypes);
         } else {
-            mainObj.put("main_instance", normalFullDetailsJsonFor(pInst, pSuppPropTypes));
+            mainObj.put("main_instance", normalFullDetailsJsonFor(pInst, pOnlyProps, pSuppPropTypes));
 
             if (pRelInsts) {
             	CeStoreJsonObject relInsts = new CeStoreJsonObject();
@@ -72,7 +73,7 @@ public class CeWebInstance extends CeWebObject {
         int thisDepth = pDepth + 1;
 
         for (CeInstance relInst : pInst.getAllRelatedInstances(this.ac, pLimRels)) {
-            pResult.put(relInst.getInstanceName(), normalSummaryDetailsJsonFor(relInst, pSuppPropTypes));
+            pResult.put(relInst.getInstanceName(), normalSummaryDetailsJsonFor(relInst, null, pSuppPropTypes));
 
             if (thisDepth <= pNumSteps) {
                 relatedInstancesJsonFor(relInst, pNumSteps, thisDepth, pResult, pLimRels, pSuppPropTypes);
@@ -102,7 +103,7 @@ public class CeWebInstance extends CeWebObject {
 	            }	
 
 	            for (CeInstance refInst : refInsts) {
-	                refArray.add(normalSummaryDetailsJsonFor(refInst, pSuppPropTypes));
+	                refArray.add(normalSummaryDetailsJsonFor(refInst, null, pSuppPropTypes));
 
 	                if (thisDepth <= pNumSteps) {
 	                    referringInstancesJsonFor(refInst, pNumSteps, thisDepth, pResult, pLimRels, pSuppPropTypes);
@@ -114,8 +115,15 @@ public class CeWebInstance extends CeWebObject {
         }
     }
 
-    private CeStoreJsonObject normalFullDetailsJsonFor(CeInstance pInst, boolean pSuppPropTypes) {
+    private CeStoreJsonObject normalFullDetailsJsonFor(CeInstance pInst, String[] pOnlyProps, boolean pSuppPropTypes) {
         CeStoreJsonObject mainObj = new CeStoreJsonObject();
+        ArrayList<String> onlyPropList = null;
+
+        if (pOnlyProps != null) {
+        	onlyPropList = new ArrayList<String>(Arrays.asList(pOnlyProps));
+        } else {
+        	onlyPropList = new ArrayList<String>();
+        }
 
         putStringValueIn(mainObj, KEY_TYPE, TYPE_INST);
         putStringValueIn(mainObj, KEY_STYLE, STYLE_FULL);
@@ -137,36 +145,38 @@ public class CeWebInstance extends CeWebObject {
         CeStoreJsonObject propRatObj = new CeStoreJsonObject();
 
         for (CePropertyInstance thisPi : pInst.getPropertyInstances()) {
-            String keyPropName = encodedPropertyName(thisPi.getRelatedProperty());
-            if (thisPi.isSingleCardinality()) {
-                putStringValueIn(propValsObj, keyPropName, thisPi.getSingleOrFirstValue());
-            } else {
-                HashSet<String> uvList = thisPi.getValueList();
-                putAllStringValuesIn(propValsObj, keyPropName, uvList);
-
-                CeStoreJsonObject valRatObj = new CeStoreJsonObject();
-
-                for (String thisVal : uvList) {
-                    ArrayList<CeRationaleReasoningStep> ratList = this.ac.getModelBuilder()
-                            .getReasoningStepsForPropertyValue(pInst.getInstanceName(), thisPi.getPropertyName(),
-                                    thisVal, false);
-
-                    if (!ratList.isEmpty()) {
-                        CeWebRationaleReasoningStep webRs = new CeWebRationaleReasoningStep(this.ac);
-                        valRatObj.put(thisVal, webRs.generateListFrom(ratList));
-                    }
-                }
-
-                if (!valRatObj.isEmpty()) {
-                    propRatObj.put(thisPi.getPropertyName(), valRatObj);
-                }
-            }
-
-            if (thisPi.getRelatedProperty().isDatatypeProperty()) {
-                putStringValueIn(propTypesObj, keyPropName, PROPTYPE_DATATYPE);
-            } else {
-                putStringValueIn(propTypesObj, keyPropName, PROPTYPE_OBJECT);
-            }
+        	if (isValidProperty(thisPi, onlyPropList)) {
+	            String keyPropName = encodedPropertyName(thisPi.getRelatedProperty());
+	            if (thisPi.isSingleCardinality()) {
+	                putStringValueIn(propValsObj, keyPropName, thisPi.getSingleOrFirstValue());
+	            } else {
+	                HashSet<String> uvList = thisPi.getValueList();
+	                putAllStringValuesIn(propValsObj, keyPropName, uvList);
+	
+	                CeStoreJsonObject valRatObj = new CeStoreJsonObject();
+	
+	                for (String thisVal : uvList) {
+	                    ArrayList<CeRationaleReasoningStep> ratList = this.ac.getModelBuilder()
+	                            .getReasoningStepsForPropertyValue(pInst.getInstanceName(), thisPi.getPropertyName(),
+	                                    thisVal, false);
+	
+	                    if (!ratList.isEmpty()) {
+	                        CeWebRationaleReasoningStep webRs = new CeWebRationaleReasoningStep(this.ac);
+	                        valRatObj.put(thisVal, webRs.generateListFrom(ratList));
+	                    }
+	                }
+	
+	                if (!valRatObj.isEmpty()) {
+	                    propRatObj.put(thisPi.getPropertyName(), valRatObj);
+	                }
+	            }
+	
+	            if (thisPi.getRelatedProperty().isDatatypeProperty()) {
+	                putStringValueIn(propTypesObj, keyPropName, PROPTYPE_DATATYPE);
+	            } else {
+	                putStringValueIn(propTypesObj, keyPropName, PROPTYPE_OBJECT);
+	            }
+        	}
         }
 
         putObjectValueIn(mainObj, KEY_PROPVALS, propValsObj);
@@ -185,13 +195,13 @@ public class CeWebInstance extends CeWebObject {
         return mainObj;
     }
 
-    public CeStoreJsonObject generateSummaryDetailsJsonFor(CeInstance pInst, int pNumSteps, boolean pRelInsts, boolean pRefInsts, String[] pLimInsts, boolean pSuppPropTypes) {
+    public CeStoreJsonObject generateSummaryDetailsJsonFor(CeInstance pInst, String[] pOnlyProps, int pNumSteps, boolean pRelInsts, boolean pRefInsts, String[] pLimInsts, boolean pSuppPropTypes) {
         CeStoreJsonObject mainObj = new CeStoreJsonObject();
 
         if (pNumSteps <= 0) {
-            mainObj = normalSummaryDetailsJsonFor(pInst, pSuppPropTypes);
+            mainObj = normalSummaryDetailsJsonFor(pInst, pOnlyProps, pSuppPropTypes);
         } else {
-            mainObj.put("main_instance", normalSummaryDetailsJsonFor(pInst, pSuppPropTypes));
+            mainObj.put("main_instance", normalSummaryDetailsJsonFor(pInst, pOnlyProps, pSuppPropTypes));
 
             if (pRelInsts) {
 	            CeStoreJsonObject relInsts = new CeStoreJsonObject();
@@ -209,8 +219,15 @@ public class CeWebInstance extends CeWebObject {
         return mainObj;
     }
 
-    private CeStoreJsonObject normalSummaryDetailsJsonFor(CeInstance pInst, boolean pSuppPropTypes) {
+    private CeStoreJsonObject normalSummaryDetailsJsonFor(CeInstance pInst, String[] pOnlyProps, boolean pSuppPropTypes) {
         CeStoreJsonObject mainObj = new CeStoreJsonObject();
+        ArrayList<String> onlyPropList = null;
+
+        if (pOnlyProps != null) {
+        	onlyPropList = new ArrayList<String>(Arrays.asList(pOnlyProps));
+        } else {
+        	onlyPropList = new ArrayList<String>();
+        }
 
         putStringValueIn(mainObj, KEY_TYPE, TYPE_INST);
         putStringValueIn(mainObj, KEY_STYLE, STYLE_SUMMARY);
@@ -232,18 +249,20 @@ public class CeWebInstance extends CeWebObject {
         CeStoreJsonObject propTypesObj = new CeStoreJsonObject();
 
         for (CePropertyInstance thisPi : pInst.getPropertyInstances()) {
-            String keyPropName = encodedPropertyName(thisPi.getRelatedProperty());
-            if (thisPi.isSingleCardinality()) {
-                putStringValueIn(propValsObj, keyPropName, thisPi.getSingleOrFirstValue());
-            } else {
-                putAllStringValuesIn(propValsObj, keyPropName, thisPi.getValueList());
-            }
-
-            if (thisPi.getRelatedProperty().isDatatypeProperty()) {
-                putStringValueIn(propTypesObj, keyPropName, PROPTYPE_DATATYPE);
-            } else {
-                putStringValueIn(propTypesObj, keyPropName, PROPTYPE_OBJECT);
-            }
+        	if (isValidProperty(thisPi, onlyPropList)) {
+	            String keyPropName = encodedPropertyName(thisPi.getRelatedProperty());
+	            if (thisPi.isSingleCardinality()) {
+	                putStringValueIn(propValsObj, keyPropName, thisPi.getSingleOrFirstValue());
+	            } else {
+	                putAllStringValuesIn(propValsObj, keyPropName, thisPi.getValueList());
+	            }
+	
+	            if (thisPi.getRelatedProperty().isDatatypeProperty()) {
+	                putStringValueIn(propTypesObj, keyPropName, PROPTYPE_DATATYPE);
+	            } else {
+	                putStringValueIn(propTypesObj, keyPropName, PROPTYPE_OBJECT);
+	            }
+        	}
         }
 
         putObjectValueIn(mainObj, KEY_PROPVALS, propValsObj);
@@ -258,21 +277,31 @@ public class CeWebInstance extends CeWebObject {
         return mainObj;
     }
 
-    public CeStoreJsonArray generateFullListJsonFor(Collection<CeInstance> pInstList, boolean pSuppPropTypes) {
+	public boolean isValidProperty(CePropertyInstance pPi, ArrayList<String> pOnlyProps) {
+		boolean result = true;
+
+		if ((pOnlyProps != null) && (!pOnlyProps.isEmpty())) {
+			result = pOnlyProps.contains(pPi.getPropertyName());
+		}
+
+		return result;
+	}
+
+    public CeStoreJsonArray generateFullListJsonFor(Collection<CeInstance> pInstList, String[] pOnlyProps, boolean pSuppPropTypes) {
         CeStoreJsonArray jInsts = new CeStoreJsonArray();
 
         for (CeInstance thisInst : pInstList) {
-            jInsts.add(normalFullDetailsJsonFor(thisInst, pSuppPropTypes));
+            jInsts.add(normalFullDetailsJsonFor(thisInst, pOnlyProps, pSuppPropTypes));
         }
 
         return jInsts;
     }
 
-    public CeStoreJsonArray generateSummaryListJsonFor(Collection<CeInstance> pInstList, boolean pSuppPropTypes) {
+    public CeStoreJsonArray generateSummaryListJsonFor(Collection<CeInstance> pInstList, String[] pOnlyProps, boolean pSuppPropTypes) {
         CeStoreJsonArray jInsts = new CeStoreJsonArray();
 
         for (CeInstance thisInst : pInstList) {
-            jInsts.add(normalSummaryDetailsJsonFor(thisInst, pSuppPropTypes));
+            jInsts.add(normalSummaryDetailsJsonFor(thisInst, pOnlyProps, pSuppPropTypes));
         }
 
         return jInsts;

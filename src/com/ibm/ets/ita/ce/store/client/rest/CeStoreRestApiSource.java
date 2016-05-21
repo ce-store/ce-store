@@ -209,7 +209,7 @@ public class CeStoreRestApiSource extends CeStoreRestApi {
 		if (result.isCeResult()) {
 			boolean returnInstances = getBooleanUrlParameterValueNamed(PARM_RETINSTS, false);
 
-			setCeResultAsStructuredResult((ContainerCeResult)result, returnInstances);
+			setCeResultAsStructuredResult((ContainerCeResult)result, false, returnInstances);
 		} else if (result.isStatistics()) {
 			setSentenceLoadResults((ContainerSentenceLoadResult)result);
 		} else {

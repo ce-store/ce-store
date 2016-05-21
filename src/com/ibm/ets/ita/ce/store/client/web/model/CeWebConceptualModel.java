@@ -131,10 +131,10 @@ public class CeWebConceptualModel extends CeWebObject {
 
 	private void addMetamodelInstanceFor(CeConceptualModel pCm, CeStoreJsonObject pJsonObj) {
 		CeInstance mmInst = pCm.retrieveMetaModelInstance(this.ac);
-		
+
 		if (mmInst != null) {
 			CeWebInstance webInst = new CeWebInstance(this.ac);
-			CeStoreJsonObject metaModelInstanceJSON = webInst.generateSummaryDetailsJsonFor(mmInst, 0, false, false, null, false);
+			CeStoreJsonObject metaModelInstanceJSON = webInst.generateSummaryDetailsJsonFor(mmInst, null, 0, false, false, null, false);
 			putObjectValueIn(pJsonObj, KEY_META_INSTANCE, metaModelInstanceJSON);
 		} else {
 			reportWarning("No meta-model instance was found for conceptual model named '" + pCm.getModelName(), this.ac);

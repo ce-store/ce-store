@@ -582,11 +582,12 @@ public abstract class CeStoreRestApi extends ApiHandler {
 	protected void setInstanceListAsStructuredResult(Collection<CeInstance> pInstList) {
 		CeWebInstance instWeb = new CeWebInstance(this.wc);
 		boolean suppPropTypes = getBooleanParameterNamed(CeStoreRestApiInstance.PARM_SPTS, false);
+		String[] onlyProps = getListParameterNamed(CeStoreRestApiInstance.PARM_ONLYPROPS);
 
 		if (isDefaultStyle() || isSummaryStyle()) {
-			getWebActionResponse().setStructuredResult(instWeb.generateSummaryListJsonFor(pInstList, suppPropTypes));
+			getWebActionResponse().setStructuredResult(instWeb.generateSummaryListJsonFor(pInstList, onlyProps, suppPropTypes));
 		} else {
-			getWebActionResponse().setStructuredResult(instWeb.generateFullListJsonFor(pInstList, suppPropTypes));
+			getWebActionResponse().setStructuredResult(instWeb.generateFullListJsonFor(pInstList, onlyProps, suppPropTypes));
 		}
 	}
 
@@ -597,19 +598,21 @@ public abstract class CeStoreRestApi extends ApiHandler {
 
 	protected void setSentenceLoadResults(ContainerSentenceLoadResult pSenStats) {
 		boolean suppPropTypes = getBooleanParameterNamed(CeStoreRestApiInstance.PARM_SPTS, false);
+		String[] onlyProps = getListParameterNamed(CeStoreRestApiInstance.PARM_ONLYPROPS);
 
 		CeWebSpecial webSpec = new CeWebSpecial(this.wc);
-		getWebActionResponse().setStructuredResult(webSpec.generateSentenceLoadResultsFrom(pSenStats, suppPropTypes));
+		getWebActionResponse().setStructuredResult(webSpec.generateSentenceLoadResultsFrom(pSenStats, onlyProps, suppPropTypes));
 	}
 
-	protected void setCeResultAsStructuredResult(ContainerCeResult pCeResult, boolean pReturnInstances) {
+	protected void setCeResultAsStructuredResult(ContainerCeResult pCeResult, boolean pSuppressResult, boolean pReturnInstances) {
 		int numSteps = getNumericUrlParameterValueNamed(CeStoreRestApiInstance.PARM_STEPS, -1);
 		boolean relInsts = getBooleanParameterNamed(CeStoreRestApiInstance.PARM_RELINSTS, true);
 		boolean refInsts = getBooleanParameterNamed(CeStoreRestApiInstance.PARM_REFINSTS, true);
 		boolean suppPropTypes = getBooleanParameterNamed(CeStoreRestApiInstance.PARM_SPTS, false);
 		String[] limRels = getListParameterNamed(CeStoreRestApiInstance.PARM_LIMRELS);
+		String[] onlyProps = getListParameterNamed(CeStoreRestApiInstance.PARM_ONLYPROPS);
 
-		getWebActionResponse().setStructuredResult(CeWebContainerResult.generateNormalCeQueryResultFrom(this.wc, pCeResult, pReturnInstances, numSteps, relInsts, refInsts, limRels, suppPropTypes));
+		getWebActionResponse().setStructuredResult(CeWebContainerResult.generateNormalCeQueryResultFrom(this.wc, pCeResult, pSuppressResult, pReturnInstances, onlyProps, numSteps, relInsts, refInsts, limRels, suppPropTypes));
 	}
 
 }

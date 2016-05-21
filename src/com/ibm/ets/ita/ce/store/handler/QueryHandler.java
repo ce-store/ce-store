@@ -633,7 +633,7 @@ public class QueryHandler extends RequestHandler {
 	public ContainerCeResult executeUserSpecifiedCeQueryByName(String pCeQueryName, boolean pSuppressCeColumn, String pStartTs, String pEndTs) {
 		return executeUserSpecifiedCeQueryByNameWithFlag(pCeQueryName, QueryExecutionManager.FLAG_RESP_IDS, pSuppressCeColumn, pStartTs, pEndTs);
 	}
-	
+
 	private ContainerCeResult executeUserSpecifiedCeQueryByNameWithFlag(String pCeQueryName, int pFlag, boolean pSuppressCeColumn, String pStartTs, String pEndTs) {
 		long sTime = System.currentTimeMillis();
 		ContainerCeResult result = null;

@@ -194,7 +194,7 @@ public class CeStoreRestApiRule extends CeStoreRestApi {
 		ContainerCeResult result = actionExecuteRuleAsQuery(pTgtRule);
 		boolean returnInstances = getBooleanUrlParameterValueNamed(PARM_RETINSTS, false);
 
-		setCeResultAsStructuredResult(result, returnInstances);
+		setCeResultAsStructuredResult(result, false, returnInstances);
 	}
 
 	private void textExecuteRuleAsQuery(CeRule pTgtRule) {
@@ -227,7 +227,7 @@ public class CeStoreRestApiRule extends CeStoreRestApi {
 		ContainerCeResult result = actionExecuteRule(pTgtRule);
 		boolean returnInstances = getBooleanUrlParameterValueNamed(PARM_RETINSTS, false);
 
-		setCeResultAsStructuredResult(result, returnInstances);
+		setCeResultAsStructuredResult(result, false, returnInstances);
 	}
 
 	private void textExecuteRule(CeRule pTgtRule) {
