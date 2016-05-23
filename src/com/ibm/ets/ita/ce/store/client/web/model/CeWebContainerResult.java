@@ -33,7 +33,7 @@ public class CeWebContainerResult extends CeWebObject {
 	private static final String KEY_QUERY_TEXT = "query";
 	private static final String KEY_QUERY_TIME = "query_time";
 
-	private static final String KEY_DOMAIN_NAME = "domain_name";
+	private static final String KEY_CONCEPT_NAMES = "concept_names";
 	private static final String KEY_INSTANCE_NAME = "instance_name";
 	private static final String KEY_INSTANCE_LABEL = "instance_label";
 	private static final String KEY_PROP_NAME = "property_name";
@@ -262,7 +262,7 @@ public class CeWebContainerResult extends CeWebObject {
 			CeStoreJsonObject jObjRow = new CeStoreJsonObject();
 			CeInstance resInst = pAc.getModelBuilder().getInstanceNamed(pAc, thisRes.getInstanceName());
 
-			putStringValueIn(jObjRow, KEY_DOMAIN_NAME, thisRes.getConceptName());
+			putAllStringValuesIn(jObjRow, KEY_CONCEPT_NAMES, thisRes.getConceptNames());
 			putStringValueIn(jObjRow, KEY_INSTANCE_NAME, thisRes.getInstanceName());
 			putStringValueIn(jObjRow, KEY_INSTANCE_LABEL, resInst.calculateLabel(pAc));
 			putStringValueIn(jObjRow, KEY_PROP_NAME, thisRes.getPropertyName());

@@ -1,5 +1,7 @@
 package com.ibm.ets.ita.ce.store.model.container;
 
+import java.util.ArrayList;
+
 /*******************************************************************************
  * (C) Copyright IBM Corporation  2011, 2015
  * All Rights Reserved
@@ -10,7 +12,7 @@ public class ContainerSearchResult implements Comparable<ContainerSearchResult> 
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
 
 	private String idKey = null;
-	private String conceptName = "";
+	private ArrayList<String> conceptNames = new ArrayList<String>();
 	private String instanceName = "";
 	private String propertyName = "";
 	private String propertyValue = "";
@@ -18,18 +20,28 @@ public class ContainerSearchResult implements Comparable<ContainerSearchResult> 
 
 	public String identityKey() {
 		if (this.idKey == null) {
-			this.idKey = this.conceptName + ":" + this.instanceName + ":" + this.propertyName + ":" + this.propertyValue;
+			this.idKey = firstConceptName() + ":" + this.instanceName + ":" + this.propertyName + ":" + this.propertyValue;
 		}
 
 		return this.idKey;
 	}
 
-	public String getConceptName() {
-		return this.conceptName;
+	public ArrayList<String> getConceptNames() {
+		return this.conceptNames;
 	}
 
-	public void setConceptName(String pConceptName) {
-		this.conceptName = pConceptName;
+	public void setConceptNames(ArrayList<String> pConceptNames) {
+		this.conceptNames = pConceptNames;
+	}
+
+	public String firstConceptName() {
+		String result = null;
+
+		if (!this.conceptNames.isEmpty()) {
+			result = this.conceptNames.get(0);
+		}
+
+		return result;
 	}
 
 	public String getInstanceName() {

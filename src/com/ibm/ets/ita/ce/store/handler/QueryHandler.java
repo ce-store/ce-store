@@ -929,49 +929,53 @@ public class QueryHandler extends RequestHandler {
 			}
 
 			if (srcVal.contains(tgtVal)) {
+				ArrayList<String> conNameList = new ArrayList<String>();
+
 				for (CeConcept instDirConcept : pInst.getAllLeafConcepts()) {
-					ContainerSearchResult csr = new ContainerSearchResult();
-					csr.setConceptName(instDirConcept.getConceptName());
-					csr.setInstanceName(pInst.getInstanceName());
-					csr.setPropertyName(pPi.getPropertyName());
-					csr.setPropertyValue(thisVal);
-
-					if (pPi.getRelatedProperty().isDatatypeProperty()) {
-						csr.setPropertyType("value");
-					} else {
-						csr.setPropertyType("instance");
-					}
-
-					pResult.add(csr);
+					conNameList.add(instDirConcept.getConceptName());
 				}
+
+				ContainerSearchResult csr = new ContainerSearchResult();
+				csr.setConceptNames(conNameList);
+				csr.setInstanceName(pInst.getInstanceName());
+				csr.setPropertyName(pPi.getPropertyName());
+				csr.setPropertyValue(thisVal);
+
+				if (pPi.getRelatedProperty().isDatatypeProperty()) {
+					csr.setPropertyType("value");
+				} else {
+					csr.setPropertyType("instance");
+				}
+
+				pResult.add(csr);
 			}
 		}
 	}
 
 	public ArrayList<ContainerCommonValues> listCommonPropertyValues(CeProperty pProp) {
 		ArrayList<ContainerCommonValues> commonVals = new ArrayList<ContainerCommonValues>();
-		
+
 		TreeMap<String, Long> result = new TreeMap<String, Long>();
-		
+
 		for (CeInstance thisInst : this.mb.listAllInstancesForConcept(pProp.getDomainConcept())) {
 			CePropertyInstance thisPi = thisInst.getPropertyInstanceForProperty(pProp);
-			
+
 			if (thisPi != null) {
 				for (String thisVal : thisPi.getValueList()) {
 					long countVal = 0;
 					Long existingCount = null;
-					
+
 					existingCount = result.get(thisVal);
-					
+
 					if (existingCount != null) {
 						countVal = existingCount.longValue();
 					}
-					
+
 					result.put(thisVal, new Long(++countVal));
 				}
 			}
 		}
-		
+
 		for (String thisKey : result.keySet()) {
 			Long countVal = result.get(thisKey);
 			ContainerCommonValues thisCcv = new ContainerCommonValues();

@@ -137,9 +137,16 @@ function HandlerStores() {
 				var thisRow = sr.search_results[idx];
 
 				var instLink = gEp.ui.links.instanceDetails(thisRow.instance_name, thisRow.instance_label);
-				var conLink = gEp.ui.links.conceptDetails(thisRow.domain_name);
-				var instDetails = instLink + '<br>(' + conLink + ')';
+				var conLinks = "";
+				var sep = "";
 
+				for (var key in thisRow.concept_names) {
+					var thisConName = thisRow.concept_names[key];
+					conLinks += sep + gEp.ui.links.conceptDetails(thisConName);
+					sep = ", ";
+				}
+
+				var instDetails = instLink + '<br>(' + conLinks + ')';
 				var propDetails = gEp.ui.links.propertyDetails(thisRow.property_name);
 				var valDetails = thisRow.property_value;
 
