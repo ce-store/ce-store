@@ -242,7 +242,6 @@ public class CeWebContainerResult extends CeWebObject {
 				if (pRetInsts) {
 					putObjectValueIn(jObj, KEY_INSTANCES, (CeStoreJsonObject)jObjResult.get(pAc, KEY_INSTANCES));
 				}
-
 			} else {
 				reportEmptyKeywordSearchResult(pAc, pSearchTerms, pConceptNames, pPropertyNames);
 			}

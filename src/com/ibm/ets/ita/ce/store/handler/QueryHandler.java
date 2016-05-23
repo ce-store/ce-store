@@ -822,11 +822,13 @@ public class QueryHandler extends RequestHandler {
 		if (pConceptNames == null|| pConceptNames.length == 0) {
 			instsToSearch = this.mb.retrieveAllInstances();
 		} else {
+			instsToSearch = new ArrayList<CeInstance>();
+
 			for (String conName : pConceptNames) {
 				CeConcept targetConcept = this.mb.getConceptNamed(this.ac, conName);
 
 				if (targetConcept != null) {
-					instsToSearch = this.mb.retrieveAllInstancesForConcept(targetConcept);
+					instsToSearch.addAll(this.mb.retrieveAllInstancesForConcept(targetConcept));
 				} else {
 					reportWarning("Specified concept '" + conName + "' could not be located when searching", this.ac);
 				}
