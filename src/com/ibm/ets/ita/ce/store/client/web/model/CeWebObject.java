@@ -29,6 +29,7 @@ public abstract class CeWebObject {
 
 	protected static final String STYLE_FULL = "full";
 	protected static final String STYLE_SUMMARY = "summary";
+	protected static final String STYLE_MINIMAL = "minimal";
 
 	private static final String KEY_ANNOTATIONS = "annotations";
 	protected static final String KEY_SEN_TEXT = "ce_text";

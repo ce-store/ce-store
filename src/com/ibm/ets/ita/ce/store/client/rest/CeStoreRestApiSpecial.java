@@ -495,6 +495,8 @@ public class CeStoreRestApiSpecial extends CeStoreRestApi {
 	private void setPatternListAsStructuredResult(Collection<CeQuery> pQueryList, Collection<CeRule> pRuleList) {
 		if (isDefaultStyle() || isSummaryStyle()) {
 			getWebActionResponse().setStructuredResult(CeWebQueryOrRule.generatePatternSummaryListFrom(pQueryList, pRuleList));
+		} else if (isMinimalStyle()) {
+			getWebActionResponse().setStructuredResult(CeWebQueryOrRule.generatePatternMinimalListFrom(pQueryList, pRuleList));
 		} else {
 			getWebActionResponse().setStructuredResult(CeWebQueryOrRule.generatePatternFullListFrom(pQueryList, pRuleList));
 		}

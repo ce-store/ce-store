@@ -43,6 +43,19 @@ public class CeWebStore extends CeWebObject {
 		return jInsts;
 	}
 
+	public static CeStoreJsonArray generateMinimalListFrom(TreeMap<String, ModelBuilder> pMbs) {
+		CeStoreJsonArray jInsts = new CeStoreJsonArray();
+
+		if (pMbs != null) {
+			for (String storeName : pMbs.keySet()) {
+				ModelBuilder thisMb = pMbs.get(storeName);
+				jInsts.add(generateMinimalDetailsJsonFor(storeName, thisMb));
+			}
+		}
+
+		return jInsts;
+	}
+
 	public static CeStoreJsonArray generateFullListFrom(TreeMap<String, ModelBuilder> pMbs) {
 		CeStoreJsonArray jInsts = new CeStoreJsonArray();
 
@@ -56,21 +69,26 @@ public class CeWebStore extends CeWebObject {
 		return jInsts;
 	}
 
-    public static CeStoreJsonObject generateSummaryDetailsJsonFor(String pStoreName, ModelBuilder pMb) {
-        CeStoreJsonObject jObj = generateDetailsJsonFor(pStoreName, pMb, STYLE_SUMMARY);
-        return jObj;
-    }
-    
-    public static CeStoreJsonObject generateFullDetailsJsonFor(String pStoreName, ModelBuilder pMb) {
-        CeStoreJsonObject jObj = generateDetailsJsonFor(pStoreName, pMb, STYLE_FULL);
-        return jObj;
-    }
+	public static CeStoreJsonObject generateSummaryDetailsJsonFor(String pStoreName, ModelBuilder pMb) {
+		CeStoreJsonObject jObj = generateDetailsJsonFor(pStoreName, pMb, STYLE_SUMMARY);
+		return jObj;
+	}
+
+	public static CeStoreJsonObject generateMinimalDetailsJsonFor(String pStoreName, ModelBuilder pMb) {
+		CeStoreJsonObject jObj = generateDetailsJsonFor(pStoreName, pMb, STYLE_MINIMAL);
+		return jObj;
+	}
+
+	public static CeStoreJsonObject generateFullDetailsJsonFor(String pStoreName, ModelBuilder pMb) {
+		CeStoreJsonObject jObj = generateDetailsJsonFor(pStoreName, pMb, STYLE_FULL);
+	return jObj;
+	}
 
 	private static CeStoreJsonObject generateDetailsJsonFor(String pStoreName, ModelBuilder pMb, String style) {
 		CeStoreJsonObject jObj = new CeStoreJsonObject();
 
 		putStringValueIn(jObj, KEY_TYPE, TYPE_STORE);
-        putStringValueIn(jObj, KEY_STYLE, style);
+		putStringValueIn(jObj, KEY_STYLE, style);
 		putStringValueIn(jObj, KEY_ID, pStoreName);
 		putLongValueIn(jObj, KEY_CREATED, pMb.getCreationTime());
 
@@ -78,8 +96,8 @@ public class CeWebStore extends CeWebObject {
 		putIntValueIn(jObj, KEY_MOD_COUNT, pMb.getAllConceptualModels().size());
 		putIntValueIn(jObj, KEY_CON_COUNT, pMb.listAllConcepts().size());
 		putIntValueIn(jObj, KEY_INST_COUNT, pMb.listAllInstances().size());
-        putLongValueIn(jObj, KEY_SERVER_TIME, System.currentTimeMillis());
-        putStringValueIn(jObj, KEY_STORE_VERSION, StoreConfig.VERSION);
+		putLongValueIn(jObj, KEY_SERVER_TIME, System.currentTimeMillis());
+		putStringValueIn(jObj, KEY_STORE_VERSION, StoreConfig.VERSION);
 
 		return jObj;
 	}

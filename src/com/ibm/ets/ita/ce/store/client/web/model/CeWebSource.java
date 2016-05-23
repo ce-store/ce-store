@@ -36,13 +36,25 @@ public class CeWebSource extends CeWebObject {
 
 	public static CeStoreJsonArray generateSummaryListFrom(Collection<CeSource> pSrcList) {
 		CeStoreJsonArray jInsts = new CeStoreJsonArray();
-		
+
 		if (pSrcList != null) {
 			for (CeSource thisSrc : pSrcList) {
 				jInsts.add(generateSummaryDetailsJsonFor(thisSrc));
 			}
 		}
-		
+
+		return jInsts;
+	}
+
+	public static CeStoreJsonArray generateMinimalListFrom(Collection<CeSource> pSrcList) {
+		CeStoreJsonArray jInsts = new CeStoreJsonArray();
+
+		if (pSrcList != null) {
+			for (CeSource thisSrc : pSrcList) {
+				jInsts.add(generateMinimalDetailsJsonFor(thisSrc));
+			}
+		}
+
 		return jInsts;
 	}
 
@@ -64,7 +76,7 @@ public class CeWebSource extends CeWebObject {
 		putStringValueIn(jObj, KEY_TYPE, TYPE_SRC);
 		putStringValueIn(jObj, KEY_STYLE, STYLE_SUMMARY);
 		putStringValueIn(jObj, KEY_ID, pSrc.getId());
-	    putLongValueIn(jObj, KEY_CREATED, pSrc.getCreationDate());
+		putLongValueIn(jObj, KEY_CREATED, pSrc.getCreationDate());
 
 		processAnnotations(pSrc, jObj);
 
@@ -93,6 +105,11 @@ public class CeWebSource extends CeWebObject {
 		//Sentences are not returned in summary mode
 		
 		return jObj;
+	}
+
+	public static CeStoreJsonObject generateMinimalDetailsJsonFor(CeSource pSrc) {
+		//TODO: Replace this with the actual minimal version
+		return generateSummaryDetailsJsonFor(pSrc);
 	}
 
 	public CeStoreJsonObject generateFullDetailsJsonFor(CeSource pSrc) {

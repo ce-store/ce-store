@@ -186,7 +186,12 @@ public class CeWebConcept extends CeWebObject {
 
 		return jObj;
 	}
-	
+
+	public CeStoreJsonObject generateMinimalDetailsJsonFor(CeConcept pConcept) {
+		//TODO: Replace this with the actual minimal version
+		return generateSummaryDetailsJsonFor(pConcept);
+	}
+
 	private void addMetamodelInstanceFor(CeConcept pCon, CeStoreJsonObject pJsonObj) {
 		CeInstance mmInst = pCon.retrieveMetaModelInstance(this.ac);
 		
@@ -217,6 +222,18 @@ public class CeWebConcept extends CeWebObject {
 		if (pConList != null) {
 			for (CeConcept thisConcept : pConList) {
 				jConcepts.add(generateSummaryDetailsJsonFor(thisConcept));
+			}
+		}
+
+		return jConcepts;
+	}
+
+	public CeStoreJsonArray generateMinimalListJsonFor(Collection<CeConcept> pConList) {
+		CeStoreJsonArray jConcepts = new CeStoreJsonArray();
+
+		if (pConList != null) {
+			for (CeConcept thisConcept : pConList) {
+				jConcepts.add(generateMinimalDetailsJsonFor(thisConcept));
 			}
 		}
 

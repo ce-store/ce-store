@@ -75,6 +75,7 @@ public abstract class CeStoreRestApi extends ApiHandler {
 
 	private static final String STYLE_FULL = "full";
 	private static final String STYLE_SUMMARY = "summary";
+	private static final String STYLE_MINIMAL = "minimal";
 
 	private static final String REST_STORE = "stores";
 	protected static final String REST_SOURCE = "sources";
@@ -304,7 +305,7 @@ public abstract class CeStoreRestApi extends ApiHandler {
 
 	@Override
 	public boolean isDefaultStyle() {
-		return (this.parmStyle == null) || ((!this.parmStyle.equals(STYLE_FULL)) && (!this.parmStyle.equals(STYLE_SUMMARY)));
+		return (this.parmStyle == null) || ((!this.parmStyle.equals(STYLE_FULL)) && (!this.parmStyle.equals(STYLE_SUMMARY)) && (!this.parmStyle.equals(STYLE_MINIMAL)));
 	}
 
 	@Override
@@ -315,6 +316,11 @@ public abstract class CeStoreRestApi extends ApiHandler {
 	@Override
 	public boolean isSummaryStyle() {
 		return (this.parmStyle != null) && (this.parmStyle.equals(STYLE_SUMMARY));
+	}
+
+	@Override
+	public boolean isMinimalStyle() {
+		return (this.parmStyle != null) && (this.parmStyle.equals(STYLE_MINIMAL));
 	}
 
 	protected String getParameterNamed(String pParmName) {
@@ -528,6 +534,8 @@ public abstract class CeStoreRestApi extends ApiHandler {
 	protected void setSourceListAsStructuredResult(ApiHandler pApiHandler, Collection<CeSource> pSrcList) {
 		if ((pApiHandler.isDefaultStyle()) || (pApiHandler.isSummaryStyle())) {
 			getWebActionResponse().setStructuredResult(CeWebSource.generateSummaryListFrom(pSrcList));
+		} else if (isMinimalStyle()) {
+			getWebActionResponse().setStructuredResult(CeWebSource.generateMinimalListFrom(pSrcList));
 		} else {
 			CeWebSource srcWeb = new CeWebSource(this.wc);
 			getWebActionResponse().setStructuredResult(srcWeb.generateFullListFrom(pSrcList));
@@ -538,6 +546,8 @@ public abstract class CeStoreRestApi extends ApiHandler {
 		CeWebSentence senWeb = new CeWebSentence(this.wc);
 		if (isDefaultStyle() || isSummaryStyle()) {
 			getWebActionResponse().setStructuredResult(senWeb.generateSummaryListFrom(pSenList));
+		} else if (isMinimalStyle()) {
+			getWebActionResponse().setStructuredResult(senWeb.generateMinimalListFrom(pSenList));
 		} else {
 			getWebActionResponse().setStructuredResult(senWeb.generateFullListFrom(pSenList));
 		}
@@ -551,6 +561,9 @@ public abstract class CeStoreRestApi extends ApiHandler {
 		if (isDefaultStyle() || isSummaryStyle()) {
 			senWeb.generateSummaryListUsing(pSentencesPair.get(0), BuilderSentence.SENSOURCE_PRIMARY, jArr);
 			senWeb.generateSummaryListUsing(pSentencesPair.get(1), BuilderSentence.SENSOURCE_SECONDARY, jArr);
+		} else if (isMinimalStyle()) {
+			senWeb.generateMinimalListUsing(pSentencesPair.get(0), BuilderSentence.SENSOURCE_PRIMARY, jArr);
+			senWeb.generateMinimalListUsing(pSentencesPair.get(1), BuilderSentence.SENSOURCE_SECONDARY, jArr);
 		} else {
 			senWeb.generateFullListUsing(pSentencesPair.get(0), BuilderSentence.SENSOURCE_PRIMARY, jArr);
 			senWeb.generateFullListUsing(pSentencesPair.get(1), BuilderSentence.SENSOURCE_SECONDARY, jArr);
@@ -564,6 +577,8 @@ public abstract class CeStoreRestApi extends ApiHandler {
 
 		if (isDefaultStyle() || isSummaryStyle()) {
 			getWebActionResponse().setStructuredResult(conWeb.generateSummaryListJsonFor(pConcepts));
+		} else if (isMinimalStyle()) {
+			getWebActionResponse().setStructuredResult(conWeb.generateMinimalListJsonFor(pConcepts));
 		} else {
 			getWebActionResponse().setStructuredResult(conWeb.generateFullListJsonFor(pConcepts));
 		}
@@ -574,6 +589,8 @@ public abstract class CeStoreRestApi extends ApiHandler {
 
 		if (isDefaultStyle() || isSummaryStyle()) {
 			getWebActionResponse().setStructuredResult(propWeb.generateSummaryListJsonFor(pPropList));
+		} else if (isMinimalStyle()) {
+			getWebActionResponse().setStructuredResult(propWeb.generateMinimalListJsonFor(pPropList));
 		} else {
 			getWebActionResponse().setStructuredResult(propWeb.generateFullListJsonFor(pPropList));
 		}
@@ -586,6 +603,8 @@ public abstract class CeStoreRestApi extends ApiHandler {
 
 		if (isDefaultStyle() || isSummaryStyle()) {
 			getWebActionResponse().setStructuredResult(instWeb.generateSummaryListJsonFor(pInstList, onlyProps, suppPropTypes));
+		} else if (isMinimalStyle()) {
+			getWebActionResponse().setStructuredResult(instWeb.generateMinimalListJsonFor(pInstList, onlyProps));
 		} else {
 			getWebActionResponse().setStructuredResult(instWeb.generateFullListJsonFor(pInstList, onlyProps, suppPropTypes));
 		}
@@ -612,7 +631,15 @@ public abstract class CeStoreRestApi extends ApiHandler {
 		String[] limRels = getListParameterNamed(CeStoreRestApiInstance.PARM_LIMRELS);
 		String[] onlyProps = getListParameterNamed(CeStoreRestApiInstance.PARM_ONLYPROPS);
 
-		getWebActionResponse().setStructuredResult(CeWebContainerResult.generateNormalCeQueryResultFrom(this.wc, pCeResult, pSuppressResult, pReturnInstances, onlyProps, numSteps, relInsts, refInsts, limRels, suppPropTypes));
+		CeStoreJsonObject jRes = null;
+
+		if (isMinimalStyle()) {
+			jRes = CeWebContainerResult.generateMinimalCeQueryResultFrom(this.wc, pCeResult, pSuppressResult, pReturnInstances, onlyProps, numSteps, relInsts, refInsts, limRels, suppPropTypes);
+		} else {
+			jRes = CeWebContainerResult.generateNormalCeQueryResultFrom(this.wc, pCeResult, pSuppressResult, pReturnInstances, onlyProps, numSteps, relInsts, refInsts, limRels, suppPropTypes);
+		}
+
+		getWebActionResponse().setStructuredResult(jRes);
 	}
 
 }

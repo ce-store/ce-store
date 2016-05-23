@@ -56,10 +56,10 @@ public class CeWebProperty extends CeWebObject {
 	public CeStoreJsonObject generateSummaryDetailsJsonFor(CeProperty pProp) {
 		CeStoreJsonObject jObj = new CeStoreJsonObject();
 
-        putStringValueIn(jObj, KEY_TYPE, TYPE_PROPERTY);
-        putStringValueIn(jObj, KEY_STYLE, STYLE_SUMMARY);
+		putStringValueIn(jObj, KEY_TYPE, TYPE_PROPERTY);
+		putStringValueIn(jObj, KEY_STYLE, STYLE_SUMMARY);
 		putStringValueIn(jObj, KEY_ID, pProp.formattedFullPropertyName());
-        putLongValueIn(jObj, KEY_CREATED, pProp.getCreationDate());
+		putLongValueIn(jObj, KEY_CREATED, pProp.getCreationDate());
 		putStringValueIn(jObj, KEY_PROP_NAME, pProp.getPropertyName());
 		putStringValueIn(jObj, KEY_ASS_DOMAIN_NAME, pProp.calculateAssertedDomainConceptName());
 		putStringValueIn(jObj, KEY_DOMAIN_NAME, pProp.calculateDomainConceptName());
@@ -71,6 +71,11 @@ public class CeWebProperty extends CeWebObject {
 		addMetamodelInstanceFor(pProp, jObj);
 
 		return jObj;
+	}
+
+	public CeStoreJsonObject generateMinimalDetailsJsonFor(CeProperty pProp) {
+		//TODO: Replace this with the actual minimal version
+		return generateSummaryDetailsJsonFor(pProp);
 	}
 
 	public CeStoreJsonArray generateFullListJsonFor(Collection<CeProperty> pPropList) {
@@ -92,6 +97,19 @@ public class CeWebProperty extends CeWebObject {
 		if (pPropList != null) {
 			for (CeProperty thisProp : pPropList) {
 				CeStoreJsonObject jObj = generateSummaryDetailsJsonFor(thisProp);
+				addObjectValueTo(jProps, jObj);
+			}
+		}
+
+		return jProps;
+	}
+
+	public CeStoreJsonArray generateMinimalListJsonFor(Collection<CeProperty> pPropList) {
+		CeStoreJsonArray jProps = new CeStoreJsonArray();
+
+		if (pPropList != null) {
+			for (CeProperty thisProp : pPropList) {
+				CeStoreJsonObject jObj = generateMinimalDetailsJsonFor(thisProp);
 				addObjectValueTo(jProps, jObj);
 			}
 		}

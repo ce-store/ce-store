@@ -46,15 +46,23 @@ public class CeWebSentence extends CeWebObject {
 	private static final String KEY_SENQUAL_TF = "timeframe";
 	private static final String KEY_SENQUAL_TS = "timestamp";
 	private static final String KEY_SENQUAL_TV = "truth_value";
-	
+
 	private static final String KEY_IDX = "index";
 	private static final String KEY_FRAGTYPE = "type";
-	
+
 	public CeStoreJsonArray generateSummaryListFrom(Collection<CeSentence> pSenList) {
 		CeStoreJsonArray jArr = new CeStoreJsonArray();
 
 		generateSummaryListUsing(pSenList, null, jArr);
-		
+
+		return jArr;
+	}
+
+	public CeStoreJsonArray generateMinimalListFrom(Collection<CeSentence> pSenList) {
+		CeStoreJsonArray jArr = new CeStoreJsonArray();
+
+		generateMinimalListUsing(pSenList, null, jArr);
+
 		return jArr;
 	}
 
@@ -73,7 +81,15 @@ public class CeWebSentence extends CeWebObject {
 			}
 		}
 	}
-	
+
+	public void generateMinimalListUsing(Collection<CeSentence> pSenList, String pPriOrSecInd, CeStoreJsonArray pJa) {
+		if (pSenList != null) {
+			for (CeSentence thisSen : pSenList) {
+				addObjectValueTo(pJa, generateMinimalJson(thisSen, pPriOrSecInd));
+			}
+		}
+	}
+
 	public void generateFullListUsing(Collection<CeSentence> pSenList, String pPriOrSecInd, CeStoreJsonArray pJa) {
 		if (pSenList != null) {
 			for (CeSentence thisSen : pSenList) {
@@ -91,6 +107,11 @@ public class CeWebSentence extends CeWebObject {
 		}
 		
 		return jObj;
+	}
+
+	public CeStoreJsonObject generateMinimalJson(CeSentence pSen, String pPriOrSecInd) {
+		//TODO: Replace this with the actual minimal version
+		return generateSummaryJson(pSen, pPriOrSecInd);
 	}
 
 	public CeStoreJsonObject generateFullJson(CeSentence pSen, String pPriOrSecInd) {

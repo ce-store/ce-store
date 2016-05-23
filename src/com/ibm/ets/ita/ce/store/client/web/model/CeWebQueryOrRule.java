@@ -70,12 +70,17 @@ public class CeWebQueryOrRule extends CeWebObject {
 		//TODO: Decide what this should be
 		return generateQueryListFrom(pQueryList);
 	}
-	
+
+	public static CeStoreJsonArray generateQueryMinimalListFrom(Collection<CeQuery> pQueryList) {
+		//TODO: Decide what this should be
+		return generateQueryListFrom(pQueryList);
+	}
+
 	public static CeStoreJsonArray generateQueryFullListFrom(Collection<CeQuery> pQueryList) {
 		//TODO: Decide what this should be
 		return generateQueryListFrom(pQueryList);
 	}
-	
+
 	//Query List response structure:
 	//	[]
 	//	KEY_QR_TYPE
@@ -107,12 +112,17 @@ public class CeWebQueryOrRule extends CeWebObject {
 		//TODO: Decide what this should be
 		return generateRuleListFrom(pRuleList);
 	}
-	
+
+	public static CeStoreJsonArray generateRuleMinimalListFrom(Collection<CeRule> pRuleList) {
+		//TODO: Decide what this should be
+		return generateRuleListFrom(pRuleList);
+	}
+
 	public static CeStoreJsonArray generateRuleFullListFrom(Collection<CeRule> pRuleList) {
 		//TODO: Decide what this should be
 		return generateRuleListFrom(pRuleList);
 	}
-	
+
 	//Query List response structure:
 	//	[]
 	//	KEY_QR_TYPE
@@ -144,12 +154,17 @@ public class CeWebQueryOrRule extends CeWebObject {
 		//TODO: Decide what this should be
 		return generateRuleAndQueryListFrom(pQueryList, pRuleList);
 	}
-	
+
+	public static CeStoreJsonObject generatePatternMinimalListFrom(Collection<CeQuery> pQueryList, Collection<CeRule> pRuleList) {
+		//TODO: Decide what this should be
+		return generateRuleAndQueryListFrom(pQueryList, pRuleList);
+	}
+
 	public static CeStoreJsonObject generatePatternFullListFrom(Collection<CeQuery> pQueryList, Collection<CeRule> pRuleList) {
 		//TODO: Decide what this should be
 		return generateRuleAndQueryListFrom(pQueryList, pRuleList);
 	}
-	
+
 	//Query List response structure:
 	//	KEY_QUERIES[]
 	//		See generateQueryListFrom()

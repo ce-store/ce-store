@@ -194,6 +194,8 @@ public class CeStoreRestApiStore extends CeStoreRestApi {
 	private void setStoreListAsStructuredResult(TreeMap<String, ModelBuilder> pMbs) {
 		if (isDefaultStyle() || isSummaryStyle()) {
 			getWebActionResponse().setStructuredResult(CeWebStore.generateSummaryListFrom(pMbs));
+		} else if (isMinimalStyle()) {
+			getWebActionResponse().setStructuredResult(CeWebStore.generateMinimalListFrom(pMbs));
 		} else {
 			getWebActionResponse().setStructuredResult(CeWebStore.generateFullListFrom(pMbs));
 		}
@@ -202,6 +204,8 @@ public class CeStoreRestApiStore extends CeStoreRestApi {
 	private void setStoreDetailsAsStructuredResult(String pStoreName, ModelBuilder pMb) {
 		if (isDefaultStyle() || isSummaryStyle()) {
 			getWebActionResponse().setStructuredResult(CeWebStore.generateSummaryDetailsJsonFor(pStoreName, pMb));
+		} else if (isMinimalStyle()) {
+			getWebActionResponse().setStructuredResult(CeWebStore.generateMinimalDetailsJsonFor(pStoreName, pMb));
 		} else {
 			getWebActionResponse().setStructuredResult(CeWebStore.generateFullDetailsJsonFor(pStoreName, pMb));
 		}

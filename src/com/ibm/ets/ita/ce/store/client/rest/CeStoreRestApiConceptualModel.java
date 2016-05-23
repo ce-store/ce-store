@@ -348,6 +348,8 @@ public class CeStoreRestApiConceptualModel extends CeStoreRestApi {
 
 		if (isDefaultStyle() || isSummaryStyle()) {
 			getWebActionResponse().setStructuredResult(cmWeb.generateSummaryListJsonFor(pCmList));
+		} else if (isMinimalStyle()) {
+			getWebActionResponse().setStructuredResult(cmWeb.generateMinimalListJsonFor(pCmList));
 		} else {
 			getWebActionResponse().setStructuredResult(cmWeb.generateFullListJsonFor(pCmList));
 		}

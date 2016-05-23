@@ -73,6 +73,11 @@ public class CeWebConceptualModel extends CeWebObject {
 		return jObj;
 	}
 
+	public CeStoreJsonObject generateMinimalDetailsJsonFor(CeConceptualModel pCm) {
+		//TODO: Replace this with the actual minimal version
+		return generateSummaryDetailsJsonFor(pCm);
+	}
+
 	public CeStoreJsonArray generateFullListJsonFor(Collection<CeConceptualModel> pCmList) {
 		CeStoreJsonArray jCms = new CeStoreJsonArray();
 		
@@ -87,13 +92,25 @@ public class CeWebConceptualModel extends CeWebObject {
 
 	public CeStoreJsonArray generateSummaryListJsonFor(Collection<CeConceptualModel> pCmList) {
 		CeStoreJsonArray jCms = new CeStoreJsonArray();
-		
+
 		if (pCmList != null) {
 			for (CeConceptualModel thisCm : pCmList) {
 				jCms.add(generateSummaryDetailsJsonFor(thisCm));
 			}
 		}
-		
+
+		return jCms;
+	}
+
+	public CeStoreJsonArray generateMinimalListJsonFor(Collection<CeConceptualModel> pCmList) {
+		CeStoreJsonArray jCms = new CeStoreJsonArray();
+
+		if (pCmList != null) {
+			for (CeConceptualModel thisCm : pCmList) {
+				jCms.add(generateMinimalDetailsJsonFor(thisCm));
+			}
+		}
+
 		return jCms;
 	}
 
