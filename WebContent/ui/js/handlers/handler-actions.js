@@ -21,7 +21,15 @@ function HandlerActions() {
 	this.processCommandsRelative = function(pUrl, pFormName, pCbf, pUserParms) {
 		var arr = gEp.autoRunRules;
 		var rc = gEp.returnCe;
-		var fullUrl = gEp.currentServerAddress + pUrl;
+		var fullUrl = null;
+
+		if (gCe.utils.startsWith(pUrl, '.')) {
+			var trimmedUrl = pUrl.substring(2, pUrl.length);
+			fullUrl = gEp.currentServerAddress + gEp.currentAppName + trimmedUrl;
+		} else {
+			fullUrl = gEp.currentServerAddress + pUrl;
+		}
+
 		var ceLoadText = 'perform load sentences from url \'' + fullUrl + '\'.';
 
 		var cbf = null;

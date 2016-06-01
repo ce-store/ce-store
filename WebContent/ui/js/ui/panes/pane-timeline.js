@@ -59,7 +59,7 @@ function PaneTimeline() {
 		var timeProperty = document.getElementById("timeProperty").value;
 		var buckets = parseInt(document.getElementById("buckets").value);
 		
-		var url = "/ce-store/concepts/" + concept + "/instances/frequency";
+		var url = "../concepts/" + concept + "/instances/frequency";
 		
 		if (timeProperty) {
 			url += "?property=" + timeProperty;

@@ -75,7 +75,7 @@ function PaneConfig() {
 		html += '  </tr>';
 		html += '  <tr>';
 		html += '   <td>';
-		html += '    App name: <input value="ce-store/">';
+		html += '    App name: <input value="' + gEp.DEFAULT_APPNAME + '">';
 		html += '   </td>';
 		html += '  </tr>';
 		html += '  <tr>';

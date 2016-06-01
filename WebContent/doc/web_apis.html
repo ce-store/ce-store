@@ -14,7 +14,7 @@
 <head>
  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
  <title>CE Store : General and Web API Documenatation</title>
- <link rel="stylesheet" type="text/css" href="/ce-store/css/cestore_doc.css">
+ <link rel="stylesheet" type="text/css" href="../css/cestore_doc.css">
 </head>
 
 <body class="doc">
@@ -118,7 +118,7 @@
      /sources
     </td>
     <td rowspan="2">
-     <a href="/ce-store/sources" target="_blank">GET</a>
+     <a href="../sources" target="_blank">GET</a>
     </td>
     <td rowspan="2">
      List all sources
@@ -133,7 +133,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/source_list_summary.json" target="_blank">list of sources</a> in their <a href="/ce-store/doc/json-schema/objects/source_summary.json" target="_blank">summary form</a>.
+     A JSON <a href="../doc/json-schema/requests/source_list_summary.json" target="_blank">list of sources</a> in their <a href="../doc/json-schema/objects/source_summary.json" target="_blank">summary form</a>.
     </td>
     <td rowspan="2">
      A plain text list of all CE sentences for every source plus the meta-model CE sentences for each of these sources
@@ -148,7 +148,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/source_list_full.json" target="_blank">list of sources</a> in their <a href="/ce-store/doc/json-schema/objects/source_full.json" target="_blank">full form</a>.
+     A JSON <a href="../doc/json-schema/requests/source_list_full.json" target="_blank">list of sources</a> in their <a href="../doc/json-schema/objects/source_full.json" target="_blank">full form</a>.
     </td>
    </tr>
 
@@ -158,7 +158,7 @@
      /sources/<em>{id}</em>
     </td>
     <td rowspan="2">
-     <a href="/ce-store/sources/src_001" target="_blank">GET</a>
+     <a href="../sources/src_001" target="_blank">GET</a>
     </td>
     <td rowspan="2">
      Get details for the source identified by <em>{id}</em>
@@ -173,7 +173,7 @@
      </ul>
     </td>
     <td>
-     The JSON <a href="/ce-store/doc/json-schema/requests/source_details_full.json" target="_blank">details</a> for <a href="/ce-store/doc/json-schema/objects/source_full.json" target="_blank">full form</a> for the source.
+     The JSON <a href="../doc/json-schema/requests/source_details_full.json" target="_blank">details</a> for <a href="../doc/json-schema/objects/source_full.json" target="_blank">full form</a> for the source.
     </td>
     <td rowspan="2">
      A plain text list of all CE sentences for the source plus the meta-model CE sentences for each of these sources
@@ -188,7 +188,7 @@
      </ul>
     </td>
     <td>
-     The JSON <a href="/ce-store/doc/json-schema/requests/source_details_summary.json" target="_blank">details</a> for <a href="/ce-store/doc/json-schema/objects/source_summary.json" target="_blank">summary form</a> for the source.
+     The JSON <a href="../doc/json-schema/requests/source_details_summary.json" target="_blank">details</a> for <a href="../doc/json-schema/objects/source_summary.json" target="_blank">summary form</a> for the source.
     </td>
    </tr>
 
@@ -226,7 +226,7 @@
      /sources/<em>{id}</em>/sentences
     </td>
     <td rowspan="2">
-     <a href="/ce-store/sources/src_001/sentences" target="_blank">GET</a>
+     <a href="../sources/src_001/sentences" target="_blank">GET</a>
     </td>
     <td rowspan="2">
      List all sentences for the source identified by <em>{id}</em>
@@ -241,7 +241,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/sentence_list_summary.json" target="_blank">list of sentences</a> in their <a href="/ce-store/doc/json-schema/objects/sentence_summary.json" target="_blank">summary form</a>.
+     A JSON <a href="../doc/json-schema/requests/sentence_list_summary.json" target="_blank">list of sentences</a> in their <a href="../doc/json-schema/objects/sentence_summary.json" target="_blank">summary form</a>.
     </td>
     <td rowspan="2">
      A plain text list of all CE sentences for the source
@@ -256,7 +256,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/sentence_list_full.json" target="_blank">list of sentences</a> in their <a href="/ce-store/doc/json-schema/objects/sentence_full.json" target="_blank">full form</a>.
+     A JSON <a href="../doc/json-schema/requests/sentence_list_full.json" target="_blank">list of sentences</a> in their <a href="../doc/json-schema/objects/sentence_full.json" target="_blank">full form</a>.
     </td>
    </tr>
   </table>
@@ -287,7 +287,7 @@
      /sentences
     </td>
     <td rowspan="2">
-     <a href="/ce-store/sentences" target="_blank">GET</a>
+     <a href="../sentences" target="_blank">GET</a>
     </td>
     <td rowspan="2">
      List all sentences.<br/>
@@ -296,48 +296,48 @@
       <li>Sentence type:
        <ul>
         <li>
-         <a href="/ce-store/sentences/?type=model" target="_blank">Model</a>
+         <a href="../sentences/?type=model" target="_blank">Model</a>
         </li>
         <li>
-         <a href="/ce-store/sentences/?type=fact" target="_blank">Fact (all)</a>
+         <a href="../sentences/?type=fact" target="_blank">Fact (all)</a>
         </li>
         <li>
-         <a href="/ce-store/sentences/?type=fact-normal" target="_blank">Fact (normal)</a>
+         <a href="../sentences/?type=fact-normal" target="_blank">Fact (normal)</a>
         </li>
         <li>
-         <a href="/ce-store/sentences/?type=fact-qualified" target="_blank">Fact (qualified)</a>
+         <a href="../sentences/?type=fact-qualified" target="_blank">Fact (qualified)</a>
         </li>
         <li>
-         <a href="/ce-store/sentences/?type=pattern" target="_blank">Pattern (rule or query)</a>
+         <a href="../sentences/?type=pattern" target="_blank">Pattern (rule or query)</a>
         </li>
         <li>
-         <a href="/ce-store/sentences/?type=rule" target="_blank">Rule</a>
+         <a href="../sentences/?type=rule" target="_blank">Rule</a>
         </li>
         <li>
-         <a href="/ce-store/sentences/?type=query" target="_blank">Query</a>
+         <a href="../sentences/?type=query" target="_blank">Query</a>
         </li>
         <li>
-         <a href="/ce-store/sentences/?type=annotation" target="_blank">Annotation</a>
+         <a href="../sentences/?type=annotation" target="_blank">Annotation</a>
         </li>
         <li>
-         <a href="/ce-store/sentences/?type=command" target="_blank">Command</a>
+         <a href="../sentences/?type=command" target="_blank">Command</a>
         </li>
        </ul>
       </li>
       <li>Sentence validity:
        <ul>
         <li>
-         <a href="/ce-store/sentences/?validity=valid" target="_blank">Valid</a>
+         <a href="../sentences/?validity=valid" target="_blank">Valid</a>
         </li>
         <li>
-         <a href="/ce-store/sentences/?validity=invalid" target="_blank">Invalid</a>
+         <a href="../sentences/?validity=invalid" target="_blank">Invalid</a>
         </li>
        </ul>
       </li>
      </ul>
      If multiple type and/or validity parameters are supplied, sentences are listed after the combination
      of filters have been applied.
-     <a href="/ce-store/sentences?type=model&?validity=valid" target="_blank">This is an example</a>
+     <a href="../sentences?type=model&?validity=valid" target="_blank">This is an example</a>
      of combining filters to retrieve valid model sentences.
     </td>
     <td>
@@ -356,7 +356,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/sentence_list_summary.json" target="_blank">list of sentences</a> in their <a href="/ce-store/doc/json-schema/objects/sentence_summary.json" target="_blank">summary form</a>.
+     A JSON <a href="../doc/json-schema/requests/sentence_list_summary.json" target="_blank">list of sentences</a> in their <a href="../doc/json-schema/objects/sentence_summary.json" target="_blank">summary form</a>.
     </td>
     <td rowspan="2">
      A plain text list of all CE sentences
@@ -377,7 +377,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/sentence_list_full.json" target="_blank">list of sentences</a> in their <a href="/ce-store/doc/json-schema/objects/sentence_full.json" target="_blank">full form</a>.
+     A JSON <a href="../doc/json-schema/requests/sentence_list_full.json" target="_blank">list of sentences</a> in their <a href="../doc/json-schema/objects/sentence_full.json" target="_blank">full form</a>.
     </td>
    </tr>
 
@@ -424,7 +424,7 @@
      /sentences/<em>{id}</em>
     </td>
     <td rowspan="2">
-     <a href="/ce-store/sentences/sen_001" target="_blank">GET</a>
+     <a href="../sentences/sen_001" target="_blank">GET</a>
     </td>
     <td rowspan="2">
      Get details for the sentence identified by <em>{id}</em>
@@ -439,7 +439,7 @@
      </ul>
     </td>
     <td>
-     The JSON <a href="/ce-store/doc/json-schema/requests/sentence_details_full.json" target="_blank">details</a> for <a href="/ce-store/doc/json-schema/objects/sentence_full.json" target="_blank">full form</a> for the sentence.
+     The JSON <a href="../doc/json-schema/requests/sentence_details_full.json" target="_blank">details</a> for <a href="../doc/json-schema/objects/sentence_full.json" target="_blank">full form</a> for the sentence.
     </td>
     <td rowspan="2">
      The plain text for the specified CE sentence
@@ -454,7 +454,7 @@
      </ul>
     </td>
     <td>
-     The JSON <a href="/ce-store/doc/json-schema/requests/sentence_details_summary.json" target="_blank">details</a> for <a href="/ce-store/doc/json-schema/objects/sentences_summary.json" target="_blank">summary form</a> for the sentence.
+     The JSON <a href="../doc/json-schema/requests/sentence_details_summary.json" target="_blank">details</a> for <a href="../doc/json-schema/objects/sentences_summary.json" target="_blank">summary form</a> for the sentence.
     </td>
    </tr>
    
@@ -491,7 +491,7 @@
      /sentences/<em>{id}</em>/rationale
     </td>
     <td rowspan="2">
-     <a href="/ce-store/sentences/sen_001/rationale" target="_blank">GET</a>
+     <a href="../sentences/sen_001/rationale" target="_blank">GET</a>
     </td>
     <td rowspan="2">
      <font>description needed</font>
@@ -553,7 +553,7 @@
      /models
     </td>
     <td rowspan="2">
-     <a href="/ce-store/models" target="_blank">GET</a>
+     <a href="../models" target="_blank">GET</a>
     </td>
     <td rowspan="2">
      List all models
@@ -568,7 +568,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/model_list_summary.json" target="_blank">list of models</a> in their <a href="/ce-store/doc/json-schema/objects/model_summary.json" target="_blank">summary form</a>.
+     A JSON <a href="../doc/json-schema/requests/model_list_summary.json" target="_blank">list of models</a> in their <a href="../doc/json-schema/objects/model_summary.json" target="_blank">summary form</a>.
     </td>
     <td rowspan="2">
      A plain text list of all CE sentences for every model plus the meta-model CE sentences for for each of these models
@@ -583,7 +583,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/model_list_full.json" target="_blank">list of models</a> in their <a href="/ce-store/doc/json-schema/objects/model_full.json" target="_blank">full form</a>.
+     A JSON <a href="../doc/json-schema/requests/model_list_full.json" target="_blank">list of models</a> in their <a href="../doc/json-schema/objects/model_full.json" target="_blank">full form</a>.
     </td>
    </tr>
 
@@ -593,7 +593,7 @@
      /models/<em>{name}</em>
     </td>
     <td rowspan="2">
-     <a href="/ce-store/models/Medicine" target="_blank">GET</a>
+     <a href="../models/Medicine" target="_blank">GET</a>
     </td>
     <td rowspan="2">
      Get details for the model identified by <em>{name}</em>
@@ -608,7 +608,7 @@
      </ul>
     </td>
     <td>
-     The JSON <a href="/ce-store/doc/json-schema/requests/model_details_full.json" target="_blank">details</a> for <a href="/ce-store/doc/json-schema/objects/model_full.json" target="_blank">full form</a> for the model.
+     The JSON <a href="../doc/json-schema/requests/model_details_full.json" target="_blank">details</a> for <a href="../doc/json-schema/objects/model_full.json" target="_blank">full form</a> for the model.
     </td>
     <td rowspan="2">
      A plain text list of all CE sentences for the model plus the meta-model CE sentences for each of these models
@@ -623,7 +623,7 @@
      </ul>
     </td>
     <td>
-     The JSON <a href="/ce-store/doc/json-schema/requests/model_details_summary.json" target="_blank">details</a> for <a href="/ce-store/doc/json-schema/objects/model_summary.json" target="_blank">summary form</a> for the model.
+     The JSON <a href="../doc/json-schema/requests/model_details_summary.json" target="_blank">details</a> for <a href="../doc/json-schema/objects/model_summary.json" target="_blank">summary form</a> for the model.
     </td>
    </tr>
 
@@ -661,7 +661,7 @@
      /models/<em>{name}</em>/sources
     </td>
     <td rowspan="2">
-     <a href="/ce-store/models/Medicine/sources" target="_blank">GET</a>
+     <a href="../models/Medicine/sources" target="_blank">GET</a>
     </td>
     <td rowspan="2">
      List all sources that define the model identified by <em>{name}</em>
@@ -676,7 +676,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/source_list_summary.json" target="_blank">list of sources</a> in their <a href="/ce-store/doc/json-schema/objects/source_summary.json" target="_blank">summary form</a>.
+     A JSON <a href="../doc/json-schema/requests/source_list_summary.json" target="_blank">list of sources</a> in their <a href="../doc/json-schema/objects/source_summary.json" target="_blank">summary form</a>.
     </td>
     <td rowspan="2">
      A plain text list of all CE sentences for each of the sources that define this model
@@ -691,7 +691,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/sentence_list_full.json" target="_blank">list of sentences</a> in their <a href="/ce-store/doc/json-schema/objects/sentence_full.json" target="_blank">full form</a>.
+     A JSON <a href="../doc/json-schema/requests/sentence_list_full.json" target="_blank">list of sentences</a> in their <a href="../doc/json-schema/objects/sentence_full.json" target="_blank">full form</a>.
     </td>
    </tr>
 
@@ -701,7 +701,7 @@
      /models/<em>{name}</em>/sentences
     </td>
     <td rowspan="2">
-     <a href="/ce-store/models/Medicine/sentences" target="_blank">GET</a>
+     <a href="../models/Medicine/sentences" target="_blank">GET</a>
     </td>
     <td rowspan="2">
      List all sentences for the model identified by <em>{name}</em>
@@ -716,7 +716,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/sentence_list_summary.json" target="_blank">list of sentences</a> in their <a href="/ce-store/doc/json-schema/objects/sentence_summary.json" target="_blank">summary form</a>.
+     A JSON <a href="../doc/json-schema/requests/sentence_list_summary.json" target="_blank">list of sentences</a> in their <a href="../doc/json-schema/objects/sentence_summary.json" target="_blank">summary form</a>.
     </td>
     <td rowspan="2">
      A plain text list of all CE sentences for the model
@@ -731,7 +731,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/sentence_list_full.json" target="_blank">list of sentences</a> in their <a href="/ce-store/doc/json-schema/objects/sentence_full.json" target="_blank">full form</a>.
+     A JSON <a href="../doc/json-schema/requests/sentence_list_full.json" target="_blank">list of sentences</a> in their <a href="../doc/json-schema/objects/sentence_full.json" target="_blank">full form</a>.
     </td>
    </tr>
 
@@ -741,7 +741,7 @@
      /models/<em>{name}</em>/concepts
     </td>
     <td rowspan="2">
-     <a href="/ce-store/models/Medicine/concepts" target="_blank">GET</a>
+     <a href="../models/Medicine/concepts" target="_blank">GET</a>
     </td>
     <td rowspan="2">
      List all concepts that are defined in the model identified by <em>{name}</em>
@@ -756,7 +756,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/concept_list_summary.json" target="_blank">list of concepts</a> in their <a href="/ce-store/doc/json-schema/objects/concept_summary.json" target="_blank">summary form</a>.
+     A JSON <a href="../doc/json-schema/requests/concept_list_summary.json" target="_blank">list of concepts</a> in their <a href="../doc/json-schema/objects/concept_summary.json" target="_blank">summary form</a>.
     </td>
     <td rowspan="2">
      A plain text list of all CE sentences for each of the concepts defined in this model
@@ -771,7 +771,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/concept_list_full.json" target="_blank">list of concepts</a> in their <a href="/ce-store/doc/json-schema/objects/concept_full.json" target="_blank">full form</a>.
+     A JSON <a href="../doc/json-schema/requests/concept_list_full.json" target="_blank">list of concepts</a> in their <a href="../doc/json-schema/objects/concept_full.json" target="_blank">full form</a>.
     </td>
    </tr>
 
@@ -781,7 +781,7 @@
      /models/<em>{name}</em>/properties
     </td>
     <td rowspan="2">
-     <a href="/ce-store/models/Medicine/properties" target="_blank">GET</a>
+     <a href="../models/Medicine/properties" target="_blank">GET</a>
     </td>
     <td rowspan="2">
      List all properties that are defined in the model identified by <em>{name}</em>
@@ -796,7 +796,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/property_list_summary.json" target="_blank">list of properties</a> in their <a href="/ce-store/doc/json-schema/objects/property_summary.json" target="_blank">summary form</a>.
+     A JSON <a href="../doc/json-schema/requests/property_list_summary.json" target="_blank">list of properties</a> in their <a href="../doc/json-schema/objects/property_summary.json" target="_blank">summary form</a>.
     </td>
     <td rowspan="2">
      A plain text list of all CE sentences for each of the properties defined in this model
@@ -811,7 +811,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/property_list_full.json" target="_blank">list of properties</a> in their <a href="/ce-store/doc/json-schema/objects/property_full.json" target="_blank">full form</a>.
+     A JSON <a href="../doc/json-schema/requests/property_list_full.json" target="_blank">list of properties</a> in their <a href="../doc/json-schema/objects/property_full.json" target="_blank">full form</a>.
     </td>
    </tr>
 
@@ -843,7 +843,7 @@
      /concepts
     </td>
     <td rowspan="2">
-     <a href="/ce-store/concepts" target="_blank">GET</a>
+     <a href="../concepts" target="_blank">GET</a>
     </td>
     <td rowspan="2">
      List all concepts
@@ -858,7 +858,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/concept_list_summary.json" target="_blank">list of concepts</a> in their <a href="/ce-store/doc/json-schema/objects/concept_summary.json" target="_blank">summary form</a>.
+     A JSON <a href="../doc/json-schema/requests/concept_list_summary.json" target="_blank">list of concepts</a> in their <a href="../doc/json-schema/objects/concept_summary.json" target="_blank">summary form</a>.
     </td>
     <td rowspan="2">
      A plain text list of all CE sentences for every concept plus the meta-model CE sentences for for each of these concepts
@@ -873,7 +873,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/concept_list_full.json" target="_blank">list of concepts</a> in their <a href="/ce-store/doc/json-schema/objects/concept_full.json" target="_blank">full form</a>.
+     A JSON <a href="../doc/json-schema/requests/concept_list_full.json" target="_blank">list of concepts</a> in their <a href="../doc/json-schema/objects/concept_full.json" target="_blank">full form</a>.
     </td>
    </tr>
 
@@ -883,7 +883,7 @@
      /concepts/<em>{name}</em>
     </td>
     <td rowspan="2">
-     <a href="/ce-store/concepts/person" target="_blank">GET</a>
+     <a href="../concepts/person" target="_blank">GET</a>
     </td>
     <td rowspan="2">
      Get details for the concept identified by <em>{name}</em>
@@ -898,7 +898,7 @@
      </ul>
     </td>
     <td>
-     The JSON <a href="/ce-store/doc/json-schema/requests/concept_details_full.json" target="_blank">details</a> for <a href="/ce-store/doc/json-schema/objects/concept_full.json" target="_blank">full form</a> for the concept.
+     The JSON <a href="../doc/json-schema/requests/concept_details_full.json" target="_blank">details</a> for <a href="../doc/json-schema/objects/concept_full.json" target="_blank">full form</a> for the concept.
     </td>
     <td rowspan="2">
      A plain text list of all CE sentences for the concept plus the meta-model CE sentences for each of these concepts
@@ -913,7 +913,7 @@
      </ul>
     </td>
     <td>
-     The JSON <a href="/ce-store/doc/json-schema/requests/concept_details_summary.json" target="_blank">details</a> for <a href="/ce-store/doc/json-schema/objects/concept_summary.json" target="_blank">summary form</a> for the concept.
+     The JSON <a href="../doc/json-schema/requests/concept_details_summary.json" target="_blank">details</a> for <a href="../doc/json-schema/objects/concept_summary.json" target="_blank">summary form</a> for the concept.
     </td>
    </tr>
 
@@ -951,7 +951,7 @@
      /concepts/<em>{name}</em>/children
     </td>
     <td rowspan="2">
-     <a href="/ce-store/concepts/person/children" target="_blank">GET</a>
+     <a href="../concepts/person/children" target="_blank">GET</a>
     </td>
     <td rowspan="2">
      List all child concepts for the concept identified by <em>{name}</em>
@@ -966,7 +966,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/concept_list_summary.json" target="_blank">list of concepts</a> in their <a href="/ce-store/doc/json-schema/objects/concept_summary.json" target="_blank">summary form</a>.
+     A JSON <a href="../doc/json-schema/requests/concept_list_summary.json" target="_blank">list of concepts</a> in their <a href="../doc/json-schema/objects/concept_summary.json" target="_blank">summary form</a>.
     </td>
     <td rowspan="2">
      A plain text list of all CE sentences for all child concepts of this concept
@@ -981,7 +981,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/concept_list_full.json" target="_blank">list of concepts</a> in their <a href="/ce-store/doc/json-schema/objects/concept_full.json" target="_blank">full form</a>.
+     A JSON <a href="../doc/json-schema/requests/concept_list_full.json" target="_blank">list of concepts</a> in their <a href="../doc/json-schema/objects/concept_full.json" target="_blank">full form</a>.
     </td>
    </tr>
 
@@ -991,7 +991,7 @@
      /concepts/<em>{name}</em>/children/direct
     </td>
     <td rowspan="2">
-     <a href="/ce-store/concepts/person/children/direct" target="_blank">GET</a>
+     <a href="../concepts/person/children/direct" target="_blank">GET</a>
     </td>
     <td rowspan="2">
      List direct child concepts for the concept identified by <em>{name}</em>
@@ -1006,7 +1006,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/concept_list_summary.json" target="_blank">list of concepts</a> in their <a href="/ce-store/doc/json-schema/objects/concept_summary.json" target="_blank">summary form</a>.
+     A JSON <a href="../doc/json-schema/requests/concept_list_summary.json" target="_blank">list of concepts</a> in their <a href="../doc/json-schema/objects/concept_summary.json" target="_blank">summary form</a>.
     </td>
     <td rowspan="2">
      A plain text list of all CE sentences for the direct child concepts of this concept
@@ -1021,7 +1021,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/concept_list_full.json" target="_blank">list of concepts</a> in their <a href="/ce-store/doc/json-schema/objects/concept_full.json" target="_blank">full form</a>.
+     A JSON <a href="../doc/json-schema/requests/concept_list_full.json" target="_blank">list of concepts</a> in their <a href="../doc/json-schema/objects/concept_full.json" target="_blank">full form</a>.
     </td>
    </tr>
 
@@ -1031,7 +1031,7 @@
      /concepts/<em>{name}</em>/parents
     </td>
     <td rowspan="2">
-     <a href="/ce-store/concepts/person/parents" target="_blank">GET</a>
+     <a href="../concepts/person/parents" target="_blank">GET</a>
     </td>
     <td rowspan="2">
      List all parent concepts for the concept identified by <em>{name}</em>
@@ -1046,7 +1046,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/concept_list_summary.json" target="_blank">list of concepts</a> in their <a href="/ce-store/doc/json-schema/objects/concept_summary.json" target="_blank">summary form</a>.
+     A JSON <a href="../doc/json-schema/requests/concept_list_summary.json" target="_blank">list of concepts</a> in their <a href="../doc/json-schema/objects/concept_summary.json" target="_blank">summary form</a>.
     </td>
     <td rowspan="2">
      A plain text list of all CE sentences for all parent concepts of this concept
@@ -1061,7 +1061,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/concept_list_full.json" target="_blank">list of concepts</a> in their <a href="/ce-store/doc/json-schema/objects/concept_full.json" target="_blank">full form</a>.
+     A JSON <a href="../doc/json-schema/requests/concept_list_full.json" target="_blank">list of concepts</a> in their <a href="../doc/json-schema/objects/concept_full.json" target="_blank">full form</a>.
     </td>
    </tr>
 
@@ -1071,7 +1071,7 @@
      /concepts/<em>{name}</em>/parents/direct
     </td>
     <td rowspan="2">
-     <a href="/ce-store/concepts/person/parents/direct" target="_blank">GET</a>
+     <a href="../concepts/person/parents/direct" target="_blank">GET</a>
     </td>
     <td rowspan="2">
      List direct parent concepts for the concept identified by <em>{name}</em>
@@ -1086,7 +1086,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/concept_list_summary.json" target="_blank">list of concepts</a> in their <a href="/ce-store/doc/json-schema/objects/concept_summary.json" target="_blank">summary form</a>.
+     A JSON <a href="../doc/json-schema/requests/concept_list_summary.json" target="_blank">list of concepts</a> in their <a href="../doc/json-schema/objects/concept_summary.json" target="_blank">summary form</a>.
     </td>
     <td rowspan="2">
      A plain text list of all CE sentences for the direct parent concepts of this concept
@@ -1101,7 +1101,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/concept_list_full.json" target="_blank">list of concepts</a> in their <a href="/ce-store/doc/json-schema/objects/concept_full.json" target="_blank">full form</a>.
+     A JSON <a href="../doc/json-schema/requests/concept_list_full.json" target="_blank">list of concepts</a> in their <a href="../doc/json-schema/objects/concept_full.json" target="_blank">full form</a>.
     </td>
    </tr>
 
@@ -1111,7 +1111,7 @@
      /concepts/<em>{name}</em>/properties
     </td>
     <td rowspan="2">
-     <a href="/ce-store/concepts/person/properties" target="_blank">GET</a>
+     <a href="../concepts/person/properties" target="_blank">GET</a>
     </td>
     <td rowspan="2">
      List all properties for the concept identified by <em>{name}</em>
@@ -1126,7 +1126,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/property_list_summary.json" target="_blank">list of properties</a> in their <a href="/ce-store/doc/json-schema/objects/property_summary.json" target="_blank">summary form</a>.
+     A JSON <a href="../doc/json-schema/requests/property_list_summary.json" target="_blank">list of properties</a> in their <a href="../doc/json-schema/objects/property_summary.json" target="_blank">summary form</a>.
     </td>
     <td rowspan="2">
      A plain text list of all CE sentences for all properties of this concept
@@ -1141,7 +1141,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/property_list_full.json" target="_blank">list of properties</a> in their <a href="/ce-store/doc/json-schema/objects/property_full.json" target="_blank">full form</a>.
+     A JSON <a href="../doc/json-schema/requests/property_list_full.json" target="_blank">list of properties</a> in their <a href="../doc/json-schema/objects/property_full.json" target="_blank">full form</a>.
     </td>
    </tr>
 
@@ -1151,7 +1151,7 @@
      /concepts/<em>{name}</em>/properties/datatype
     </td>
     <td rowspan="2">
-     <a href="/ce-store/concepts/person/properties/datatype" target="_blank">GET</a>
+     <a href="../concepts/person/properties/datatype" target="_blank">GET</a>
     </td>
     <td rowspan="2">
      List all datatype properties for the concept identified by <em>{name}</em>
@@ -1166,7 +1166,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/property_list_summary.json" target="_blank">list of properties</a> in their <a href="/ce-store/doc/json-schema/objects/property_summary.json" target="_blank">summary form</a>.
+     A JSON <a href="../doc/json-schema/requests/property_list_summary.json" target="_blank">list of properties</a> in their <a href="../doc/json-schema/objects/property_summary.json" target="_blank">summary form</a>.
     </td>
     <td rowspan="2">
      A plain text list of all CE sentences for all datatype properties of this concept
@@ -1181,7 +1181,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/property_list_full.json" target="_blank">list of properties</a> in their <a href="/ce-store/doc/json-schema/objects/property_full.json" target="_blank">full form</a>.
+     A JSON <a href="../doc/json-schema/requests/property_list_full.json" target="_blank">list of properties</a> in their <a href="../doc/json-schema/objects/property_full.json" target="_blank">full form</a>.
     </td>
    </tr>
 
@@ -1191,7 +1191,7 @@
      /concepts/<em>{name}</em>/properties/object
     </td>
     <td rowspan="2">
-     <a href="/ce-store/concepts/person/properties/object" target="_blank">GET</a>
+     <a href="../concepts/person/properties/object" target="_blank">GET</a>
     </td>
     <td rowspan="2">
      List all object properties for the concept identified by <em>{name}</em>
@@ -1210,7 +1210,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/property_list_summary.json" target="_blank">list of properties</a> in their <a href="/ce-store/doc/json-schema/objects/property_summary.json" target="_blank">summary form</a>.
+     A JSON <a href="../doc/json-schema/requests/property_list_summary.json" target="_blank">list of properties</a> in their <a href="../doc/json-schema/objects/property_summary.json" target="_blank">summary form</a>.
     </td>
     <td rowspan="2">
      A plain text list of all CE sentences for all object properties of this concept
@@ -1229,7 +1229,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/property_list_full.json" target="_blank">list of properties</a> in their <a href="/ce-store/doc/json-schema/objects/property_full.json" target="_blank">full form</a>.
+     A JSON <a href="../doc/json-schema/requests/property_list_full.json" target="_blank">list of properties</a> in their <a href="../doc/json-schema/objects/property_full.json" target="_blank">full form</a>.
     </td>
    </tr>
 
@@ -1239,7 +1239,7 @@
      /concepts/<em>{name}</em>/instances
     </td>
     <td rowspan="2">
-     <a href="/ce-store/concepts/person/instances" target="_blank">GET</a>
+     <a href="../concepts/person/instances" target="_blank">GET</a>
     </td>
     <td rowspan="2">
      List all instances for the concept identified by <em>{name}</em>
@@ -1254,7 +1254,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/instance_list_summary.json" target="_blank">list of instances</a> in their <a href="/ce-store/doc/json-schema/objects/instance_summary.json" target="_blank">summary form</a>.
+     A JSON <a href="../doc/json-schema/requests/instance_list_summary.json" target="_blank">list of instances</a> in their <a href="../doc/json-schema/objects/instance_summary.json" target="_blank">summary form</a>.
     </td>
     <td rowspan="2">
      A plain text list of all CE sentences for all instances of this concept
@@ -1269,7 +1269,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/instance_list_full.json" target="_blank">list of instances</a> in their <a href="/ce-store/doc/json-schema/objects/instance_full.json" target="_blank">full form</a>.
+     A JSON <a href="../doc/json-schema/requests/instance_list_full.json" target="_blank">list of instances</a> in their <a href="../doc/json-schema/objects/instance_full.json" target="_blank">full form</a>.
     </td>
    </tr>
 
@@ -1297,7 +1297,7 @@
      /concepts/<em>{name}</em>/instances/frequency
     </td>
     <td>
-     <a href="/ce-store/concepts/temporal%20thing/instances/frequency" target="_blank">GET</a>
+     <a href="../concepts/temporal%20thing/instances/frequency" target="_blank">GET</a>
     </td>
     <td>
      Return the frequency of all instances for the concept identified by <em>{name}</em> sorted into buckets by time.
@@ -1330,7 +1330,7 @@
      /concepts/<em>{name}</em>/instances/count
     </td>
     <td>
-     <a href="/ce-store/concepts/person/instances/count" target="_blank">GET</a>
+     <a href="../concepts/person/instances/count" target="_blank">GET</a>
     </td>
     <td>
      Count all instances for the concept identified by <em>{name}</em>
@@ -1338,7 +1338,7 @@
     <td>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/special_singlevalue.json" target="_blank">special single value</a> containing the number of instances.
+     A JSON <a href="../doc/json-schema/requests/special_singlevalue.json" target="_blank">special single value</a> containing the number of instances.
     </td>
     <td>
      A plain text number that is the count of the instances for this concept
@@ -1351,7 +1351,7 @@
      /concepts/<em>{name}</em>/instances/exact
     </td>
     <td rowspan="2">
-     <a href="/ce-store/concepts/person/instances/exact" target="_blank">GET</a>
+     <a href="../concepts/person/instances/exact" target="_blank">GET</a>
     </td>
     <td rowspan="2">
      List all exact instances for the concept identified by <em>{name}</em>, i.e. those instance directly asserted to be of this concept rather than any inferred instances from children
@@ -1366,7 +1366,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/instance_list_summary.json" target="_blank">list of instances</a> in their <a href="/ce-store/doc/json-schema/objects/instance_summary.json" target="_blank">summary form</a>.
+     A JSON <a href="../doc/json-schema/requests/instance_list_summary.json" target="_blank">list of instances</a> in their <a href="../doc/json-schema/objects/instance_summary.json" target="_blank">summary form</a>.
     </td>
     <td rowspan="2">
      A plain text list of all CE sentences for all exact instances of this concept
@@ -1381,7 +1381,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/instance_list_full.json" target="_blank">list of instances</a> in their <a href="/ce-store/doc/json-schema/objects/instance_full.json" target="_blank">full form</a>.
+     A JSON <a href="../doc/json-schema/requests/instance_list_full.json" target="_blank">list of instances</a> in their <a href="../doc/json-schema/objects/instance_full.json" target="_blank">full form</a>.
     </td>
    </tr>
 
@@ -1409,7 +1409,7 @@
      /concepts/<em>{name}</em>/sentences
     </td>
     <td rowspan="2">
-     <a href="/ce-store/concepts/person/sentences" target="_blank">GET</a>
+     <a href="../concepts/person/sentences" target="_blank">GET</a>
     </td>
     <td rowspan="2">
      List all sentences for the concept identified by <em>{name}</em>
@@ -1424,7 +1424,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/sentence_list_summary.json" target="_blank">list of sentences</a> in their <a href="/ce-store/doc/json-schema/objects/sentence_summary.json" target="_blank">summary form</a>.
+     A JSON <a href="../doc/json-schema/requests/sentence_list_summary.json" target="_blank">list of sentences</a> in their <a href="../doc/json-schema/objects/sentence_summary.json" target="_blank">summary form</a>.
     </td>
     <td rowspan="2">
      A plain text list of all CE sentences for the concept
@@ -1439,7 +1439,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/sentence_list_full.json" target="_blank">list of sentences</a> in their <a href="/ce-store/doc/json-schema/objects/sentence_full.json" target="_blank">full form</a>.
+     A JSON <a href="../doc/json-schema/requests/sentence_list_full.json" target="_blank">list of sentences</a> in their <a href="../doc/json-schema/objects/sentence_full.json" target="_blank">full form</a>.
     </td>
    </tr>
 
@@ -1449,7 +1449,7 @@
      /concepts/<em>{name}</em>/sentences/primary
     </td>
     <td rowspan="2">
-     <a href="/ce-store/concepts/person/sentences/primary" target="_blank">GET</a>
+     <a href="../concepts/person/sentences/primary" target="_blank">GET</a>
     </td>
     <td rowspan="2">
      List all primary sentences for the concept identified by <em>{name}</em>
@@ -1464,7 +1464,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/sentence_list_summary.json" target="_blank">list of sentences</a> in their <a href="/ce-store/doc/json-schema/objects/sentence_summary.json" target="_blank">summary form</a>.
+     A JSON <a href="../doc/json-schema/requests/sentence_list_summary.json" target="_blank">list of sentences</a> in their <a href="../doc/json-schema/objects/sentence_summary.json" target="_blank">summary form</a>.
     </td>
     <td rowspan="2">
      A plain text list of all primary CE sentences for the concept
@@ -1479,7 +1479,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/sentence_list_full.json" target="_blank">list of sentences</a> in their <a href="/ce-store/doc/json-schema/objects/sentence_full.json" target="_blank">full form</a>.
+     A JSON <a href="../doc/json-schema/requests/sentence_list_full.json" target="_blank">list of sentences</a> in their <a href="../doc/json-schema/objects/sentence_full.json" target="_blank">full form</a>.
     </td>
    </tr>
 
@@ -1489,7 +1489,7 @@
      /concepts/<em>{name}</em>/sentences/secondary
     </td>
     <td rowspan="2">
-     <a href="/ce-store/concepts/person/sentences/secondary" target="_blank">GET</a>
+     <a href="../concepts/person/sentences/secondary" target="_blank">GET</a>
     </td>
     <td rowspan="2">
      List all secondary sentences for the concept identified by <em>{name}</em>
@@ -1504,7 +1504,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/sentence_list_summary.json" target="_blank">list of sentences</a> in their <a href="/ce-store/doc/json-schema/objects/sentence_summary.json" target="_blank">summary form</a>.
+     A JSON <a href="../doc/json-schema/requests/sentence_list_summary.json" target="_blank">list of sentences</a> in their <a href="../doc/json-schema/objects/sentence_summary.json" target="_blank">summary form</a>.
     </td>
     <td rowspan="2">
      A plain text list of all secondary CE sentences for the concept
@@ -1519,7 +1519,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/sentence_list_full.json" target="_blank">list of sentences</a> in their <a href="/ce-store/doc/json-schema/objects/sentence_full.json" target="_blank">full form</a>.
+     A JSON <a href="../doc/json-schema/requests/sentence_list_full.json" target="_blank">list of sentences</a> in their <a href="../doc/json-schema/objects/sentence_full.json" target="_blank">full form</a>.
     </td>
    </tr>
 
@@ -1529,7 +1529,7 @@
      /concepts/<em>{name}</em>/rationale
     </td>
     <td rowspan="2">
-     <a href="/ce-store/concepts/person/rationale" target="_blank">GET</a>
+     <a href="../concepts/person/rationale" target="_blank">GET</a>
     </td>
     <td rowspan="2">
      <font>description needed</font>
@@ -1591,7 +1591,7 @@
      /properties
     </td>
     <td rowspan="2">
-     <a href="/ce-store/properties" target="_blank">GET</a>
+     <a href="../properties" target="_blank">GET</a>
     </td>
     <td rowspan="2">
      List all properties
@@ -1606,7 +1606,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/property_list_summary.json" target="_blank">list of properties</a> in their <a href="/ce-store/doc/json-schema/objects/property_summary.json" target="_blank">summary form</a>.
+     A JSON <a href="../doc/json-schema/requests/property_list_summary.json" target="_blank">list of properties</a> in their <a href="../doc/json-schema/objects/property_summary.json" target="_blank">summary form</a>.
     </td>
     <td rowspan="2">
      A plain text list of all CE sentences for every property plus the meta-model CE sentences for each of these properties
@@ -1621,7 +1621,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/property_list_full.json" target="_blank">list of properties</a> in their <a href="/ce-store/doc/json-schema/objects/property_full.json" target="_blank">full form</a>.
+     A JSON <a href="../doc/json-schema/requests/property_list_full.json" target="_blank">list of properties</a> in their <a href="../doc/json-schema/objects/property_full.json" target="_blank">full form</a>.
     </td>
    </tr>
 
@@ -1631,7 +1631,7 @@
      /properties/datatype
     </td>
     <td rowspan="2">
-     <a href="/ce-store/properties/datatype" target="_blank">GET</a>
+     <a href="../properties/datatype" target="_blank">GET</a>
     </td>
     <td rowspan="2">
      List all datatype properties
@@ -1646,7 +1646,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/property_list_summary.json" target="_blank">list of properties</a> in their <a href="/ce-store/doc/json-schema/objects/property_summary.json" target="_blank">summary form</a>.
+     A JSON <a href="../doc/json-schema/requests/property_list_summary.json" target="_blank">list of properties</a> in their <a href="../doc/json-schema/objects/property_summary.json" target="_blank">summary form</a>.
     </td>
     <td rowspan="2">
      A plain text list of all CE sentences for every datatype property plus the meta-model CE sentences for each of these datatype properties
@@ -1661,7 +1661,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/property_list_full.json" target="_blank">list of properties</a> in their <a href="/ce-store/doc/json-schema/objects/property_full.json" target="_blank">full form</a>.
+     A JSON <a href="../doc/json-schema/requests/property_list_full.json" target="_blank">list of properties</a> in their <a href="../doc/json-schema/objects/property_full.json" target="_blank">full form</a>.
     </td>
    </tr>
 
@@ -1671,7 +1671,7 @@
      /properties/object
     </td>
     <td rowspan="2">
-     <a href="/ce-store/properties/object" target="_blank">GET</a>
+     <a href="../properties/object" target="_blank">GET</a>
     </td>
     <td rowspan="2">
      List all object properties
@@ -1686,7 +1686,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/property_list_summary.json" target="_blank">list of properties</a> in their <a href="/ce-store/doc/json-schema/objects/property_summary.json" target="_blank">summary form</a>.
+     A JSON <a href="../doc/json-schema/requests/property_list_summary.json" target="_blank">list of properties</a> in their <a href="../doc/json-schema/objects/property_summary.json" target="_blank">summary form</a>.
     </td>
     <td rowspan="2">
      A plain text list of all CE sentences for every object property plus the meta-model CE sentences for each of these object properties
@@ -1701,7 +1701,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/property_list_full.json" target="_blank">list of properties</a> in their <a href="/ce-store/doc/json-schema/objects/property_full.json" target="_blank">full form</a>.
+     A JSON <a href="../doc/json-schema/requests/property_list_full.json" target="_blank">list of properties</a> in their <a href="../doc/json-schema/objects/property_full.json" target="_blank">full form</a>.
     </td>
    </tr>
 
@@ -1711,7 +1711,7 @@
      /properties/object/<em>{range}</em>
     </td>
     <td rowspan="2">
-     <a href="/ce-store/properties/datatype/person" target="_blank">GET</a>
+     <a href="../properties/datatype/person" target="_blank">GET</a>
     </td>
     <td rowspan="2">
      List all object properties with the range <em>{range}</em>
@@ -1726,7 +1726,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/property_list_summary.json" target="_blank">list of properties</a> in their <a href="/ce-store/doc/json-schema/objects/property_summary.json" target="_blank">summary form</a>.
+     A JSON <a href="../doc/json-schema/requests/property_list_summary.json" target="_blank">list of properties</a> in their <a href="../doc/json-schema/objects/property_summary.json" target="_blank">summary form</a>.
     </td>
     <td rowspan="2">
      A plain text list of all CE sentences for every object property with the specified range, plus the meta-model CE sentences for each of these properties
@@ -1741,7 +1741,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/property_list_full.json" target="_blank">list of properties</a> in their <a href="/ce-store/doc/json-schema/objects/property_full.json" target="_blank">full form</a>.
+     A JSON <a href="../doc/json-schema/requests/property_list_full.json" target="_blank">list of properties</a> in their <a href="../doc/json-schema/objects/property_full.json" target="_blank">full form</a>.
     </td>
    </tr>
 
@@ -1751,7 +1751,7 @@
      /properties/<em>{name}</em>
     </td>
     <td rowspan="2">
-     <a href="/ce-store/properties/is married to" target="_blank">GET</a>
+     <a href="../properties/is married to" target="_blank">GET</a>
     </td>
     <td rowspan="2">
      Get details for the property identified by <em>{name}</em>
@@ -1766,7 +1766,7 @@
      </ul>
     </td>
     <td>
-     The JSON <a href="/ce-store/doc/json-schema/requests/property_details_full.json" target="_blank">details</a> for <a href="/ce-store/doc/json-schema/objects/property_full.json" target="_blank">full form</a> for the property.
+     The JSON <a href="../doc/json-schema/requests/property_details_full.json" target="_blank">details</a> for <a href="../doc/json-schema/objects/property_full.json" target="_blank">full form</a> for the property.
     </td>
     <td rowspan="2">
      A plain text list of all CE sentences for the property plus the meta-model CE sentences for each of these properties
@@ -1781,7 +1781,7 @@
      </ul>
     </td>
     <td>
-     The JSON <a href="/ce-store/doc/json-schema/requests/property_details_summary.json" target="_blank">details</a> for <a href="/ce-store/doc/json-schema/objects/property_summary.json" target="_blank">summary form</a> for the property.
+     The JSON <a href="../doc/json-schema/requests/property_details_summary.json" target="_blank">details</a> for <a href="../doc/json-schema/objects/property_summary.json" target="_blank">summary form</a> for the property.
     </td>
    </tr>
 
@@ -1791,7 +1791,7 @@
      /properties/<em>{name}</em>/sentences
     </td>
     <td rowspan="2">
-     <a href="/ce-store/properties/is married to/sentences" target="_blank">GET</a>
+     <a href="../properties/is married to/sentences" target="_blank">GET</a>
     </td>
     <td rowspan="2">
      List all sentences for the property identified by <em>{name}</em>
@@ -1806,7 +1806,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/sentence_list_summary.json" target="_blank">list of sentences</a> in their <a href="/ce-store/doc/json-schema/objects/sentence_summary.json" target="_blank">summary form</a>.
+     A JSON <a href="../doc/json-schema/requests/sentence_list_summary.json" target="_blank">list of sentences</a> in their <a href="../doc/json-schema/objects/sentence_summary.json" target="_blank">summary form</a>.
     </td>
     <td rowspan="2">
      A plain text list of all CE sentences for the property
@@ -1821,7 +1821,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/sentence_list_full.json" target="_blank">list of sentences</a> in their <a href="/ce-store/doc/json-schema/objects/sentence_full.json" target="_blank">full form</a>.
+     A JSON <a href="../doc/json-schema/requests/sentence_list_full.json" target="_blank">list of sentences</a> in their <a href="../doc/json-schema/objects/sentence_full.json" target="_blank">full form</a>.
     </td>
    </tr>
 
@@ -1831,7 +1831,7 @@
      /properties/<em>{name}</em>/sentences/primary
     </td>
     <td rowspan="2">
-     <a href="/ce-store/properties/is married to/sentences/primary" target="_blank">GET</a>
+     <a href="../properties/is married to/sentences/primary" target="_blank">GET</a>
     </td>
     <td rowspan="2">
      List all primary sentences for the property identified by <em>{name}</em>
@@ -1846,7 +1846,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/sentence_list_summary.json" target="_blank">list of sentences</a> in their <a href="/ce-store/doc/json-schema/objects/sentence_summary.json" target="_blank">summary form</a>.
+     A JSON <a href="../doc/json-schema/requests/sentence_list_summary.json" target="_blank">list of sentences</a> in their <a href="../doc/json-schema/objects/sentence_summary.json" target="_blank">summary form</a>.
     </td>
     <td rowspan="2">
      A plain text list of all primary CE sentences for the property
@@ -1861,7 +1861,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/sentence_list_full.json" target="_blank">list of sentences</a> in their <a href="/ce-store/doc/json-schema/objects/sentence_full.json" target="_blank">full form</a>.
+     A JSON <a href="../doc/json-schema/requests/sentence_list_full.json" target="_blank">list of sentences</a> in their <a href="../doc/json-schema/objects/sentence_full.json" target="_blank">full form</a>.
     </td>
    </tr>
 
@@ -1871,7 +1871,7 @@
      /properties/<em>{name}</em>/sentences/secondary
     </td>
     <td rowspan="2">
-     <a href="/ce-store/properties/is married to/sentences/secondary" target="_blank">GET</a>
+     <a href="../properties/is married to/sentences/secondary" target="_blank">GET</a>
     </td>
     <td rowspan="2">
      List all secondary sentences for the property identified by <em>{name}</em>
@@ -1886,7 +1886,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/sentence_list_summary.json" target="_blank">list of sentences</a> in their <a href="/ce-store/doc/json-schema/objects/sentence_summary.json" target="_blank">summary form</a>.
+     A JSON <a href="../doc/json-schema/requests/sentence_list_summary.json" target="_blank">list of sentences</a> in their <a href="../doc/json-schema/objects/sentence_summary.json" target="_blank">summary form</a>.
     </td>
     <td rowspan="2">
      A plain text list of all secondary CE sentences for the property
@@ -1901,7 +1901,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/sentence_list_full.json" target="_blank">list of sentences</a> in their <a href="/ce-store/doc/json-schema/objects/sentence_full.json" target="_blank">full form</a>.
+     A JSON <a href="../doc/json-schema/requests/sentence_list_full.json" target="_blank">list of sentences</a> in their <a href="../doc/json-schema/objects/sentence_full.json" target="_blank">full form</a>.
     </td>
    </tr>
 
@@ -1911,7 +1911,7 @@
      /properties/<em>{name}</em>/rationale
     </td>
     <td rowspan="2">
-     <a href="/ce-store/properties/is married to/rationale" target="_blank">GET</a>
+     <a href="../properties/is married to/rationale" target="_blank">GET</a>
     </td>
     <td rowspan="2">
      <font>description needed</font>
@@ -1951,7 +1951,7 @@
      /properties/<em>{name}</em>/common
     </td>
     <td rowspan="2">
-     <a href="/ce-store/properties/is married to/common" target="_blank">GET</a>
+     <a href="../properties/is married to/common" target="_blank">GET</a>
     </td>
     <td rowspan="2">
      <font>description needed</font>
@@ -2013,7 +2013,7 @@
      /instances
     </td>
     <td rowspan="2">
-     <a href="/ce-store/instances" target="_blank">GET</a>
+     <a href="../instances" target="_blank">GET</a>
     </td>
     <td rowspan="2">
      List all instances
@@ -2028,7 +2028,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/instance_list_summary.json" target="_blank">list of instances</a> in their <a href="/ce-store/doc/json-schema/objects/instance_summary.json" target="_blank">summary form</a>.
+     A JSON <a href="../doc/json-schema/requests/instance_list_summary.json" target="_blank">list of instances</a> in their <a href="../doc/json-schema/objects/instance_summary.json" target="_blank">summary form</a>.
     </td>
     <td rowspan="2">
      A plain text list of all CE sentences for every instance
@@ -2043,7 +2043,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/instance_list_full.json" target="_blank">list of instances</a> in their <a href="/ce-store/doc/json-schema/objects/instance_full.json" target="_blank">full form</a>.
+     A JSON <a href="../doc/json-schema/requests/instance_list_full.json" target="_blank">list of instances</a> in their <a href="../doc/json-schema/objects/instance_full.json" target="_blank">full form</a>.
     </td>
    </tr>
 
@@ -2070,7 +2070,7 @@
      /instances/<em>{name}</em>
     </td>
     <td rowspan="2">
-     <a href="/ce-store/instances/Fred" target="_blank">GET</a>
+     <a href="../instances/Fred" target="_blank">GET</a>
     </td>
     <td rowspan="2">
      Get details for the instance identified by <em>{name}</em>
@@ -2085,7 +2085,7 @@
      </ul>
     </td>
     <td>
-     The JSON <a href="/ce-store/doc/json-schema/requests/instance_details_full.json" target="_blank">details</a> for <a href="/ce-store/doc/json-schema/objects/instance_full.json" target="_blank">full form</a> for the instance.
+     The JSON <a href="../doc/json-schema/requests/instance_details_full.json" target="_blank">details</a> for <a href="../doc/json-schema/objects/instance_full.json" target="_blank">full form</a> for the instance.
     </td>
     <td rowspan="2">
      A plain text list of all CE sentences for the specified instance
@@ -2100,7 +2100,7 @@
      </ul>
     </td>
     <td>
-     The JSON <a href="/ce-store/doc/json-schema/requests/instance_details_summary.json" target="_blank">details</a> for <a href="/ce-store/doc/json-schema/objects/instance_summary.json" target="_blank">summary form</a> for the instance.
+     The JSON <a href="../doc/json-schema/requests/instance_details_summary.json" target="_blank">details</a> for <a href="../doc/json-schema/objects/instance_summary.json" target="_blank">summary form</a> for the instance.
     </td>
    </tr>
 
@@ -2128,7 +2128,7 @@
      /instances/<em>{name}</em>/references
     </td>
     <td rowspan="2">
-     <a href="/ce-store/instances/Fred/references" target="_blank">GET</a>
+     <a href="../instances/Fred/references" target="_blank">GET</a>
     </td>
     <td rowspan="2">
      List all the instances that refer to the specified instance, and the property in which they refer to it
@@ -2143,7 +2143,7 @@
      </ul>
     </td>
     <td>
-     A special JSON <a href="/ce-store/doc/json-schema/requests/special_referencelist_summary.json" target="_blank">list of instances</a> in their <a href="/ce-store/doc/json-schema/objects/instance_summary.json" target="_blank">summary form</a>.
+     A special JSON <a href="../doc/json-schema/requests/special_referencelist_summary.json" target="_blank">list of instances</a> in their <a href="../doc/json-schema/objects/instance_summary.json" target="_blank">summary form</a>.
     </td>
     <td rowspan="2">
      A plain text list of all CE sentences that refer to the specified instance
@@ -2158,7 +2158,7 @@
      </ul>
     </td>
     <td>
-     A special JSON <a href="/ce-store/doc/json-schema/requests/special_referencelist_full.json" target="_blank">list of instances</a> in their <a href="/ce-store/doc/json-schema/objects/instance_full.json" target="_blank">full form</a>.
+     A special JSON <a href="../doc/json-schema/requests/special_referencelist_full.json" target="_blank">list of instances</a> in their <a href="../doc/json-schema/objects/instance_full.json" target="_blank">full form</a>.
     </td>
    </tr>
 
@@ -2168,7 +2168,7 @@
      /instances/<em>{name}</em>/sentences
     </td>
     <td rowspan="2">
-     <a href="/ce-store/instances/Fred/sentences" target="_blank">GET</a>
+     <a href="../instances/Fred/sentences" target="_blank">GET</a>
     </td>
     <td rowspan="2">
      List all sentences for the instance identified by <em>{name}</em>
@@ -2183,7 +2183,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/sentence_list_summary.json" target="_blank">list of sentences</a> in their <a href="/ce-store/doc/json-schema/objects/sentence_summary.json" target="_blank">summary form</a>.
+     A JSON <a href="../doc/json-schema/requests/sentence_list_summary.json" target="_blank">list of sentences</a> in their <a href="../doc/json-schema/objects/sentence_summary.json" target="_blank">summary form</a>.
     </td>
     <td rowspan="2">
      A plain text list of all CE sentences for the specified instance
@@ -2198,7 +2198,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/sentence_list_full.json" target="_blank">list of sentences</a> in their <a href="/ce-store/doc/json-schema/objects/sentence_full.json" target="_blank">full form</a>.
+     A JSON <a href="../doc/json-schema/requests/sentence_list_full.json" target="_blank">list of sentences</a> in their <a href="../doc/json-schema/objects/sentence_full.json" target="_blank">full form</a>.
     </td>
    </tr>
 
@@ -2208,7 +2208,7 @@
      /instances/<em>{name}</em>/sentences/primary
     </td>
     <td rowspan="2">
-     <a href="/ce-store/instances/Fred/sentences/primary" target="_blank">GET</a>
+     <a href="../instances/Fred/sentences/primary" target="_blank">GET</a>
     </td>
     <td rowspan="2">
      List all primary sentences for the instance identified by <em>{name}</em>
@@ -2223,7 +2223,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/sentence_list_summary.json" target="_blank">list of sentences</a> in their <a href="/ce-store/doc/json-schema/objects/sentence_summary.json" target="_blank">summary form</a>.
+     A JSON <a href="../doc/json-schema/requests/sentence_list_summary.json" target="_blank">list of sentences</a> in their <a href="../doc/json-schema/objects/sentence_summary.json" target="_blank">summary form</a>.
     </td>
     <td rowspan="2">
      A plain text list of all primary CE sentences for the specified instance
@@ -2238,7 +2238,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/sentence_list_full.json" target="_blank">list of sentences</a> in their <a href="/ce-store/doc/json-schema/objects/sentence_full.json" target="_blank">full form</a>.
+     A JSON <a href="../doc/json-schema/requests/sentence_list_full.json" target="_blank">list of sentences</a> in their <a href="../doc/json-schema/objects/sentence_full.json" target="_blank">full form</a>.
     </td>
    </tr>
 
@@ -2248,7 +2248,7 @@
      /instances/<em>{name}</em>/sentences/secondary
     </td>
     <td rowspan="2">
-     <a href="/ce-store/instances/Fred/sentences/secondary" target="_blank">GET</a>
+     <a href="../instances/Fred/sentences/secondary" target="_blank">GET</a>
     </td>
     <td rowspan="2">
      List all secondary sentences for the instance identified by <em>{name}</em>
@@ -2263,7 +2263,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/sentence_list_summary.json" target="_blank">list of sentences</a> in their <a href="/ce-store/doc/json-schema/objects/sentence_summary.json" target="_blank">summary form</a>.
+     A JSON <a href="../doc/json-schema/requests/sentence_list_summary.json" target="_blank">list of sentences</a> in their <a href="../doc/json-schema/objects/sentence_summary.json" target="_blank">summary form</a>.
     </td>
     <td rowspan="2">
      A plain text list of all secondary CE sentences for the specified instance
@@ -2278,7 +2278,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/sentence_list_full.json" target="_blank">list of sentences</a> in their <a href="/ce-store/doc/json-schema/objects/sentence_full.json" target="_blank">full form</a>.
+     A JSON <a href="../doc/json-schema/requests/sentence_list_full.json" target="_blank">list of sentences</a> in their <a href="../doc/json-schema/objects/sentence_full.json" target="_blank">full form</a>.
     </td>
    </tr>
 
@@ -2288,7 +2288,7 @@
      /instances/<em>{name}</em>/rationale
     </td>
     <td rowspan="2">
-     <a href="/ce-store/instances/Fred/rationale" target="_blank">GET</a>
+     <a href="../instances/Fred/rationale" target="_blank">GET</a>
     </td>
     <td rowspan="2">
      <font>description needed</font>
@@ -2350,7 +2350,7 @@
      /queries
     </td>
     <td rowspan="2">
-     <a href="/ce-store/queries" target="_blank">GET</a>
+     <a href="../queries" target="_blank">GET</a>
     </td>
     <td rowspan="2">
      List all queries
@@ -2365,7 +2365,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/query_list_summary.json" target="_blank">list of queries</a> in their <a href="/ce-store/doc/json-schema/objects/query_summary.json" target="_blank">summary form</a>.
+     A JSON <a href="../doc/json-schema/requests/query_list_summary.json" target="_blank">list of queries</a> in their <a href="../doc/json-schema/objects/query_summary.json" target="_blank">summary form</a>.
     </td>
     <td rowspan="2">
      A plain text list of all CE sentences for every query plus the meta-model CE sentences for for each of these queries
@@ -2380,7 +2380,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/query_list_full.json" target="_blank">list of queries</a> in their <a href="/ce-store/doc/json-schema/objects/query_full.json" target="_blank">full form</a>.
+     A JSON <a href="../doc/json-schema/requests/query_list_full.json" target="_blank">list of queries</a> in their <a href="../doc/json-schema/objects/query_full.json" target="_blank">full form</a>.
     </td>
    </tr>
 
@@ -2390,7 +2390,7 @@
      /queries/<em>{name}</em>
     </td>
     <td rowspan="2">
-     <a href="/ce-store/queries/brother of" target="_blank">GET</a>
+     <a href="../queries/brother of" target="_blank">GET</a>
     </td>
     <td rowspan="2">
      Get details for the query identified by <em>{name}</em>
@@ -2405,7 +2405,7 @@
      </ul>
     </td>
     <td>
-     The JSON <a href="/ce-store/doc/json-schema/requests/query_details_full.json" target="_blank">details</a> for <a href="/ce-store/doc/json-schema/objects/query_full.json" target="_blank">full form</a> for the query.
+     The JSON <a href="../doc/json-schema/requests/query_details_full.json" target="_blank">details</a> for <a href="../doc/json-schema/objects/query_full.json" target="_blank">full form</a> for the query.
     </td>
     <td rowspan="2">
      A plain text list of all CE sentences for the query plus the meta-model CE sentences the query
@@ -2420,7 +2420,7 @@
      </ul>
     </td>
     <td>
-     The JSON <a href="/ce-store/doc/json-schema/requests/query_details_summary.json" target="_blank">details</a> for <a href="/ce-store/doc/json-schema/objects/query_summary.json" target="_blank">summary form</a> for the query.
+     The JSON <a href="../doc/json-schema/requests/query_details_summary.json" target="_blank">details</a> for <a href="../doc/json-schema/objects/query_summary.json" target="_blank">summary form</a> for the query.
     </td>
    </tr>
 
@@ -2448,7 +2448,7 @@
      /queries/<em>{name}</em>/execute
     </td>
     <td>
-     <a href="/ce-store/queries/brother of/execute" target="_blank">GET</a>
+     <a href="../queries/brother of/execute" target="_blank">GET</a>
     </td>
     <td>
      Show the results of executing the query identified by <em>{name}</em>
@@ -2456,7 +2456,7 @@
     <td>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/query_result.json" target="_blank">query result</a> from executing the query.
+     A JSON <a href="../doc/json-schema/requests/query_result.json" target="_blank">query result</a> from executing the query.
     </td>
     <td rowspan="2">
      A plain text list of the CE sentences returned by executing the query
@@ -2491,7 +2491,7 @@
      /rules
     </td>
     <td rowspan="2">
-     <a href="/ce-store/rules" target="_blank">GET</a>
+     <a href="../rules" target="_blank">GET</a>
     </td>
     <td rowspan="2">
      List all rules
@@ -2506,7 +2506,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/rule_list_summary.json" target="_blank">list of rules</a> in their <a href="/ce-store/doc/json-schema/objects/rule_summary.json" target="_blank">summary form</a>.
+     A JSON <a href="../doc/json-schema/requests/rule_list_summary.json" target="_blank">list of rules</a> in their <a href="../doc/json-schema/objects/rule_summary.json" target="_blank">summary form</a>.
     </td>
     <td rowspan="2">
      A plain text list of all CE sentences for every rule plus the meta-model CE sentences for for each of these rules
@@ -2521,7 +2521,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/rule_list_full.json" target="_blank">list of rules</a> in their <a href="/ce-store/doc/json-schema/objects/rule_full.json" target="_blank">full form</a>.
+     A JSON <a href="../doc/json-schema/requests/rule_list_full.json" target="_blank">list of rules</a> in their <a href="../doc/json-schema/objects/rule_full.json" target="_blank">full form</a>.
     </td>
    </tr>
 
@@ -2531,7 +2531,7 @@
      /rules/<em>{name}</em>
     </td>
     <td rowspan="2">
-     <a href="/ce-store/rules/aunt" target="_blank">GET</a>
+     <a href="../rules/aunt" target="_blank">GET</a>
     </td>
     <td rowspan="2">
      Get details for the rule identified by <em>{name}</em>
@@ -2546,7 +2546,7 @@
      </ul>
     </td>
     <td>
-     The JSON <a href="/ce-store/doc/json-schema/requests/rule_details_full.json" target="_blank">details</a> for <a href="/ce-store/doc/json-schema/objects/rule_full.json" target="_blank">full form</a> for the rule.
+     The JSON <a href="../doc/json-schema/requests/rule_details_full.json" target="_blank">details</a> for <a href="../doc/json-schema/objects/rule_full.json" target="_blank">full form</a> for the rule.
     </td>
     <td rowspan="2">
      A plain text list of all CE sentences for the rule plus the meta-model CE sentences for the rule
@@ -2561,7 +2561,7 @@
      </ul>
     </td>
     <td>
-     The JSON <a href="/ce-store/doc/json-schema/requests/rule_details_summary.json" target="_blank">details</a> for <a href="/ce-store/doc/json-schema/objects/rule_summary.json" target="_blank">summary form</a> for the rule.
+     The JSON <a href="../doc/json-schema/requests/rule_details_summary.json" target="_blank">details</a> for <a href="../doc/json-schema/objects/rule_summary.json" target="_blank">summary form</a> for the rule.
     </td>
    </tr>
 
@@ -2589,7 +2589,7 @@
      /rules/<em>{name}</em>/execute
     </td>
     <td>
-     <a href="/ce-store/rules/aunt/execute" target="_blank">GET</a>
+     <a href="../rules/aunt/execute" target="_blank">GET</a>
     </td>
     <td>
      Show the results of evaluating the rule identified by <em>{name}</em> by executing it as a query
@@ -2597,7 +2597,7 @@
     <td>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/query_result.json" target="_blank">query result</a> from executing the rule as a query.
+     A JSON <a href="../doc/json-schema/requests/query_result.json" target="_blank">query result</a> from executing the rule as a query.
     </td>
     <td>
      A plain text list of the CE sentences returned by executing the rule as a query
@@ -2615,7 +2615,7 @@
     <td>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/query_result.json" target="_blank">query result</a> from executing the rule.
+     A JSON <a href="../doc/json-schema/requests/query_result.json" target="_blank">query result</a> from executing the rule.
     </td>
     <td>
      A plain text list of the CE sentences created by executing the rule
@@ -2628,7 +2628,7 @@
      /rules/<em>{name}</em>/rationale
     </td>
     <td>
-     <a href="/ce-store/rules/aunt/rationale" target="_blank">GET</a>
+     <a href="../rules/aunt/rationale" target="_blank">GET</a>
     </td>
     <td>
      Show the rationale related to the rule identified by <em>{name}</em>
@@ -2671,7 +2671,7 @@
      /special/statistics
     </td>
     <td>
-     <a href="/ce-store/special/statistics" target="_blank">GET</a>
+     <a href="../special/statistics" target="_blank">GET</a>
     </td>
     <td>
      Show various statistics about the CE Store
@@ -2679,7 +2679,7 @@
     <td>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/special_statistics.json" target="_blank">list of statistics</a>.
+     A JSON <a href="../doc/json-schema/requests/special_statistics.json" target="_blank">list of statistics</a>.
     </td>
     <td>
      A plain text summary of the CE Store statistics
@@ -2697,7 +2697,7 @@
     <td>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/special_statistics.json" target="_blank">list of statistics</a>.
+     A JSON <a href="../doc/json-schema/requests/special_statistics.json" target="_blank">list of statistics</a>.
     </td>
     <td>
      A plain text summary of the CE Store statistics
@@ -2710,7 +2710,7 @@
      /special/patterns
     </td>
     <td rowspan="2">
-     <a href="/ce-store/special/patterns" target="_blank">GET</a>
+     <a href="../special/patterns" target="_blank">GET</a>
     </td>
     <td rowspan="2">
      List all patterns (queries or rules)
@@ -2725,7 +2725,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/pattern_list_summary.json" target="_blank">list of patterns</a> in their <a href="/ce-store/doc/json-schema/objects/pattern_summary.json" target="_blank">summary form</a>.
+     A JSON <a href="../doc/json-schema/requests/pattern_list_summary.json" target="_blank">list of patterns</a> in their <a href="../doc/json-schema/objects/pattern_summary.json" target="_blank">summary form</a>.
     </td>
     <td rowspan="2">
      A plain text list of all CE sentences for every pattern (query or rule) plus the meta-model CE sentences for for each of these patterns
@@ -2740,7 +2740,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/pattern_list_full.json" target="_blank">list of patterns</a> in their <a href="/ce-store/doc/json-schema/objects/pattern_full.json" target="_blank">full form</a>.
+     A JSON <a href="../doc/json-schema/requests/pattern_list_full.json" target="_blank">list of patterns</a> in their <a href="../doc/json-schema/objects/pattern_full.json" target="_blank">full form</a>.
     </td>
    </tr>
 
@@ -2750,7 +2750,7 @@
      /special/rationale
     </td>
     <td rowspan="2">
-     <a href="/ce-store/special/rationale" target="_blank">GET</a>
+     <a href="../special/rationale" target="_blank">GET</a>
     </td>
     <td rowspan="2">
      List all rationale details
@@ -2765,7 +2765,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/rationale_list_summary.json" target="_blank">list of rationale details</a> in their <a href="/ce-store/doc/json-schema/objects/rationale_summary.json" target="_blank">summary form</a>.
+     A JSON <a href="../doc/json-schema/requests/rationale_list_summary.json" target="_blank">list of rationale details</a> in their <a href="../doc/json-schema/objects/rationale_summary.json" target="_blank">summary form</a>.
     </td>
     <td rowspan="2">
      A plain text list of all CE sentences for all rationale
@@ -2780,7 +2780,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/rationale_list_full.json" target="_blank">list of rationale details</a> in their <a href="/ce-store/doc/json-schema/objects/rationale_full.json" target="_blank">full form</a>.
+     A JSON <a href="../doc/json-schema/requests/rationale_list_full.json" target="_blank">list of rationale details</a> in their <a href="../doc/json-schema/objects/rationale_full.json" target="_blank">full form</a>.
     </td>
    </tr>
 
@@ -2790,7 +2790,7 @@
      /special/config
     </td>
     <td>
-     <a href="/ce-store/special/config" target="_blank">GET</a>
+     <a href="../special/config" target="_blank">GET</a>
     </td>
     <td>
      Show all the configuration details for the CE Store
@@ -2798,7 +2798,7 @@
     <td>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/special_configlist.json" target="_blank">list of config values</a> for the CE Store.
+     A JSON <a href="../doc/json-schema/requests/special_configlist.json" target="_blank">list of config values</a> for the CE Store.
     </td>
     <td>
      A plain text list of the config values for the CE Store
@@ -2811,7 +2811,7 @@
      /special/config/<em>{key}</em>
     </td>
     <td>
-     <a href="/ce-store/special/config/tbc" target="_blank">GET</a>
+     <a href="../special/config/tbc" target="_blank">GET</a>
     </td>
     <td>
      Show the value for the configuration setting specified by <em>{key}</em>
@@ -2819,7 +2819,7 @@
     <td>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/special_configvalue.json" target="_blank">value</a> for the specified configuration setting.
+     A JSON <a href="../doc/json-schema/requests/special_configvalue.json" target="_blank">value</a> for the specified configuration setting.
     </td>
     <td>
      A plain text value for the specified configuration setting
@@ -2843,7 +2843,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/special_configvalue.json" target="_blank">value</a> for the updated configuration setting.
+     A JSON <a href="../doc/json-schema/requests/special_configvalue.json" target="_blank">value</a> for the updated configuration setting.
     </td>
     <td>
      A plain text value for the updated configuration setting
@@ -2856,7 +2856,7 @@
      /special/uid
     </td>
     <td>
-     <a href="/ce-store/special/uid" target="_blank">GET</a>
+     <a href="../special/uid" target="_blank">GET</a>
     </td>
     <td>
      Show the current unique id, i.e. the one that was last used, in the CE Store
@@ -2864,7 +2864,7 @@
     <td>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/special_singlevalue.json" target="_blank">single value</a> showing the unique id.
+     A JSON <a href="../doc/json-schema/requests/special_singlevalue.json" target="_blank">single value</a> showing the unique id.
     </td>
     <td>
      A plain text single value that is the current unique id
@@ -2882,7 +2882,7 @@
     <td>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/special_singlevalue.json" target="_blank">single value</a> showing the unique id.
+     A JSON <a href="../doc/json-schema/requests/special_singlevalue.json" target="_blank">single value</a> showing the unique id.
     </td>
     <td>
      A plain text single value that is the new unique id
@@ -2909,7 +2909,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/special_uidbatch.json" target="_blank">batch</a> of unique ids.
+     A JSON <a href="../doc/json-schema/requests/special_uidbatch.json" target="_blank">batch</a> of unique ids.
     </td>
     <td>
      A plain text description of the unique id batch
@@ -2922,7 +2922,7 @@
      /special/keyword-search
     </td>
     <td>
-     <a href="/ce-store/special/keyword-search" target="_blank">GET</a>
+     <a href="../special/keyword-search" target="_blank">GET</a>
     </td>
     <td>
      Search the whole CE Store for the specified keywords
@@ -2936,7 +2936,7 @@
      </ul>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/special_search.json" target="_blank">list</a> of the search results.
+     A JSON <a href="../doc/json-schema/requests/special_search.json" target="_blank">list</a> of the search results.
     </td>
     <td>
      A plain text summary of the CE sentences that match the search keywords
@@ -2949,7 +2949,7 @@
      /special/shadow-concepts
     </td>
     <td>
-     <a href="/ce-store/special/shadow-concepts" target="_blank">GET</a>
+     <a href="../special/shadow-concepts" target="_blank">GET</a>
     </td>
     <td>
      Show all shadow concepts (concepts that are referenced but not defined)
@@ -2957,7 +2957,7 @@
     <td>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/special_shadowconcepts.json" target="_blank">list of shadow concept</a> details.
+     A JSON <a href="../doc/json-schema/requests/special_shadowconcepts.json" target="_blank">list of shadow concept</a> details.
     </td>
     <td>
      A plain text list of all CE sentences that refer to each of the shadow concepts
@@ -2970,7 +2970,7 @@
      /special/shadow-instances
     </td>
     <td>
-     <a href="/ce-store/special/shadow-instances" target="_blank">GET</a>
+     <a href="../special/shadow-instances" target="_blank">GET</a>
     </td>
     <td>
      Show all shadow instances (instances that are referenced but not defined)
@@ -2978,7 +2978,7 @@
     <td>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/special_shadowinstances.json" target="_blank">list of shadow instance</a> details.
+     A JSON <a href="../doc/json-schema/requests/special_shadowinstances.json" target="_blank">list of shadow instance</a> details.
     </td>
     <td>
      A plain text list of all CE sentences that refer to each of the shadow instances
@@ -2991,7 +2991,7 @@
      /special/diverse-concept-instances
     </td>
     <td>
-     <a href="/ce-store/special/diverse-concept-instances" target="_blank">GET</a>
+     <a href="../special/diverse-concept-instances" target="_blank">GET</a>
     </td>
     <td>
      Show all diverse concept instances (instances that are stated as being concepts which do not have a common non-thing parent)
@@ -2999,7 +2999,7 @@
     <td>
     </td>
     <td>
-     A JSON <a href="/ce-store/doc/json-schema/requests/special_diverseconceptinstances.json" target="_blank">list of diverse concept instance</a> details.
+     A JSON <a href="../doc/json-schema/requests/special_diverseconceptinstances.json" target="_blank">list of diverse concept instance</a> details.
     </td>
     <td>
      A plain text list of all CE sentences that define each of the diverse concept instances

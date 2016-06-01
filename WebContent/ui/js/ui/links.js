@@ -133,7 +133,7 @@ function CeStoreLinks() {
 	};
 
 	this.externalHyperlinkFor = function(pUrl) {
-		return this.hyperlinkFor(pUrl, '<img src="/ce-store/ui/icons/link.png" height="15"/>', 'Open this link in a new window', '_blank');
+		return this.hyperlinkFor(pUrl, '<img src="./icons/link.png" height="15"/>', 'Open this link in a new window', '_blank');
 	};
 
 	//Stores
@@ -737,7 +737,7 @@ function CeStoreLinks() {
 	};
 
 	this.help = function() {
-		return this.hyperlinkFor('/ce-store/doc/index.html', 'help', 'Open the help page', TARGET_POPUP);
+		return this.hyperlinkFor('../doc/index.html', 'help', 'Open the help page', TARGET_POPUP);
 	};
 
 	this.clearDropPane = function() {

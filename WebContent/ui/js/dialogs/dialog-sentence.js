@@ -6,7 +6,7 @@
 gEp.dlg.sentence = new DialogSentence();
 
 function DialogSentence() {
-	var DEFAULT_CMDURL = 'ce-store/ce/medicine/cmd/med_load.cecmd';
+	var DEFAULT_CMDURL = './ce/medicine/cmd/med_load.cecmd';
 
 	var iLastUserCmdUrl = null;
 
@@ -64,7 +64,11 @@ function DialogSentence() {
 
 	function initialiseLastUserCmdUrl() {
 		if (iLastUserCmdUrl === null) {
-			iLastUserCmdUrl = gEp.currentServerAddress + DEFAULT_CMDURL;
+			if (gCe.utils.startsWith(DEFAULT_CMDURL, '.')) {
+				iLastUserCmdUrl = DEFAULT_CMDURL;
+			} else {
+				iLastUserCmdUrl = gEp.currentServerAddress + DEFAULT_CMDURL;
+			}
 		}
 	}
 

@@ -23,7 +23,7 @@ function DialogConvActions() {
 		if (gEp.isCeStoreEmpty()) {
 			gCe.msg.alert('The CE Store is empty.  Please load a sentence set before enabling the conversation pane.');
 		} else {
-			var senUrl = 'ce-store/ce/conversation/cmd/load_conv_and_card_models.cecmd';
+			var senUrl = './ce/conversation/cmd/load_conv_and_card_models.cecmd';
 			var cbf = function(pResponseObject, pUserParms) { 
 							gEp.handler.sentences.reportLoadResultsAndRefresh(pResponseObject, pUserParms);
 							gEp.dlg.conv.actions.updateAfterLoad(true);
