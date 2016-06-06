@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -631,6 +632,8 @@ public abstract class CeStoreRestApi extends ApiHandler {
 		String[] limRels = getListParameterNamed(CeStoreRestApiInstance.PARM_LIMRELS);
 		String[] onlyProps = getListParameterNamed(CeStoreRestApiInstance.PARM_ONLYPROPS);
 
+		onlyProps = mergedPropertyRestrictionsFor(onlyProps, limRels);
+
 		CeStoreJsonObject jRes = null;
 
 		if (isMinimalStyle()) {
@@ -640,6 +643,25 @@ public abstract class CeStoreRestApi extends ApiHandler {
 		}
 
 		getWebActionResponse().setStructuredResult(jRes);
+	}
+
+	protected String[] mergedPropertyRestrictionsFor(String[] pOnlyProps, String[] pLimRels) {
+		String[] result = null;
+
+		if ((pOnlyProps == null) || (pOnlyProps.length == 0)) {
+			result = pOnlyProps;
+		} else {
+			if ((pLimRels == null) || (pLimRels.length == 0)) {
+				result = pOnlyProps;
+			} else {
+				HashSet<String> mergedSet = new HashSet<String>(Arrays.asList(pOnlyProps));
+				mergedSet.addAll(Arrays.asList(pLimRels));
+
+				result = mergedSet.toArray(new String[mergedSet.size()]);
+			}
+		}
+
+		return result;
 	}
 
 }

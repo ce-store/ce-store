@@ -81,14 +81,14 @@ public class CeWebInstance extends CeWebObject {
 		}
 	}
 
-	private void relatedInstancesMinimalJsonFor(CeInstance pInst, int pNumSteps, int pDepth, CeStoreJsonObject pResult, String[] pLimRels) {
+	private void relatedInstancesMinimalJsonFor(CeInstance pInst, int pNumSteps, int pDepth, CeStoreJsonObject pResult, String[] pLimRels, String[] pOnlyProps) {
 		int thisDepth = pDepth + 1;
 
 		for (CeInstance relInst : pInst.getAllRelatedInstances(this.ac, pLimRels)) {
-			pResult.put(relInst.getInstanceName(), normalMinimalDetailsJsonFor(relInst, null));
+			pResult.put(relInst.getInstanceName(), normalMinimalDetailsJsonFor(relInst, pOnlyProps));
 
 			if (thisDepth <= pNumSteps) {
-				relatedInstancesMinimalJsonFor(relInst, pNumSteps, thisDepth, pResult, pLimRels);
+				relatedInstancesMinimalJsonFor(relInst, pNumSteps, thisDepth, pResult, pLimRels, pOnlyProps);
 			}
 		}
 	}
@@ -127,7 +127,7 @@ public class CeWebInstance extends CeWebObject {
 		}
 	}
 
-	private void referringInstancesMinimalJsonFor(CeInstance pInst, int pNumSteps, int pDepth, CeStoreJsonObject pResult, String[] pLimRels) {
+	private void referringInstancesMinimalJsonFor(CeInstance pInst, int pNumSteps, int pDepth, CeStoreJsonObject pResult, String[] pLimRels, String[] pOnlyProps) {
 		int thisDepth = pDepth + 1;
 		QueryHandler qh = new QueryHandler(this.ac);
 		TreeMap<String, HashSet<CeInstance>> refResult = qh.listAllInstanceReferencesFor(pInst);
@@ -152,7 +152,7 @@ public class CeWebInstance extends CeWebObject {
 					refArray.add(normalMinimalDetailsJsonFor(refInst, null));
 
 					if (thisDepth <= pNumSteps) {
-						referringInstancesMinimalJsonFor(refInst, pNumSteps, thisDepth, pResult, pLimRels);
+						referringInstancesMinimalJsonFor(refInst, pNumSteps, thisDepth, pResult, pLimRels, pOnlyProps);
 					}
 				}
 
@@ -275,13 +275,13 @@ public class CeWebInstance extends CeWebObject {
 
 			if (pRelInsts) {
 				CeStoreJsonObject relInsts = new CeStoreJsonObject();
-				relatedInstancesMinimalJsonFor(pInst, pNumSteps, 1, relInsts, pLimInsts);
+				relatedInstancesMinimalJsonFor(pInst, pNumSteps, 1, relInsts, pLimInsts, pOnlyProps);
 				mainObj.put("related_instances", relInsts);
 			}
 
 			if (pRefInsts) {
 				CeStoreJsonObject refInsts = new CeStoreJsonObject();
-				referringInstancesMinimalJsonFor(pInst, pNumSteps, 1, refInsts, pLimInsts);
+				referringInstancesMinimalJsonFor(pInst, pNumSteps, 1, refInsts, pLimInsts, pOnlyProps);
 				mainObj.put("referring_instances", refInsts);
 			}
 		}

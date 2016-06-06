@@ -524,10 +524,14 @@ public class CeStoreRestApiInstance extends CeStoreRestApi {
 		String[] limRels = getListParameterNamed(PARM_LIMRELS);
 		String[] onlyProps = getListParameterNamed(PARM_ONLYPROPS);
 
+		onlyProps = mergedPropertyRestrictionsFor(onlyProps, limRels);
+
 		if (isDefaultStyle() || isFullStyle()) {
 			getWebActionResponse().setStructuredResult(instWeb.generateFullDetailsJsonFor(pInstance, onlyProps, numSteps, relInsts, refInsts, limRels, suppPropTypes));
-		} else {
+		} else if (isSummaryStyle()) {
 			getWebActionResponse().setStructuredResult(instWeb.generateSummaryDetailsJsonFor(pInstance, onlyProps, numSteps, relInsts, refInsts, limRels, suppPropTypes));
+		} else {
+			getWebActionResponse().setStructuredResult(instWeb.generateMinimalDetailsJsonFor(pInstance, onlyProps, numSteps, relInsts, refInsts, limRels));
 		}
 	}
 

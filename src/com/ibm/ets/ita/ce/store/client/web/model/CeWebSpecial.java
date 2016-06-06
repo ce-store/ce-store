@@ -192,10 +192,12 @@ public class CeWebSpecial extends CeWebObject {
                     for (CeInstance thisInst : instList) {
                         CeWebInstance instWeb = new CeWebInstance(pAc);
 
-                        if ((pApiHandler.isDefaultStyle()) || (pApiHandler.isFullStyle())) {
+                        if ((pApiHandler.isDefaultStyle()) || (pApiHandler.isSummaryStyle())) {
+                            jArr.add(instWeb.generateSummaryDetailsJsonFor(thisInst, pOnlyProps, pNumSteps, pRelInsts, pRefInsts, pLimRels, pSuppPropTypes));
+                        } else if (pApiHandler.isFullStyle()) {
                             jArr.add(instWeb.generateFullDetailsJsonFor(thisInst, pOnlyProps, pNumSteps, pRelInsts, pRefInsts, pLimRels, pSuppPropTypes));
                         } else {
-                            jArr.add(instWeb.generateSummaryDetailsJsonFor(thisInst, pOnlyProps, pNumSteps, pRelInsts, pRefInsts, pLimRels, pSuppPropTypes));
+                            jArr.add(instWeb.generateMinimalDetailsJsonFor(thisInst, pOnlyProps, pNumSteps, pRelInsts, pRefInsts, pLimRels));
                         }
                     }
                 }

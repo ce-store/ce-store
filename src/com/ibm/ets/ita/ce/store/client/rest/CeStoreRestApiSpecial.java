@@ -311,6 +311,8 @@ public class CeStoreRestApiSpecial extends CeStoreRestApi {
 		String[] limRels = getListParameterNamed(CeStoreRestApiInstance.PARM_LIMRELS);
 		String[] onlyProps = getListParameterNamed(CeStoreRestApiInstance.PARM_ONLYPROPS);
 
+		onlyProps = mergedPropertyRestrictionsFor(onlyProps, limRels);
+
 		boolean retInsts = getBooleanParameterNamed(PARM_RETINSTS);
 		boolean caseSen = getBooleanParameterNamed(PARM_CASESEN, this.wc.getCeConfig().isCaseSensitive());
 
