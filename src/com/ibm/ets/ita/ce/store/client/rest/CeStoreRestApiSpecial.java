@@ -505,7 +505,11 @@ public class CeStoreRestApiSpecial extends CeStoreRestApi {
 	}
 
 	private void setSearchListAsStructuredResult(ArrayList<ContainerSearchResult> pResults, ArrayList<String> pSearchTerms, String[] pConceptNames, String[] pPropertyNames, boolean pRetInsts, String[] pOnlyProps, int pNumSteps, boolean pRelInsts, boolean pRefInsts, String []pLimRels, boolean pSuppPropTypes) {
-		getWebActionResponse().setStructuredResult(CeWebContainerResult.generateKeywordSearchResultFrom(this.wc, pResults, pSearchTerms, pConceptNames, pPropertyNames, pRetInsts, pOnlyProps, pNumSteps, pRelInsts, pRefInsts, pLimRels, pSuppPropTypes));
+		if (isDefaultStyle() || isSummaryStyle()) {
+			getWebActionResponse().setStructuredResult(CeWebContainerResult.generateKeywordSearchSummaryResultFrom(this.wc, pResults, pSearchTerms, pConceptNames, pPropertyNames, pRetInsts, pOnlyProps, pNumSteps, pRelInsts, pRefInsts, pLimRels, pSuppPropTypes));
+		} else {
+			getWebActionResponse().setStructuredResult(CeWebContainerResult.generateKeywordSearchMinimalResultFrom(this.wc, pResults, pSearchTerms, pConceptNames, pPropertyNames, pRetInsts, pOnlyProps, pNumSteps, pRelInsts, pRefInsts, pLimRels, pSuppPropTypes));
+		}
 	}
 
 	private void setMultipleConceptInstanceListAsStructuredResult(TreeMap<String, ArrayList<CeInstance>> pList, int pNumSteps, boolean pRelInsts, boolean pRefInsts, String[] pLimRels) {

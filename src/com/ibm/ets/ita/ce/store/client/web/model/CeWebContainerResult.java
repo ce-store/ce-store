@@ -217,6 +217,14 @@ public class CeWebContainerResult extends CeWebObject {
 		return sb.toString();
 	}
 
+	public static CeStoreJsonObject generateKeywordSearchSummaryResultFrom(ActionContext pAc, ArrayList<ContainerSearchResult> pResults, ArrayList<String> pSearchTerms, String[] pConceptNames, String[] pPropertyNames, boolean pRetInsts, String[] pOnlyProps, int pNumSteps, boolean pRelInsts, boolean pRefInsts, String[] pLimRels, boolean pSuppPropTypes) {
+		return generateKeywordSearchResultFrom(pAc, pResults, pSearchTerms, pConceptNames, pPropertyNames, pRetInsts, pOnlyProps, pNumSteps, pRelInsts, pRefInsts, pLimRels, pSuppPropTypes, false);
+	}
+
+	public static CeStoreJsonObject generateKeywordSearchMinimalResultFrom(ActionContext pAc, ArrayList<ContainerSearchResult> pResults, ArrayList<String> pSearchTerms, String[] pConceptNames, String[] pPropertyNames, boolean pRetInsts, String[] pOnlyProps, int pNumSteps, boolean pRelInsts, boolean pRefInsts, String[] pLimRels, boolean pSuppPropTypes) {
+		return generateKeywordSearchResultFrom(pAc, pResults, pSearchTerms, pConceptNames, pPropertyNames, pRetInsts, pOnlyProps, pNumSteps, pRelInsts, pRefInsts, pLimRels, pSuppPropTypes, true);
+	}
+
 	// Keyword search response:
 	//	KEY_SEARCHTERMS
 	//	KEY_SEARCHCONS
@@ -227,12 +235,12 @@ public class CeWebContainerResult extends CeWebObject {
 	//		KEY_PROP_NAME
 	//		KEY_PROP_VAL
 	//		KEY_PROP_TYPE
-	public static CeStoreJsonObject generateKeywordSearchResultFrom(ActionContext pAc, ArrayList<ContainerSearchResult> pResults, ArrayList<String> pSearchTerms, String[] pConceptNames, String[] pPropertyNames, boolean pRetInsts, String[] pOnlyProps, int pNumSteps, boolean pRelInsts, boolean pRefInsts, String[] pLimRels, boolean pSuppPropTypes) {
+	public static CeStoreJsonObject generateKeywordSearchResultFrom(ActionContext pAc, ArrayList<ContainerSearchResult> pResults, ArrayList<String> pSearchTerms, String[] pConceptNames, String[] pPropertyNames, boolean pRetInsts, String[] pOnlyProps, int pNumSteps, boolean pRelInsts, boolean pRefInsts, String[] pLimRels, boolean pSuppPropTypes, boolean pMinimal) {
 		CeStoreJsonObject jObj = new CeStoreJsonObject();
 
 		if (pResults != null) {
 			if (!pResults.isEmpty()) {
-				CeStoreJsonObject jObjResult = processKeywordSearchRows(pAc, pResults, pRetInsts, pOnlyProps, pNumSteps, pRelInsts, pRefInsts, pLimRels, pSuppPropTypes);
+				CeStoreJsonObject jObjResult = processKeywordSearchRows(pAc, pResults, pRetInsts, pOnlyProps, pNumSteps, pRelInsts, pRefInsts, pLimRels, pSuppPropTypes, pMinimal);
 
 				putAllStringValuesIn(jObj, KEY_SEARCHTERMS, pSearchTerms);
 				putAllStringValuesIn(jObj, KEY_SEARCHCONS, pConceptNames);
@@ -252,7 +260,7 @@ public class CeWebContainerResult extends CeWebObject {
 		return jObj;
 	}
 
-	private static CeStoreJsonObject processKeywordSearchRows(ActionContext pAc, ArrayList<ContainerSearchResult> pResults, boolean pRetInsts, String[] pOnlyProps, int pNumSteps, boolean pRelInsts, boolean pRefInsts, String[] pLimRels, boolean pSuppPropTypes) {
+	private static CeStoreJsonObject processKeywordSearchRows(ActionContext pAc, ArrayList<ContainerSearchResult> pResults, boolean pRetInsts, String[] pOnlyProps, int pNumSteps, boolean pRelInsts, boolean pRefInsts, String[] pLimRels, boolean pSuppPropTypes, boolean pMinimal) {
 		CeStoreJsonObject jObjMain = new CeStoreJsonObject();
 		CeStoreJsonObject jObjInsts = new CeStoreJsonObject();
 		CeStoreJsonArray jArr = new CeStoreJsonArray();
@@ -275,7 +283,11 @@ public class CeWebContainerResult extends CeWebObject {
 					CeWebInstance cwi = new CeWebInstance(pAc);
 
 					//TODO: Get the values for these defaulted parameters from command line parameters
-					jObjInsts.put(thisInst.getInstanceName(), cwi.generateSummaryDetailsJsonFor(thisInst, pOnlyProps, pNumSteps, pRelInsts, pRefInsts, pLimRels, pSuppPropTypes));
+					if (pMinimal) {
+						jObjInsts.put(thisInst.getInstanceName(), cwi.generateMinimalDetailsJsonFor(thisInst, pOnlyProps, pNumSteps, pRelInsts, pRefInsts, pLimRels));
+					} else {
+						jObjInsts.put(thisInst.getInstanceName(), cwi.generateSummaryDetailsJsonFor(thisInst, pOnlyProps, pNumSteps, pRelInsts, pRefInsts, pLimRels, pSuppPropTypes));
+					}
 				}
 			}
 
