@@ -20,105 +20,38 @@ Clone the code
 git clone https://github.com/ce-store/ce-store
 ```
 
-### Eclipse
+### Using Apache Maven
 
-Install Eclipse
+Using Apache Maven, run the following command to start up the CE Store application using an embedded Tomcat server.
 
-  1. Download and install [Eclipse IDE for Java EE Developers](http://www.eclipse.org/downloads/packages/eclipse-ide-java-ee-developers/mars1).
-  2. Open Eclipse and set up your workspace.
+```
+mvn install
+mvn tomcat:run
+```
 
-Set the Eclipse Text encoding
-  1. In Eclipse open `Window`, `Preferences`, `General`, `Workspace`
-  2. Set the Text file encoding to UTF-8, Click on `OK`
+The CE Store will be available at the following URL [http://localhost:8080/ce-store]()
 
-Set new Eclipse file associations
-  1. In Eclipse open `Window`, `Preferences`, `General`, `Content Types`
-  2. Click on the `Text` entry in the top `Content types` pane
-  3. In the lower `File associations` pane, use the `Add` button to add file associations for `*.ce` and `*.cecmd`, then click on `Ok`.
+### Using Docker
 
-Import the project into Eclipse
+Use Apache Maven to build a WAR file for the project with the following command.
 
-  1. In Eclipse select `File` then `Import`
-  2. Under the `Import` window select `Git` then `Projects from Git`
-  3. Select `Existing local repository`
-  4. Select the git repository that contains the ce-store code and click `Next`. If this repository is not listed click `Add...` and locate the folder
-  5. Select `Import existing Eclipse projects` and click `Next`
-  6. Select the `ce-store` project on the Import Projects pane and click `Next` 
-  7. Click `Finish`
+```
+mvn package
+```
 
-The project should now appear in your Package Explorer. 
+This WAR file can be built into a Docker image with the command below.
 
-You may find that you get a number of servlet-based compilation errors due to the runtime setup. These will be resolved by configuring a web server in the following section.
+```
+docker build -t ce-store .
+```
 
-### Web Server
-Add the project to your favourite server and run. Tomcat and Liberty examples are described below.
+Then start the container from this image running locally.
 
-**Tomcat**
+```
+docker run --rm -it -p 8080:8080 ce-store
+```
 
-Install Tomcat
-
-  1. Go to the [Tomcat website](http://tomcat.apache.org/) and download Tomcat 7 (minimum required version).
-
-Add Tomcat to Eclipse
-
-  1. In Eclipse open `Window`, `Preferences`, `Server`, `Runtime Environments`
-  2. Click `Add...`
-  3. Under the New Server Runtime dialog select your runtime under Apache (minimum Tomcat 7)
-  4. Click `Next`
-  5. Fill in the Tomcat installation directory
-  6. In `Window`, `Preferences`, `Java`, `Installed JREs`, ensure the selected JRE is a full JDK and is a version that will satisfy Apache Tomcat. If necessary, you can add a compatible JDK to Eclipse
-  7. Click `Finish`
-
-Set up Tomcat server
-
-  1. Set up a new server by clicking `File`, `New`, `Other...`, `Server`, `Server`
-  2. Click `Next`
-  3. Under `Apache` select `Tomcat`
-  4. Name your server and click `Next`
-  5. Add `ce-store` to configure on the server
-  6. Click `Finish`
-
-Run the server
-
-  1. In the Server view right click the Tomcat server and click `Start`
-  2. Access the CE Store at [http://localhost:8080/ce-store](http://localhost:8080/ce-store)
-
-**Liberty**
-
-Install Liberty
-
-  1. Go to the [Liberty Get Started page](https://developer.ibm.com/wasdev/downloads/liberty-profile-using-eclipse/) and follow instructions to install
-
-Set up Liberty server
-
-  1. Set up a new server by clicking `File`, `New`, `Other...`, `Server`, `Server`
-  2. Click `Next`
-  3. Under `IBM` select `WebSphere Application Server Liberty`
-  4. Click `Next`
-  5. Select `Install from an archive or a repository` (If you already have the Liberty Runtime installed select the runtime and skip to step 12)
-  6. Click `Next`
-  7. Select `Download and install a new runtime environment from ibm.com`
-  8. Select `WAS Liberty V8.5.* Runtime`
-  9. Enter a destination path for the installation (.\Servers\Liberty under the workspace is a good location) 
-  10. Click `Next`, then `Next` again
-  11. Accept the T&Cs
-  12. Name your server and click `Next`
-  13. Add `ce-store` to configure on the server (right click on the Liberty server in the Servers view, select `Add and Remove` and add the ce-store)
-  14. Click `Finish`
-
-Change the project build path
-  1. In the Project Explorer view, right click on the ce-store project, select `Build Path`, `Configure Build Path...`
-  2. In the Libraries tab, click on `Add Library`
-  3. Select `Server Runtime` and click `Next`
-  4. Select the WebSphere Application Server Liberty Profile, click `Finish`
-  5. Click `Ok`. 
-  The ce-store should now build with no compilation errors, using the Liberty profile.
-
-
-Run the server
-
-  1. In the Server view right click the Liberty server and click `Start`
-  2. Access the CE Store at [http://localhost:9080/ce-store](http://localhost:9080/ce-store)
+The CE Store will be available at the following URL [http://localhost:8080/ce-store]()
 
 ## Usage
 
