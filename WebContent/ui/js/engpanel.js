@@ -75,12 +75,18 @@ function EngineeringPanel() {
 
 			ce.msg.debug('Attempting load of: ' + thisJsLib.url + ' (' + key + ')');
 			require({"async":false});
+
 			require( [ thisJsLib.url ], function() { handleJsLoadSuccess(thisJsLib); } );
 		}
 	}
 
 	function initialJsLibraries(pExtraLibraries) {
 		var jsLibs = {
+			core_01: { url: 'https://cdnjs.cloudflare.com/ajax/libs/openlayers/2.13.1/OpenLayers.js', loaded:false },
+			core_02: { url: 'https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.3.12/proj4-src.js', loaded:false },
+			core_03: { url: 'https://maps.google.com/maps/api/js', loaded:false },
+			core_04: { url: 'https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.12/d3.min.js', loaded:false },
+
 			dojo_01: { url:'dojo/has', loaded: false },
 			dojo_02: { url:'dojox/gfx', loaded: false },
 			dojo_03: { url:'dojox/gfx/move', loaded: false },

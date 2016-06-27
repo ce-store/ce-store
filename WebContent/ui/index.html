@@ -7,47 +7,38 @@
 -->
 <html>
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<title>CE Store Engineering Panel - v1.3</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>ce-store engineering panel</title>
 
-	<!-- DOJO -->
-	<link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/dojo/1.10.4/dijit/themes/tundra/tundra.css"/>
-	<link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/dojo/1.10.4/dojo/resources/dnd.css"/>
+    <link rel="icon" href="../favicon.png" type="image/x-icon">
+    <link rel="shortcut icon" href="../favicon.png" type="image/x-icon"> 
+
+    <!-- DOJO -->
+    <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/dojo/1.10.4/dijit/themes/tundra/tundra.css"/>
+    <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/dojo/1.10.4/dojo/resources/dnd.css"/>
     <script data-dojo-config="parseOnLoad:true, isDebug:true" src="https://ajax.googleapis.com/ajax/libs/dojo/1.10.4/dojo/dojo.js"></script>
 
-	<!-- OpenLayers (Mapping) -->
-  	<script src="https://cdnjs.cloudflare.com/ajax/libs/openlayers/2.13.1/OpenLayers.js"></script>
+    <!-- CE Store -->
+    <script defer src="../js/cestore.js"></script>
 
-	<!-- Proj4js (conversion of coordinate systems) -->
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.3.12/proj4-src.js"></script>
-
-	<!-- Google maps JS (used for statellite imagery) -->
-	<script src="https://maps.google.com/maps/api/js"></script>
-
-	<!-- D3.js (used for diagrams) -->
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.12/d3.min.js"></script>
-
-	<!-- CE Store -->
-	<script src="../js/cestore.js"></script>
-
-	<!-- Engineering Panel -->
-	<link rel="stylesheet" type="text/css" href="../ui/css/cestore.css">
-	<link rel="stylesheet" type="text/css" href="../ui/css/timeline.css">
-	<script src="../ui/js/engpanel.js"></script>
-	<script src="../ui/js/startup.js"></script>
+    <!-- Engineering Panel -->
+    <link rel="stylesheet" type="text/css" href="../ui/css/cestore.css">
+    <link rel="stylesheet" type="text/css" href="../ui/css/timeline.css">
+    <script defer src="../ui/js/engpanel.js"></script>
+    <script defer src="../ui/js/startup.js"></script>
 </head>
 
 <body class="tundra">
-	<div data-dojo-type="dijit.layout.BorderContainer" id="outerContainer" style="width: 100%; height: 100%">
-		<div data-dojo-type="dijit.layout.ContentPane" id="statusPane" data-dojo-props="region:'top'">&nbsp;</div>
-		<div data-dojo-type="dijit.layout.AccordionContainer" id="menuContainer" data-dojo-props="region:'leading', splitter:true" style="width: 250px;"></div>
-		<div data-dojo-type="dijit.layout.TabContainer" id="mainContainer" style="width: 100%; height: 100%;" data-dojo-props="region:'center', splitter:true"></div>
-		<div data-dojo-type="dijit.layout.AccordionContainer" id="detailsContainer" data-dojo-props="region:'trailing', splitter:true" style="width: 400px;"></div>
-		<div data-dojo-type="dijit.layout.TabContainer" id="feedbackContainer" data-dojo-props="region:'bottom', splitter:true" style="height: 100px; overflow: auto"></div>
-	</div>
+    <div data-dojo-type="dijit.layout.BorderContainer" id="outerContainer" style="width: 100%; height: 100%">
+        <div data-dojo-type="dijit.layout.ContentPane" id="statusPane" data-dojo-props="region:'top'">&nbsp;</div>
+        <div data-dojo-type="dijit.layout.AccordionContainer" id="menuContainer" data-dojo-props="region:'leading', splitter:true" style="width: 250px;"></div>
+        <div data-dojo-type="dijit.layout.TabContainer" id="mainContainer" style="width: 100%; height: 100%;" data-dojo-props="region:'center', splitter:true"></div>
+        <div data-dojo-type="dijit.layout.AccordionContainer" id="detailsContainer" data-dojo-props="region:'trailing', splitter:true" style="width: 400px;"></div>
+        <div data-dojo-type="dijit.layout.TabContainer" id="feedbackContainer" data-dojo-props="region:'bottom', splitter:true" style="height: 100px; overflow: auto"></div>
+    </div>
 
-	<!-- The forms are loaded into the divs below (they are invisible until used in popup windows)  -->
-	<div data-dojo-type="dijit.layout.ContentPane" id="formContainer">
-	</div>
+    <!-- The forms are loaded into the divs below (they are invisible until used in popup windows)  -->
+    <div data-dojo-type="dijit.layout.ContentPane" id="formContainer">
+    </div>
 </body>
 </html>
