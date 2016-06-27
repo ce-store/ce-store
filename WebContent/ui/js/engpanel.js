@@ -11,8 +11,9 @@ function EngineeringPanel() {
 	this.currentCeStore = this.DEFAULT_CESTORE;
 	this.currentServerAddress = this.DEFAULT_SERVERADDRESS;
 	this.currentAppName = this.DEFAULT_APPNAME;
-	
+
 	var jsLibraries = null;
+	var asynchJsLibraries = null;
 	var extraActions = null;
 	var actionsList = null;
 	var ce = gCe;
@@ -78,15 +79,31 @@ function EngineeringPanel() {
 
 			require( [ thisJsLib.url ], function() { handleJsLoadSuccess(thisJsLib); } );
 		}
+
+		for (var key in asynchJsLibraries) {
+			var thisJsLib = asynchJsLibraries[key];
+
+			ce.msg.debug('Attempting load of: ' + thisJsLib.url + ' (' + key + ')');
+			require({"async":true});
+
+			require( [ thisJsLib.url ], function() { handleJsLoadSuccess(thisJsLib); } );
+		}
 	}
 
 	function initialJsLibraries(pExtraLibraries) {
-		var jsLibs = {
+		asynchJsLibraries = {
 			core_01: { url: 'https://cdnjs.cloudflare.com/ajax/libs/openlayers/2.13.1/OpenLayers.js', loaded:false },
 			core_02: { url: 'https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.3.12/proj4-src.js', loaded:false },
+//			core_03: { url: 'https://maps.google.com/maps/api/js?key=myKey', loaded:false },
 			core_03: { url: 'https://maps.google.com/maps/api/js', loaded:false },
 			core_04: { url: 'https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.12/d3.min.js', loaded:false },
 
+//			core_01: { url: 'http://localhost:8080/localJsLibs/js/OpenLayers/OpenLayers.js', loaded:false },
+//			core_02: { url: 'http://localhost:8080/localJsLibs/js/Proj4js/proj4-src.js', loaded:false },
+//			core_04: { url: 'http://localhost:8080/localJsLibs/js/d3/d3.min.js', loaded:false },
+		};
+
+		var jsLibs = {
 			dojo_01: { url:'dojo/has', loaded: false },
 			dojo_02: { url:'dojox/gfx', loaded: false },
 			dojo_03: { url:'dojox/gfx/move', loaded: false },

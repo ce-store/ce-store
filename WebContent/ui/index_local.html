@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<!-- 
+ *******************************************************************************
+ * (C) Copyright IBM Corporation  2011, 2015
+ * All Rights Reserved
+ *******************************************************************************
+-->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>ce-store engineering panel</title>
+
+    <link rel="icon" href="../favicon.png" type="image/x-icon">
+    <link rel="shortcut icon" href="../favicon.png" type="image/x-icon"> 
+
+    <!-- DOJO -->
+    <link rel="stylesheet" type="text/css" href="http://localhost:8080/localJsLibs/js/dojo/dijit/themes/tundra/tundra.css"/>
+    <link rel="stylesheet" type="text/css" href="http://localhost:8080/localJsLibs/js/dojo/dojo/resources/dnd.css"/>
+    <script data-dojo-config="parseOnLoad:true, isDebug:true" src="http://localhost:8080/localJsLibs/js/dojo/dojo/dojo.js"></script>
+
+    <!-- CE Store -->
+    <script defer src="../js/cestore.js"></script>
+
+    <!-- Engineering Panel -->
+    <link rel="stylesheet" type="text/css" href="../ui/css/cestore.css">
+    <link rel="stylesheet" type="text/css" href="../ui/css/timeline.css">
+    <script defer src="../ui/js/engpanel.js"></script>
+    <script defer src="../ui/js/startup.js"></script>
+</head>
+
+<body class="tundra">
+    <div data-dojo-type="dijit.layout.BorderContainer" id="outerContainer" style="width: 100%; height: 100%">
+        <div data-dojo-type="dijit.layout.ContentPane" id="statusPane" data-dojo-props="region:'top'">&nbsp;</div>
+        <div data-dojo-type="dijit.layout.AccordionContainer" id="menuContainer" data-dojo-props="region:'leading', splitter:true" style="width: 250px;"></div>
+        <div data-dojo-type="dijit.layout.TabContainer" id="mainContainer" style="width: 100%; height: 100%;" data-dojo-props="region:'center', splitter:true"></div>
+        <div data-dojo-type="dijit.layout.AccordionContainer" id="detailsContainer" data-dojo-props="region:'trailing', splitter:true" style="width: 400px;"></div>
+        <div data-dojo-type="dijit.layout.TabContainer" id="feedbackContainer" data-dojo-props="region:'bottom', splitter:true" style="height: 100px; overflow: auto"></div>
+    </div>
+
+    <!-- The forms are loaded into the divs below (they are invisible until used in popup windows)  -->
+    <div data-dojo-type="dijit.layout.ContentPane" id="formContainer">
+    </div>
+</body>
+</html>

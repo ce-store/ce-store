@@ -63,7 +63,7 @@ function DialogMap() {
 
 		if (gEp.dlg.map.isMapConversionLibraryLoaded()) {
 			msgText += '\n\nMap conversion = ' + Proj4js.scriptName;
-			
+
 			if (gEp.dlg.map.isMgrsProjectionLoaded()) {
 				msgText += '\n(MGRS projection is loaded)';
 			} else {
@@ -141,20 +141,29 @@ function DialogMap() {
 							{type: google.maps.MapTypeId.SATELLITE, numZoomLevels: 22}
 							// used to be {type: G_SATELLITE_MAP, numZoomLevels: 22}
 						);
-					gEp.dlg.map.map.addLayer(layerGoogleSat);
 
-					var layerGooglRoad = new OpenLayers.Layer.Google(
+					if (layerGoogleSat != null) {
+						gEp.dlg.map.map.addLayer(layerGoogleSat);
+					}
+
+					var layerGoogleRoad = new OpenLayers.Layer.Google(
 							'Google Road Map',
 							{type: google.maps.MapTypeId.ROADMAP, numZoomLevels: 22}
 						);
-					gEp.dlg.map.map.addLayer(layerGooglRoad);
+
+					if (layerGoogleRoad != null) {
+						gEp.dlg.map.map.addLayer(layerGoogleRoad);
+					}
 
 					var layerGoogleHyb = new OpenLayers.Layer.Google(
 							'Google Hybrid',
 							{type: google.maps.MapTypeId.HYBRID, numZoomLevels: 22}
 							// used to be {type: G_HYBRID_MAP, numZoomLevels: 22}
 						);
-					gEp.dlg.map.map.addLayer(layerGoogleHyb);
+
+					if (layerGoogleHyb != null) {
+						gEp.dlg.map.map.addLayer(layerGoogleHyb);
+					}
 				}
 
 				registerMapEvents();
@@ -163,21 +172,25 @@ function DialogMap() {
 
 				gEp.dlg.map.actions.redrawMap();
 			} else {
-				var domMapPanel = dojo.byId('geoPane');
+				var domMapPanel = dojo.byId('mapPane');
 				//TODO: Would be nice to have the failed URL to show here
-				domMapPanel.innerHTML = 'The map cannot be displayed because the OpenLayers javascript library cannot be located.' + BR + BR + 'Please check that the URL to load this library is correctly specified (look for "OpenLayers" in index.html)' + BR + BR + 'OpenLayers can be downloaded from <a href="http://openlayers.org" target="_blank">here</a>, or can be referenced remotely via http://www.openlayers.org/api/OpenLayers.js' + BR + BR + 'You will need to refresh this page to show the map once you have fixed the problem';
+				domMapPanel.innerHTML = 'The map cannot be displayed because the OpenLayers javascript library cannot be located.<BR/><BR/>Please check that the URL to load this library is correctly specified (look for "OpenLayers" in index.html)<BR/><BR/>OpenLayers can be downloaded from <a href="http://openlayers.org" target="_blank">here</a>, or can be referenced remotely via http://www.openlayers.org/api/OpenLayers.js<BR/><BR/>You will need to refresh this page to show the map once you have fixed the problem';
 			}
 
 		}
 	}
 	
 	function registerDropEvents() {
-		document.getElementById('mapDetails').addEventListener('dragover', function(e) {
-			doMapDragOverHandling(e);
-		}, false);
-		document.getElementById('mapDetails').addEventListener('drop', function(e) {
-			doMapDropHandling(e);
-		}, false);
+		var domMapDetails = document.getElementById('mapDetails');
+
+		if (domMapDetails) {
+			domMapDetails.addEventListener('dragover', function(e) {
+				doMapDragOverHandling(e);
+			}, false);
+			domMapDetails.addEventListener('drop', function(e) {
+				doMapDropHandling(e);
+			}, false);
+		}
 	}
 
 	function doMapDragOverHandling(pE) {

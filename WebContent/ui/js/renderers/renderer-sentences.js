@@ -288,7 +288,7 @@ function RendererSentences() {
 				justHadQuote = (thisFrag.type === 'open quote');
 			}
 		} else {
-			result = '***UNFORMATTED***' + BR + pSen.ce_text;
+			result = '***UNFORMATTED***<BR/>' + pSen.ce_text;
 		}
 
 		return result;
