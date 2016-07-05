@@ -21,6 +21,7 @@ public class BuilderSentenceCommand extends BuilderSentence {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
 
 	private static final String CMD_RESET = "reset";
+	private static final String CMD_RELOAD = "reload";
 	private static final String CMD_STORE = "store";
 	private static final String CMD_STARTING = "starting";
 	private static final String CMD_UID = "uid";
@@ -150,6 +151,22 @@ public class BuilderSentenceCommand extends BuilderSentence {
 			if (result) {
 				this.isValid = true;
 				this.cmdStartingUid = stripDelimitingQuotesFrom(this.rawTokens.get(6));
+			}
+		} else {
+			result = false;
+		}
+
+		return result;
+	}
+
+	public boolean isCmdReloadStore() {
+		boolean result = false;
+
+		if (this.rawTokens.size() == 3) {
+			//No need to check first token as it must be 'perform' for this to be a command sentence
+			result = (this.rawTokens.get(1).equals(CMD_RELOAD)) && (this.rawTokens.get(2).equals(CMD_STORE));
+			if (result) {
+				this.isValid = true;
 			}
 		} else {
 			result = false;
@@ -492,9 +509,11 @@ public class BuilderSentenceCommand extends BuilderSentence {
 		StoreActions sa = StoreActions.createUsingDefaultConfig(pAc);
 		
 		if (isCmdResetStoreSimple()) {
-			pSenStats.updateFrom(sa.resetStore("1"), true);
+			pSenStats.updateFrom(sa.resetStore("1", true), true);
 		} else if (isCmdResetStoreWithUidStart()) {
-			pSenStats.updateFrom(sa.resetStore(getCmdStartingUid()), true);
+			pSenStats.updateFrom(sa.resetStore(getCmdStartingUid(), true), true);
+		} else if (isCmdReloadStore()) {
+			pSenStats.updateFrom(sa.reloadStore(), true);
 		} else if (isCmdSwitchStore()) {
 			pAc.switchToStoreNamed(getCmdTargetStore());
 		} else if (isCmdEmptyInstances()) {
@@ -538,7 +557,7 @@ public class BuilderSentenceCommand extends BuilderSentence {
 //			}
 		} else if (isCmdPrepareForCachedCeLoad()) {
 			pAc.markAsCachedCeLoading();
-			sa.resetStore("1");
+			sa.resetStore("1", true);
 		} else if (isCmdSaveStore()) {
 			PersistenceManagerFactory.get().save(pAc);
 		} else if (isCmdLoadStore()) {
@@ -569,6 +588,7 @@ public class BuilderSentenceCommand extends BuilderSentence {
 		isCmdDeleteSourceByName();
 		isCmdDeleteSourceById();
 		isCmdResetStore();
+		isCmdReloadStore();
 		isCmdRunAgent();
 		isCmdShowNextUidValue();
 //		isCmdSetNextUidValue();

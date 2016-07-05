@@ -58,7 +58,13 @@ public interface CEStore {
 	 * Remove all entries from the CE Store. This includes all concepts, rules
 	 * and instances.
 	 */
-	ContainerSentenceLoadResult resetStore(String pStartingUid);
+	ContainerSentenceLoadResult resetStore(String pStartingUid, boolean pFromCommand);
+
+	/**
+	 * Remove all entries from the CE Store and test for autoload.cecmd, loading
+	 * any found CE.
+	 */
+	ContainerSentenceLoadResult reloadStore();
 
 	/**
 	 * Remove all instances from the CE Store

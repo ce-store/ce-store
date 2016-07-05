@@ -140,7 +140,7 @@ public class ServletStateManager {
 		//...thus enabling users to use the CE store without being forced to issue
 		//the command "perform reset store.".
 		StoreActions sa = StoreActions.createUsingDefaultConfig(pAc);
-		sa.resetStore("1");
+		sa.resetStore("1", false);
 
 		return newMb;
 	}

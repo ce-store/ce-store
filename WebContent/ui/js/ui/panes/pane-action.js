@@ -106,6 +106,7 @@ function PaneAction() {
 
 		list.push([ 'gEp.handler.stores.listAllStores', 'List CE Stores' ]);
 		list.push([ 'gEp.handler.actions.resetStore', 'Reset (drop) store' ]);
+		list.push([ 'gEp.handler.actions.reloadStore', 'Reload store' ]);
 		list.push([ 'gEp.handler.actions.emptyInstanceData', 'Empty instance data' ]);
 		list.push([ 'gEp.handler.actions.showStoreStatistics', 'Show store stats' ]);
 		list.push([ 'gEp.handler.actions.showNextUid', 'Show next UID' ]);

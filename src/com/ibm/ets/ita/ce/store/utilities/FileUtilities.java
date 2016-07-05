@@ -481,14 +481,14 @@ public abstract class FileUtilities {
 		
 		headers.put("Accept", "application/text");
 
-		return makeUrlRequest(pAc, pUrl, null, headers, false);
+		return makeUrlRequest(pAc, pUrl, null, headers, false, false);
 	}
 
 	public static BufferedReader bufferedReaderFromUrl(ActionContext pAc, String pUrl) {
-		return makeUrlRequest(pAc, pUrl, null, null, false);
+		return makeUrlRequest(pAc, pUrl, null, null, false, false);
 	}
 
-	private static BufferedReader makeUrlRequest(ActionContext pAc, String pUrl, String pPostParms, TreeMap<String, String> pHdrs, boolean pIsPost) {
+	private static BufferedReader makeUrlRequest(ActionContext pAc, String pUrl, String pPostParms, TreeMap<String, String> pHdrs, boolean pIsPost, boolean pQuiet) {
 		final String METHOD_NAME = "bufferedReaderFromUrl";
 		
 		URLConnection conn = null;
@@ -531,7 +531,9 @@ public abstract class FileUtilities {
 
 				brd = new BufferedReader(new InputStreamReader(conn.getInputStream(), ENCODING));
 			} catch (IOException e) {
-				reportException(e, encUrl, pAc, logger, CLASS_NAME, METHOD_NAME);
+				if (!pQuiet) {
+					reportException(e, encUrl, pAc, logger, CLASS_NAME, METHOD_NAME);
+				}
 			}
 		} else {
 			reportError("Unable to open URL '" + encUrl + "' (null connection)", pAc);
@@ -708,15 +710,15 @@ public abstract class FileUtilities {
 		}
 	}
 
-	public static String sendHttpGetRequest(ActionContext pAc, String pTargetUrl, TreeMap<String, String> pUrlParms) {
-		return sendHttpRequest(pAc, pTargetUrl, pUrlParms, false);
+	public static String sendHttpGetRequest(ActionContext pAc, String pTargetUrl, TreeMap<String, String> pUrlParms, boolean pQuiet) {
+		return sendHttpRequest(pAc, pTargetUrl, pUrlParms, false, pQuiet);
 	}
 
-	public static String sendHttpPostRequest(ActionContext pAc, String pTargetUrl, TreeMap<String, String> pUrlParms) {
-		return sendHttpRequest(pAc, pTargetUrl, pUrlParms, true);
+	public static String sendHttpPostRequest(ActionContext pAc, String pTargetUrl, TreeMap<String, String> pUrlParms, boolean pQuiet) {
+		return sendHttpRequest(pAc, pTargetUrl, pUrlParms, true, pQuiet);
 	}
 
-	private static String sendHttpRequest(ActionContext pAc, String pTargetUrl, TreeMap<String, String> pPostParms, boolean pIsPost) {
+	private static String sendHttpRequest(ActionContext pAc, String pTargetUrl, TreeMap<String, String> pPostParms, boolean pIsPost, boolean pQuiet) {
 		final String METHOD_NAME = "sendHttpRequest";
 		
 		String response = null;
@@ -728,7 +730,7 @@ public abstract class FileUtilities {
 			reportException(e, pTargetUrl, pAc, logger, CLASS_NAME, METHOD_NAME);
 		}
 
-		response = sendAndExtractResponseFrom(pAc, pTargetUrl, parmText, pIsPost);
+		response = sendAndExtractResponseFrom(pAc, pTargetUrl, parmText, pIsPost, pQuiet);
 
 		if (isReportMicroDebug()) {
 			reportMicroDebug("HTTP response received: " + response, pAc);
@@ -760,21 +762,24 @@ public abstract class FileUtilities {
 		return sb.toString();
 	}
 
-	private static String sendAndExtractResponseFrom(ActionContext pAc, String pUrl, String pPostParms, boolean pIsPost) {
+	private static String sendAndExtractResponseFrom(ActionContext pAc, String pUrl, String pPostParms, boolean pIsPost, boolean pQuiet) {
 		final String METHOD_NAME = "sendAndExtractResponseFrom";
-		
+
 		StringBuilder sb = new StringBuilder();
 
 		try {
-			BufferedReader rd = makeUrlRequest(pAc, pUrl, pPostParms, null, pIsPost);
-			String line = null;
-			
-			while ((line = rd.readLine()) != null) {
-				sb.append(line);
-				sb.append(NL);
-			}
+			BufferedReader rd = makeUrlRequest(pAc, pUrl, pPostParms, null, pIsPost, pQuiet);
 
-			rd.close();
+			if (rd != null) {
+				String line = null;
+
+				while ((line = rd.readLine()) != null) {
+					sb.append(line);
+					sb.append(NL);
+				}
+
+				rd.close();
+			}
 		} catch (IOException e) {
 			reportException(e, pUrl, pAc, logger, CLASS_NAME, METHOD_NAME);
 		}

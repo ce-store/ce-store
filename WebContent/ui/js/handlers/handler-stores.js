@@ -187,8 +187,15 @@ function HandlerStores() {
 	};
 
 	this.processResetCeStore = function(pResponseObject, pUserParms) {
-		//The store has been reset
 		alert('The store has been reset');
+	};
+
+	this.processReloadCeStore = function(pResponseObject, pUserParms) {
+		alert('The store has been reloaded');
+	};
+
+	this.processEmptyCeStore = function(pResponseObject, pUserParms) {
+		alert('The store has been emptied');
 	};
 
 	this.processLoadCeStore = function(pResponseObject, pUserParms) {

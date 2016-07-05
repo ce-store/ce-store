@@ -53,6 +53,7 @@ import com.ibm.ets.ita.ce.store.model.container.ContainerSearchResult;
 import com.ibm.ets.ita.ce.store.model.container.ContainerSentenceLoadResult;
 import com.ibm.ets.ita.ce.store.model.rationale.CeRationaleReasoningStep;
 import com.ibm.ets.ita.ce.store.parsing.processor.ProcessorCe;
+import com.ibm.ets.ita.ce.store.utilities.FileUtilities;
 
 //TODO: sen_ceprop: what about rules?
 //TODO: Review and set all property overrides
@@ -65,11 +66,14 @@ public class StoreActions implements CEStore {
 	private static final String PACKAGE_NAME = StoreActions.class.getPackage().getName();
 	private static final Logger logger = Logger.getLogger(PACKAGE_NAME);
 
+	private static final String URL_DEFAULTLOAD = "./ce/autoload.cecmd";
+
 	private static final String SRCID_CONCMETAMODEL = "src_cm";
 	private static final String STEPNAME_CONCMETAMODEL = "conceptualiseMetamodel";
 
 	private static final int ACTION_RESET = 1;
-	private static final int ACTION_EMPTY = 2;
+	private static final int ACTION_RELOAD = 2;
+	private static final int ACTION_EMPTY = 3;
 
 	public static final int MODE_NORMAL = 1;
 	public static final int MODE_VALIDATE = 2;
@@ -120,12 +124,12 @@ public class StoreActions implements CEStore {
 	}
 
 	@Override
-	public ContainerSentenceLoadResult resetStore(String pStartingUid) {
+	public ContainerSentenceLoadResult resetStore(String pStartingUid, boolean pFromCommand) {
 		ContainerSentenceLoadResult result = null;
 		CeSource lastCurrent = this.ac.getCurrentSource();
 
 		this.ac.getModelBuilder().resetUids(this.ac, pStartingUid);
-		result = performAndReportAction(ACTION_RESET);
+		result = performAndReportAction(ACTION_RESET, pFromCommand);
 
 		if (lastCurrent != null) {
 			renumberExistingSources(lastCurrent);
@@ -133,7 +137,15 @@ public class StoreActions implements CEStore {
 
 		return result;
 	}
-	
+
+	@Override
+	public ContainerSentenceLoadResult reloadStore() {
+		ContainerSentenceLoadResult result = null;
+
+		result = performAndReportAction(ACTION_RELOAD, false);
+
+		return result;
+	}
 	private void renumberExistingSources(CeSource pLastSource) {
 		ArrayList<CeSource> listToRenumber = new ArrayList<CeSource>();
 		
@@ -159,7 +171,7 @@ public class StoreActions implements CEStore {
 
 	@Override
 	public ContainerSentenceLoadResult emptyInstances() {
-		return performAndReportAction(ACTION_EMPTY);
+		return performAndReportAction(ACTION_EMPTY, true);
 	}
 
 	public ContainerSentenceLoadResult runAgent(String pAgentName, String pAgentConName) {
@@ -1071,7 +1083,7 @@ public class StoreActions implements CEStore {
 		this.ac.getModelBuilder().resetUids(this.ac, "");
 	}
 
-	private ContainerSentenceLoadResult performAndReportAction(int pActionType) {
+	private ContainerSentenceLoadResult performAndReportAction(int pActionType, boolean pFromCommand) {
 		ContainerSentenceLoadResult senStats = null;
 		String formattedExecTime = "";
 		String formattedStats = "";
@@ -1080,8 +1092,12 @@ public class StoreActions implements CEStore {
 
 		switch (pActionType) {
 			case ACTION_RESET:
-				senStats = performStoreReset();
+				senStats = performStoreReset(pFromCommand);
 				resultLabel = "Sentence store reset - ";
+				break;
+			case ACTION_RELOAD:
+				senStats = performStoreReload();
+				resultLabel = "Sentence store reload - ";
 				break;
 			case ACTION_EMPTY:
 				senStats = performEmptyInstances();
@@ -1102,17 +1118,55 @@ public class StoreActions implements CEStore {
 		return senStats;
 	}
 
-	private ContainerSentenceLoadResult performStoreReset() {
+	private ContainerSentenceLoadResult performStoreReset(boolean pFromCommand) {
 		ContainerSentenceLoadResult result = null;
 
 		this.ac.getModelBuilder().reset(this.ac);
 
-		if (!this.ac.isCachedCeLoading()) {
+		if (!pFromCommand) {
+			result = checkForDefaultLoad();
+		}
+
+		if (this.ac.getModelBuilder().isCeStoreEmpty()) {
+			if (!this.ac.isCachedCeLoading()) {
+				deleteFile(this.ac, this.ac.getCeConfig().getTempPath() + this.ac.getModelBuilder().calculateCeLoggingFilename());
+				result = conceptualiseMetamodel(); // Load the core meta model concepts
+			} else {
+				//Do not load the meta-model if this is cached CE loading (since the meta-model will be in the cached CE)
+				result = ContainerSentenceLoadResult.createWithZeroValues("performStoreReset");
+			}
+		}
+
+		return result;
+	}
+
+	private ContainerSentenceLoadResult performStoreReload() {
+		ContainerSentenceLoadResult result = null;
+
+		this.ac.getModelBuilder().reset(this.ac);
+
+		result = checkForDefaultLoad();
+
+		if (this.ac.getModelBuilder().isCeStoreEmpty()) {
 			deleteFile(this.ac, this.ac.getCeConfig().getTempPath() + this.ac.getModelBuilder().calculateCeLoggingFilename());
 			result = conceptualiseMetamodel(); // Load the core meta model concepts
-		} else {
-			//Do not load the meta-model if this is cached CE loading (since the meta-model will be in the cached CE)
-			result = ContainerSentenceLoadResult.createWithZeroValues("performStoreReset");
+		}
+
+		return result;
+	}
+
+	private ContainerSentenceLoadResult checkForDefaultLoad() {
+		String tgtUrl = URL_DEFAULTLOAD;
+		ContainerSentenceLoadResult result = null;
+
+		if (isRelativePath(tgtUrl)) {
+			tgtUrl = createFullUrlForRelativePath(this.ac, tgtUrl);
+		}
+
+		String ceText = FileUtilities.sendHttpGetRequest(this.ac, tgtUrl, null, true);
+
+		if (!ceText.isEmpty()) {
+			result = saveCeText(ceText, null);
 		}
 
 		return result;

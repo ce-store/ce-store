@@ -258,7 +258,7 @@ public abstract class CeStoreRestApi extends ApiHandler {
 		return this.mb;
 	}
 	
-	protected static ModelBuilder getNamedModelBuilder(WebActionContext pWc, String pMbName) {
+	protected static synchronized ModelBuilder getNamedModelBuilder(WebActionContext pWc, String pMbName) {
 		ModelBuilder result = ServletStateManager.getServletStateManager().getModelBuilder(pMbName);
 		
 		if (result == null && pMbName.toUpperCase().trim().equals(ModelBuilder.CESTORENAME_DEFAULT)) {

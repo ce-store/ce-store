@@ -149,6 +149,19 @@ function HandlerActions() {
 		}
 	};
 
+	this.reloadStore = function() {
+		if (confirm('This will reload the current CE Store.  Are you sure?')) {
+			var userParms = { store_name: gEp.currentCeStore };
+			var cbf = function(pResponseObject, userParms) { gEp.handler.stores.processReloadCeStore(pResponseObject, userParms); };
+
+			var ceText = 'perform reload store.';
+			var arr = gEp.autoRunRules;
+			var rc = gEp.returnCe;
+
+			gCe.api.sentences.add(gEp.stdHttpParms(), cbf, ceText, arr, rc, userParms);
+		}
+	};
+
 	this.loadStore = function() {
 		if (confirm('This will empty the current CE Store and reload from the the last saved state.  Are you sure?')) {
 			var userParms = { store_name: gEp.currentCeStore };
@@ -178,7 +191,7 @@ function HandlerActions() {
 	this.emptyInstanceData = function() {
 		if (confirm('This will empty the instances (but leave the model) for the current CE Store.  Are you sure?')) {
 			var userParms = { store_name: gEp.currentCeStore };
-			var cbf = function(pResponseObject, userParms) { gEp.handler.stores.processResetCeStore(pResponseObject, userParms); };
+			var cbf = function(pResponseObject, userParms) { gEp.handler.stores.processEmptyCeStore(pResponseObject, userParms); };
 
 			var ceText = 'perform empty instances.';
 			var arr = gEp.autoRunRules;
