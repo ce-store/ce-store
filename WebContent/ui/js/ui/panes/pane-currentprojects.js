@@ -14,19 +14,37 @@ function PaneCurrentProjects() {
 	this.initialise = function() {
 		gCe.msg.debug(iDomName, 'initialise');
 
-		gEp.ui.registerTab(iDomName, iDomParentName, iTabPos, iTitle, initialHtml(this));
+		gEp.ui.registerTab(iDomName, iDomParentName, iTabPos, iTitle, '');
+
+		this.requestContents();
 	};
 
-	this.resetContents = function() {
-		gCe.msg.debug(iDomName, 'resetContents');
-
-		this.updateWith(initialHtml(this));
+	this.requestContents = function() {
+		requestContentsFor('./json/my_projects.json');
+		requestContentsFor('./json/public_projects.json');
 	};
 
-	function initialHtml(pPane) {
+	this.setContents = function(pProjects) {
+		gCe.msg.debug(iDomName, 'setContents');
+
+		this.updateWith(initialHtml(iDomName, pProjects));
+	};
+
+	function requestContentsFor(pUrl) {
+		var cbf = function(json) { gEp.ui.pane.currentProjects.setContents(json);};
+
+		gCe.api.sendAjaxGet(pUrl, gEp.stdHttpParms(), cbf, null);
+	}
+
+	initialHtml = function(pDomName, pProjects) {
 		var html = '';
+		var tgt = document.getElementById(pDomName);
 
-		html += htmlListFor(pPane.listSentenceSets());
+		if (tgt != null) {
+			html = tgt.innerHTML;
+		}
+
+		html += htmlListFor(pProjects);
 
 		return html;
 	}
@@ -39,25 +57,14 @@ function PaneCurrentProjects() {
 		}
 	};
 
-	this.listSentenceSets = function() {
-		return {
-			basic: {
-				title: 'Basic sentence sets',
-				links: [
-					{ url: 'ce-store/ce/medicine/cmd/med_load.cecmd', name: 'Medicine' }
-					]
-			}
-		};
-	};
-
 	function htmlListFor(pSenListArray) {
 		var jsMethod = 'gEp.dlg.sentence.loadNewSentenceSet';
 		var html = '';
-		
+
 		for (var key in pSenListArray) {
 			var thisSenSet = pSenListArray[key];
 			var linkList = [];
-			
+
 			for (var linkKey in thisSenSet.links) {
 				var thisLink = thisSenSet.links[linkKey];
 				var jsText = gEp.ui.links.jsTextFor(jsMethod, [ thisLink.url ]);

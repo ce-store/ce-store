@@ -760,9 +760,9 @@ function CeStoreApi(pCe) {
 		var xhr = setUpAjaxRequest(AJAX_POST, pUrl, pStdVals, pCallbackFunction, pUserParms);
 		// HDR_CONTYPE will be automatically set to multipart/form-data
 		var formData = new FormData(pForm);
-        xhr.send(formData);
+		xhr.send(formData);
 	};
-	
+
 	function ajaxSuccess(pResponseObject, pCallbackFunction, pUserParms) {
 		if (pResponseObject != null) {
 			cbfAjaxSuccess(pResponseObject, pUserParms);
