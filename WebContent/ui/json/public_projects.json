@@ -2,7 +2,7 @@
     "basic": {
         "title": "Public sentence sets",
         "links": [
-            { "url": "./ce/medicine/cmd/med_load.cecmd", "name": "Medicine" }
+            { "url": "./ce/medicine/cmd/med_load.cecmd", "name": "Medicine (public)" }
         ]
     }
 }

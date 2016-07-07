@@ -10,6 +10,8 @@ function PaneCurrentProjects() {
 	var iDomName = 'cpPane';
 	var iTitle = 'Current Projects';
 	var iTabPos = 1;
+	var jsonUrls = [ './json/local_projects.json',
+			'./json/public_projects.json' ];
 
 	this.initialise = function() {
 		gCe.msg.debug(iDomName, 'initialise');
@@ -20,8 +22,11 @@ function PaneCurrentProjects() {
 	};
 
 	this.requestContents = function() {
-		requestContentsFor('./json/my_projects.json');
-		requestContentsFor('./json/public_projects.json');
+		for ( var i in jsonUrls) {
+			var thisUrl = jsonUrls[i];
+
+			requestContentsFor(thisUrl);
+		}
 	};
 
 	this.setContents = function(pProjects) {
@@ -32,8 +37,9 @@ function PaneCurrentProjects() {
 
 	function requestContentsFor(pUrl) {
 		var cbf = function(json) { gEp.ui.pane.currentProjects.setContents(json);};
+		var parms = gEp.stdHttpParms();
 
-		gCe.api.sendAjaxGet(pUrl, gEp.stdHttpParms(), cbf, null);
+		gCe.api.sendAjaxGet(pUrl, parms, cbf, null);
 	}
 
 	initialHtml = function(pDomName, pProjects) {
