@@ -31,4 +31,4 @@ stages:
       application: ${CF_APP}
     script: |
       #!/bin/bash
-      cf push "${CF_APP}" -p ce-store-1.0-SNAPSHOT.war
+      cf push "${CF_APP}" -p ce-store-1.0-SNAPSHOT.war -m 256M
