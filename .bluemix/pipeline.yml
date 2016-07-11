@@ -25,10 +25,10 @@ stages:
   - name: Deploy
     type: deployer
     target:
-      region_id: ibm:yp:us-south
-      organization: annathom@uk.ibm.com
-      space: dev
-      application: ce-store
+      region_id: ${BLUEMIX_REGION_ID}
+      organization: ${CF_ORGANIZATION}
+      space: ${CF_SPACE}
+      application: ${CF_APP}
     script: |
       #!/bin/bash
       cf push "${CF_APP}" -p ce-store-1.0-SNAPSHOT.war
