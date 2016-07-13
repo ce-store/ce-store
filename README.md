@@ -33,7 +33,7 @@ mvn install
 mvn tomcat:run
 ```
 
-The CE Store will be available at the following URL [http://localhost:8080/ce-store]()
+The CE Store will be available at the following URL [http://localhost:8080/ce-store](http://localhost:8080/ce-store)
 
 ### Using Docker
 
@@ -55,7 +55,7 @@ Then start the container from this image running locally.
 docker run --rm -it -p 8080:8080 ce-store
 ```
 
-The CE Store will be available at the following URL [http://localhost:8080/ce-store]()
+The CE Store will be available at the following URL [http://localhost:8080/ce-store](http://localhost:8080/ce-store)
 
 ## Usage
 
