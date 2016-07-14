@@ -26,6 +26,9 @@ function HandlerActions() {
 		if (gCe.utils.startsWith(pUrl, '.')) {
 			var trimmedUrl = pUrl.substring(2, pUrl.length);
 			fullUrl = gEp.currentServerAddress + gEp.currentAppName + trimmedUrl;
+		} else if (gCe.utils.startsWith(pUrl, '/')){
+			var trimmedUrl = pUrl.substring(1, pUrl.length);
+			fullUrl = gEp.currentServerAddress + trimmedUrl;
 		} else {
 			fullUrl = gEp.currentServerAddress + pUrl;
 		}

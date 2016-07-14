@@ -39,7 +39,7 @@ function PaneCurrentProjects() {
 		var cbf = function(json) { gEp.ui.pane.currentProjects.setContents(json);};
 		var parms = gEp.stdHttpParms();
 
-		gCe.api.sendAjaxGet(pUrl, parms, cbf, null);
+		gCe.api.sendAjaxGet(pUrl, parms, cbf, {});
 	}
 
 	initialHtml = function(pDomName, pProjects) {
