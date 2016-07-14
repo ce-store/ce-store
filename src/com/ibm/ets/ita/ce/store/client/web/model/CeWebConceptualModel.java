@@ -78,6 +78,11 @@ public class CeWebConceptualModel extends CeWebObject {
 		return generateSummaryDetailsJsonFor(pCm);
 	}
 
+	public CeStoreJsonObject generateNormalisedDetailsJsonFor(CeConceptualModel pCm) {
+		//TODO: Replace this with the actual normalised version
+		return generateSummaryDetailsJsonFor(pCm);
+	}
+
 	public CeStoreJsonArray generateFullListJsonFor(Collection<CeConceptualModel> pCmList) {
 		CeStoreJsonArray jCms = new CeStoreJsonArray();
 		
@@ -108,6 +113,18 @@ public class CeWebConceptualModel extends CeWebObject {
 		if (pCmList != null) {
 			for (CeConceptualModel thisCm : pCmList) {
 				jCms.add(generateMinimalDetailsJsonFor(thisCm));
+			}
+		}
+
+		return jCms;
+	}
+
+	public CeStoreJsonArray generateNormalisedListJsonFor(Collection<CeConceptualModel> pCmList) {
+		CeStoreJsonArray jCms = new CeStoreJsonArray();
+
+		if (pCmList != null) {
+			for (CeConceptualModel thisCm : pCmList) {
+				jCms.add(generateNormalisedDetailsJsonFor(thisCm));
 			}
 		}
 

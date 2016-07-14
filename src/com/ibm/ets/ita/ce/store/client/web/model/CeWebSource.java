@@ -58,6 +58,18 @@ public class CeWebSource extends CeWebObject {
 		return jInsts;
 	}
 
+	public static CeStoreJsonArray generateNormalisedListFrom(Collection<CeSource> pSrcList) {
+		CeStoreJsonArray jInsts = new CeStoreJsonArray();
+
+		if (pSrcList != null) {
+			for (CeSource thisSrc : pSrcList) {
+				jInsts.add(generateNormalisedDetailsJsonFor(thisSrc));
+			}
+		}
+
+		return jInsts;
+	}
+
 	public CeStoreJsonArray generateFullListFrom(Collection<CeSource> pSrcList) {
 		CeStoreJsonArray jInsts = new CeStoreJsonArray();
 		
@@ -109,6 +121,11 @@ public class CeWebSource extends CeWebObject {
 
 	public static CeStoreJsonObject generateMinimalDetailsJsonFor(CeSource pSrc) {
 		//TODO: Replace this with the actual minimal version
+		return generateSummaryDetailsJsonFor(pSrc);
+	}
+
+	public static CeStoreJsonObject generateNormalisedDetailsJsonFor(CeSource pSrc) {
+		//TODO: Replace this with the actual normalised version
 		return generateSummaryDetailsJsonFor(pSrc);
 	}
 

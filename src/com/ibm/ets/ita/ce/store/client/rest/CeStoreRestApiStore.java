@@ -196,6 +196,8 @@ public class CeStoreRestApiStore extends CeStoreRestApi {
 			getWebActionResponse().setStructuredResult(CeWebStore.generateSummaryListFrom(pMbs));
 		} else if (isMinimalStyle()) {
 			getWebActionResponse().setStructuredResult(CeWebStore.generateMinimalListFrom(pMbs));
+		} else if (isNormalisedStyle()) {
+			getWebActionResponse().setStructuredResult(CeWebStore.generateNormalisedListFrom(pMbs));
 		} else {
 			getWebActionResponse().setStructuredResult(CeWebStore.generateFullListFrom(pMbs));
 		}
@@ -206,6 +208,8 @@ public class CeStoreRestApiStore extends CeStoreRestApi {
 			getWebActionResponse().setStructuredResult(CeWebStore.generateSummaryDetailsJsonFor(pStoreName, pMb));
 		} else if (isMinimalStyle()) {
 			getWebActionResponse().setStructuredResult(CeWebStore.generateMinimalDetailsJsonFor(pStoreName, pMb));
+		} else if (isNormalisedStyle()) {
+			getWebActionResponse().setStructuredResult(CeWebStore.generateNormalisedDetailsJsonFor(pStoreName, pMb));
 		} else {
 			getWebActionResponse().setStructuredResult(CeWebStore.generateFullDetailsJsonFor(pStoreName, pMb));
 		}

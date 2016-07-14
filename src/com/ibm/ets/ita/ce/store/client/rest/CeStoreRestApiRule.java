@@ -278,6 +278,8 @@ public class CeStoreRestApiRule extends CeStoreRestApi {
 			getWebActionResponse().setStructuredResult(CeWebQueryOrRule.generateRuleSummaryListFrom(pRuleList));
 		} else if (isMinimalStyle()) {
 			getWebActionResponse().setStructuredResult(CeWebQueryOrRule.generateRuleMinimalListFrom(pRuleList));
+		} else if (isNormalisedStyle()) {
+			getWebActionResponse().setStructuredResult(CeWebQueryOrRule.generateRuleNormalisedListFrom(pRuleList));
 		} else {
 			getWebActionResponse().setStructuredResult(CeWebQueryOrRule.generateRuleFullListFrom(pRuleList));
 		}

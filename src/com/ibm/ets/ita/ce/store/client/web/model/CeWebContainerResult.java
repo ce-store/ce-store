@@ -155,6 +155,56 @@ public class CeWebContainerResult extends CeWebObject {
 		return jObj;
 	}
 
+	public static CeStoreJsonObject generateNormalisedCeQueryResultFrom(ActionContext pAc, ContainerCeResult pCeResult, boolean pSuppressResult, boolean pReturnInstances, String[] pOnlyProps, int pNumSteps, boolean pRelInsts, boolean pRefInsts, String[] pLimRels, boolean pSuppPropTypes) {
+		CeStoreJsonObject jObj = new CeStoreJsonObject();
+
+		if (pCeResult != null) {
+			ArrayList<ArrayList<String>> queryResults = pCeResult.getResultRows();
+			int ceIndex = pCeResult.getIndexForHeader("CE");
+
+			if (ceIndex > -1) {
+				for (ArrayList<String> thisRow : queryResults) {
+					String oldCe = thisRow.get(ceIndex);
+
+					if (ContainerCeResult.isMultipleSentences(oldCe)) {
+						String newCe = "";
+						for (String thisPart : ContainerCeResult.splitSentences(oldCe)) {
+							if (!thisPart.isEmpty()) {
+								if (!newCe.isEmpty()) {
+									newCe += "\n";
+								}
+								newCe += thisPart;
+
+								if (!thisPart.endsWith("\n")) {
+									newCe += "\n";
+								}
+							}
+						}
+						thisRow.set(ceIndex, newCe);
+					}
+				}
+			}
+
+			putStringValueIn(jObj, KEY_QUERY_TEXT, pCeResult.getQuery());
+			putLongValueIn(jObj, KEY_QUERY_TIME, pCeResult.getExecutionTime());
+			putLongValueIn(jObj, KEY_NUMROWS, queryResults.size());
+
+			if (!pSuppressResult) {
+				putAllStringValuesIn(jObj, KEY_HEADERS, pCeResult.getHeaders());
+				putAllStringValuesIn(jObj, KEY_TYPES, pCeResult.getTypes());
+				putAllArrayStringValuesIn(jObj, KEY_RESULTS, queryResults);	
+			}
+
+			if (pReturnInstances) {
+				createNormalisedInstanceResultsFor(pAc, jObj, KEY_INSTANCES, queryResults, pCeResult.getTypes(), pOnlyProps, pNumSteps, pRelInsts, pRefInsts, pLimRels, pSuppPropTypes);
+			}
+		} else {
+			reportError("Unexpected null container CE result encountered during details JSON rendering", pAc);
+		}
+
+		return jObj;
+	}
+
 	private static void createNormalInstanceResultsFor(ActionContext pAc, CeStoreJsonObject pObj, String pKey, ArrayList<ArrayList<String>> pResults, ArrayList<String> pTypes, String[] pOnlyProps, int pNumSteps, boolean pRelInsts, boolean pRefInsts, String[] pLimRels, boolean pSuppPropTypes) {
 		CeStoreJsonObject jInsts = new CeStoreJsonObject();
 
@@ -193,6 +243,30 @@ public class CeWebContainerResult extends CeWebObject {
 
 						CeWebInstance webInst = new CeWebInstance(pAc);
 						CeStoreJsonObject jInst = webInst.generateMinimalDetailsJsonFor(thisInst, pOnlyProps, pNumSteps, pRelInsts, pRefInsts, pLimRels);
+
+						jInsts.put(thisInst.getInstanceName(), jInst);
+					}
+				}
+			}
+		}
+
+		pObj.put(pKey, jInsts);
+	}
+
+	private static void createNormalisedInstanceResultsFor(ActionContext pAc, CeStoreJsonObject pObj, String pKey, ArrayList<ArrayList<String>> pResults, ArrayList<String> pTypes, String[] pOnlyProps, int pNumSteps, boolean pRelInsts, boolean pRefInsts, String[] pLimRels, boolean pSuppPropTypes) {
+		CeStoreJsonObject jInsts = new CeStoreJsonObject();
+
+		for (ArrayList<String> thisRow : pResults) {
+			for (int i = 0; i < pTypes.size(); i++) {
+				String thisType = pTypes.get(i);
+				String thisId = thisRow.get(i);
+
+				if (thisType.equals("O")) {
+					if (!thisId.isEmpty()) {
+						CeInstance thisInst = pAc.getModelBuilder().getInstanceNamed(pAc,  thisId);
+
+						CeWebInstance webInst = new CeWebInstance(pAc);
+						CeStoreJsonObject jInst = webInst.generateNormalisedDetailsJsonFor(thisInst, pOnlyProps, pNumSteps, pRelInsts, pRefInsts, pLimRels);
 
 						jInsts.put(thisInst.getInstanceName(), jInst);
 					}
@@ -283,6 +357,7 @@ public class CeWebContainerResult extends CeWebObject {
 					CeWebInstance cwi = new CeWebInstance(pAc);
 
 					//TODO: Get the values for these defaulted parameters from command line parameters
+					//TODO: Need to handle normalised form here too
 					if (pMinimal) {
 						jObjInsts.put(thisInst.getInstanceName(), cwi.generateMinimalDetailsJsonFor(thisInst, pOnlyProps, pNumSteps, pRelInsts, pRefInsts, pLimRels));
 					} else {

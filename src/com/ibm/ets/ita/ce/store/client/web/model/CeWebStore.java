@@ -56,6 +56,19 @@ public class CeWebStore extends CeWebObject {
 		return jInsts;
 	}
 
+	public static CeStoreJsonArray generateNormalisedListFrom(TreeMap<String, ModelBuilder> pMbs) {
+		CeStoreJsonArray jInsts = new CeStoreJsonArray();
+
+		if (pMbs != null) {
+			for (String storeName : pMbs.keySet()) {
+				ModelBuilder thisMb = pMbs.get(storeName);
+				jInsts.add(generateNormalisedDetailsJsonFor(storeName, thisMb));
+			}
+		}
+
+		return jInsts;
+	}
+
 	public static CeStoreJsonArray generateFullListFrom(TreeMap<String, ModelBuilder> pMbs) {
 		CeStoreJsonArray jInsts = new CeStoreJsonArray();
 
@@ -75,7 +88,14 @@ public class CeWebStore extends CeWebObject {
 	}
 
 	public static CeStoreJsonObject generateMinimalDetailsJsonFor(String pStoreName, ModelBuilder pMb) {
+		//TODO: Implement minimal version
 		CeStoreJsonObject jObj = generateDetailsJsonFor(pStoreName, pMb, STYLE_MINIMAL);
+		return jObj;
+	}
+
+	public static CeStoreJsonObject generateNormalisedDetailsJsonFor(String pStoreName, ModelBuilder pMb) {
+		//TODO: Implement normalised version
+		CeStoreJsonObject jObj = generateDetailsJsonFor(pStoreName, pMb, STYLE_NORMALISED);
 		return jObj;
 	}
 

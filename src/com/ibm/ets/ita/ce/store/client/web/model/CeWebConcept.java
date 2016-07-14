@@ -192,6 +192,11 @@ public class CeWebConcept extends CeWebObject {
 		return generateSummaryDetailsJsonFor(pConcept);
 	}
 
+	public CeStoreJsonObject generateNormalisedDetailsJsonFor(CeConcept pConcept) {
+		//TODO: Replace this with the actual normalised version
+		return generateSummaryDetailsJsonFor(pConcept);
+	}
+
 	private void addMetamodelInstanceFor(CeConcept pCon, CeStoreJsonObject pJsonObj) {
 		CeInstance mmInst = pCon.retrieveMetaModelInstance(this.ac);
 		
@@ -234,6 +239,18 @@ public class CeWebConcept extends CeWebObject {
 		if (pConList != null) {
 			for (CeConcept thisConcept : pConList) {
 				jConcepts.add(generateMinimalDetailsJsonFor(thisConcept));
+			}
+		}
+
+		return jConcepts;
+	}
+
+	public CeStoreJsonArray generateNormalisedListJsonFor(Collection<CeConcept> pConList) {
+		CeStoreJsonArray jConcepts = new CeStoreJsonArray();
+
+		if (pConList != null) {
+			for (CeConcept thisConcept : pConList) {
+				jConcepts.add(generateNormalisedDetailsJsonFor(thisConcept));
 			}
 		}
 

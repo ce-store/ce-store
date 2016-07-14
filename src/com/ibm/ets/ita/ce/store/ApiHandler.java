@@ -14,5 +14,6 @@ public abstract class ApiHandler {
 	public abstract boolean isFullStyle();
 	public abstract boolean isSummaryStyle();
 	public abstract boolean isMinimalStyle();
+	public abstract boolean isNormalisedStyle();
 
 }

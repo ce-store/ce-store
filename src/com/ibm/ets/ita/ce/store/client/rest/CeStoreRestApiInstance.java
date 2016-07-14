@@ -530,8 +530,10 @@ public class CeStoreRestApiInstance extends CeStoreRestApi {
 			getWebActionResponse().setStructuredResult(instWeb.generateFullDetailsJsonFor(pInstance, onlyProps, numSteps, relInsts, refInsts, limRels, suppPropTypes));
 		} else if (isSummaryStyle()) {
 			getWebActionResponse().setStructuredResult(instWeb.generateSummaryDetailsJsonFor(pInstance, onlyProps, numSteps, relInsts, refInsts, limRels, suppPropTypes));
-		} else {
+		} else if (isMinimalStyle()){
 			getWebActionResponse().setStructuredResult(instWeb.generateMinimalDetailsJsonFor(pInstance, onlyProps, numSteps, relInsts, refInsts, limRels));
+		} else {
+			getWebActionResponse().setStructuredResult(instWeb.generateNormalisedDetailsJsonFor(pInstance, onlyProps, numSteps, relInsts, refInsts, limRels));
 		}
 	}
 

@@ -76,6 +76,11 @@ public class CeWebQueryOrRule extends CeWebObject {
 		return generateQueryListFrom(pQueryList);
 	}
 
+	public static CeStoreJsonArray generateQueryNormalisedListFrom(Collection<CeQuery> pQueryList) {
+		//TODO: Decide what this should be
+		return generateQueryListFrom(pQueryList);
+	}
+
 	public static CeStoreJsonArray generateQueryFullListFrom(Collection<CeQuery> pQueryList) {
 		//TODO: Decide what this should be
 		return generateQueryListFrom(pQueryList);
@@ -118,6 +123,11 @@ public class CeWebQueryOrRule extends CeWebObject {
 		return generateRuleListFrom(pRuleList);
 	}
 
+	public static CeStoreJsonArray generateRuleNormalisedListFrom(Collection<CeRule> pRuleList) {
+		//TODO: Decide what this should be
+		return generateRuleListFrom(pRuleList);
+	}
+
 	public static CeStoreJsonArray generateRuleFullListFrom(Collection<CeRule> pRuleList) {
 		//TODO: Decide what this should be
 		return generateRuleListFrom(pRuleList);
@@ -156,6 +166,11 @@ public class CeWebQueryOrRule extends CeWebObject {
 	}
 
 	public static CeStoreJsonObject generatePatternMinimalListFrom(Collection<CeQuery> pQueryList, Collection<CeRule> pRuleList) {
+		//TODO: Decide what this should be
+		return generateRuleAndQueryListFrom(pQueryList, pRuleList);
+	}
+
+	public static CeStoreJsonObject generatePatternNormalisedListFrom(Collection<CeQuery> pQueryList, Collection<CeRule> pRuleList) {
 		//TODO: Decide what this should be
 		return generateRuleAndQueryListFrom(pQueryList, pRuleList);
 	}

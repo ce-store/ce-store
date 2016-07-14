@@ -78,6 +78,11 @@ public class CeWebProperty extends CeWebObject {
 		return generateSummaryDetailsJsonFor(pProp);
 	}
 
+	public CeStoreJsonObject generateNormalisedDetailsJsonFor(CeProperty pProp) {
+		//TODO: Replace this with the actual normalised version
+		return generateSummaryDetailsJsonFor(pProp);
+	}
+
 	public CeStoreJsonArray generateFullListJsonFor(Collection<CeProperty> pPropList) {
 		CeStoreJsonArray jProps = new CeStoreJsonArray();
 		
@@ -110,6 +115,19 @@ public class CeWebProperty extends CeWebObject {
 		if (pPropList != null) {
 			for (CeProperty thisProp : pPropList) {
 				CeStoreJsonObject jObj = generateMinimalDetailsJsonFor(thisProp);
+				addObjectValueTo(jProps, jObj);
+			}
+		}
+
+		return jProps;
+	}
+
+	public CeStoreJsonArray generateNormalisedListJsonFor(Collection<CeProperty> pPropList) {
+		CeStoreJsonArray jProps = new CeStoreJsonArray();
+
+		if (pPropList != null) {
+			for (CeProperty thisProp : pPropList) {
+				CeStoreJsonObject jObj = generateNormalisedDetailsJsonFor(thisProp);
 				addObjectValueTo(jProps, jObj);
 			}
 		}

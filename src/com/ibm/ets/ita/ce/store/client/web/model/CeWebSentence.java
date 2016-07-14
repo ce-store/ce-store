@@ -66,6 +66,14 @@ public class CeWebSentence extends CeWebObject {
 		return jArr;
 	}
 
+	public CeStoreJsonArray generateNormalisedListFrom(Collection<CeSentence> pSenList) {
+		CeStoreJsonArray jArr = new CeStoreJsonArray();
+
+		generateNormalisedListUsing(pSenList, null, jArr);
+
+		return jArr;
+	}
+
 	public CeStoreJsonArray generateFullListFrom(Collection<CeSentence> pSenList) {
 		CeStoreJsonArray jArr = new CeStoreJsonArray();
 
@@ -90,6 +98,14 @@ public class CeWebSentence extends CeWebObject {
 		}
 	}
 
+	public void generateNormalisedListUsing(Collection<CeSentence> pSenList, String pPriOrSecInd, CeStoreJsonArray pJa) {
+		if (pSenList != null) {
+			for (CeSentence thisSen : pSenList) {
+				addObjectValueTo(pJa, generateNormalisedJson(thisSen, pPriOrSecInd));
+			}
+		}
+	}
+
 	public void generateFullListUsing(Collection<CeSentence> pSenList, String pPriOrSecInd, CeStoreJsonArray pJa) {
 		if (pSenList != null) {
 			for (CeSentence thisSen : pSenList) {
@@ -109,9 +125,36 @@ public class CeWebSentence extends CeWebObject {
 		return jObj;
 	}
 
+	public CeStoreJsonObject generateMinimalSummaryJson(CeSentence pSen, String pPriOrSecInd) {
+		//TODO: Implement minimal form
+		CeStoreJsonObject jObj = generateSummaryNormalJson(pSen, pPriOrSecInd);
+
+		if (pSen instanceof CeSentenceQualified) {
+			CeSentenceQualified qSen = (CeSentenceQualified)pSen;
+			generateQualifiedJsonInto(jObj, qSen);
+		}
+
+		return jObj;
+	}
+
+	public CeStoreJsonObject generateNormalisedSummaryJson(CeSentence pSen, String pPriOrSecInd) {
+		//TODO: Implement normalised form
+		CeStoreJsonObject jObj = generateSummaryNormalJson(pSen, pPriOrSecInd);
+
+		if (pSen instanceof CeSentenceQualified) {
+			CeSentenceQualified qSen = (CeSentenceQualified)pSen;
+			generateQualifiedJsonInto(jObj, qSen);
+		}
+
+		return jObj;
+	}
+
 	public CeStoreJsonObject generateMinimalJson(CeSentence pSen, String pPriOrSecInd) {
-		//TODO: Replace this with the actual minimal version
-		return generateSummaryJson(pSen, pPriOrSecInd);
+		return generateMinimalSummaryJson(pSen, pPriOrSecInd);
+	}
+
+	public CeStoreJsonObject generateNormalisedJson(CeSentence pSen, String pPriOrSecInd) {
+		return generateNormalisedSummaryJson(pSen, pPriOrSecInd);
 	}
 
 	public CeStoreJsonObject generateFullJson(CeSentence pSen, String pPriOrSecInd) {

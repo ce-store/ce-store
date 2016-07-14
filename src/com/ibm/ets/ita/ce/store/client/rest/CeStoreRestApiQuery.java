@@ -214,6 +214,8 @@ public class CeStoreRestApiQuery extends CeStoreRestApi {
 			getWebActionResponse().setStructuredResult(CeWebQueryOrRule.generateQuerySummaryListFrom(pQueryList));
 		} else if (isMinimalStyle()) {
 			getWebActionResponse().setStructuredResult(CeWebQueryOrRule.generateQueryMinimalListFrom(pQueryList));
+		} else if (isNormalisedStyle()) {
+			getWebActionResponse().setStructuredResult(CeWebQueryOrRule.generateQueryNormalisedListFrom(pQueryList));
 		} else {
 			getWebActionResponse().setStructuredResult(CeWebQueryOrRule.generateQueryFullListFrom(pQueryList));
 		}
