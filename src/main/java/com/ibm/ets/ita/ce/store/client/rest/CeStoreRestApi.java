@@ -396,7 +396,7 @@ public abstract class CeStoreRestApi extends ApiHandler {
 		boolean result = pDefaultValue;
 		String parmText = getUrlParameterValueNamed(pKeyName);
 
-		if (parmText != null) {
+		if ((parmText != null) && (!parmText.isEmpty())) {
 			result = new Boolean(parmText).booleanValue();
 		}
 
@@ -421,20 +421,26 @@ public abstract class CeStoreRestApi extends ApiHandler {
 		BufferedReader reader = null;
 		
 		try {
-			if (this.request.getContentType().startsWith(CONTENT_TYPE_MULTIPART_FORM)) {
-				// multipart form, i.e. file upload request, currently single file only.
-				Collection<Part> parts = this.request.getParts();
-				Iterator<Part> partsIterator = parts.iterator();
-				if (partsIterator.hasNext()) {
-					Part part = partsIterator.next();
-					InputStream partInputStream = part.getInputStream();
-					InputStreamReader partInputStreamReader = new InputStreamReader(partInputStream); 
-					reader = new BufferedReader(partInputStreamReader);
+			if (this.request.getContentType() != null) {
+				if (this.request.getContentType().startsWith(CONTENT_TYPE_MULTIPART_FORM)) {
+					// multipart form, i.e. file upload request, currently single file only.
+					Collection<Part> parts = this.request.getParts();
+					Iterator<Part> partsIterator = parts.iterator();
+					if (partsIterator.hasNext()) {
+						Part part = partsIterator.next();
+						InputStream partInputStream = part.getInputStream();
+						InputStreamReader partInputStreamReader = new InputStreamReader(partInputStream); 
+						reader = new BufferedReader(partInputStreamReader);
+					}
+				} else {
+					// normal request.
+					reader = this.request.getReader();
 				}
 			} else {
 				// normal request.
 				reader = this.request.getReader();
 			}
+
 			if (reader!=null) {
 				result = convertToString(this.wc, reader);
 

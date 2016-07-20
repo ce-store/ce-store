@@ -37,6 +37,7 @@ public abstract class ActionContext {
 		this.userName = pUserName;
 		this.conf = pConf;
 		this.ar = pAr;
+		this.autoExecuteRules = pConf.getAutoRunRules();
 	}
 
 	public long getStartTime() {

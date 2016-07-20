@@ -394,7 +394,7 @@ public class CeStoreRestApiSentence extends CeStoreRestApi {
 				//Save sentences
 				StoreActions sa = StoreActions.createUsingDefaultConfig(this.wc);
 
-				boolean runRules = this.getBooleanUrlParameterValueNamed(PARM_RUNRULES, false);
+				boolean runRules = this.getBooleanUrlParameterValueNamed(PARM_RUNRULES, this.wc.getCeConfig().getAutoRunRules());
 				this.wc.markAsAutoExecuteRules(runRules);
 
 				result = sa.saveCeText(ceText, newSrc);

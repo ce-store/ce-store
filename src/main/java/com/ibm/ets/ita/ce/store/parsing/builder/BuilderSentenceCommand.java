@@ -20,6 +20,9 @@ import com.ibm.ets.ita.ce.store.persistence.PersistenceManagerFactory;
 public class BuilderSentenceCommand extends BuilderSentence {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
 
+	private static final String VARNAME_ARR = "autorun rules";
+	private static final String VARVAL_TRUE = "true";
+
 	private static final String CMD_RESET = "reset";
 	private static final String CMD_RELOAD = "reload";
 	private static final String CMD_STORE = "store";
@@ -59,6 +62,7 @@ public class BuilderSentenceCommand extends BuilderSentence {
 	private static final String CMD_SAVE = "save";
 	private static final String CMD_CE = "CE";
 	private static final String CMD_SWITCH = "switch";
+	private static final String CMD_SET = "set";
 
 	private static final String UID_NEXTAVAIL = "(next available)";
 
@@ -111,6 +115,22 @@ public class BuilderSentenceCommand extends BuilderSentence {
 		if (this.rawTokens.size() == 3) {
 			// No need to check first token as it must be 'perform' for this to be a command sentence
 			result = (this.rawTokens.get(1).equals(CMD_LOAD)) && (this.rawTokens.get(2).equals(CMD_STORE));
+			if (result) {
+				this.isValid = true;
+			}
+		} else {
+			result = false;
+		}
+
+		return result;
+	}
+
+	public boolean isCmdSetValue() {
+		boolean result = false;
+
+		if (this.rawTokens.size() == 5) {
+			// No need to check first token as it must be 'perform' for this to be a command sentence
+			result = (this.rawTokens.get(1).equals(CMD_SET)) && (this.rawTokens.get(3).equals(CMD_TO));
 			if (result) {
 				this.isValid = true;
 			}
@@ -564,6 +584,8 @@ public class BuilderSentenceCommand extends BuilderSentence {
 			pAc.markAsAutoExecuteRules(false);
 			pAc.markAsCachedCeLoading();
 			PersistenceManagerFactory.get().load(pAc);
+		} else if (isCmdSetValue()) {
+			setUserSpecifiedValue(pAc);
 		} else {
 			reportError("Unknown command encountered during command sentence processing (" + getSentenceText() + ")", pAc);
 		}
@@ -595,8 +617,24 @@ public class BuilderSentenceCommand extends BuilderSentence {
 		isCmdPrepareForCachedCeLoad();
 		isCmdSaveStore();
 		isCmdLoadStore();
+		isCmdSetValue();
 
 		return this.isValid;
+	}
+
+	private void setUserSpecifiedValue(ActionContext pAc) {
+		String varName = stripDelimitingQuotesFrom(this.rawTokens.get(2)).toLowerCase().trim();
+		String varVal = stripDelimitingQuotesFrom(this.rawTokens.get(4)).toLowerCase().trim();
+
+		if (varName.equals(VARNAME_ARR)) {
+			if (varVal.equals(VARVAL_TRUE)) {
+				pAc.getCeConfig().setAutoRunRules(true);
+				pAc.markAsAutoExecuteRules(true);
+			} else {
+				pAc.getCeConfig().setAutoRunRules(false);
+				pAc.markAsAutoExecuteRules(false);
+			}
+		}
 	}
 
 }

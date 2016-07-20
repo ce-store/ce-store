@@ -106,6 +106,7 @@ public abstract class StoreConfig {
 	private String tempPath = null;
 	private String genPath = null;
 	private String persistPath = null;
+	private boolean autoRunRules = false;
 
 	// Other
 	private boolean autogenerateFolders = false;
@@ -162,7 +163,7 @@ public abstract class StoreConfig {
 			pAc.getActionResponse().addLineToMessage("debug could not be updated with value '" + pDebug + "' and remains set to " + Boolean.toString(this.isDebug()));					
 		}
 	}
-	
+
 	public String getRootFolder() {
 		return this.rootFolder;
 	}
@@ -195,6 +196,14 @@ public abstract class StoreConfig {
 
 	public void setLogfile(String pLogfile) {
 		this.logfile = pLogfile;
+	}
+
+	public boolean getAutoRunRules() {
+		return this.autoRunRules;
+	}
+
+	public void setAutoRunRules(boolean pVal) {
+		this.autoRunRules = pVal;
 	}
 
 	public boolean isLoggingCeToFiles() {
