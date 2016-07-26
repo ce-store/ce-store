@@ -1,0 +1,41 @@
+-- --------------------------------------------------------------------------
+-- (C) Copyright IBM Corporation  2011, 2016
+-- All Rights Reserved
+-- --------------------------------------------------------------------------
+
+Model:   Templates
+Version: 1.0
+Date:    19th October 2015
+Author:  Dave Braines
+
+conceptualise a ~ templated thing ~ TT that
+  is a configuration concept and
+  has the entity template T as ~ entity template ~.
+
+conceptualise a ~ template mode ~ M that
+  is a configuration concept.
+
+conceptualise a ~ template ~ T that
+  is a configuration concept.
+
+conceptualise an ~ entity template ~ T that
+  is a template and
+  has the property template PT as ~ property template ~ and
+  has the value SC as ~ template string ~ and
+  has the value WMP as ~ warn about missed properties ~ and
+  ~ corresponds to ~ the template mode M.
+  
+conceptualise a ~ property template ~ T that
+  is a template and
+  ~ corresponds to ~ the property concept PC and
+  has the value MVS as ~ multi-value separator ~ and
+  has the value PS as ~ property separator ~ and
+  has the value PT as ~ prefix text ~ and
+  has the value ST as ~ suffix text ~ and
+  has the value DF as ~ data format ~ and
+  ~ applies when domain concept is ~ the entity concept EC.
+
+conceptualise a ~ filtered property template ~ F that
+  is a property template and
+  has the value FO as ~ filter operator ~ and
+  has the value FV as ~ filter value ~.

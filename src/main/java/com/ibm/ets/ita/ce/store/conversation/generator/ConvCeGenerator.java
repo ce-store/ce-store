@@ -1,6 +1,7 @@
 package com.ibm.ets.ita.ce.store.conversation.generator;
+
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
@@ -20,7 +21,7 @@ import com.ibm.ets.ita.ce.store.model.CeInstance;
 import com.ibm.ets.ita.ce.store.model.CeProperty;
 
 public class ConvCeGenerator extends CeGenerator {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private static final String CON_MT = "matched triple";
 	private static final String CON_MDT = "matched datatype triple";
@@ -283,7 +284,7 @@ public class ConvCeGenerator extends CeGenerator {
 	}
 
 	private void wordCeForMatchingInstance(ProcessedWord pPw) {
-		CeInstance matchInst = pPw.getMatchingInstance();
+		CeInstance matchInst = pPw.getFirstMatchingInstance();
 
 		if (matchInst != null) {
 			String conName = matchInst.getFirstLeafConceptName();

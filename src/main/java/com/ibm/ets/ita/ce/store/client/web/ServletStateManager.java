@@ -1,7 +1,7 @@
 package com.ibm.ets.ita.ce.store.client.web;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
@@ -17,13 +17,15 @@ import com.ibm.ets.ita.ce.store.ActionContext;
 import com.ibm.ets.ita.ce.store.ModelBuilder;
 import com.ibm.ets.ita.ce.store.StoreActions;
 import com.ibm.ets.ita.ce.store.StoreConfig;
+import com.ibm.ets.ita.ce.store.hudson.helper.HudsonManager;
 
 public class ServletStateManager {
 
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	// Static variables
 	private static ServletStateManager pm = null;
+	private static HudsonManager hm = null;
 	private static String defaultRootUrl = null;
 	private static String defaultCurrentUrl = null;
 	//defaultUrl: to avoid the need to manually specify the hostname in the server
@@ -69,7 +71,7 @@ public class ServletStateManager {
 
 		return wc;
 	}
-	
+
 	protected static String getDefaultRootUrl() {
 		return defaultRootUrl;
 	}
@@ -94,7 +96,7 @@ public class ServletStateManager {
 			}
 
 			defaultRootUrl += "/";
-			
+
 			//The action context has been created already and may need to have the
 			//default CE server updated
 			pAc.getCeConfig().useDefaultCeServerIfNeeded(defaultRootUrl, defaultCurrentUrl, pAc);
@@ -103,11 +105,11 @@ public class ServletStateManager {
 
 	private static String keyForCeStoreName(String pCeStoreName) {
 		String result = ModelBuilder.CESTORENAME_DEFAULT;
-		
+
 		if ((pCeStoreName != null) && (!pCeStoreName.trim().isEmpty())) {
 			result = pCeStoreName.trim();
 		}
-		
+
 		return result;
 	}
 
@@ -115,7 +117,17 @@ public class ServletStateManager {
 		return pm;
 	}
 
-	private StoreConfig getCeConfig() {
+	public static HudsonManager getHudsonManager(ActionContext pAc) {
+		if (hm == null) {
+			hm = new HudsonManager(pAc);
+
+			reportDebug("New HudsonManager successfully created", pAc);
+		}
+
+		return hm;
+	}
+
+	public StoreConfig getCeConfig() {
 		return this.cc;
 	}
 

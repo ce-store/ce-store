@@ -1,7 +1,7 @@
 package com.ibm.ets.ita.ce.store.client.web;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
@@ -26,7 +26,7 @@ import com.ibm.ets.ita.ce.store.client.rest.CeStoreRestApi;
  */
 @MultipartConfig
 public class RestHandler extends HttpServlet {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private static final String CLASS_NAME = RestHandler.class.getName();
 	private static final String PACKAGE_NAME = RestHandler.class.getPackage().getName();
@@ -96,7 +96,6 @@ public class RestHandler extends HttpServlet {
 
 		wrapUpAndReturn(wc, pRequest, pResponse, statsInResponse);
 	}
-	
 
 	private static synchronized WebActionContext createWebActionContext(HttpServletRequest pRequest) {
 		String thisUserName = pRequest.getHeader(HDR_CEUSER);

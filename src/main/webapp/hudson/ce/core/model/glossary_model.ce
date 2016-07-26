@@ -1,0 +1,26 @@
+-- --------------------------------------------------------------------------
+-- (C) Copyright IBM Corporation  2011, 2016
+-- All Rights Reserved
+-- --------------------------------------------------------------------------
+
+Model:   Glossary
+Version: 1.0
+Date:    24th April 2015
+Author:  Dave Braines
+
+conceptualise a ~ glossary term ~ G that
+  is a local concept and
+  has the value M as ~ main form ~ and
+  has the value D as ~ description ~ and
+  has the value Q as ~ qualification ~ and
+  has the value A as ~ abbreviation ~ and
+  has the value SY as ~ synonym ~ and
+  ~ is related to ~ the glossary term G1.
+
+the entity concept 'glossary term' is a separately identified concept.
+
+the property concept 'glossary term:main form:value' is an identification property concept.
+
+conceptualise an ~ acronym term ~ A that
+  is a glossary term and
+  has the value E as ~ expansion ~.

@@ -1,0 +1,107 @@
+/* (C) Copyright IBM Corporation  2011, 2016
+ * All Rights Reserved
+
+ *
+ * (C) Copyright IBM Corporation  2011, 2016 All Rights Reserved.
+ *
+ * US Government Users Restricted Rights - Use, duplication or
+ * disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+ */
+
+@CHARSET "UTF-8";
+
+body {
+   font-family:"HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
+   font-weight:300;
+   font-size:100%;
+}
+
+#header-1 {
+    background-color:darkslateblue;
+    color:cornsilk;
+    font-size:1.5em;
+    text-align:left;
+    padding:5px;
+}
+
+#header-2 {
+    color:black;
+    font-size:1.3em;
+    text-align:left;
+    text-indent:10px; 
+    padding:5px;
+}
+
+#header-3 {
+    color:black;
+    font-size:1.2em;
+    text-align:left;
+    text-indent:5px; 
+    padding:5px;
+}
+
+#plain-text {
+    color:darkslategray;
+    font-size:1.2em;
+    text-align:left;
+    padding:5px;
+}
+
+#ce {
+	color:blue;
+	font-family:monospace;
+	font-size:1.3em;
+	font-weight:400;
+	text-indent:50px;
+}
+
+#code-snippet {
+	color:black;
+	font-family:monospace;
+	font-size:1.2em;
+	font-weight:400;
+}
+
+#json-object {
+	color:green;
+}
+
+#json-array {
+	color:green;
+}
+
+#json-key {
+	color:red;
+}
+
+#json-value {
+	color:blue;
+}
+
+#http-type {
+	color:blue;
+}
+
+#http-header {
+	color:red;
+}
+
+#http-value {
+	color:blue;
+}
+
+#url {
+	color:blue;
+}
+
+#parameter-name {
+	color:red;
+}
+
+#parameter-value {
+	color:blue;
+}
+
+#emphasize {
+	font-weight:500;
+}

@@ -1,11 +1,11 @@
 package com.ibm.ets.ita.ce.store.client.rest;
 
-import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.urlDecode;
-
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
+
+import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.urlDecode;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,7 +27,7 @@ import com.ibm.ets.ita.ce.store.model.CeRule;
 import com.ibm.ets.ita.ce.store.model.container.ContainerSearchResult;
 
 public class CeStoreRestApiSpecial extends CeStoreRestApi {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private static final String REST_STATISTICS = "statistics";
 	private static final String REST_PATTERN = "patterns";
@@ -39,6 +39,7 @@ public class CeStoreRestApiSpecial extends CeStoreRestApi {
 	private static final String REST_UNREFINST = "unreferenced-instances";
 	private static final String REST_DIVCONINST = "diverse-concept-instances";
 	private static final String REST_MULTINSTS = "instances-for-multiple-concepts";
+	private static final String REST_HUDSON = "hudson";
 
 	private static final String PARM_SEARCHTERMS = "keywords";
 	private static final String PARM_CASESEN = "caseSensitive";
@@ -66,6 +67,7 @@ public class CeStoreRestApiSpecial extends CeStoreRestApi {
 	 * 		/special/shadow-instances
 	 * 		/special/diverse-concept-instances
 	 * 		/special/data
+	 * 		/special/hudson
 	 */
 	public static boolean processRequest(WebActionContext pWc, ArrayList<String> pRestParts, HttpServletRequest pRequest) {
 		boolean statsInResponse = false;
@@ -84,6 +86,9 @@ public class CeStoreRestApiSpecial extends CeStoreRestApi {
 			} else if (specialType.equals(REST_CONFIG)) {
 				CeStoreRestApiSpecialConfig configHandler = new CeStoreRestApiSpecialConfig(pWc, pRestParts, pRequest);
 				configHandler.processRequest();
+			} else if (specialType.equals(REST_HUDSON)) {
+				CeStoreRestApiSpecialHudson hudsonHandler = new CeStoreRestApiSpecialHudson(pWc, pRestParts, pRequest);
+				statsInResponse = hudsonHandler.processRequest();
 			} else if (specialType.equals(REST_UID)) {
 				CeStoreRestApiSpecialUid uidHandler = new CeStoreRestApiSpecialUid(pWc, pRestParts, pRequest);
 				uidHandler.processRequest();

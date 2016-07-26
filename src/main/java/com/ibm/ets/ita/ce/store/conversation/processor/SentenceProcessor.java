@@ -1,7 +1,7 @@
 package com.ibm.ets.ita.ce.store.conversation.processor;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 import com.ibm.ets.ita.ce.store.ActionContext;
+import com.ibm.ets.ita.ce.store.client.web.ServletStateManager;
 import com.ibm.ets.ita.ce.store.conversation.generator.ConvCeGenerator;
 import com.ibm.ets.ita.ce.store.conversation.generator.DomainCeGenerator;
 import com.ibm.ets.ita.ce.store.conversation.generator.GistGenerator;
@@ -23,16 +24,17 @@ import com.ibm.ets.ita.ce.store.conversation.model.ExtractedItem;
 import com.ibm.ets.ita.ce.store.conversation.model.MatchedTriple;
 import com.ibm.ets.ita.ce.store.conversation.model.ProcessedWord;
 import com.ibm.ets.ita.ce.store.generation.CeGenerator;
+import com.ibm.ets.ita.ce.store.hudson.helper.ConvConfig;
 import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
 import com.ibm.ets.ita.ce.store.model.CeProperty;
 import com.ibm.ets.ita.ce.store.model.CePropertyInstance;
 
 public class SentenceProcessor {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
-	private static final String CON_CWL = "common word list";
-	private static final String CON_NWL = "negation word list";
+//	private static final String CON_CWL = "common word list";
+//	private static final String CON_NWL = "negation word list";
 	private static final String CON_ATTTHING = "attributional thing";
 	private static final String PROP_LOC = "location";
 	private static final String PROP_NEWINSTSCORE = "new instance score";
@@ -492,20 +494,23 @@ public class SentenceProcessor {
 	}
 
 	private void prepareAndClassifyWords() {
+		int wordPos = 0;
+		ConvConfig cc = ServletStateManager.getHudsonManager(this.ac).getConvConfig(this.ac);
+
 		//First create all the processed word instances
 		for (ConvWord thisWord : this.convSentence.getAllWords()) {
-			ProcessedWord newPw = ProcessedWord.createFrom(thisWord, this);
+			ProcessedWord newPw = ProcessedWord.createFrom(thisWord, wordPos++);
 			this.allProcessedWords.add(newPw);
 		}
 
 		markQuestionWords(this.allProcessedWords);
 
-		ArrayList<CeInstance> cwls = this.ac.getModelBuilder().getAllInstancesForConceptNamed(this.ac, CON_CWL);
-		ArrayList<CeInstance> nwls = this.ac.getModelBuilder().getAllInstancesForConceptNamed(this.ac, CON_NWL);
-		
+//		ArrayList<CeInstance> cwls = this.ac.getModelBuilder().getAllInstancesForConceptNamed(this.ac, CON_CWL);
+//		ArrayList<CeInstance> nwls = this.ac.getModelBuilder().getAllInstancesForConceptNamed(this.ac, CON_NWL);
+
 		//Then classify the processed words
 		for (ProcessedWord thisWord : this.allProcessedWords) {
-			thisWord.classify(this.ac, cwls, nwls);
+			thisWord.classify(this.ac, cc);
 		}
 	}
 	

@@ -1,0 +1,28 @@
+-- --------------------------------------------------------------------------
+-- (C) Copyright IBM Corporation  2011, 2016
+-- All Rights Reserved
+-- --------------------------------------------------------------------------
+
+Model:   Misc
+Version: 1.0
+Date:    27th August 2015
+Author:  Dave Braines
+
+conceptualise a ~ thing ~ T that
+  ~ is also known as ~ the value V.
+
+the property concept 'thing:is also known as:value' is an identification property concept.
+
+conceptualise a ~ formatted property ~ F that has the value DF as ~ data format ~.
+
+conceptualise a ~ spatial thing ~ S that
+  has the value LAT as ~ latitude ~ and
+  has the value LON as ~ longitude ~.
+
+conceptualise a ~ location ~ L that
+  is a spatial thing and
+  is a local concept.
+
+conceptualise a ~ person ~ P.
+conceptualise a ~ man ~ M that is a person.
+conceptualise a ~ woman ~ W that is a person.

@@ -1,0 +1,8 @@
+-- --------------------------------------------------------------------------
+-- (C) Copyright IBM Corporation  2011, 2016
+-- All Rights Reserved
+-- --------------------------------------------------------------------------
+
+perform reset store with starting uid '1'.
+
+perform load sentences from url './hudson/ce/core/cmd/load_core.cecmd'.

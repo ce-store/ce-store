@@ -1,0 +1,23 @@
+-- --------------------------------------------------------------------------
+-- (C) Copyright IBM Corporation  2011, 2016
+-- All Rights Reserved
+-- --------------------------------------------------------------------------
+
+conceptualise a ~ CE triggered event ~ T that
+  has at most one value NC as ~ class to notify ~ and
+  has the value CN as ~ concept name ~ and
+  has the value PN as ~ property name ~ and
+  has the value AQ as ~ affected query name ~ and
+  has the value AR as ~ affected rule name ~.
+
+conceptualise a ~ duration event ~ DE that
+  is a CE triggered event and
+  has the value FC as ~ from concept ~ and
+  has the value FI as ~ from instance ~ and
+  has the value SP as ~ start property ~ and
+  has the value EP as ~ end property ~ and
+  has the value DP as ~ duration property ~ and
+  has the value UP as ~ unended duration property ~ and
+  has the value CP as ~ current property ~ and
+  has the value GC as ~ generate current ~ and
+  has the value TO as ~ current time override ~.

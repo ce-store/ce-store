@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<!-- 
+ * (C) Copyright IBM Corporation  2011, 2016
+ * All Rights Reserved
+
+ *
+ * (C) Copyright IBM Corporation  2011, 2016 All Rights Reserved.
+ *
+ * US Government Users Restricted Rights - Use, duplication or
+ * disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+ -->
+
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>Hudson - Test UI</title>
+    <link rel="icon" href="favicon.png" type="image/x-icon">
+    <link rel="shortcut icon" href="favicon.png" type="image/x-icon"> 
+	<script src="./js/hudson.js"></script>
+	<script src="./js/questions.js"></script>
+	<link rel="stylesheet" type="text/css" href="./css/hudson.css">
+</head>
+<body>
+	<div>
+		Endpoint: <input type="text" id="endpoint" size="40" value=".."/>
+		<a href="javascript:gHudson.swapEndpoint();">swap</a>
+		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+		Debug: <input type="checkbox" id="debug"/>
+		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+		<a href="javascript:gHudson.resetCeStore();">reset</a>
+		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+		<a href="javascript:gHudson.getCeStoreStatus();">status</a>
+		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+		Version: 1.1.0
+		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+		<a href="docs.html">docs</a>
+		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+		<a href="tests.html">tests</a>
+		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+		Username: <input type="text" id="username" size="15" value="davebraines"/>
+		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+		Log results: <input type="checkbox" id="log_results"/>
+		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+		<hr/>
+		Question: <input type="text" id="questionText" size="75" onKeyUp="gHudson.keyUpQuestionText();" value="(type your question here)">
+		<a href="javascript:gHudson.loadPreviousCannedQuestion();">&lt;</a>
+		<input type="text" id="questionPos" size="2" onKeyUp="gHudson.keyUpQuestionPos();" value="0"/>
+		<a href="javascript:gHudson.loadNextCannedQuestion();">&gt;</a>
+		&nbsp;&nbsp;(<a href="javascript:gHudson.parseQuestionText();">Parse question text</a>)
+		<br/>
+		<a href="javascript:gHudson.executeQuestion();">Execute question</a>&nbsp;&nbsp;&nbsp;
+		<a href="javascript:gHudson.analyseQuestion();">Analyse question</a>
+		<hr/>
+		<u>Suggestions:</u>
+		<div id="parsedQuestion"></div>
+		<br/>
+		<a href="javascript:gHudson.showInterpretations();">Show interpretations</a>
+		<hr/>
+		<u>Answer(s):</u>
+		(<input type="checkbox" id="answers_normal" checked onclick="gHudson.changeAnswerCheckbox('answers_normal');"/> normal, or <input type="checkbox" id="answers_chatty" onclick="gHudson.changeAnswerCheckbox('answers_chatty');"/> chatty)
+		<br/>
+		<div id="answer"></div>
+	</div>
+</body>
+</html>

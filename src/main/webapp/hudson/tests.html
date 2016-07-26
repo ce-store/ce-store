@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<!-- 
+ * (C) Copyright IBM Corporation  2011, 2016
+ * All Rights Reserved
+
+ *
+ * (C) Copyright IBM Corporation  2011, 2016 All Rights Reserved.
+ *
+ * US Government Users Restricted Rights - Use, duplication or
+ * disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+ -->
+
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>Hudson - Regression testing UI</title>
+    <link rel="icon" href="favicon.png" type="image/x-icon">
+    <link rel="shortcut icon" href="favicon.png" type="image/x-icon"> 
+	<script src="./js/hudson.js"></script>
+	<script src="./js/tester.js"></script>
+	<script src="./js/checker.js"></script>
+	<script src="./js/questions.js"></script>
+	<link rel="stylesheet" type="text/css" href="./css/hudson.css">
+</head>
+<body onload="gTester.initialiseTestPage();">
+	<div>
+		Endpoint: <input type="text" id="endpoint" size="40" value="."/> <a href="javascript:gHudson.swapEndpoint();">swap</a>
+		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+		Debug: <input type="checkbox" id="debug"/>
+		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+		<a href="javascript:gHudson.resetCeStore();">reset</a>
+		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+		Version: 1.0.14
+		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+		<a href="docs.html">docs</a>
+		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+		tests
+		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+		Username: <input type="text" id="username" size="15" value="davebraines"/>
+		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+		<hr/>
+		Load definitive responses:
+		<a href="javascript:gTester.loadDefinitiveNormalResponses();">normal</a>
+		<span id="normal_loaded"> (0 loaded)</span>,
+		<a href="javascript:gTester.loadDefinitiveDebugResponses();">debug</a>
+		<span id="debug_loaded"> (0 loaded)</span>
+		<hr/>
+		Question range: <input type="text" id="question_range" size="10" onKeyUp="javascript:gTester.keyUpQuestionRange();"/>
+		(e.g. "1-100")<span id="number_of_questions"></span>
+		<br/>
+		Delay (ms): <input type="text" id="delay" size="5" value="200"/>
+		<br/>
+		Iterations: <input type="text" id="iterations" size="5" value="1"/>
+		&nbsp;&nbsp;&nbsp;
+		Result set depth: <input type="text" id="result_set_depth" size="5" value="100"/>
+		<br/>
+		<a href="javascript:gTester.executeTestQuestions();">execute test questions</a>
+		&nbsp;&nbsp;&nbsp;<span id="test_results"></span>
+		<hr/>
+		<table border=1 width="100%">
+		 <tr valign="top">
+		  <td width="50%">
+		   Questions:<br/>
+		   <div id="question_list"></div>
+		  </td>
+		  <td width="50%">
+           Answer(s):<br/>
+		   <div id="answer_list"></div>
+		  </td>
+		 </tr>
+		</table>
+	</div>
+</body>
+</html>

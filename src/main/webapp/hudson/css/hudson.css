@@ -1,0 +1,18 @@
+/*
+ * (C) Copyright IBM Corporation  2011, 2016
+ * All Rights Reserved
+
+ *
+ * (C) Copyright IBM Corporation  2011, 2016 All Rights Reserved.
+ *
+ * US Government Users Restricted Rights - Use, duplication or
+ * disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+ */
+
+@CHARSET "UTF-8";
+
+body {
+   font-family:"HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
+   font-weight:300;
+   font-size:100%;
+}

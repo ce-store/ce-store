@@ -1,0 +1,115 @@
+-- --------------------------------------------------------------------------
+-- (C) Copyright IBM Corporation  2011, 2016
+-- All Rights Reserved
+-- --------------------------------------------------------------------------
+
+there is a conversation config named 'cc' that
+  has 'true' as split phrases and
+  has '100' as max suggestions and
+  has '100' as max answer result rows and
+  has '100' as max database to ce rows and
+  has 'true' as compute answer confidence and
+  has 'true' as compute interpretation confidence and
+  has 'true' as compute ability to answer confidence and
+  has the config list 'sen_delims' as sentence delimiters and
+  has the config list 'phrase_delims' as phrase delimiters and
+  has the config list 'clause_delims' as clause delimiters and
+  has the config list 'clause_puncs' as clause punctuation and
+  has the config list 'qsms' as question start markers and
+  has the config list 'qems' as question end markers and
+  has the config list 'cws' as common words and
+  has the config list 'nws' as negation words.
+  
+there is a config list named 'sen_delims' that
+  has ':' as marker and
+  has ';' as marker and
+  has ',' as marker and
+  has '!' as marker and
+  has '?' as marker and
+  has '.' as marker.
+
+there is a config list named 'phrase_delims' that
+  has '.' as marker and
+  has '!' as marker and
+  has '?' as marker.
+
+there is a config list named 'clause_delims' that
+  has ' ' as marker and	-- whitespace
+  has '	' as marker.	-- tab
+
+there is a config list named 'clause_puncs' that
+  has '.' as marker and
+  has ',' as marker and
+  has ';' as marker and
+  has ':' as marker.
+
+there is a config list named 'qsms' that
+  has 'what' as marker and
+  has 'who' as marker and
+  has 'why' as marker and
+  has 'where' as marker and
+  has 'when' as marker and
+  has 'which' as marker.
+
+there is a config list named 'qems' that
+  has '?' as marker.
+
+there is a config list named 'cws'
+  has 'and' as marker and
+  has 'is' as marker and
+  has 'with' as marker and
+  has 'there' as marker and
+  has 'do' as marker and
+  has 'in' as marker and
+  has 'the' as marker and
+  has 'are' as marker and
+  has 'were' as marker and
+  has 'have' as marker and
+  has 'been' as marker and
+  has 'at' as marker and
+  has 'of' as marker and
+  has 'has' as marker and
+  has 'does' as marker and
+  has 'also' as marker.
+
+there is a response list named 'greeting words' that
+  has 'Hello' as word and
+  has 'Hi' as word and
+  has 'Hola' as word and
+  has 'Hey' as word and
+  causes the response 'RC_GREETING'.
+
+there is a response list named 'negation words' that
+  has 'not' as word and
+  has 'doesn\'t' as word and
+  has 'didn\'t' as word and
+  has 'won\'t' as word and
+  causes the response 'RC_NEGATION' and
+  has 'terminate' as action.
+
+there is a response list named 'prediction words' that
+  has 'will' as word and
+  has 'bet' as word and
+  has 'going' as word and
+  has 'might' as word and
+  has 'could' as word and
+  has 'should' as word and
+  has 'predict' as word and
+  has 'prediction' as word and
+  has 'future' as word and
+  has 'next' as word and
+  has 'tomorrow' as word and
+  causes the response 'RC_PREDICTION' and
+  has 'terminate' as action.
+
+the response 'RC_GREETING'
+  has 'GREETING' as response code and
+  has 'Hello to you too :smile:' as response text.
+
+the response 'RC_NEGATION'
+  has 'NEGATION' as response code and
+  has 'Sorry, I don\'t understand negative words, like "don\'t"... :flushed:' as response text.
+
+the response 'RC_PREDICTION'
+  has 'PREDICTION' as response code and
+  has 'I can\'t do predictions (yet!), sorry :flushed:' as response text.

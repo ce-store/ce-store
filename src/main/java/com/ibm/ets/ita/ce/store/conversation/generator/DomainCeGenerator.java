@@ -1,7 +1,7 @@
 package com.ibm.ets.ita.ce.store.conversation.generator;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
@@ -21,7 +21,7 @@ import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
 
 public class DomainCeGenerator extends CeGenerator {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private static final String CON_GROUP = "group";
 	private static final String CON_QUANTITY = "quantity";
@@ -411,7 +411,7 @@ public class DomainCeGenerator extends CeGenerator {
 		for (ProcessedWord thisPw : this.sp.getAllProcessedWords()) {
 			//Try for instances of number
 			if (thisPw.refersToInstanceOfConceptNamed(this.ac, CON_QUANTITY)) {
-				CeInstance tgtInst = thisPw.getMatchingInstance();
+				CeInstance tgtInst = thisPw.getFirstMatchingInstance();
 
 				ceAddFnProperty(PROP_SIZE, null, tgtInst.getSingleValueFromPropertyNamed(PROP_NUMVAL));
 			}
@@ -426,7 +426,7 @@ public class DomainCeGenerator extends CeGenerator {
 	private void tryToAddGroupQualifier() {
 		for (ProcessedWord thisPw : this.sp.getAllProcessedWords()) {
 			if (thisPw.refersToInstanceOfConceptNamed(this.ac, CON_QUALIFIER)) {
-				CeInstance tgtInst = thisPw.getMatchingInstance();
+				CeInstance tgtInst = thisPw.getFirstMatchingInstance();
 
 				ceAddFnProperty(PROP_QUAL, tgtInst.getFirstLeafConceptName(), tgtInst.getInstanceName());
 			}

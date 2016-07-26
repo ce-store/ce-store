@@ -1,0 +1,150 @@
+-- --------------------------------------------------------------------------
+-- (C) Copyright IBM Corporation  2011, 2016
+-- All Rights Reserved
+-- --------------------------------------------------------------------------
+
+Model:   Conversation
+Version: 1.0
+Date:    24th April 2015
+Author:  Dave Braines
+
+conceptualise a ~ suppressed concept ~ SC.
+Note: this concept will be suppressed in the queries; no instances will be returned if they are a configuration concept.
+
+conceptualise a ~ configuration concept ~ CC that is a suppressed concept.
+conceptualise an ~ uninteresting concept ~ UC that is a suppressed concept.
+
+--Ensure that the meta-model concepts are all suppressed
+conceptualise a ~ concept ~ C that is a configuration concept.
+conceptualise a ~ conceptual model ~ C that is a configuration concept.
+conceptualise a ~ sequence ~ S that is a configuration concept.
+conceptualise a ~ statement ~ S that is a configuration concept.
+conceptualise a ~ symbol ~ S that is a configuration concept.
+
+conceptualise a ~ sourced concept ~ S that
+  is a configuration concept and
+  has the source S as ~ source ~.
+
+conceptualise a ~ supporting concept ~ S that is a local concept.
+
+conceptualise a ~ separately identified concept ~ SC that
+  is a configuration concept.
+Note: this is a concept for which the id is not a natural identifier
+
+conceptualise a ~ externally sourced property concept ~ C that
+  is a property concept and
+  has the source S as ~ source ~.
+
+conceptualise a ~ linguistic thing ~ L that
+  is a configuration concept and
+  has the value PF as ~ plural form ~ and
+  has the value PT as ~ past tense ~ and
+  has the value DD as ~ default determiner ~ and
+  has the value PQ as ~ property qualifier ~ and
+  ~ is expressed by ~ the value V and
+  ~ is qualified by ~ the entity concept E.
+
+conceptualise a ~ common word list ~ CWL that
+  is a configuration concept and
+  has the value CW as ~ common word ~.
+
+conceptualise a ~ negation word list ~ NWL that
+  is a configuration concept and
+  has the value NW as ~ negation word ~.
+
+conceptualise an ~ identification property concept ~ I that
+  is a property concept.
+
+conceptualise a ~ conversation config ~ CC that
+  is a configuration concept and
+  has the value SP as ~ split phrases ~ and
+  has the value RR as ~ run rules ~ and
+  has the value SA as ~ single answers ~ and
+  has the value MS as ~ max suggestions ~ and
+  has the value MR as ~ max answer result rows ~ and
+  has the value MCR as ~ max database to ce rows ~ and
+  has the value CAC as ~ compute answer confidence ~ and
+  has the value CIC as ~ compute interpretation confidence ~ and
+  has the value CAAC as ~ compute ability to answer confidence ~ and
+  has the value DAC as ~ default answer confidence ~ and
+  has the value DIC as ~ default interpretation confidence ~ and
+  has the value DAAC as ~ default ability to answer confidence ~ and
+  has the config list SD as ~ sentence delimiters ~ and
+  has the config list PD as ~ phrase delimiters ~ and
+  has the config list CD as ~ clause delimiters ~ and
+  has the config list CP as ~ clause punctuation ~ and
+  has the config list QS as ~ question start markers ~ and
+  has the config list QE as ~ question end markers ~ and
+  has the config list CW as ~ common words ~ and
+  has the config list NW as ~ negation words ~.
+
+conceptualise a ~ function ~ F.
+conceptualise a ~ general function ~ F that is a function.
+conceptualise a ~ filter function ~ F that is a function.
+  
+conceptualise a ~ config list ~ CL that
+  is a configuration concept and
+  has the value M as ~ marker ~.
+
+conceptualise a ~ modifier ~ M that
+  ~ corresponds to ~ the general function F and
+  ~ uses by default ~ the entity concept E.
+
+conceptualise a ~ database modifier ~ M that
+  is a modifier and
+  ~ corresponds to ~ the database function F.
+
+conceptualise a ~ search modifier ~ M that
+  is a modifier and
+  ~ corresponds to ~ the search function F.
+
+conceptualise a ~ filter modifier ~ M that
+  is a modifier and
+  ~ corresponds to ~ the filter function F and
+  ~ involves ~ the entity concept EC.
+
+conceptualise a ~ CE modifier ~ M that
+  is a modifier and
+  has the value U as ~ CE URL ~.
+
+conceptualise an ~ end modifier ~ M that is a modifier.
+
+conceptualise an ~ affector ~ A that
+  ~ corresponds to ~ the database function F.
+
+conceptualise a ~ grouper ~ G that
+  is an affector and
+  has the database concept C as ~ target concept ~.
+
+conceptualise an ~ orderer ~ O that
+  is an affector and
+  has the value C as ~ order column name ~.
+
+conceptualise a ~ local concept ~ L that
+  has the source SO as ~ source ~ and
+  ~ is defined by ~ the glossary term G.
+
+conceptualise an ~ authority ~ A that
+  is a configuration concept and
+  has the value C as ~ credibility ~ and
+  has the value D as ~ last update date ~.
+
+conceptualise a ~ source ~ S that
+  is a configuration concept and
+  ~ is from ~ the authority A and
+  has the value SN as ~ short name ~ and
+  has the value U as ~ url ~.
+
+conceptualise a ~ response list ~ L that
+  is a configuration concept and
+  has the value W as ~ word ~ and
+  ~ causes ~ the the response R and
+  has the value AC as ~ action ~.
+
+conceptualise a ~ response ~ R that
+  is a configuration concept and
+  has the value RC as ~ response code ~ and
+  has the value RT as ~ response text ~.
+
+conceptualise a ~ qualified concept ~ Q that
+  has the value UN as ~ unit name ~. 

@@ -94,6 +94,7 @@ function CeStoreLinks() {
 	this.JS_INST_ALLSENS = 'gEp.handler.instances.listAllSentencesForInstance';
 
 	var TARGET_POPUP = '_blank';
+	var TARGET_HUDSON = '_hudson';
 	var DEFAULT_DEL = '[d]';
 
 	this.initialise = function() {
@@ -738,6 +739,10 @@ function CeStoreLinks() {
 
 	this.help = function() {
 		return this.hyperlinkFor('../doc/index.html', 'help', 'Open the help page', TARGET_POPUP);
+	};
+
+	this.hudson = function() {
+		return this.hyperlinkFor('../hudson/', 'Hudson', 'Open Hudson', TARGET_HUDSON);
 	};
 
 	this.clearDropPane = function() {
