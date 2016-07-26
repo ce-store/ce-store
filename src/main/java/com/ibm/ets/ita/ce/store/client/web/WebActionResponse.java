@@ -130,7 +130,8 @@ public class WebActionResponse extends ActionResponse {
 				if (this.structuredResult != null) {
 					jsonSb = this.structuredResult.serializeToSb(pAc);
 				} else {
-					jsonSb = CeWebObject.generateStandardAlertsFrom(this.alerts).serializeToSb(pAc);
+					jsonSb = this.jsonPayload.serializeToSb(pAc);
+//					jsonSb = CeWebObject.generateStandardAlertsFrom(this.alerts).serializeToSb(pAc);
 				}
 			}
 

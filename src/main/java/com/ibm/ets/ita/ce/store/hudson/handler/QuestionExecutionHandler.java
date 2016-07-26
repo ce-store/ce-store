@@ -19,6 +19,7 @@ import com.ibm.ets.ita.ce.store.hudson.helper.AnswerMedia;
 import com.ibm.ets.ita.ce.store.hudson.helper.AnswerReply;
 import com.ibm.ets.ita.ce.store.hudson.helper.AnswerResultSet;
 import com.ibm.ets.ita.ce.store.hudson.helper.ChosenWord;
+import com.ibm.ets.ita.ce.store.hudson.helper.ConvConfig;
 import com.ibm.ets.ita.ce.store.hudson.helper.Question;
 import com.ibm.ets.ita.ce.store.hudson.helper.Source;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
@@ -184,11 +185,14 @@ public class QuestionExecutionHandler extends QuestionHandler {
 
 	private int answerConfidenceFor(Answer pAnswer) {
 		int result = -1;
+		ConvConfig thisCc = getConvConfig();
 
-		if (this.cc.computeAnswerConfidence()) {
-			result = pAnswer.getAnswerConfidence();
-		} else {
-			result = this.cc.defaultAnswerConfidence();
+		if (thisCc != null) {
+			if (thisCc.computeAnswerConfidence()) {
+				result = pAnswer.getAnswerConfidence();
+			} else {
+				result = thisCc.defaultAnswerConfidence();
+			}
 		}
 
 		return result;
@@ -196,12 +200,13 @@ public class QuestionExecutionHandler extends QuestionHandler {
 
 	private int interpretationConfidenceFor(Question pQuestion) {
 		int result = -1;
+		ConvConfig thisCc = getConvConfig();
 
-		if (this.cc != null) {
-			if (this.cc.computeInterpretationConfidence()) {
+		if (thisCc != null) {
+			if (thisCc.computeInterpretationConfidence()) {
 				result = pQuestion.getInterpretationConfidence();
 			} else {
-				result = this.cc.defaultInterpretationConfidence();
+				result = thisCc.defaultInterpretationConfidence();
 			}
 		}
 
@@ -210,12 +215,13 @@ public class QuestionExecutionHandler extends QuestionHandler {
 
 	private int abilityToAnswerConfidenceFor(Question pQuestion) {
 		int result = -1;
+		ConvConfig thisCc = getConvConfig();
 
-		if (this.cc != null) {
-			if (this.cc.computeAbilityToAnswerConfidence()) {
+		if (thisCc != null) {
+			if (thisCc.computeAbilityToAnswerConfidence()) {
 				result = pQuestion.getAbilityToAnswerConfidence();
 			} else {
-				result = this.cc.defaultAbilityToAnswerConfidence();
+				result = thisCc.defaultAbilityToAnswerConfidence();
 			}
 		}
 
@@ -399,7 +405,7 @@ public class QuestionExecutionHandler extends QuestionHandler {
 		//needToTerminate will be true if the response list processing found words
 		//that can't be handled (like negation etc)
 		if (!needToTerminate) {
-			ModifierHandler mh = new ModifierHandler(this.ac, this.cc, this.allWords);
+			ModifierHandler mh = new ModifierHandler(this.ac, getConvConfig(), this.allWords);
 			ArrayList<CeInstance> newInsts = null;
 
 //			if (isDatabaseQuestion()) {

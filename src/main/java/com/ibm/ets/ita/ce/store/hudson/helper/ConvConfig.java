@@ -141,15 +141,17 @@ public class ConvConfig extends GeneralItem {
 
 	private ArrayList<String> populateUsing(ActionContext pAc, String pPropName) {
 		ArrayList<String> result = null;
-		
+
 		CeInstance relInst = this.ccInst.getSingleInstanceFromPropertyNamed(pAc, pPropName);
-		
+
 		if (relInst != null) {
 			result = relInst.getValueListFromPropertyNamed(PROP_MARKER);
-		} else {
+		}
+
+		if (result == null) {
 			result = new ArrayList<String>();
 		}
-		
+
 		return result;
 	}
 

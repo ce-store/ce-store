@@ -146,7 +146,7 @@ public abstract class GenericHandler {
 	protected static final String ANSCODE_NOMEDIA = "NO_MEDIA";
 
 	protected ActionContext ac = null;
-	protected ConvConfig cc = null;
+	private ConvConfig cc = null;
 	protected boolean debug = false;
 	protected long startTime = -1;
 
@@ -154,27 +154,28 @@ public abstract class GenericHandler {
 		this.ac = pAc;
 		this.debug = pDebug;
 		this.startTime = pStartTime;
-		initialiseConvConfig(pAc);
 	}
 
-	private void initialiseConvConfig(ActionContext pAc) {
+	protected ConvConfig getConvConfig() {
 		if (this.cc == null) {
-			ModelBuilder mb = pAc.getModelBuilder();
+			ModelBuilder mb = this.ac.getModelBuilder();
 
 			if (mb != null) {
-				for (CeInstance ccInst : mb.getAllInstancesForConceptNamed(pAc, CON_CC)) {
+				for (CeInstance ccInst : mb.getAllInstancesForConceptNamed(this.ac, CON_CC)) {
 					if (this.cc == null) {
-						this.cc = ConvConfig.createUsing(pAc, ccInst);
+						this.cc = ConvConfig.createUsing(this.ac, ccInst);
 					} else {
-						reportError("Error: more than one instance of " + CON_CC + " defined: " + ccInst.getInstanceName(), pAc);
+						reportError("Error: more than one instance of " + CON_CC + " defined: " + ccInst.getInstanceName(), this.ac);
 					}
 				}
 			}
 		}
 
 		if (this.cc == null) {
-			reportDebug("No " + CON_CC + " instance found", pAc);
+			reportDebug("No " + CON_CC + " instance found", this.ac);
 		}
+
+		return this.cc;
 	}
 
 	public static Answer handleExceptionAsAnswer(ActionContext pAc, Exception pE, String pErrCode, AnswerReply pReply) {

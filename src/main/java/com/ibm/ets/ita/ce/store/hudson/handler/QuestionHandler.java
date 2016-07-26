@@ -95,15 +95,21 @@ public abstract class QuestionHandler extends GenericHandler {
 
 		//Then classify the processed words
 		for (ProcessedWord thisWord : this.allWords) {
-			thisWord.classify(this.ac, this.cc);
+			thisWord.classify(this.ac, getConvConfig());
 		}
 	}
 
 	private void markQuestionWords() {
-		for (ProcessedWord thisPw : this.allWords) {
-			for (String thisQsw : this.cc.getQuestionStartMarkers()) {
-				if (thisPw.getLcWordText().equals(thisQsw)) {
-					thisPw.markAsQuestionWord();
+		ArrayList<String> qsws = null;
+
+		if (getConvConfig() != null) {
+			qsws = getConvConfig().getQuestionStartMarkers();
+
+			for (ProcessedWord thisPw : this.allWords) {
+				for (String thisQsw : qsws) {
+					if (thisPw.getLcWordText().equals(thisQsw)) {
+						thisPw.markAsQuestionWord();
+					}
 				}
 			}
 		}

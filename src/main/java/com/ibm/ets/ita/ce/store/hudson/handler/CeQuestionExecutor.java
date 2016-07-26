@@ -824,8 +824,12 @@ public class CeQuestionExecutor extends GenericHandler {
 					ArrayList<ChosenWord> cws = chosenWordsPlus(pWord);
 
 					CeInstance srcInst = tgtInst.getSingleInstanceFromPropertyNamed(this.ac, PROP_SOURCE);
-					if (this.cc.isReturningSingleAnswers()) {
-						createNormalSingleAnswer(tgtInst, cws, desc, srcInst, true);
+					if (getConvConfig() != null) {
+						if (getConvConfig().isReturningSingleAnswers()) {
+							createNormalSingleAnswer(tgtInst, cws, desc, srcInst, true);
+						} else {
+							createNormalAnswer(tgtInst.getInstanceName(), cws, desc, srcInst, tgtInst, true);
+						}
 					} else {
 						createNormalAnswer(tgtInst.getInstanceName(), cws, desc, srcInst, tgtInst, true);
 					}

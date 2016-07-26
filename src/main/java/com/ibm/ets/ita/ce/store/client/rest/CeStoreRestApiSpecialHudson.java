@@ -47,7 +47,7 @@ public class CeStoreRestApiSpecialHudson extends CeStoreRestApi {
 			reportUnhandledUrl();
 		}
 
-		return true;
+		return false;
 	}
 
 	private void processThreeElementHudsonRequest() {
@@ -57,14 +57,18 @@ public class CeStoreRestApiSpecialHudson extends CeStoreRestApi {
 		boolean debug = getBooleanParameterNamed(PARM_DEBUG, false);
 		String qt = getTextFromRequest();
 
-		if (isGet()) {
+		if (isPost()) {
 			if (command.equals(REST_HELPER)) {
 				result = processHelperRequest(qt, debug, st);
 			} else if (command.equals(REST_EXECUTOR)) {
 				result = processExecutorRequest(qt, debug, st);
 			} else if (command.equals(REST_ANALYSER)) {
 				result = processAnalyserRequest(qt, debug, st);
-			} else if (command.equals(REST_RESET)) {
+			} else {
+				reportUnhandledUrl();
+			}
+		} else if (isGet()) {
+			if (command.equals(REST_RESET)) {
 				//TODO: /reset should probably be implemented as a POST rather than GET
 				result = processResetRequest(debug, st);
 			} else if (command.equals(REST_STATUS)) {

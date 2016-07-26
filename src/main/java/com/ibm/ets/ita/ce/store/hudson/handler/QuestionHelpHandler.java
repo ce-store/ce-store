@@ -42,8 +42,8 @@ public class QuestionHelpHandler extends QuestionHandler {
 
 		this.interpretations = new ArrayList<Interpretation>();
 
-		if (this.cc != null) {
-			this.maxSuggs = this.cc.getMaxSuggestions();
+		if (getConvConfig() != null) {
+			this.maxSuggs = getConvConfig().getMaxSuggestions();
 		}
 	}
 

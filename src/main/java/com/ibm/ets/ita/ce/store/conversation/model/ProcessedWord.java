@@ -937,11 +937,11 @@ public class ProcessedWord extends GeneralItem {
 		ArrayList<String> cWords = pWcc.getCommonWords(pCc, pAc);
 		ArrayList<String> nWords = pWcc.getNegationWords(pCc, pAc);
 
-		if (cWords.contains(myText)) {
+		if ((cWords != null) && (cWords.contains(myText))) {
 			this.isStandardWord = true;
 		}
 
-		if (nWords.contains(myText)) {
+		if ((nWords != null) && (nWords.contains(myText))) {
 			this.isNegationWord = true;
 		}
 	}

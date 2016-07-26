@@ -158,15 +158,16 @@ public class WordCheckerCache {
 	private static boolean isUninterestingInstance(ActionContext pAc, CeInstance pInst) {
 		return pInst.isConceptNamed(pAc, GenericHandler.CON_UNINTCON);
 	}
-	
-	public synchronized ArrayList<String> getCommonWords(ConvConfig pCc, ActionContext pAc) {
-		if (this.commonWords == null) {
-//			reportDebug("Looking live for common words", pAc);
-			this.commonWords = new ArrayList<String>();
 
-			for (String thisCw : pCc.getCommonWords()) {
-				String cwText = thisCw.trim().toLowerCase();
-				this.commonWords.add(cwText);
+	public synchronized ArrayList<String> getCommonWords(ConvConfig pCc, ActionContext pAc) {
+		if (pCc != null) {
+			if (this.commonWords == null) {
+				this.commonWords = new ArrayList<String>();
+
+				for (String thisCw : pCc.getCommonWords()) {
+					String cwText = thisCw.trim().toLowerCase();
+					this.commonWords.add(cwText);
+				}
 			}
 		}
 
@@ -174,20 +175,21 @@ public class WordCheckerCache {
 	}
 
 	public synchronized ArrayList<String> getNegationWords(ConvConfig pCc, ActionContext pAc) {
-		if (this.negationWords == null) {
-//			reportDebug("Looking live for negation words", pAc);
-			this.negationWords = new ArrayList<String>();
+		if (pCc != null) {
+			if (this.negationWords == null) {
+				this.negationWords = new ArrayList<String>();
 
-			for (String thisNw : pCc.getNegationWords()) {
-				String nwText = thisNw.trim().toLowerCase();
-	
-				this.negationWords.add(nwText);
+				for (String thisNw : pCc.getNegationWords()) {
+					String nwText = thisNw.trim().toLowerCase();
+
+					this.negationWords.add(nwText);
+				}
 			}
 		}
 
 		return this.negationWords;
 	}
-	
+
 	public synchronized ArrayList<CeInstance> getLingThingInstances(ActionContext pAc) {
 		if (this.lingThingInsts == null) {
 //			reportDebug("Creating live lingThing list", pAc);
@@ -203,7 +205,7 @@ public class WordCheckerCache {
 
 		return this.lingThingInsts;
 	}
-	
+
 	public synchronized ArrayList<CeInstance> getLingThingPluralForms(ActionContext pAc, String pTgtText) {
 		if (!this.lingThingPluralFormInsts.containsKey(pTgtText)) {
 //			reportDebug("Creating live lingThing plural form list", pAc);
@@ -220,7 +222,7 @@ public class WordCheckerCache {
 					}
 				}
 			}
-			
+
 			this.lingThingPluralFormInsts.put(pTgtText, matchedInsts);
 
 //			reportDebug("totCount=" + totCount, pAc);
