@@ -1,8 +1,0 @@
-{
-    "group": {
-        "title": "Local sentence sets",
-        "links": [
-            { "url": "./ce/medicine/cmd/med_load.cecmd", "name": "Medicine (local)" }
-        ]
-    }
-}
