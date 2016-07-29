@@ -50,16 +50,16 @@ public abstract class QuestionHandler extends GenericHandler {
 		//This is the original CE processing
 		this.phrase = originalCePhraseProcessing();
 		originalCeWordClassifying(this.phrase);
-		
+
 		extractUnitName();
 	}
-	
+
 	private void extractUnitName() {
 		for (ProcessedWord thisWord : this.allWords) {
 			if (thisWord.isGroundedOnConcept()) {
 				for (CeConcept thisCon : thisWord.listGroundedConcepts()) {
 					CeInstance mmInst = thisCon.retrieveMetaModelInstance(this.ac);
-					
+
 					if (mmInst != null) {
 						if (mmInst.isConceptNamed(this.ac, CON_QUALCON)) {
 							if (this.unitName == null) {

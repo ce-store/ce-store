@@ -159,7 +159,7 @@ function Tester(pJsDebug) {
 		}
 
 		this.totalQuestions = (numIts * this.selectedQuestions.length);
-		
+
 		updateAnswerText(this.answerText);
 
 		this.executeNextQuestion();
@@ -181,14 +181,14 @@ function Tester(pJsDebug) {
 				result = this.selectedQuestions[this.currentPos++];
 			}
 		}
-		
+
 		return result;
 	};
-	
+
 	this.executeNextQuestion = function() {
 		var msDelay = parseInt(getTextFrom(DOM_DE)) + this.nextQuestionDelay;
 		var nextQ = gTester.takeNextQuestion();
-		
+
 		if (nextQ != null) {
 			var addedDelay = nextQ[2];
 			if ((addedDelay != undefined) && (!isNaN(addedDelay))) {
@@ -196,7 +196,7 @@ function Tester(pJsDebug) {
 			} else {
 				this.nextQuestionDelay = 0;
 			}
-			
+
 			setTimeout(function () {
 				var qIdx = gTester.getCurrentPos();
 				var qIt = gTester.getCurrentIteration();
@@ -205,24 +205,23 @@ function Tester(pJsDebug) {
 					gHudson.executeSpecificQuestion(nextQ[1], cbf);
 	
 					gTester.executeNextQuestion();
-				
 			}, msDelay);
 		}
 	};
 
 	this.reportResults = function() {
 		var resultText = '';
-		
+
 		resultText += this.testCount + ' of ' + this.totalQuestions + ' tests completed';
 
 		if (this.testTime !== 0) {
 			var avgText = ' (' + Math.round(parseInt(this.testTime) / parseInt(this.testCount)) + ' ms per test)';
-			
+
 			resultText += ' in ' + parseInt(this.testTime) / 1000 + ' seconds ' + avgText + '. ';
 		} else {
 			resultText += '. ';
 		}
-		
+
 		if (this.testErrors === 0) {
 			if (this.testUnknowns === 0) {
 				resultText += '<font color="green">No issues detected</font>';

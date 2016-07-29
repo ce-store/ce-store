@@ -386,48 +386,43 @@ public class CeStoreRestApiSentence extends CeStoreRestApi {
 			this.wc.markAsKeepingSentences();
 		}
 
-		if ((actionParm != null) && (!actionParm.isEmpty())) {
-			if (actionParm.equals(ACTION_SAVE)) {
-				//Create a new source
-				CeSource newSrc = CeSource.createNewFormSource(this.wc, "add sentences", null);
+		if ((actionParm == null) || (actionParm.isEmpty()) || (actionParm.equals(ACTION_SAVE))) {
+			//Create a new source
+			CeSource newSrc = CeSource.createNewFormSource(this.wc, "add sentences", null);
 
-				//Save sentences
-				StoreActions sa = StoreActions.createUsingDefaultConfig(this.wc);
+			//Save sentences
+			StoreActions sa = StoreActions.createUsingDefaultConfig(this.wc);
 
-				boolean runRules = this.getBooleanUrlParameterValueNamed(PARM_RUNRULES, this.wc.getCeConfig().getAutoRunRules());
-				this.wc.markAsAutoExecuteRules(runRules);
+			boolean runRules = this.getBooleanUrlParameterValueNamed(PARM_RUNRULES, this.wc.getCeConfig().getAutoRunRules());
+			this.wc.markAsAutoExecuteRules(runRules);
 
-				result = sa.saveCeText(ceText, newSrc);
-			} else if (actionParm.equals(ACTION_VALIDATE)) {
-				//Validate sentences
-				StoreActions sa = StoreActions.createUsingDefaultConfig(this.wc);
-				result = sa.validateCeSentence(ceText);
-			} else if (actionParm.equals(ACTION_PARSE)) {
-				//Parse sentences
+			result = sa.saveCeText(ceText, newSrc);
+		} else if (actionParm.equals(ACTION_VALIDATE)) {
+			//Validate sentences
+			StoreActions sa = StoreActions.createUsingDefaultConfig(this.wc);
+			result = sa.validateCeSentence(ceText);
+		} else if (actionParm.equals(ACTION_PARSE)) {
+			//Parse sentences
 
-				//TODO: Implement this
+			//TODO: Implement this
 //				StoreActions sa = StoreActions.createUsingDefaultConfig(this.wc);
 //				HashSet<String> instNames = sa.ParseCeSentence(ceText);
 
-				reportNotYetImplementedError();
-				result = ContainerSentenceLoadResult.createWithZeroValues("actionAddSentences(1)");
-			} else if (actionParm.equals(ACTION_EXEC_Q)) {
-				//Execute query sentence
-				boolean suppressCE = getBooleanUrlParameterValueNamed(PARM_SUPPCE, false);
+			reportNotYetImplementedError();
+			result = ContainerSentenceLoadResult.createWithZeroValues("actionAddSentences(1)");
+		} else if (actionParm.equals(ACTION_EXEC_Q)) {
+			//Execute query sentence
+			boolean suppressCE = getBooleanUrlParameterValueNamed(PARM_SUPPCE, false);
 
-				StoreActions sa = StoreActions.createUsingDefaultConfig(this.wc);
-				result = sa.executeUserSpecifiedCeQuery(ceText, suppressCE, startTs, endTs);
-			} else if (actionParm.equals(ACTION_EXEC_R)) {
-				//Execute rule sentence
-				StoreActions sa = StoreActions.createUsingDefaultConfig(this.wc);
-				result = sa.executeUserSpecifiedCeRule(ceText, startTs, endTs);
-			} else {
-				reportGeneralError("Unknown action '" + actionParm + "' when saving CE sentences");
-				result = ContainerSentenceLoadResult.createWithZeroValues("actionAddSentences(2)");
-			}
+			StoreActions sa = StoreActions.createUsingDefaultConfig(this.wc);
+			result = sa.executeUserSpecifiedCeQuery(ceText, suppressCE, startTs, endTs);
+		} else if (actionParm.equals(ACTION_EXEC_R)) {
+			//Execute rule sentence
+			StoreActions sa = StoreActions.createUsingDefaultConfig(this.wc);
+			result = sa.executeUserSpecifiedCeRule(ceText, startTs, endTs);
 		} else {
-			reportGeneralError("No 'action' parameter specified.  Unable to determine how sentences should be saved");
-			result = ContainerSentenceLoadResult.createWithZeroValues("actionAddSentences(3)");
+			reportGeneralError("Unknown action '" + actionParm + "' when saving CE sentences");
+			result = ContainerSentenceLoadResult.createWithZeroValues("actionAddSentences(2)");
 		}
 
 		if (returnCe.equals("true")) {

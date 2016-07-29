@@ -4,13 +4,10 @@
 -- --------------------------------------------------------------------------
 
 -- Load the models
-perform load sentences from url './hudson/ce/core/model/api_model.ce'.
 perform load sentences from url './hudson/ce/core/model/conversation_model.ce'.
-perform load sentences from url './hudson/ce/core/model/template_model.ce'.
 perform load sentences from url './hudson/ce/core/model/glossary_model.ce'.
-perform load sentences from url './hudson/ce/core/model/database_model.ce'.
 perform load sentences from url './hudson/ce/core/model/misc_model.ce'.
-perform load sentences from url './hudson/ce/core/model/agents_model.ce'.
 
 -- Load the facts
-perform load sentences from url './hudson/ce/core/facts/database_functions.ce'.
+perform load sentences from url './hudson/ce/core/facts/default_config.ce'.
+perform load sentences from url './hudson/ce/core/facts/modifiers.ce'.

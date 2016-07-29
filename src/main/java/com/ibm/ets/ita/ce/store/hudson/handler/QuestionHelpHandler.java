@@ -35,7 +35,7 @@ public class QuestionHelpHandler extends QuestionHandler {
 	
 	protected ArrayList<Suggestion> suggestions = null;
 	protected ArrayList<Interpretation> interpretations = null;
-	private int maxSuggs = -1;
+	private int maxSuggs = 10;	//TODO: Abstract this
 
 	public QuestionHelpHandler(WebActionContext pWc, boolean pDebug, String pQt, long pStartTime) {
 		super(pWc, pDebug, Question.create(pQt), pStartTime);
@@ -108,7 +108,7 @@ public class QuestionHelpHandler extends QuestionHandler {
 		Collections.sort(theseSuggs);
 
 		this.suggestions = theseSuggs;
-		
+
 		result = createResult();
 
 		reportDebug("handleQuestion=" + new Long(System.currentTimeMillis() - st).toString(), this.ac);
@@ -128,7 +128,7 @@ public class QuestionHelpHandler extends QuestionHandler {
 			}
 		}
 	}
-	
+
 	private String getPartialText(int pStartIndex) {
 		String result = null;
 		int wordCount = this.allWords.size() - 1;
@@ -142,7 +142,7 @@ public class QuestionHelpHandler extends QuestionHandler {
 				result += " " + thisWord.getLcWordText();
 			}
 		}
-		
+
 		return result;
 	}
 
@@ -154,15 +154,18 @@ public class QuestionHelpHandler extends QuestionHandler {
 
 	private void suggestInstanceNames(String pFragment, ArrayList<Suggestion> pSuggs) {
 		ArrayList<CeInstance> instList = this.ac.getIndexedEntityAccessor().calculateInstancesWithNameStarting(this.ac, pFragment);
-		ArrayList<CeInstance> trimmedList = new ArrayList<CeInstance>();
 
-		for (CeInstance thisInst : instList) {
-			if (!thisInst.isOnlyConceptNamed(this.ac, GenericHandler.CON_CONFCON)) {
-				trimmedList.add(thisInst);
+		if (!instList.isEmpty()) {
+			ArrayList<CeInstance> trimmedList = new ArrayList<CeInstance>();
+	
+			for (CeInstance thisInst : instList) {
+				if (!thisInst.isOnlyConceptNamed(this.ac, GenericHandler.CON_CONFCON)) {
+					trimmedList.add(thisInst);
+				}
 			}
-		}
 
-		suggestInstanceNamesFromList(pFragment, trimmedList, pSuggs);
+			suggestInstanceNamesFromList(pFragment, trimmedList, pSuggs);
+		}
 	}
 
 	private void suggestInstanceNamesFromList(String pFragment, ArrayList<CeInstance> pTgtInsts, ArrayList<Suggestion> pSuggestions) {
@@ -293,13 +296,13 @@ public class QuestionHelpHandler extends QuestionHandler {
 	protected CeStoreJsonObject createResult() {
 		long st = System.currentTimeMillis();
 		CeStoreJsonObject result = null;
-		
+
 		Collections.sort(this.suggestions);
-		
+
 		if (this.debug) {
 			this.interpretations = InterpretationSummary.generateInterpretations(this.allWords);
 		}
-		
+
 		result = createJsonResponse();
 		reportDebug("createResult=" + new Long(System.currentTimeMillis() - st).toString(), this.ac);
 

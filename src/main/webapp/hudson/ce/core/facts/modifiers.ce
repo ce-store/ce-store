@@ -1,0 +1,48 @@
+-- --------------------------------------------------------------------------
+-- (C) Copyright IBM Corporation  2011, 2016
+-- All Rights Reserved
+-- --------------------------------------------------------------------------
+
+-- General modifiers
+there is a modifier named 'where' that
+  corresponds to the general function 'general:locate' and
+  uses by default the entity concept 'spatial thing'.
+
+there is a modifier named 'how many' and
+  corresponds to the general function 'general:count'.
+
+there is a modifier named 'list' and
+  corresponds to the general function 'general:list'.
+
+there is a modifier named 'show' and
+  corresponds to the general function 'general:show'.
+
+there is a modifier named 'play' and
+  corresponds to the general function 'general:show'.
+
+there is a modifier named 'expand' that
+  corresponds to the general function 'general:expand'.
+
+there is a modifier named 'reset' that
+  corresponds to the general function 'general:reset'.
+
+there is a modifier named 'clear cache' that
+  corresponds to the general function 'general:clearcache'.
+
+there is a CE modifier named 'CE:' that
+  corresponds to the general function 'ce:save'.
+
+there is a modifier named 'stats' that
+  corresponds to the general function 'general:stats'.
+
+there is a modifier named 'what'.
+
+there is a modifier named 'who' that
+  uses by default the entity concept person.
+
+there is a modifier named 'when' and
+  uses by default the entity concept 'temporal thing'.
+
+there is a modifier named 'has'.
+there is a modifier named 'is'.
+there is a modifier named 'are'.
