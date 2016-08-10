@@ -37,7 +37,7 @@ function EngineeringPanel() {
 
 		loadJsLibraries();
 	};
-	
+
 	this.startup = function() {
 		ce.msg.debug('EngineeringPanel', 'initialise');
 
@@ -211,10 +211,11 @@ function EngineeringPanel() {
 
 	this.initialSentenceSets = function() {
 		return {
-			main: { 
+			main: {
 				title: 'Add CE from URL',
-				links: [ 
+				links: [
 					{ url: './ce/medicine/cmd/med_load.cecmd', name: 'Medicine' },
+					{ url: './hudson/ce/core/cmd/load_core.cecmd', name: 'Hudson' },
 					{ url: '', name: 'Specify URL ...' }
 				]
 			}
@@ -263,7 +264,7 @@ function EngineeringPanel() {
 		gEp.handler.sources.listAllSources(null, userParms);
 		gEp.refreshGeneralPaneIfNeeded();
 	};
-	
+
 	function initialiseActionsList() {
 		var actList = {};
 
@@ -274,13 +275,13 @@ function EngineeringPanel() {
 		initialiseModelActions(actList.model);
 
 		actList.source = [];
-		initialiseSourceActions(actList.source);		
+		initialiseSourceActions(actList.source);
 
 		actList.instance = [];
-		initialiseInstanceActions(actList.instance);		
+		initialiseInstanceActions(actList.instance);
 
 		actList.concept = [];
-		initialiseConceptActions(actList.concept);		
+		initialiseConceptActions(actList.concept);
 
 		return actList;
 	}
@@ -333,7 +334,7 @@ function EngineeringPanel() {
 		newAction.jsParms = [ '{item}._id' ];
 		pActList.push(newAction);
 	}
-	
+
 	function initialiseModelActions(pActList) {
 		//Nothing to do here
 	}
@@ -347,7 +348,7 @@ function EngineeringPanel() {
 		newAction.linkText = '[d]';
 		newAction.hoverText = 'Delete this source';
 		newAction.jsMethodName = 'gEp.handler.sources.deleteSource';
-		newAction.jsParms = [ '{item}._id' ];		
+		newAction.jsParms = [ '{item}._id' ];
 		pActList.push(newAction);
 
 		//Source: Delete (in details mode)
@@ -356,7 +357,7 @@ function EngineeringPanel() {
 		newAction.linkText = 'Delete this source';
 		newAction.hoverText = 'Delete this source';
 		newAction.jsMethodName = 'gEp.handler.sources.deleteSource';
-		newAction.jsParms = [ '{item}._id' ];		
+		newAction.jsParms = [ '{item}._id' ];
 		pActList.push(newAction);
 
 		//Source: Get CE text from
@@ -365,10 +366,10 @@ function EngineeringPanel() {
 		newAction.linkText = 'Get CE text from';
 		newAction.hoverText = 'Get all of the CE sentences defined in this source';
 		newAction.jsMethodName = 'gEp.handler.sources.getSentenceTextFor';
-		newAction.jsParms = [ '{item}._id' ];		
+		newAction.jsParms = [ '{item}._id' ];
 		pActList.push(newAction);
 	}
-	
+
 	function initialiseInstanceActions(pActList) {
 		var newAction = null;
 
@@ -399,7 +400,7 @@ function EngineeringPanel() {
 		if (!ce.utils.isNullOrEmpty(pConList)) {
 			for (var key in pConList) {
 				var thisCon = pConList[key];
-				
+
 				this.allConcepts[thisCon._id] = thisCon;
 			}
 		}
@@ -414,7 +415,7 @@ function EngineeringPanel() {
 			}
 		}
 	};
-	
+
 	this.showCeInPopupWindow = function(pTitle, pCeText) {
 		var myWindow = window.open('', pTitle, 'width=800, height=1000');
 		myWindow.document.write(pCeText);	};
@@ -462,7 +463,7 @@ function EngineeringPanel() {
 			gEp.ui.pane.general.lastRequest();
 		}
 	};
-	
+
 	this.hasListItemActionsFor = function(pType) {
 		return hasActionsFor(actionsList, pType, gEp.ui.MODE_LISTITEM);
 	};
@@ -477,7 +478,7 @@ function EngineeringPanel() {
 
 	function hasActionsFor(pActions, pType, pMode) {
 		var result = false;
-		
+
 		if (pMode === null) {
 			result = !gCe.utils.isNullOrEmpty(pActions[pType]);
 		} else {
@@ -486,10 +487,10 @@ function EngineeringPanel() {
 			if (!gCe.utils.isNullOrEmpty(typeActions)) {
 				for (var i = 0; i < typeActions.length; i++) {
 					var thisAction = typeActions[i];
-					
+
 					for (var j = 0; j < thisAction.filters.length; j++) {
 						var thisFilter = thisAction.filters[j];
-						
+
 						if (thisFilter === pMode) {
 							result = true;
 						}
@@ -497,14 +498,14 @@ function EngineeringPanel() {
 				}
 			}
 		}
-		
+
 		return result;
 	}
 
 	this.getListItemActionsListFor = function(pType, pInst) {
 		return getActionsListFor(actionsList, pType, pInst, gEp.ui.MODE_LISTITEM);
 	};
-	
+
 	this.getListFooterActionsListFor = function(pType) {
 		return getActionsListFor(actionsList, pType, null, gEp.ui.MODE_LISTFOOTER);
 	};
@@ -516,7 +517,7 @@ function EngineeringPanel() {
 	function getActionsListFor(pActions, pType, pInst, pMode) {
 		var result = [];
 		var typeActions = pActions[pType];
-		
+
 		if (!gCe.utils.isNullOrEmpty(typeActions)) {
 			for (var i = 0; i < typeActions.length; i++) {
 				var thisAction = typeActions[i];
@@ -529,14 +530,14 @@ function EngineeringPanel() {
 						useThisAction = true;
 					}
 				}
-				
+
 				if (useThisAction) {
 					var linkText = gEp.ui.links.createActionLinkUsing(thisAction, pInst);
 					result.push(linkText);
 				}
 			}
 		}
-		
+
 		return result;
 	};
 
