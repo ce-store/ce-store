@@ -26,15 +26,63 @@ function PaneAddCe() {
 	function initialHtml() {
 		var html = '';
 
-		html += '<b>Add CE sentence:</b>&nbsp;&nbsp;&nbsp;<span id="ceText_Status"></span><br>';
+		html += '<h3>Add CE sentence:</h3>&nbsp;&nbsp;&nbsp;<span id="ceText_Status"></span><br>';
 		html += '<textarea id="ceText" name="ceText" data-dojo-type="dijit.form.SimpleTextarea" rows="12" cols="25" onKeyUp="gEp.handler.sentences.autoValidateCe(\'ceText\');">';
 		html += 'there is a person named \'Fred Smith\'.';
 		html += '</textarea>';
 		html += '<br>';
 		html += gEp.ui.links.addSentencesFromForm('generalCeForm') + '<br>';
+		
+		html += htmlForSentenceSets();
+        html += htmlForSentenceUpload();
 
 		return html;
 	}
+	
+	function htmlForSentenceSets() {
+		var html = '';
+
+		for (var key in gEp.sentenceSets) {
+			var thisSet = gEp.sentenceSets[key];
+			var linkList = [];
+
+			html += '<h3>' + thisSet.title + ':' + '</h3>';
+
+			for (var lKey in thisSet.links) {
+				var thisSenSet = thisSet.links[lKey];
+				var jsText = null;
+
+				if (gCe.utils.isNullOrEmpty(thisSenSet.url)) {
+					jsText = gEp.ui.links.jsTextFor('gEp.dlg.sentence.processCommandsAbsolute');
+				} else {
+					jsText = gEp.ui.links.jsTextFor('gEp.dlg.sentence.loadNewSentenceSet', [ thisSenSet.url ]);
+				}
+
+				linkList.push(gEp.ui.links.hyperlinkFor(jsText, thisSenSet.name));
+			}
+
+			html += gEp.ui.htmlUnorderedListFor(linkList);
+		}
+
+		return html;
+	}
+
+	// Calls handler-sentences.js/uploadSentencesFromForm.
+	// Does not use dojo widgets, believe that would require switching to
+	// dojox.form.Uploader, but haven't yet worked out how to plug that into the
+	// existing ce js upload code.
+	function htmlForSentenceUpload() {
+		var html = '';
+        html += '<h3>Upload CE from file:</h3>';
+        html += '<form id="generalCeUploadForm" method="post" enctype="multipart/form-data" action="/">';
+        html += '  <div style="display:flex; flex-wrap:wrap;">';
+        html += '    <input style="border:1px solid #DDDDDD;" id="upload-form-input-id" name="file" type="file" />';
+		html += '    <button type="button" onclick="' + 'gEp.handler.sentences.uploadSentencesFromForm(this.parentNode.parentNode)' + '">Upload</button>';
+        html += '  </div>';
+        html += '</form>';
+
+        return html;
+    }
 
 	this.updateWith = function(pHtml, pShow, pTitle) {
 		if (pShow) {
