@@ -19,6 +19,18 @@ public class CeStoreJsonArray extends CeStoreJsonProcessor {
 		this.innerList.add(pValue);
 	}
 
+	public void add(Object pValue) {
+		this.innerList.add(pValue);
+	}
+
+	public void add(boolean pValue) {
+		this.innerList.add(pValue);
+	}
+
+	public void add(int pValue) {
+		this.innerList.add(pValue);
+	}
+
 	public void add(CeStoreJsonObject pValue) {
 		this.innerList.add(pValue);
 	}
@@ -30,9 +42,17 @@ public class CeStoreJsonArray extends CeStoreJsonProcessor {
 	public void addAll(ArrayList<String> pValues) {
 		this.innerList.addAll(pValues);
 	}
-	
+
 	public Object get(int index) {
 		return this.innerList.get(index);
+	}
+
+	public int length() {
+		return this.innerList.size();
+	}
+
+	public ArrayList<Object> items() {
+		return this.innerList;
 	}
 
 	public boolean isEmpty() {

@@ -13,8 +13,10 @@ import com.ibm.ets.ita.ce.store.client.web.ServletStateManager;
 import com.ibm.ets.ita.ce.store.client.web.WebActionContext;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
 import com.ibm.ets.ita.ce.store.hudson.handler.QuestionAnalysisHandler;
+import com.ibm.ets.ita.ce.store.hudson.handler.QuestionAnswererHandler;
 import com.ibm.ets.ita.ce.store.hudson.handler.QuestionExecutionHandler;
 import com.ibm.ets.ita.ce.store.hudson.handler.QuestionHelpHandler;
+import com.ibm.ets.ita.ce.store.hudson.handler.QuestionInterpreterHandler;
 import com.ibm.ets.ita.ce.store.hudson.handler.QuestionManagementHandler;
 
 public class CeStoreRestApiSpecialHudson extends CeStoreRestApi {
@@ -23,6 +25,8 @@ public class CeStoreRestApiSpecialHudson extends CeStoreRestApi {
 	private static final String REST_HELPER = "helper";
 	private static final String REST_EXECUTOR = "executor";
 	private static final String REST_ANALYSER = "analyser";
+	private static final String REST_INTERPRETER = "interpreter";
+	private static final String REST_ANSWERER = "answerer";
 	private static final String REST_RESET = "reset";
 	private static final String REST_STATUS = "status";
 
@@ -37,6 +41,8 @@ public class CeStoreRestApiSpecialHudson extends CeStoreRestApi {
 	 * 		/special/hudson/helper
 	 * 		/special/hudson/executor
 	 * 		/special/hudson/analyser
+	 * 		/special/hudson/interpreter
+	 * 		/special/hudson/answerer
 	 * 		/special/hudson/reset
 	 * 		/special/hudson/status
 	 */
@@ -56,6 +62,7 @@ public class CeStoreRestApiSpecialHudson extends CeStoreRestApi {
 		String command = this.restParts.get(2);
 		boolean debug = getBooleanParameterNamed(PARM_DEBUG, false);
 		String qt = getTextFromRequest();
+		boolean plainText = false;
 
 		if (isPost()) {
 			if (command.equals(REST_HELPER)) {
@@ -64,6 +71,11 @@ public class CeStoreRestApiSpecialHudson extends CeStoreRestApi {
 				result = processExecutorRequest(qt, debug, st);
 			} else if (command.equals(REST_ANALYSER)) {
 				result = processAnalyserRequest(qt, debug, st);
+			} else if (command.equals(REST_INTERPRETER)) {
+				result = processInterpreterRequest(qt, debug, st);
+			} else if (command.equals(REST_ANSWERER)) {
+				result = processAnswererRequest(qt, debug, st);
+				plainText = true;
 			} else {
 				reportUnhandledUrl();
 			}
@@ -81,7 +93,12 @@ public class CeStoreRestApiSpecialHudson extends CeStoreRestApi {
 		}
 
 		if (result != null) {
-			getWebActionResponse().setPayloadTo(result);
+			if (plainText) {
+				getWebActionResponse().setIsPlainTextResponse(true);
+				getWebActionResponse().setPlainTextPayload(this.wc, (String)result.get(this.wc, "answer"));
+			} else {
+				getWebActionResponse().setPayloadTo(result);
+			}
 		}
 	}
 
@@ -109,6 +126,24 @@ public class CeStoreRestApiSpecialHudson extends CeStoreRestApi {
 		CeStoreJsonObject result = new CeStoreJsonObject();
 
 		QuestionAnalysisHandler qh = new QuestionAnalysisHandler(this.wc, pDebug, pQuestionText, pStartTime);
+		result = qh.handleQuestion();
+
+		return result;
+	}
+
+	private CeStoreJsonObject processInterpreterRequest(String pQuestionText, boolean pDebug, long pStartTime) {
+		CeStoreJsonObject result = new CeStoreJsonObject();
+
+		QuestionInterpreterHandler qh = new QuestionInterpreterHandler(this.wc, pDebug, pQuestionText, pStartTime);
+		result = qh.handleQuestion();
+
+		return result;
+	}
+
+	private CeStoreJsonObject processAnswererRequest(String pQuestionText, boolean pDebug, long pStartTime) {
+		CeStoreJsonObject result = new CeStoreJsonObject();
+
+		QuestionAnswererHandler qh = new QuestionAnswererHandler(this.wc, pDebug, pQuestionText, pStartTime);
 		result = qh.handleQuestion();
 
 		return result;

@@ -33,7 +33,6 @@ public class ChosenWord {
 	private int type = -1;
 	private CeInstance primaryInstance = null;
 	private CeInstance secondaryInstance = null;
-//	private Constraint dbConstraint = null;
 
 	private ChosenWord(ProcessedWord pCoreWord, int pType) {
 		this.coreWord = pCoreWord;
@@ -42,7 +41,7 @@ public class ChosenWord {
 
 	public static ChosenWord createAsStartModifier(ProcessedWord pWord, CeInstance pInst) {
 		ChosenWord cw = new ChosenWord(pWord, TYPE_MOD_START);
-		
+
 		cw.primaryInstance = pInst;
 
 		return cw;
@@ -50,7 +49,7 @@ public class ChosenWord {
 
 	public static ChosenWord createAsEndModifier(ProcessedWord pWord, CeInstance pInst) {
 		ChosenWord cw = new ChosenWord(pWord, TYPE_MOD_END);
-		
+
 		cw.primaryInstance = pInst;
 
 		return cw;
@@ -58,7 +57,7 @@ public class ChosenWord {
 
 	public static ChosenWord createAsOrderer(ProcessedWord pWord, CeInstance pInst) {
 		ChosenWord cw = new ChosenWord(pWord, TYPE_ORD);
-		
+
 		cw.primaryInstance = pInst;
 
 		return cw;
@@ -66,7 +65,7 @@ public class ChosenWord {
 
 	public static ChosenWord createAsGrouper(ProcessedWord pWord, CeInstance pInst) {
 		ChosenWord cw = new ChosenWord(pWord, TYPE_GRP);
-		
+
 		cw.primaryInstance = pInst;
 
 		return cw;
@@ -74,7 +73,7 @@ public class ChosenWord {
 
 	public static ChosenWord createAsDatabaseConcept(ProcessedWord pWord, CeInstance pPriInst, CeInstance pSecInst) {
 		ChosenWord cw = new ChosenWord(pWord, TYPE_DBCONC);
-		
+
 		cw.primaryInstance = pPriInst;
 		cw.secondaryInstance = pSecInst;
 
@@ -83,7 +82,7 @@ public class ChosenWord {
 
 	public static ChosenWord createAsDatabaseTable(ProcessedWord pWord, CeInstance pPriInst, CeInstance pSecInst) {
 		ChosenWord cw = new ChosenWord(pWord, TYPE_DBTAB);
-		
+
 		cw.primaryInstance = pPriInst;
 		cw.secondaryInstance = pSecInst;
 
@@ -92,18 +91,16 @@ public class ChosenWord {
 
 	public static ChosenWord createAsDatabaseColumn(ProcessedWord pWord, CeInstance pInst) {
 		ChosenWord cw = new ChosenWord(pWord, TYPE_DBCOL);
-		
+
 		cw.primaryInstance = pInst;
 
 		return cw;
 	}
-	
+
 	public static ChosenWord createAsDatabaseConstraint(ProcessedWord pWord, CeInstance pInst) {
-//	public static ChosenWord createAsDatabaseConstraint(ProcessedWord pWord, CeInstance pInst, Constraint pConstraint) {
 		ChosenWord cw = new ChosenWord(pWord, TYPE_DBCONS);
 
 		cw.primaryInstance = pInst;
-//		cw.dbConstraint = pConstraint;
 
 		return cw;
 	}
@@ -118,9 +115,9 @@ public class ChosenWord {
 
 	public static ChosenWord createAsCeConcept(ActionContext pAc, ProcessedWord pWord, CeConcept pCon) {
 		ChosenWord cw = null;
-		
+
 		CeInstance mmInst = pCon.retrieveMetaModelInstance(pAc);
-		
+
 		if (mmInst != null) {
 			cw = new ChosenWord(pWord, TYPE_CECON);
 			cw.primaryInstance = mmInst;
@@ -128,7 +125,7 @@ public class ChosenWord {
 
 		return cw;
 	}
-	
+
 	public String getConceptName() {
 		return this.primaryInstance.getInstanceName();
 	}
@@ -136,9 +133,9 @@ public class ChosenWord {
 	public String getConceptPluralName(ActionContext pAc) {
 		String result = null;
 		String conName = this.primaryInstance.getInstanceName();
-		
+
 		CeConcept tgtCon = pAc.getModelBuilder().getConceptNamed(pAc, conName);
-		
+
 		if (tgtCon != null) {
 			result = tgtCon.pluralFormName(pAc);
 		} else {
@@ -150,9 +147,9 @@ public class ChosenWord {
 
 	public static ChosenWord createAsCeProperty(ActionContext pAc, ProcessedWord pWord, CeProperty pProp) {
 		ChosenWord cw = null;
-		
+
 		CeInstance mmInst = pProp.getMetaModelInstance(pAc);
-		
+
 		if (mmInst != null) {
 			cw = new ChosenWord(pWord, TYPE_CEPROP);
 			cw.primaryInstance = mmInst;
@@ -164,35 +161,35 @@ public class ChosenWord {
 	public int originalWordPos() {
 		return this.coreWord.getWordPos();
 	}
-	
+
 	public CeInstance getSecondaryInstance() {
 		return this.secondaryInstance;
 	}
-	
+
 	public boolean hasPropertyQualifier() {
 		boolean result = false;
-		
+
 		if (this.secondaryInstance != null) {
 			result = !this.secondaryInstance.getSingleValueFromPropertyNamed(GenericHandler.PROP_PROPQUAL).isEmpty();
 		}
-		
+
 		return result;
 	}
-	
+
 	public String getPropertyQualifier() {
 		String result = null;
-		
+
 		if (this.secondaryInstance != null) {
 			result = this.secondaryInstance.getSingleValueFromPropertyNamed(GenericHandler.PROP_PROPQUAL);
 		}
-		
+
 		return result;
 	}
 
 	public boolean isStartModifier() {
 		return this.type == TYPE_MOD_START;
 	}
-	
+
 	public boolean isEndModifier() {
 		return this.type == TYPE_MOD_END;
 	}
@@ -209,22 +206,6 @@ public class ChosenWord {
 		return this.type == TYPE_ORD;
 	}
 
-//	public boolean isDatabaseConcept() {
-//		return this.type == TYPE_DBCONC;
-//	}
-//
-//	public boolean isDatabaseTable() {
-//		return this.type == TYPE_DBTAB;
-//	}
-//
-//	public boolean isDatabaseColumn() {
-//		return this.type == TYPE_DBCOL;
-//	}
-//
-//	public boolean isDatabaseConstraint() {
-//		return this.type == TYPE_DBCONS;
-//	}
-//	
 	public boolean isCeInstance() {
 		return this.type == TYPE_CEINST;
 	}
@@ -243,7 +224,7 @@ public class ChosenWord {
 		if (isNamedConcept()) {
 			if (this.secondaryInstance != null) {
 				String conName = this.secondaryInstance.getInstanceName();
-				
+
 				CeConcept tgtCon = pAc.getModelBuilder().getConceptNamed(pAc, conName);
 
 				if (tgtCon != null) {
@@ -266,25 +247,25 @@ public class ChosenWord {
 
 		return result;
 	}
-	
+
 	public String interpretationPropertyTextFor(ActionContext pAc, CeConcept pCon, String pLastPropName, boolean pPluralise) {
 		String result = "";
-		
+
 		if (pCon == null) {
 			result = interpretationText(pAc, pPluralise);
 		} else {
 			CeConcept thisCon = getConcept(pAc);
-			
+
 			for (CeProperty possProp : pCon.calculateAllDirectProperties(false)) {
 				if (possProp.isObjectProperty()) {
 					if (!possProp.getPropertyName().equals(pLastPropName)) {
 						CeConcept rangeCon = possProp.getRangeConcept();
-						
+
 						if (!rangeCon.isThing()) {
 							if (rangeCon.equalsOrHasParent(thisCon)) {
 								if (pPluralise) {
 									String pf = possProp.pluralFormName(pAc);
-									
+
 									if (!pf.isEmpty()) {
 										result += pf;
 									} else {
@@ -319,7 +300,7 @@ public class ChosenWord {
 
 		if (this.secondaryInstance != null) {
 			CeInstance optUses = this.secondaryInstance.getSingleInstanceFromPropertyNamed(pAc, GenericHandler.PROP_OPTUSES);
-			
+
 			if (optUses != null) {
 				propName = optUses.getSingleValueFromPropertyNamed(GenericHandler.PROP_PROPNAME);
 			}
@@ -330,7 +311,7 @@ public class ChosenWord {
 				result += this.primaryInstance.getFirstInstanceIdentifier(pAc);
 			} else {
 				String tgtVal = this.primaryInstance.getSingleValueFromPropertyNamed(propName);
-				
+
 				if (tgtVal.isEmpty()) {
 					result += this.primaryInstance.getFirstInstanceIdentifier(pAc);
 				} else {
@@ -349,7 +330,7 @@ public class ChosenWord {
 			String conName = this.secondaryInstance.getInstanceName();
 
 			result = pAc.getModelBuilder().getConceptNamed(pAc, conName);
-		}			
+		}
 
 		return result;
 	}
@@ -381,11 +362,11 @@ public class ChosenWord {
 
 	public String cePropertyText() {
 		String result = "";
-		
+
 		if (this.primaryInstance != null) {
 			result = this.primaryInstance.getSingleValueFromPropertyNamed(GenericHandler.PROP_PROPNAME);
 		}
-		
+
 		return result;
 	}
 
@@ -413,16 +394,11 @@ public class ChosenWord {
 	public String toString() {
 		String result = null;
 		String firstName = null;
-//		String secondName = null;
 		String cwText = null;
 
 		if (this.primaryInstance != null) {
 			firstName = this.primaryInstance.getInstanceName();
 		}
-
-//		if (this.secondaryInstance != null) {
-//			secondName = this.secondaryInstance.getInstanceName();
-//		}
 
 		if (this.coreWord != null) {
 			cwText = this.coreWord.getWordText();
@@ -434,14 +410,6 @@ public class ChosenWord {
 			result = "(Grouper) " + firstName + " [" + cwText + "]";
 		} else if (isOrderer()) {
 			result = "(Orderer) " + firstName + " [" + cwText + "]";
-//		} else if (isDatabaseConcept()) {
-//			result = "(DbConcept) " + firstName + ", " + secondName + " [" + cwText + "]";
-//		} else if (isDatabaseTable()) {
-//			result = "(DbTable) " + firstName + ", " + secondName + " [" + cwText + "]";
-//		} else if (isDatabaseColumn()) {
-//			result = "(DbColumn) " + firstName + " [" + cwText + "]";
-//		} else if (isDatabaseConstraint()) {
-//			result = "(DbConstraint) " + firstName + ", " + this.dbConstraint.toString() + " [" + cwText + "]";
 		} else if (isCeInstance()) {
 			result = "(CeInstance) " + firstName + " [" + cwText + "]";
 		} else if (isCeConcept()) {
@@ -451,6 +419,12 @@ public class ChosenWord {
 		} else {
 			result = "Unknown type of ChosenWord: " + this.type;
 		}
+
+		return result;
+	}
+
+	public CeProperty getCeProperty(ActionContext pAc) {
+		CeProperty result = pAc.getModelBuilder().getPropertyFullyNamed(this.primaryInstance.getInstanceName());
 
 		return result;
 	}

@@ -55,7 +55,13 @@ conceptualise the diagnostic test D
 
 conceptualise a ~ medical procedure ~ M.
 
-conceptualise a ~ hospital ~ H that is a place.
+conceptualise a ~ media ~ M that
+  has the value U as ~ url ~ and
+  has the value C as ~ credit ~.
+
+conceptualise a ~ hospital ~ H that
+  is a place and
+  has the media P as ~ picture ~.
 
 conceptualise a ~ event ~ E that
   is a temporal thing and

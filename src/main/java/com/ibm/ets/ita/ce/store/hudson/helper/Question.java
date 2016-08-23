@@ -12,16 +12,16 @@ public class Question {
 	private String interpretationText = null;
 	private int interpretationConfidence = -1;
 	private int abilityToAnswerConfidence = -1;
-	
+
 	private Question(String pQt) {
 		//Private to enforce use of creator methods
 		this.questionText = pQt;
 	}
-	
+
 	public static Question create(String pQt) {
 		return new Question(pQt);
 	}
-	
+
 	public String getQuestionText() {
 		return this.questionText;
 	}
@@ -48,6 +48,11 @@ public class Question {
 
 	public void setInterpretationConfidence(int pVal) {
 		this.interpretationConfidence = pVal;
+	}
+
+	public boolean endsWithPunctuation() {
+		//TODO: Make this more dynamic
+		return this.questionText.endsWith("?");
 	}
 
 }

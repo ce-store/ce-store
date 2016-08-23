@@ -4,15 +4,37 @@
 -- --------------------------------------------------------------------------
 
 -- General modifiers
+--there is a modifier named 'what' and
+--  corresponds to the general function 'general:what'.
+--the linguistic thing 'what'
+--  is expressed by 'what is' and
+--  is expressed by 'what\'s'.
+
+--there is a modifier named 'who' and
+--  corresponds to the general function 'general:who'.
+--the linguistic thing 'who'
+--  is expressed by 'who is' and
+--  is expressed by 'who\'s' and
+--  is expressed by 'whose'.
+
 there is a modifier named 'where' that
   corresponds to the general function 'general:locate' and
   uses by default the entity concept 'spatial thing'.
+
+there is a modifier named 'count' and
+  corresponds to the general function 'general:count'.
 
 there is a modifier named 'how many' and
   corresponds to the general function 'general:count'.
 
 there is a modifier named 'list' and
   corresponds to the general function 'general:list'.
+
+there is a modifier named 'links from' and
+  corresponds to the general function 'general:linksfrom'.
+
+there is a modifier named 'links to' and
+  corresponds to the general function 'general:linksto'.
 
 there is a modifier named 'show' and
   corresponds to the general function 'general:show'.
@@ -29,20 +51,20 @@ there is a modifier named 'reset' that
 there is a modifier named 'clear cache' that
   corresponds to the general function 'general:clearcache'.
 
-there is a CE modifier named 'CE:' that
+there is a CE modifier named 'CE>' that
   corresponds to the general function 'ce:save'.
 
 there is a modifier named 'stats' that
   corresponds to the general function 'general:stats'.
 
-there is a modifier named 'what'.
+--there is a modifier named 'what'.
 
-there is a modifier named 'who' that
-  uses by default the entity concept person.
+--there is a modifier named 'who' that
+--  uses by default the entity concept person.
 
-there is a modifier named 'when' and
-  uses by default the entity concept 'temporal thing'.
+--there is a modifier named 'when' and
+--  uses by default the entity concept 'temporal thing'.
 
-there is a modifier named 'has'.
-there is a modifier named 'is'.
-there is a modifier named 'are'.
+--there is a modifier named 'has'.
+--there is a modifier named 'is'.
+--there is a modifier named 'are'.

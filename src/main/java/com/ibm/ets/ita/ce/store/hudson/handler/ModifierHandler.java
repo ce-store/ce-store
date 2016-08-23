@@ -32,6 +32,8 @@ public class ModifierHandler {
 	public static final String MOD_LOCATE = "general:locate";
 	public static final String MOD_COUNT = "general:count";
 	public static final String MOD_LIST = "general:list";
+	public static final String MOD_LINKSFROM = "general:linksfrom";
+	public static final String MOD_LINKSTO = "general:linksto";
 	public static final String MOD_SHOW = "general:show";
 	//	private static final String MOD_GET = "search:get";
 	//	private static final String MOD_STARTS = "search:starts";
@@ -156,12 +158,17 @@ public class ModifierHandler {
 		return questionMatchesFunctionNamed(pAc, pWords, MOD_STATS);
 	}
 
-	private static boolean isCeLoadStatement(ActionContext pAc, ArrayList<ProcessedWord> pWords) {
+	public static boolean isCeLoadStatement(ActionContext pAc, ArrayList<ProcessedWord> pWords) {
 		return questionMatchesFunctionNamed(pAc, pWords, MOD_CELOAD);
 	}
 
-	private static boolean isCeSaveStatement(ActionContext pAc, ArrayList<ProcessedWord> pWords) {
+	public static boolean isCeSaveStatement(ActionContext pAc, ArrayList<ProcessedWord> pWords) {
 		return questionMatchesFunctionNamed(pAc, pWords, MOD_CESAVE);
+	}
+
+	public static boolean isCeModifier(ActionContext pAc, ArrayList<ProcessedWord> pWords) {
+		return questionMatchesFunctionNamed(pAc, pWords, MOD_CELOAD) ||
+				questionMatchesFunctionNamed(pAc, pWords, MOD_CESAVE);
 	}
 
 	public static boolean isSameQuestion(ActionContext pAc, ArrayList<ProcessedWord> pWords) {
@@ -368,6 +375,10 @@ public class ModifierHandler {
 
 				result += thisWord.getWordText();
 			}
+		}
+
+		if (!result.endsWith(".")) {
+			result += ".";
 		}
 
 		return result;

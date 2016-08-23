@@ -114,10 +114,10 @@ public abstract class QuestionHandler extends GenericHandler {
 			}
 		}
 	}
-	
+
 	protected void createJsonDebugs(CeStoreJsonObject pResult) {
 		ActionResponse ar = this.ac.getActionResponse();
-		
+
 		if (!ar.getDebug().isEmpty()) {
 			CeStoreJsonArray jDebugs = new CeStoreJsonArray();
 			jDebugs.addAll(ar.getDebug());

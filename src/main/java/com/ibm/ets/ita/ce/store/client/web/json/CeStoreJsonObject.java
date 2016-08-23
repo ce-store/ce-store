@@ -9,6 +9,7 @@ import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
+import java.util.Set;
 
 import com.ibm.ets.ita.ce.store.ActionContext;
 
@@ -78,7 +79,7 @@ public class CeStoreJsonObject extends CeStoreJsonProcessor {
 		this.keyMap.put(pKey, MAP_JSON);
 		this.jsonMap.put(pKey, pValue);
 	}
-	
+
 	public Integer getInt(String pKey) {
 		return (Integer) this.objectMap.get(pKey);
 	}
@@ -87,8 +88,20 @@ public class CeStoreJsonObject extends CeStoreJsonProcessor {
 		return this.stringMap.get(pKey);
 	}
 
+	public CeStoreJsonObject getJsonObject(String pKey) {
+		return (CeStoreJsonObject)this.jsonMap.get(pKey);
+	}
+
+	public CeStoreJsonArray getJsonArray(String pKey) {
+		return (CeStoreJsonArray)this.jsonMap.get(pKey);
+	}
+
 	public boolean isEmpty() {
 		return this.keyMap.isEmpty();
+	}
+
+	public Set<String> keySet() {
+		return this.keyMap.keySet();
 	}
 
 	@Override

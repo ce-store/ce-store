@@ -3,8 +3,7 @@
 -- All Rights Reserved
 -- --------------------------------------------------------------------------
 
-perform reset store with starting uid '1'.
+the linguistic thing 'person' has 'people' as plural form.
 
-perform load sentences from url './hudson/ce/core/cmd/load_core.cecmd'.
-
-perform load sentences from url './ce/medicine/cmd/med_load_hudson.cecmd'.
+the linguistic thing 'hospital:picture:media'
+  is expressed by 'look like'.

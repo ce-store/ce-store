@@ -53,7 +53,7 @@ public class TemplateProcessor {
 		String idBit = id;
 		String instBit = id;
 		String conBit = computeConBit(pInstCluster);
-		
+
 		if ((conBit != null) && (!conBit.isEmpty())) {
 			if (!instBit.equals(instName)) {
 				instBit += " (" + instName + ")";
@@ -93,7 +93,7 @@ public class TemplateProcessor {
 
 		return result;
 	}
-	
+
 	private String getNextModeFor(String pMode) {
 		String nextMode = null;
 
@@ -130,9 +130,9 @@ public class TemplateProcessor {
 
 	private String computeConBit(ArrayList<CeInstance> pInstCluster) {
 		String result = null;
-		
+
 		ArrayList<CeConcept> sortedCons = new ArrayList<CeConcept>();
-		
+
 		for (CeInstance thisInst : pInstCluster) {
 			for (CeConcept thisCon : computeLeavesFor(thisInst)) {
 				if (!sortedCons.contains(thisCon)) {
@@ -140,11 +140,11 @@ public class TemplateProcessor {
 				}
 			}
 		}
-		
+
 		Collections.sort(sortedCons);
 
 		for (CeConcept thisCon : sortedCons) {
-			if (!thisCon.equalsOrHasParentNamed(this.ac, GenericHandler.CON_CONFCON)) {
+//			if (!thisCon.equalsOrHasParentNamed(this.ac, GenericHandler.CON_CONFCON)) {
 				if (result == null) {
 					result = "";
 				} else {
@@ -156,10 +156,10 @@ public class TemplateProcessor {
 				} else {
 					result += "a ";
 				}
-				
+
 				result += thisCon.getConceptName();
 			}
-		}
+//		}
 
 		if ((result != null) && (!result.isEmpty())) {
 			result = " is " + result;
@@ -190,20 +190,20 @@ public class TemplateProcessor {
 			for (CeConcept possCon : mainInst.listAllConcepts()) {
 				CeInstance mmConInst = possCon.retrieveMetaModelInstance(this.ac);
 				String nextSep = "";
-				
+
 				if (mmConInst.isConceptNamed(this.ac, GenericHandler.CON_TEMPTHING)) {
 					result = templateStringFor(pTplInst);
 					result = result.replace("{ID}", pIdBit);
 					result = result.replace("{INST}", pInstBit);
 					result = result.replace("{CONS}", pConBit);
-					
+
 					for (CeProperty thisProp : possCon.calculateAllProperties().values()) {
 						CeInstance propTplInst = propertyTemplateInstanceFor(pTplInst, thisProp, mainInst);
 						String multiValSep = "";
 						String filterOp = null;
 						String filterVal = null;
 						String dataFormat = null;
-						
+
 						if (propTplInst != null) {
 							multiValSep = propTplInst.getSingleValueFromPropertyNamed(GenericHandler.PROP_MVS);
 							nextSep = propTplInst.getSingleValueFromPropertyNamed(GenericHandler.PROP_PROPSEP);
@@ -214,17 +214,17 @@ public class TemplateProcessor {
 							multiValSep = DEFAULT_MULTI_VALUE_SEPARATOR;
 							nextSep = DEFAULT_NEXT_SEPARATOR;
 						}
-	
+
 						String propMarker = "{" + thisProp.getPropertyName() + "}";
 						String valList = "";
-	
+
 						if (thisProp.isDatatypeProperty()) {
 							//Datatype property
 							for (String thisVal : mainInst.getValueListFromPropertyNamed(thisProp.getPropertyName())) {
 								if (!valList.isEmpty()) {
 									valList += multiValSep;
 								}
-	
+
 								if ((filterOp != null) && (!filterOp.isEmpty())) {
 									if ((filterVal != null) && (!filterVal.isEmpty())) {
 										//TODO: Support more filter types and abstract these values
@@ -251,16 +251,15 @@ public class TemplateProcessor {
 
 									String nextMode = getNextModeFor(pMode);
 									String thisVal = createAnswerFor(wrappedInst, nextMode);
-									
+
 									if (!previousVals.contains(thisVal)) {
 										if (!valList.isEmpty()) {
 											valList += multiValSep;
 										}
-		
+
 										valList += thisVal;
 										previousVals.add(thisVal);
 									}
-									
 								}
 							}
 						}
@@ -275,10 +274,10 @@ public class TemplateProcessor {
 							if (!valList.isEmpty()) {
 								valList += nextSep;
 							}
-							
+
 							String preText = null;
 							String suffText = null;
-							
+
 							if (propTplInst != null) {
 								preText = propTplInst.getSingleValueFromPropertyNamed(GenericHandler.PROP_PRETEXT);
 								suffText = propTplInst.getSingleValueFromPropertyNamed(GenericHandler.PROP_SUFFTEXT);
@@ -491,29 +490,29 @@ public class TemplateProcessor {
 			for (CePropertyInstance thisPi : thisInst.getPropertyInstances()) {
 				if (thisPi.getRelatedProperty().isDatatypeProperty()) {
 					String valList = "";
-					
+
 					for (String thisVal : thisPi.getValueList()) {
 						if (!valList.isEmpty()) {
 							valList += ", ";
 						}
-	
+
 						valList += thisVal;
 					}
-	
+
 					sb.append("  " + thisPi.getRelatedProperty().getPropertyName() + " -> " + valList + "\n");
 				} else {
 					String idList = "";
-					
+
 					for (CeInstance relInst : thisPi.getValueInstanceList(this.ac)) {
 						ArrayList<CeInstance> wrappedInst = new ArrayList<CeInstance>();
 						wrappedInst.add(relInst);
 						wrappedInst.addAll(relInst.getInstanceListFromPropertyNamed(this.ac, GenericHandler.PROP_SAMEAS));
-	
+
 						if (!idList.isEmpty()) {
 							idList += ", ";
 						}
-	
-						idList += createAnswerFor(wrappedInst, pMode);
+
+						idList += createAnswerFor(wrappedInst, MODE_NONE);
 					}
 	
 					sb.append("  " + thisPi.getRelatedProperty().getPropertyName() + " -> " + idList + "\n");

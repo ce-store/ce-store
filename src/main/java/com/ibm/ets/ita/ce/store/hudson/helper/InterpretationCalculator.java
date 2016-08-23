@@ -36,7 +36,6 @@ public class InterpretationCalculator {
 
 	public InterpretationCalculator(ActionContext pAc, ArrayList<ChosenWord> pChosWords, ArrayList<ProcessedWord> pQuesWords, Answer pAns) {
 		this.ac = pAc;
-//		this.chosenWords = pChosWords;
 		this.questionWords = pQuesWords;
 		this.answer = pAns;
 
@@ -48,20 +47,20 @@ public class InterpretationCalculator {
 
 			for (ChosenWord thisCw : pChosWords) {
 				Integer wordPos = new Integer(thisCw.originalWordPos());
-				
+
 				ArrayList<ChosenWord> tgtArray = tempMap.get(wordPos);
-	
+
 				if (tgtArray == null) {
 					tgtArray = new ArrayList<ChosenWord>();
 					tempMap.put(wordPos, tgtArray);
 				}
-	
+
 				tgtArray.add(thisCw);
 			}
-	
+
 			for (Integer thisKey : tempMap.keySet()) {
 				ArrayList<ChosenWord> wordList = tempMap.get(thisKey);
-	
+
 				for (ChosenWord thisWord : wordList) {
 					this.chosenWords.add(thisWord);
 				}
@@ -76,8 +75,15 @@ public class InterpretationCalculator {
 			findTargets();
 
 			computeStartInterpretation(sb);
-			computeConceptInterpretations(sb);
-			computePropertyInterpretations(sb);
+
+			if (isVerbSingular()) {
+				computePropertyInterpretations(sb);
+				computeConceptInterpretations(sb);
+			} else {
+				computeConceptInterpretations(sb);
+				computePropertyInterpretations(sb);
+			}
+
 			computeGrouperInterpretations(sb);
 			computeOrdererInterpretations(sb);
 			computeEndInterpretation(sb);
@@ -96,12 +102,22 @@ public class InterpretationCalculator {
 				lookForQuestionWords(pSb, START_CON_WHAT);
 			}
 		} else {
-			if (isWhereAnswer()) {
-				lookForQuestionWords(pSb, START_INST_WHERE);
-			} else if (isWhoAnswer()) {
-				lookForQuestionWords(pSb, START_INST_WHO);
+			if (isVerbSingular()) {
+				if (isWhereAnswer()) {
+					lookForQuestionWords(pSb, START_CON_WHERE);
+				} else if (isWhoAnswer()) {
+					lookForQuestionWords(pSb, START_CON_WHO);
+				} else {
+					lookForQuestionWords(pSb, START_CON_WHAT);
+				}
 			} else {
-				lookForQuestionWords(pSb, START_INST_WHAT);
+				if (isWhereAnswer()) {
+					lookForQuestionWords(pSb, START_INST_WHERE);
+				} else if (isWhoAnswer()) {
+					lookForQuestionWords(pSb, START_INST_WHO);
+				} else {
+					lookForQuestionWords(pSb, START_INST_WHAT);
+				}
 			}
 		}
 	}
@@ -122,7 +138,7 @@ public class InterpretationCalculator {
 	
 	private boolean isWhoAnswer() {
 		boolean result = false;
-		
+
 		for (ProcessedWord thisWord : this.questionWords) {
 			if (thisWord.isWho()) {
 				result = true;
@@ -135,28 +151,11 @@ public class InterpretationCalculator {
 	private static void computeEndInterpretation(StringBuilder pSb) {
 		pSb.append("?");
 	}
-	
-	private void computeConceptInterpretations(StringBuilder pSb) {
-//		boolean firstTime = true;
-//		String lastPropName = "";
 
+	private void computeConceptInterpretations(StringBuilder pSb) {
 		computeQualifiers(pSb);
 
-//		CeInstance lastSecInst = null;
-//		ChosenWord lastWord = null;
-
 		for (ChosenWord thisCw : this.chosenWords) {
-//			if (thisCw.isDatabaseConcept()) {
-//				String propName = thisCw.interpretationPropertyTextFor(this.ac, this.tgtCon, lastPropName, pluraliseTerms());
-//
-//				firstTime = computeDatabaseConceptInterpretation(pSb, thisCw, firstTime, propName, lastSecInst, lastWord);
-//
-//				if (!propName.isEmpty()) {
-//					lastPropName = propName;
-//				}
-//				
-//				lastSecInst = thisCw.getSecondaryInstance();
-//			} else if (thisCw.isCeConcept()){
 			if (thisCw.isCeConcept()){
 				if (this.answer.isCountAnswer()) {
 					pSb.append(" " + thisCw.getConceptPluralName(this.ac));
@@ -168,74 +167,29 @@ public class InterpretationCalculator {
 			} else if (thisCw.isEndModifier()) {
 				pSb.append(" " + thisCw.getConceptName());
 			}
-//			lastWord = thisCw;
 		}
 	}
-
-//	private boolean computeDatabaseConceptInterpretation(StringBuilder pSb, ChosenWord pCw, boolean pFirstTime, String pPropName, CeInstance pLastSecInst, ChosenWord pLastWord) {
-//		CeConcept thisCon = pCw.getConcept(this.ac);
-//		boolean showThisWord = false;
-//		boolean result = true;
-//
-//		if (thisCon == null) {
-//			showThisWord = true;
-//		} else {
-//			if (!thisCon.equals(this.tgtCon)) {
-//				if (!this.qualifyingConWords.contains(pCw)) {
-//					showThisWord = true;
-//				}
-//			}
-//		}
-//
-//		if (showThisWord) {
-//			String intVal = pCw.interpretationValueTextFor(this.ac);
-//			String thisInt = null;
-//			String connector = null;
-//
-//			if (pLastSecInst != null) {
-//				if (pLastSecInst.equals(pCw.getSecondaryInstance())) {
-//					connector = ", ";
-//				} else {
-//					if (pCw.hasPropertyQualifier()) {
-//						if (pPropName.isEmpty()) {
-//							if (!pLastWord.isEndModifier()) {
-//								connector = " " + pCw.getPropertyQualifier() + " ";
-//							} else {
-//								connector = " ";
-//							}
-//						} else {
-//							connector = " ";
-//						}
-//					} else {
-//						connector = " ";
-//					}
-//				}
-//			}
-//
-//			if (intVal.isEmpty()) {
-//				thisInt = "";
-//			} else {
-//				thisInt = pPropName + " " + intVal;
-//			}
-//			
-//			if (!thisInt.isEmpty()) {
-//				if ((!pFirstTime) && (!pPropName.isEmpty())) {
-//					pSb.append(" and ");
-//				} else {
-//					pSb.append(connector);
-//				}
-//
-//				pSb.append(thisInt);
-//				result = false;
-//			}
-//		}
-//
-//		return result;
-//	}
 
 	private void computeLocalConceptInterpretation(StringBuilder pSb, ChosenWord pCw) {
 		pSb.append(" ");
 		pSb.append(pCw.interpretationText(this.ac, pluraliseTerms()));
+	}
+
+	private boolean isVerbSingular() {
+		boolean result = false;
+
+		//Find the CE properties
+		if (this.tgtInst != null) {
+			for (ChosenWord thisCw : this.chosenWords) {
+				if (thisCw.isCeProperty()) {
+					if (thisCw.cePropertyAppliesTo(this.ac, this.tgtInst)) {
+						result = thisCw.getCeProperty(this.ac).isVerbSingular();
+					}
+				}
+			}
+		}
+
+		return result;
 	}
 
 	private void computePropertyInterpretations(StringBuilder pSb) {
@@ -258,7 +212,7 @@ public class InterpretationCalculator {
 			}
 		}
 	}
-	
+
 	private void computeOrdererInterpretations(StringBuilder pSb) {
 		for (ChosenWord thisCw : this.chosenWords) {
 			if (thisCw.isOrderer()) {
@@ -269,10 +223,10 @@ public class InterpretationCalculator {
 
 	private void findQualifiers() {
 		CeInstance mmInst = this.tgtCon.retrieveMetaModelInstance(this.ac);
-		
+
 		if (mmInst != null) {
 			for (String qualConName : mmInst.getValueListFromPropertyNamed(GenericHandler.PROP_IQB)) {
-				
+
 				if (qualConName != null) {
 					CeConcept thisQualCon = this.ac.getModelBuilder().getConceptNamed(this.ac, qualConName);
 

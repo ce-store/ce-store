@@ -70,7 +70,7 @@ public class WordCheckerCache {
 				for (String expVal : thisInst.getValueListFromPropertyNamed(PROP_PROPNAME)) {
 					if (expVal.equals(cacheKey)) {
 						CeProperty tgtProp = pAc.getModelBuilder().getPropertyFullyNamed(propFullName);
-						tgtProps.put(tgtProp.formattedFullPropertyName(), tgtProp);
+						tgtProps.put(expVal, tgtProp);
 					}
 				}
 			}
@@ -80,7 +80,9 @@ public class WordCheckerCache {
 			tgtProps = this.matchingRelations.get(cacheKey);
 		}
 
-		pWord.setMatchingRelations(tgtProps);
+		if (!tgtProps.isEmpty()) {
+			pWord.setMatchingRelations(tgtProps);
+		}
 	}
 
 	public synchronized void checkForMatchingInstances(ActionContext pAc, ProcessedWord pWord) {

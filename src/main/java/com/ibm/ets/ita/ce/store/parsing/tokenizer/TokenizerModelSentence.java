@@ -812,7 +812,7 @@ public class TokenizerModelSentence extends TokenizerSentence {
 		this.secondaryConceptStored = true;
 
 		CeConcept tgtCon = CeConcept.createOrRetrieveConceptNamed(this.ac, conceptName);
-		
+
 		checkForConceptQualifierMismatch(tgtCon, "secondary concept");
 
 		//Store the target concept on the sentence

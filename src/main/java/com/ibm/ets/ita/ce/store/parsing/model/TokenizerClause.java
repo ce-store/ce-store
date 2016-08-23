@@ -47,7 +47,7 @@ public abstract class TokenizerClause {
 		this.delimiter = pDelimiter;
 		this.rawTokens = pRawTokens;
 
-		linkClauses(pPreceedingClause, this);		
+		linkClauses(pPreceedingClause, this);
 	}
 
 	protected static String stripQuotesFrom(String pWord) {

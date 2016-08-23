@@ -1,0 +1,7 @@
+-- --------------------------------------------------------------------------
+-- (C) Copyright IBM Corporation  2011, 2015
+-- All Rights Reserved
+-- --------------------------------------------------------------------------
+
+perform load sentences from url '/ce-store/ce/medicine/cmd/med_load_noreset.cecmd'.
+perform load sentences from url '/ce-store/ce/medicine/facts/med_hudson.ce'.

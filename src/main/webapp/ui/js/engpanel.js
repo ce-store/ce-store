@@ -215,7 +215,7 @@ function EngineeringPanel() {
 				title: 'Add CE from URL',
 				links: [
 					{ url: './ce/medicine/cmd/med_load.cecmd', name: 'Medicine' },
-					{ url: './hudson/ce/core/cmd/load_core.cecmd', name: 'Hudson' },
+					{ url: './hudson/ce/cmd/load_hudson.cecmd', name: 'Hudson' },
 					{ url: '', name: 'Specify URL ...' }
 				]
 			}

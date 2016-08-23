@@ -19,7 +19,6 @@ import com.ibm.ets.ita.ce.store.hudson.helper.AnswerMedia;
 import com.ibm.ets.ita.ce.store.hudson.helper.AnswerReply;
 import com.ibm.ets.ita.ce.store.hudson.helper.AnswerResultSet;
 import com.ibm.ets.ita.ce.store.hudson.helper.ChosenWord;
-import com.ibm.ets.ita.ce.store.hudson.helper.Duration;
 import com.ibm.ets.ita.ce.store.hudson.helper.Source;
 import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
@@ -43,6 +42,8 @@ public class CeQuestionExecutor extends GenericHandler {
 	private boolean isCount = false;
 	private boolean isList = false;
 	private boolean isShow = false;
+	private boolean isLinksFrom = false;
+	private boolean isLinksTo = false;
 	private boolean isLocate = false;
 	private ArrayList<CeInstance> newInstances = null;
 	private TemplateProcessor tp = null;
@@ -72,6 +73,10 @@ public class CeQuestionExecutor extends GenericHandler {
 				executeListQuestion();
 			} else if (this.isShow) {
 				executeShowQuestion();
+			} else if (this.isLinksFrom) {
+				executeLinksFromQuestion();
+			} else if (this.isLinksTo) {
+				executeLinksToQuestion();
 			} else if (this.isLocate) {
 				executeLocationQuestion();
 			} else {
@@ -99,6 +104,10 @@ public class CeQuestionExecutor extends GenericHandler {
 									this.isList = true;
 								} else if (isShowModifier(ctInst)) {
 									this.isShow = true;
+								} else if (isLinksFromModifier(ctInst)) {
+									this.isLinksFrom = true;
+								} else if (isLinksToModifier(ctInst)) {
+									this.isLinksTo = true;
 								} else if (isLocationModifier(ctInst)) {
 									this.isLocate = true;
 								}
@@ -136,6 +145,42 @@ public class CeQuestionExecutor extends GenericHandler {
 		return pModInst.getInstanceName().equals(ModifierHandler.MOD_LIST);
 	}
 
+	private boolean hasLinksFromModifier(CeInstance pInst) {
+		boolean result = false;
+
+		if (pInst.isConceptNamed(this.ac, CON_MODIFIER)) {
+			CeInstance ctInst = pInst.getSingleInstanceFromPropertyNamed(this.ac, PROP_CORRTO);
+
+			if (ctInst != null) {
+				result = isLinksFromModifier(ctInst);
+			}
+		}
+
+		return result;
+	}
+
+	private static boolean isLinksFromModifier(CeInstance pModInst) {
+		return pModInst.getInstanceName().equals(ModifierHandler.MOD_LINKSFROM);
+	}
+
+	private boolean hasLinksToModifier(CeInstance pInst) {
+		boolean result = false;
+
+		if (pInst.isConceptNamed(this.ac, CON_MODIFIER)) {
+			CeInstance ctInst = pInst.getSingleInstanceFromPropertyNamed(this.ac, PROP_CORRTO);
+
+			if (ctInst != null) {
+				result = isLinksToModifier(ctInst);
+			}
+		}
+
+		return result;
+	}
+
+	private static boolean isLinksToModifier(CeInstance pModInst) {
+		return pModInst.getInstanceName().equals(ModifierHandler.MOD_LINKSTO);
+	}
+
 	private static boolean isShowModifier(CeInstance pModInst) {
 		return pModInst.getInstanceName().equals(ModifierHandler.MOD_SHOW);
 	}
@@ -168,102 +213,83 @@ public class CeQuestionExecutor extends GenericHandler {
 
 	private void executeListQuestion() {
 		ArrayList<CeInstance> chosenInsts = new ArrayList<CeInstance>();
+		ArrayList<CeConcept> processedCons = new ArrayList<CeConcept>();
 		String conNames = "";
 		String conNamesPlural = "";
 
 		for (ProcessedWord thisWord : this.allWords) {
 			if (thisWord.isGroundedOnConcept()) {
 				for (CeConcept thisCon : thisWord.listGroundedConcepts()) {
-					for (CeInstance thisInst : this.ac.getModelBuilder().getAllInstancesForConceptNamed(this.ac,
-							thisCon.getConceptName())) {
-						if (!chosenInsts.contains(thisInst)) {
-							chosenInsts.add(thisInst);
+					if (!processedCons.contains(thisCon)) {
+						processedCons.add(thisCon);
+						ArrayList<CeInstance> conInsts = this.ac.getModelBuilder().getAllInstancesForConceptNamed(this.ac, thisCon.getConceptName());
+
+						for (CeInstance thisInst : conInsts) {
+							if (!chosenInsts.contains(thisInst)) {
+								chosenInsts.add(thisInst);
+							}
 						}
-					}
 
-					if (!conNames.isEmpty()) {
-						conNames += " or ";
-					}
-					if (!conNamesPlural.isEmpty()) {
-						conNamesPlural += " or ";
-					}
+						if (!conNames.isEmpty()) {
+							conNames += " or ";
+						}
 
-					conNames += thisCon.getConceptName();
-					conNamesPlural += thisCon.pluralFormName(this.ac);
+						if (!conNamesPlural.isEmpty()) {
+							conNamesPlural += " or ";
+						}
+
+						conNames += thisCon.getConceptName();
+						conNamesPlural += thisCon.pluralFormName(this.ac);
+					}
 				}
 			}
 		}
 
 		if (!chosenInsts.isEmpty()) {
 			processChosenInstances(chosenInsts);
-			
+
 			String titleTextSingle = "there is 1 " + conNames + " defined:";
 			String titleTextPlural = "there are " + chosenInsts.size() + " " + conNamesPlural + " defined:";
-	
+
 			this.newInstRs.applyTitle(titleTextSingle, titleTextPlural, "");		
 		} else {
 			reportWarning("No concepts found for any words in the phrase '" + this.reply.getOriginalQuestion().getQuestionText() + "'", this.ac);
 		}
 	}
 
-	private ArrayList<Duration<String, String>> getDurationsFromInstance(CeInstance thisInst) {
-		ArrayList<Duration<String, String>> tgtDurations = new ArrayList<Duration<String, String>>();
-		// Get referring annotations
-		CePropertyInstance[] annotationProps = thisInst.getReferringPropertyInstances();
+	private void executeLinksFromQuestion() {
+		for (ProcessedWord thisWord : this.allWords) {
+			for (CeInstance thisInst : thisWord.listGroundedInstances()) {
+				if (!hasLinksFromModifier(thisInst)) {
+					System.out.println("Matching instance: " + thisInst.toString());
 
-		for (CePropertyInstance annotationPI : annotationProps) {
-			CeInstance annotationInst = annotationPI.getRelatedInstance();
-			// Get referring events
-			CePropertyInstance[] eventProps = annotationInst.getReferringPropertyInstances();
-
-			for (CePropertyInstance eventPI : eventProps) {
-				CeInstance eventInst = eventPI.getRelatedInstance();
-
-				String start = eventInst.getSingleValueFromPropertyNamed("start");
-				String end = eventInst.getSingleValueFromPropertyNamed("end");
-
-				// Add duration
-				Duration<String, String> duration = new Duration<String, String>(start, end);
-				tgtDurations.add(duration);
+					for (CePropertyInstance thisPi : thisInst.getPropertyInstances()) {
+						if (thisPi.getRelatedProperty().isObjectProperty()) {
+							String propName = thisPi.getPropertyName();
+	
+							for (String thisVal : thisPi.getValueList()) {
+								System.out.println("  " + propName + thisVal);
+							}
+						}
+					}
+				}
 			}
 		}
-		return tgtDurations;
+	}
+
+	private void executeLinksToQuestion() {
+		for (ProcessedWord thisWord : this.allWords) {
+			for (CeInstance thisInst : thisWord.listGroundedInstances()) {
+				if (!hasLinksToModifier(thisInst)) {
+					System.out.println("Matching instance: " + thisInst.toString());
+				}
+			}
+		}
 	}
 
 	private void executeShowQuestion() {
 		ArrayList<CeConcept> tgtCons = new ArrayList<CeConcept>();
 		ArrayList<CeInstance> tgtInsts = new ArrayList<CeInstance>();
-		ArrayList<Duration<String, String>> tgtDurations = new ArrayList<Duration<String, String>>();
-
-		for (ProcessedWord thisWord : this.allWords) {
-			if (thisWord.isGroundedOnConcept()) {
-				// Concept word
-				for (CeConcept thisCon : thisWord.listGroundedConcepts()) {
-					if (!tgtCons.contains(thisCon)) {
-						tgtCons.add(thisCon);
-
-						// Get related instances
-						for (CeInstance thisInst : this.ac.getModelBuilder().getAllInstancesForConceptNamed(this.ac,
-								thisCon.getConceptName())) {
-							if (!tgtInsts.contains(thisInst)) {
-								// Get durations belonging to instance
-								tgtInsts.add(thisInst);
-								tgtDurations.addAll(getDurationsFromInstance(thisInst));
-							}
-						}
-					}
-				}
-			} else if (thisWord.isGroundedOnInstance() && !thisWord.isModifier(this.ac)) {
-				// Instance word
-				for (CeInstance thisInst : thisWord.listGroundedInstances()) {
-					if (!tgtInsts.contains(thisInst)) {
-						// Get durations belonging to instance
-						tgtInsts.add(thisInst);
-						tgtDurations.addAll(getDurationsFromInstance(thisInst));
-					}
-				}
-			}
-		}
 
 		// Initialise result set answer
 		ArrayList<String> hdrs = new ArrayList<String>();
@@ -274,19 +300,9 @@ public class CeQuestionExecutor extends GenericHandler {
 		Answer thisAnswer = Answer.create(ANSKEY_CONS, null, this.newInstRs, DEFAULT_COUNT_CONF, null);
 		saveAnswer(thisAnswer, null);
 
-		// Add durations to result set
-		for (Duration<String, String> duration : tgtDurations) {
-			ArrayList<String> newRow = new ArrayList<String>();
-			newRow.add("duration");
-			newRow.add(duration.getStart());
-			newRow.add(duration.getEnd());
-
-			this.newInstRs.addRow(newRow);
-		}
-
 		// Generate title text
-		String titleTextSingle = "there is 1 duration defined:";
-		String titleTextPlural = "there are " + tgtDurations.size() + " durations defined:";
+		String titleTextSingle = "there is 1 instance defined:";
+		String titleTextPlural = "there are " + tgtInsts.size() + " durations defined:";
 
 		this.newInstRs.applyTitle(titleTextSingle, titleTextPlural, "");
 	}
@@ -360,14 +376,14 @@ public class CeQuestionExecutor extends GenericHandler {
 			if (!thisPw.isLaterPartOfPartial()) {
 				if (thisPw.isGroundedOnInstance()) {
 					for (CeInstance thisInst : thisPw.listGroundedInstances()) {
-						if (!thisInst.isOnlyConceptNamed(this.ac, CON_CONFCON)) {
+//						if (!thisInst.isOnlyConceptNamed(this.ac, CON_CONFCON)) {
 							if (!thisInst.isOnlyConceptNamed(this.ac, CON_MODIFIER)) {
 								if (!tgtInstances.contains(thisInst)) {
 									tgtInstances.add(thisInst);
 									tgtChosenWords.add(ChosenWord.createAsCeInstance(thisPw, thisInst));
 								}
 							}
-						}
+//						}
 					}
 				}
 
@@ -447,8 +463,10 @@ public class CeQuestionExecutor extends GenericHandler {
 					exploreStandardAnswerFor(thisRow, propList, thisWord);
 				}
 			} else {
-				//Handle as a standard answer
-				exploreStandardAnswerFor(thisRow, new ArrayList<CeProperty>(tgtProps.values()), thisWord);
+//				if (!this.reply.hasAnswers()) {
+					//Handle as a standard answer
+					exploreStandardAnswerFor(thisRow, new ArrayList<CeProperty>(tgtProps.values()), thisWord);
+//				}
 			}
 		}
 	}
@@ -613,7 +631,7 @@ public class CeQuestionExecutor extends GenericHandler {
 			String lon = pLocInst.getSingleValueFromPropertyNamed(GenericHandler.PROP_LON);
 
 			if (lat.isEmpty() || lon.isEmpty()) {
-				//Next try postcode and address line 1
+				//Next try ere  and address line 1
 				//TODO: These should not be hardcoded
 				String al1 = pLocInst.getSingleValueFromPropertyNamed(GenericHandler.PROP_AL1);
 				String pc = pLocInst.getSingleValueFromPropertyNamed(GenericHandler.PROP_PC);
@@ -677,11 +695,9 @@ public class CeQuestionExecutor extends GenericHandler {
 					} else {
 						//TODO: Complete this
 						if (tgtInst.isConcept(rangeCon)) {
-							for (CeInstance possInst : this.ac.getModelBuilder().getAllInstancesForConceptNamed(this.ac,
-									thisProp.getDomainConcept().getConceptName())) {
+							for (CeInstance possInst : this.ac.getModelBuilder().getAllInstancesForConceptNamed(this.ac, thisProp.getDomainConcept().getConceptName())) {
 								//TODO: This will only work for object properties at the moment
-								for (CeInstance rangeInst : possInst.getInstanceListFromPropertyNamed(this.ac,
-										thisProp.getPropertyName())) {
+								for (CeInstance rangeInst : possInst.getInstanceListFromPropertyNamed(this.ac, thisProp.getPropertyName())) {
 									if (rangeInst.equals(tgtInst)) {
 										System.out.println("This is a match!!! - " + possInst.getInstanceName());
 									}

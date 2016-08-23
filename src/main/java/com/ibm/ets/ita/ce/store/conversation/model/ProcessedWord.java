@@ -79,6 +79,7 @@ public class ProcessedWord extends GeneralItem {
 	private boolean partialInstanceReference = false;
 
 	private CeInstance chosenInstance = null;
+	private String tempLabel = null;
 
 	private ProcessedWord(ConvWord pConvWord, int pWordPos) {
 		this.id = pConvWord.getId();
@@ -371,42 +372,23 @@ public class ProcessedWord extends GeneralItem {
 	private static String declutter(String pRawText) {
 		String result = stripDelimitingQuotesFrom(pRawText);
 
-		if (result.startsWith("@")) {
-			result = result.substring(1, result.length());
-		}
-
-		if (result.startsWith("#")) {
-			result = result.substring(1, result.length());
-		}
-
-		// DSB 21/09/2015 - Simply remove apostrophes from the text.
-		// TODO: Is the declutter phase the best place for this?
-		if (result.contains("'")) {
-			result = result.replaceAll("'", "");
-		}
-
-		if (result.contains("’")) {
-			result = result.replaceAll("’", "");
-		}
-
-		// //DSB 21/09/2015 - Simply remove dashes from the text.
-		// if (result.contains("-")) {
-		// result = result.replaceAll("-", " ");
-		// }
-
-		// //TODO: Is the declutter phase the best place for this?
-		// if (result.endsWith("'s")) {
-		// //DSB 21/09/2015 - Added trailing "s" to the word (so the apostrophe
-		// is simply removed)
-		// result = result.substring(0, result.length() - 2) + "s";
-		// }
-		//
-		// //TODO: Is the declutter phase the best place for this?
-		// if (result.endsWith("’s")) {
-		// //DSB 21/09/2015 - Added trailing "s" to the word (so the apostrophe
-		// is simply removed)
-		// result = result.substring(0, result.length() - 2) + "s";
-		// }
+//		if (result.startsWith("@")) {
+//			result = result.substring(1, result.length());
+//		}
+//
+//		if (result.startsWith("#")) {
+//			result = result.substring(1, result.length());
+//		}
+//
+//		// DSB 21/09/2015 - Simply remove apostrophes from the text.
+//		// TODO: Is the declutter phase the best place for this?
+//		if (result.contains("'")) {
+//			result = result.replaceAll("'", "");
+//		}
+//
+//		if (result.contains("’")) {
+//			result = result.replaceAll("’", "");
+//		}
 
 		return result;
 	}
@@ -481,6 +463,31 @@ public class ProcessedWord extends GeneralItem {
 	private void checkForInstanceByExpressedBy(ActionContext pAc, CeInstance pPossInst) {
 		String decText = getDeclutteredText().toLowerCase();
 
+		specificCheckForInstanceByExpressedBy(pAc, pPossInst, decText, null);
+
+		String trimmedText = depluralise(decText);
+
+		if (trimmedText != null) {
+			specificCheckForInstanceByExpressedBy(pAc, pPossInst, trimmedText, decText);
+		}
+	}
+
+	private String depluralise(String pRawText) {
+		String result = null;
+
+		//Quick and dirty de-pluralisation
+		if (pRawText.endsWith("'s")) {
+			result = pRawText.substring(0, pRawText.length() - 2);
+		} else if (pRawText.endsWith("s")) {
+			result = pRawText.substring(0, pRawText.length() - 1);
+		} else if (pRawText.endsWith("'")) {
+			result = pRawText.substring(0, pRawText.length() - 1);
+		}
+
+		return result;
+	}
+
+	private void specificCheckForInstanceByExpressedBy(ActionContext pAc, CeInstance pPossInst, String pDecText, String pLongText) {
 		ArrayList<String> expList = pPossInst.getValueListFromPropertyNamed(PROP_EXPBY);
 		ArrayList<String> lcExpList = new ArrayList<String>();
 
@@ -489,26 +496,39 @@ public class ProcessedWord extends GeneralItem {
 		}
 
 		for (String expVal : lcExpList) {
-			boolean match = expVal.equals(decText);
+			boolean match = expVal.equals(pDecText);
 			boolean exact = false;
 
 			if (match) {
 				exact = true;
 			} else {
 				exact = false;
-				match = expVal.startsWith(decText);
+				match = expVal.startsWith(pDecText);
 			}
 
 			if (match) {
 				if (exact) {
 					// This is an exact match so just save the referenced
 					// instance
-					this.addReferredExactInstance(pPossInst);
+					if (pLongText != null) {
+						this.addReferredExactInstance(pLongText, pPossInst);
+					} else {
+						this.addReferredExactInstance(expVal, pPossInst);
+					}
 				} else {
-					if (testForFullInstanceReferenceWithLaterWords(pAc, decText, lcExpList, 1)) {
-						reportMicroDebug("Found multiple word instance reference at: " + decText, pAc);
+					if (testForFullInstanceReferenceWithLaterWords(pAc, pDecText, lcExpList, 1)) {
+						reportMicroDebug("Found multiple word instance reference at: " + pDecText, pAc);
 						this.partialStartWord = true;
-						this.addReferredExactInstance(pPossInst);
+
+						if (pLongText != null) {
+							this.addReferredExactInstance(pLongText, pPossInst);
+						} else {
+							if (this.tempLabel != null) {
+								this.addReferredExactInstance(this.tempLabel, pPossInst);
+							} else {
+								this.addReferredExactInstance(expVal, pPossInst);
+							}
+						}
 					}
 				}
 			}
@@ -728,25 +748,42 @@ public class ProcessedWord extends GeneralItem {
 		return result;
 	}
 
-	private boolean testForFullInstanceReferenceWithLaterWords(ActionContext pAc, String pLcWordText,
-			ArrayList<String> pExpList, int pDepth) {
+	private boolean testForFullInstanceReferenceWithLaterWords(ActionContext pAc, String pLcWordText, ArrayList<String> pExpList, int pDepth) {
 		boolean result = false;
-		int depth = pDepth;
 		ProcessedWord nextWord = getNextProcessedWord();
 
 		if (nextWord != null) {
 			String concatText = pLcWordText + " " + nextWord.getDeclutteredText();
 
-			if (pExpList.contains(concatText)) {
-				reportMicroDebug("Matched '" + concatText + "' at depth " + pDepth, pAc);
+			result = doInstRefTest(pAc, pExpList, pDepth, nextWord, concatText);
 
-				nextWord.markWordsAsInstanceReferenceMatchedToDepth(pDepth);
-				result = true;
-			} else {
-				result = nextWord.testForFullInstanceReferenceWithLaterWords(pAc, concatText, pExpList, ++depth);
+			if (!result) {
+				String depText = depluralise(concatText);
+
+				if (depText != null) {
+					result = doInstRefTest(pAc, pExpList, pDepth, nextWord, depText);
+
+					this.tempLabel = concatText;
+				}
 			}
 		} else {
 			result = false;
+		}
+
+		return result;
+	}
+
+	private boolean doInstRefTest(ActionContext pAc, ArrayList<String> pExpList, int pDepth, ProcessedWord pNextWord, String pConcatText) {
+		boolean result = false;
+		int depth = pDepth;
+
+		if (pExpList.contains(pConcatText)) {
+			reportMicroDebug("Matched '" + pConcatText + "' at depth " + pDepth, pAc);
+
+			pNextWord.markWordsAsInstanceReferenceMatchedToDepth(pDepth);
+			result = true;
+		} else {
+			result = pNextWord.testForFullInstanceReferenceWithLaterWords(pAc, pConcatText, pExpList, ++depth);
 		}
 
 		return result;
@@ -792,9 +829,9 @@ public class ProcessedWord extends GeneralItem {
 		this.isValueWord = true;
 	}
 
-	public void markWordAsNumber() {
-		this.isNumberWord = true;
-	}
+//	public void markWordAsNumber() {
+//		this.isNumberWord = true;
+//	}
 
 	private void checkForReferringInstances(ActionContext pAc, WordCheckerCache pWcc) {
 		checkForPluralMatchingInstance(pAc, getDeclutteredText(), pWcc);
@@ -1019,24 +1056,28 @@ public class ProcessedWord extends GeneralItem {
 	}
 
 	private void checkForPartialMatchingRelations(ActionContext pAc, String pLcWordText) {
-		ArrayList<CeProperty> result = checkForPartialMatchingRelation(pAc, pLcWordText, true);
+		TreeMap<String, ArrayList<CeProperty>> result = checkForPartialMatchingRelation(pAc, pLcWordText, true);
 
 		if (result != null) {
-			for (CeProperty thisProp : result) {
-				if (!alreadyMatchesRelation(thisProp)) {
-					reportMicroDebug(
-							"Partial matched relation (" + thisProp.getPropertyName() + ") found for " + getWordText(),
-							pAc);
-					this.partialStartWord = true;
-					addReferredExactRelation(pAc, thisProp.formattedFullPropertyName(), thisProp);
+			for (String thisKey : result.keySet()) {
+				ArrayList<CeProperty> propList = result.get(thisKey);
+
+				for (CeProperty thisProp : propList) {
+					if (!alreadyMatchesRelation(thisProp)) {
+						reportMicroDebug(
+								"Partial matched relation (" + thisProp.getPropertyName() + ") found for " + getWordText(),
+								pAc);
+						this.partialStartWord = true;
+						addReferredExactRelation(pAc, thisKey, thisProp);
+					}
 				}
 			}
 		}
 	}
 
-	private ArrayList<CeProperty> checkForPartialMatchingRelation(ActionContext pAc, String pLcWordText,
+	private TreeMap<String, ArrayList<CeProperty>> checkForPartialMatchingRelation(ActionContext pAc, String pLcWordText,
 			boolean pFirstTime) {
-		ArrayList<CeProperty> result = null;
+		TreeMap<String, ArrayList<CeProperty>> result = null;
 
 		if (pAc.getModelBuilder().isThereADefinedPropertyNameStartingButNotExactly(pLcWordText)) {
 			ProcessedWord nextWord = getNextProcessedWord();
@@ -1063,11 +1104,15 @@ public class ProcessedWord extends GeneralItem {
 					}
 
 					if (result == null) {
-						result = new ArrayList<CeProperty>();
+						result = new TreeMap<String, ArrayList<CeProperty>>();
 					}
 
-					if (!result.contains(rootProp)) {
-						result.add(rootProp);
+					if (result.get(pLcWordText) == null) {
+						result.put(pLcWordText, new ArrayList<CeProperty>());
+					}
+
+					if (!result.get(pLcWordText).contains(rootProp)) {
+						result.get(pLcWordText).add(rootProp);
 					}
 				}
 
@@ -1080,7 +1125,8 @@ public class ProcessedWord extends GeneralItem {
 		if (!pFirstTime) {
 			// If the test failed retry with just the passed name
 			if ((result == null) || (result.isEmpty())) {
-				result = pAc.getModelBuilder().getPropertiesNamed(pLcWordText);
+				result = new TreeMap<String, ArrayList<CeProperty>>();
+				result.put(pLcWordText, pAc.getModelBuilder().getPropertiesNamed(pLcWordText));
 			}
 		}
 
@@ -1099,6 +1145,14 @@ public class ProcessedWord extends GeneralItem {
 		this.referredExactInstances.put(pInst.getInstanceName(), pInst);
 	}
 
+	private void addReferredExactInstance(String pKey, CeInstance pInst) {
+		if (this.referredExactInstances == null) {
+			this.referredExactInstances = new TreeMap<String, CeInstance>();
+		}
+
+		this.referredExactInstances.put(pKey, pInst);
+	}
+
 	public Collection<CeInstance> listReferredExactInstances() {
 		Collection<CeInstance> result = null;
 
@@ -1113,22 +1167,8 @@ public class ProcessedWord extends GeneralItem {
 
 	private void checkForPartialMatchingInstances(ActionContext pAc, String pLcWordText) {
 		ArrayList<CeInstance> result = checkForPartialMatchingInstanceList(pAc, pLcWordText, true);
-		// boolean matched = false;
 
 		if (result != null) {
-			// DSB 21/10/2015 - Corrected very poor previous implementation
-			// if (this.matchingInstances != null) {
-			// for (CeInstance thisInst : this.matchingInstances) {
-			// for (CeInstance resInst : result) {
-			// if (resInst == thisInst) {
-			// matched = true;
-			// break;
-			// }
-			// }
-			// }
-			// }
-
-			// if (!matched) {
 			for (CeInstance thisInst : result) {
 				if ((this.matchingInstances == null) || (!this.matchingInstances.contains(thisInst))) {
 					reportMicroDebug(
@@ -1142,7 +1182,6 @@ public class ProcessedWord extends GeneralItem {
 			}
 		}
 	}
-	// }
 
 	private ArrayList<CeInstance> checkForPartialMatchingInstanceList(ActionContext pAc, String pLcWordText,
 			boolean pFirstTime) {
@@ -1279,8 +1318,7 @@ public class ProcessedWord extends GeneralItem {
 	}
 
 	public boolean isGroundedOnConcept() {
-		return matchesToConcept() || refersToConceptsExactly() || refersToPluralConceptsExactly()
-				|| this.partialConceptReference;
+		return matchesToConcept() || refersToConceptsExactly() || refersToPluralConceptsExactly() || this.partialConceptReference;
 	}
 
 	public boolean isGroundedOnProperty() {
@@ -1288,8 +1326,9 @@ public class ProcessedWord extends GeneralItem {
 	}
 
 	public boolean isGroundedOnInstance() {
-		return (matchesToInstance() && !isLaterPartOfPartial()) || refersToInstancesExactly()
-				|| refersToPluralInstancesExactly() || (this.partialInstanceReference && this.partialStartWord);
+//		return (matchesToInstance() && !isLaterPartOfPartial()) || refersToInstancesExactly()
+//				|| refersToPluralInstancesExactly() || (this.partialInstanceReference && this.partialStartWord);
+		return matchesToInstance() || refersToInstancesExactly() || refersToPluralInstancesExactly() || (this.partialInstanceReference && this.partialStartWord);
 	}
 
 	public ArrayList<CeConcept> listGroundedConcepts() {
@@ -1317,6 +1356,37 @@ public class ProcessedWord extends GeneralItem {
 			}
 
 			result = winnowConcepts(set);
+		}
+
+		return result;
+	}
+
+	public TreeMap<String, CeConcept> listGroundedConceptsAndKeys() {
+		TreeMap<String, CeConcept> result = new TreeMap<String, CeConcept>();
+
+		if (this.matchingConcept != null) {
+			result.put(getWordText(), this.matchingConcept);
+		}
+
+		if (this.referredExactConcepts != null) {
+			for (String thisKey : this.referredExactConcepts.keySet()) {
+				CeConcept thisCon = this.referredExactConcepts.get(thisKey);
+				result.put(thisKey, thisCon);
+			}
+		}
+
+		if (this.referredExactConceptsPlural != null) {
+			for (String thisKey : this.referredExactConceptsPlural.keySet()) {
+				CeConcept thisCon = this.referredExactConceptsPlural.get(thisKey);
+				result.put(thisKey, thisCon);
+			}
+		}
+
+		if (this.referredExactConceptsPastTense != null) {
+			for (String thisKey : this.referredExactConceptsPastTense.keySet()) {
+				CeConcept thisCon = this.referredExactConceptsPastTense.get(thisKey);
+				result.put(thisKey, thisCon);
+			}
 		}
 
 		return result;
@@ -1358,6 +1428,26 @@ public class ProcessedWord extends GeneralItem {
 		return winnowProperties(result);
 	}
 
+	public TreeMap<String, CeProperty> listGroundedPropertiesAndKeys() {
+		TreeMap<String, CeProperty> result = new TreeMap<String, CeProperty>();
+
+		if (this.matchingRelations != null) {
+			for (String thisKey : this.matchingRelations.keySet()) {
+				CeProperty thisProp = this.matchingRelations.get(thisKey);
+				result.put(thisKey, thisProp);
+			}
+		}
+
+		if (this.referredExactRelations != null) {
+			for (String thisKey : this.referredExactRelations.keySet()) {
+				CeProperty thisProp = this.referredExactRelations.get(thisKey);
+				result.put(thisKey, thisProp);
+			}
+		}
+
+		return result;
+	}
+
 	public ArrayList<CeInstance> listGroundedInstances() {
 		ArrayList<CeInstance> result = new ArrayList<CeInstance>();
 		if (this.partialConceptReference) {
@@ -1380,6 +1470,30 @@ public class ProcessedWord extends GeneralItem {
 			}
 
 			result = winnowInstances(set);
+		}
+
+		return result;
+	}
+
+	public TreeMap<String, CeInstance> listGroundedInstancesAndKeys() {
+		TreeMap<String, CeInstance> result = new TreeMap<String, CeInstance>();
+
+		if (this.matchingInstances != null) {
+			for (CeInstance thisInst : this.matchingInstances) {
+				result.put(getWordText(), thisInst);
+			}
+		}
+
+		if (this.referredExactInstances != null) {
+			for (String thisKey : this.referredExactInstances.keySet()) {
+				result.put(thisKey, this.referredExactInstances.get(thisKey));
+			}
+		}
+
+		if (this.referredExactInstancesPlural != null) {
+			for (String thisKey : this.referredExactInstancesPlural.keySet()) {
+				result.put(thisKey, this.referredExactInstancesPlural.get(thisKey));
+			}
 		}
 
 		return result;

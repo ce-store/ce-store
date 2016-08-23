@@ -32,7 +32,7 @@ public class QuestionHelpHandler extends QuestionHandler {
 	private static final String JSON_D_INTS = "interpretations";
 	private static final String JSON_BT = "before_text";
 	private static final String JSON_AT = "after_text";
-	
+
 	protected ArrayList<Suggestion> suggestions = null;
 	protected ArrayList<Interpretation> interpretations = null;
 	private int maxSuggs = 10;	//TODO: Abstract this
@@ -74,8 +74,10 @@ public class QuestionHelpHandler extends QuestionHandler {
 	private CeStoreJsonArray jsonForSuggestions() {
 		CeStoreJsonArray result = new CeStoreJsonArray();
 
-		for (Suggestion thisSugg : this.suggestions) {
-			result.add(jsonForSuggestion(thisSugg));
+		if (this.suggestions != null) {
+			for (Suggestion thisSugg : this.suggestions) {
+				result.add(jsonForSuggestion(thisSugg));
+			}
 		}
 
 		return result;
@@ -83,7 +85,7 @@ public class QuestionHelpHandler extends QuestionHandler {
 
 	private static CeStoreJsonObject jsonForSuggestion(Suggestion pSugg) {
 		CeStoreJsonObject result = new CeStoreJsonObject();
-			
+
 		if (pSugg.hasBeforeText()) {
 			result.put(JSON_BT, pSugg.getBeforeText());
 		}
@@ -103,16 +105,25 @@ public class QuestionHelpHandler extends QuestionHandler {
 		CeStoreJsonObject result = null;
 
 		interpretQuestion();
-		ArrayList<Suggestion> theseSuggs = new ArrayList<Suggestion>();
-		computeSuggestions(0, theseSuggs);
-		Collections.sort(theseSuggs);
 
-		this.suggestions = theseSuggs;
+		if (!this.question.endsWithPunctuation()) {
+			if (!isCeText()) {
+				ArrayList<Suggestion> theseSuggs = new ArrayList<Suggestion>();
+				computeSuggestions(0, theseSuggs);
+				Collections.sort(theseSuggs);
+		
+				this.suggestions = theseSuggs;
+			}
+		}
 
 		result = createResult();
 
 		reportDebug("handleQuestion=" + new Long(System.currentTimeMillis() - st).toString(), this.ac);
 		return result;
+	}
+
+	private boolean isCeText() {
+		return ModifierHandler.isCeModifier(this.ac, this.allWords);
 	}
 
 	private void computeSuggestions(int pStartIndex, ArrayList<Suggestion> pSuggs) {
@@ -185,11 +196,11 @@ public class QuestionHelpHandler extends QuestionHandler {
 			String beforePart = thisPair.get(0);
 			String afterPart = thisPair.get(1);
 			int bpLen = beforePart.length();
-			
+
 			if (beforePart.isEmpty()) {
 				beforePart = " ";
 			}
-			
+
 			qText = qText.substring(0, (qText.length() - bpLen));
 			qText += beforePart;
 
@@ -200,7 +211,7 @@ public class QuestionHelpHandler extends QuestionHandler {
 			pSuggestions.add(Suggestion.create(qText, null, afterPart));
 		}
 	}
-	
+
 	private int processInstance(CeInstance pInst, String pFragment, TreeMap<String, ArrayList<String>> pFinalPairs) {
 		int result = 0;
 		String lcFrag = pFragment.toLowerCase();
@@ -213,15 +224,13 @@ public class QuestionHelpHandler extends QuestionHandler {
 					String beforePart = possId.substring(0, lcFrag.length());
 					String afterPart = possId.substring(lcFrag.length());
 
-//					if (!pFinalPairs.containsKey(afterPart)) {
-						ArrayList<String> thisPair = new ArrayList<String>();
-						thisPair.add(beforePart);
-						thisPair.add(afterPart);
+					ArrayList<String> thisPair = new ArrayList<String>();
+					thisPair.add(beforePart);
+					thisPair.add(afterPart);
 
-						pFinalPairs.put(afterPart, thisPair);
-						result = 1;
-						break;
-//					}
+					pFinalPairs.put(afterPart, thisPair);
+					result = 1;
+					break;
 				}
 			}
 		}
@@ -243,9 +252,7 @@ public class QuestionHelpHandler extends QuestionHandler {
 					if (pFragment.isEmpty() || lcId.startsWith(pFragment)) {
 						String afterBit = thisCon.pluralFormName(this.ac).substring(pFragment.length());
 
-//						if (!finalVals.contains(afterBit)) {
-							finalVals.add(afterBit);
-//						}
+						finalVals.add(afterBit);
 					}
 
 					if (pSuggs.size() >= maxSuggs) {
@@ -254,8 +261,6 @@ public class QuestionHelpHandler extends QuestionHandler {
 				}
 			}
 		}
-
-//		Collections.sort(finalVals);
 
 		for (String afterBit : finalVals) {
 			if (pSuggs.size() >= this.maxSuggs) {
@@ -269,7 +274,7 @@ public class QuestionHelpHandler extends QuestionHandler {
 	private void suggestPropertyNames(String pFragment, ArrayList<Suggestion> pSuggs) {
 		HashSet<String> propNames = new HashSet<String>();
 		ArrayList<String> finalVals = new ArrayList<String>();
-		
+
 		for (CeProperty thisProp : this.ac.getModelBuilder().getAllProperties()) {
 			String propName = thisProp.getPropertyName();
 			
@@ -297,7 +302,9 @@ public class QuestionHelpHandler extends QuestionHandler {
 		long st = System.currentTimeMillis();
 		CeStoreJsonObject result = null;
 
-		Collections.sort(this.suggestions);
+		if (this.suggestions != null) {
+			Collections.sort(this.suggestions);
+		}
 
 		if (this.debug) {
 			this.interpretations = InterpretationSummary.generateInterpretations(this.allWords);

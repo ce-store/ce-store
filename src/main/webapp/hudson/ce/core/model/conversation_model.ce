@@ -87,16 +87,17 @@ conceptualise a ~ config list ~ CL that
   has the value M as ~ marker ~.
 
 conceptualise a ~ modifier ~ M that
+--  is a configuration concept and
   ~ corresponds to ~ the general function F and
   ~ uses by default ~ the entity concept E.
 
-conceptualise a ~ database modifier ~ M that
-  is a modifier and
-  ~ corresponds to ~ the database function F.
+--conceptualise a ~ database modifier ~ M that
+--  is a modifier and
+--  ~ corresponds to ~ the database function F.
 
-conceptualise a ~ search modifier ~ M that
-  is a modifier and
-  ~ corresponds to ~ the search function F.
+--conceptualise a ~ search modifier ~ M that
+--  is a modifier and
+--  ~ corresponds to ~ the search function F.
 
 conceptualise a ~ filter modifier ~ M that
   is a modifier and
@@ -109,16 +110,16 @@ conceptualise a ~ CE modifier ~ M that
 
 conceptualise an ~ end modifier ~ M that is a modifier.
 
-conceptualise an ~ affector ~ A that
-  ~ corresponds to ~ the database function F.
+--conceptualise an ~ affector ~ A that
+--  ~ corresponds to ~ the database function F.
 
-conceptualise a ~ grouper ~ G that
-  is an affector and
-  has the database concept C as ~ target concept ~.
+--conceptualise a ~ grouper ~ G that
+--  is an affector and
+--  has the database concept C as ~ target concept ~.
 
-conceptualise an ~ orderer ~ O that
-  is an affector and
-  has the value C as ~ order column name ~.
+--conceptualise an ~ orderer ~ O that
+--  is an affector and
+--  has the value C as ~ order column name ~.
 
 conceptualise a ~ local concept ~ L that
   has the source SO as ~ source ~ and

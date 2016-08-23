@@ -43,7 +43,6 @@ import java.util.zip.ZipFile;
 import com.ibm.ets.ita.ce.store.ActionContext;
 
 public abstract class FileUtilities {
-
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
 
 	private static final String CLASS_NAME = FileUtilities.class.getName();
@@ -65,7 +64,7 @@ public abstract class FileUtilities {
 	private static final String BS = "\\";
 	private static final String URL_SEP = "/";
 	private static final String FILE_SEP = "/";
-	
+
 	private static final String HTTPHDR_AUTH = "Authorization";
 
 	public static final String SUFFIX_CE = ".ce";
@@ -95,13 +94,17 @@ public abstract class FileUtilities {
 
 	public static String convertToString(ActionContext pAc, BufferedReader pReader) {
 		final String METHOD_NAME = "convertToString";
-			
+
 		StringBuilder sb = new StringBuilder();
 		String thisLine = "";
 
 		try {
 			while ((thisLine = pReader.readLine()) != null) {
-				appendToSb(sb, thisLine);
+				if (sb.length() != 0) {
+					sb.append(NL);
+				}
+
+				appendToSbNoNl(sb, thisLine);
 			}
 		} catch (IOException e) {
 			reportException(e, pAc, logger, CLASS_NAME, METHOD_NAME);
@@ -166,24 +169,14 @@ public abstract class FileUtilities {
 			result = result.replace(TOKEN_CEFOLDER + FILE_SEP, pAc.getCeConfig().getRootFolder());
 			result = result.replace(TOKEN_CEFOLDER + BS, pAc.getCeConfig().getRootFolder());
 			result = result.replace(TOKEN_CEFOLDER, pAc.getCeConfig().getRootFolder());
-
-//			if ((result.startsWith(FILE_SEP)) || (result.startsWith(BS))) {
-//				result = result.substring(1, result.length());
-//			}
-//			
-//			result = pAc.getCeConfig().getRootFolder() + result;
 		}
 
 		return result;
 	}
 
-//	public static void writeToFile(ActionContext pAc, StringBuilder pSb, String pFilename) {
-//		writeToFile(pAc, pSb.toString(), pFilename);
-//	}
-
 	public static void writeToFile(ActionContext pAc, StringBuilder pSb, String pFilename) {
 		final String METHOD_NAME = "writeToFile";
-		
+
 		String tgtFilename = calculateFullFilenameFrom(pAc, pFilename);
 
 		if (pSb != null) {
@@ -225,7 +218,7 @@ public abstract class FileUtilities {
 
 	public static void writeToFile(ActionContext pAc, String pContents, String pFilename, boolean pAppend) {
 		final String METHOD_NAME = "writeToFile";
-		
+
 		String tgtFilename = calculateFullFilenameFrom(pAc, pFilename);
 
 		if (pContents != null) {
@@ -447,8 +440,6 @@ public abstract class FileUtilities {
 				result = URLDecoder.decode(pValue, ENCODING);
 			} catch (UnsupportedEncodingException e) {
 				reportException(e, pAc, logger, CLASS_NAME, METHOD_NAME);
-//			} catch (IllegalArgumentException e) {
-//				reportException(e, "Non-UTF8 character in input, probably from corrupted export", pAc, logger, CLASS_NAME, METHOD_NAME);
 			}
 		}
 

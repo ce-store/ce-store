@@ -21,6 +21,8 @@ function Hudson(pJsDebug) {
 	var URL_QH = '/special/hudson/helper';
 	var URL_QE = '/special/hudson/executor';
 	var URL_QA = '/special/hudson/analyser';
+	var URL_QB = '/special/hudson/answerer';
+	var URL_QI = '/special/hudson/interpreter';
 	var URL_QMR = '/special/hudson/reset';
 	var URL_QMS = '/special/hudson/status';
 	var HDR_CEUSER = 'CE_User';
@@ -29,6 +31,7 @@ function Hudson(pJsDebug) {
 	this.chattyAnswers = false;
 	this.cachedHelp = null;
 	this.cachedAnswer = null;
+	this.lastInterpretation = null;
 
 	this.isDebug = function() {
 		return getCheckboxValueFrom(DOM_DB);
@@ -67,18 +70,25 @@ function Hudson(pJsDebug) {
 	this.loadCurrentCannedQuestion = function() {
 		var cqPair = this.getCurrentCannedQuestion();
 
+		this.clearAnswerText();
+
 		setTextIn(DOM_QT, cqPair[1]);
 		this.parseQuestionText();
 	};
 
 	this.loadPreviousCannedQuestion = function() {
 		var cqPair = this.getPreviousCannedQuestion();
+
+		this.clearAnswerText();
+
 		setTextIn(DOM_QT, cqPair[1]);
 		this.parseQuestionText();
 	};
 
 	this.loadNextCannedQuestion = function() {
 		var cqPair = this.getNextCannedQuestion();
+
+		this.clearAnswerText();
 
 		setTextIn(DOM_QT, cqPair[1]);
 		this.parseQuestionText();
@@ -171,10 +181,14 @@ function Hudson(pJsDebug) {
 	this.executeQuestion = function() {
 		var qText = getTextFrom(DOM_QT);
 		var cbf = function(pResponse) {gHudson.updateAnswer(pResponse);};
-		
-		setTextIn(DOM_AT, '');
+
+		this.clearAnswerText();
 
 		this.executeSpecificQuestion(qText, cbf);
+	};
+
+	this.clearAnswerText = function() {
+		setTextIn(DOM_AT, '');
 	};
 
 	this.executeSpecificQuestion = function(pQuestionText, pCbf) {
@@ -184,14 +198,40 @@ function Hudson(pJsDebug) {
 	this.analyseQuestion = function() {
 		var qText = getTextFrom(DOM_QT);
 		var cbf = function(pResponse) {gHudson.updateAnswer(pResponse);};
-		
+
 		setTextIn(DOM_AT, '');
 
 		this.analyseSpecificQuestion(qText, cbf);
 	};
 
+	this.interpretQuestion = function() {
+		var qText = getTextFrom(DOM_QT);
+		var cbf = function(pResponse) {gHudson.updateInterpretation(pResponse);};
+
+		setTextIn(DOM_AT, '');
+
+		this.interpretSpecificQuestion(qText, cbf);
+	};
+
+	this.answerInterpretation = function() {
+		var qText = JSON.stringify(this.lastInterpretation);
+		var cbf = function(pResponse) {gHudson.updateRawAnswer(pResponse);};
+
+		setTextIn(DOM_AT, '');
+
+		this.answerSpecificInterpretation(qText, cbf);
+	};
+
 	this.analyseSpecificQuestion = function(pQuestionText, pCbf) {
 		sendAnalyseRequest(pQuestionText, pCbf, this.isDebug());
+	};
+
+	this.interpretSpecificQuestion = function(pQuestionText, pCbf) {
+		sendInterpretRequest(pQuestionText, pCbf, this.isDebug());
+	};
+
+	this.answerSpecificInterpretation = function(pQuestionText, pCbf) {
+		sendAnswerInterpretationRequest(pQuestionText, pCbf, this.isDebug());
 	};
 
 	this.showInterpretations = function() {
@@ -223,6 +263,155 @@ function Hudson(pJsDebug) {
 		setTextIn(DOM_PQ, intText);
 	};
 
+	this.updateInterpretation = function(pResponse) {
+		this.lastInterpretation = pResponse;
+
+		if (pResponse != null) {
+			this.renderInterpretation(pResponse);
+		}
+	};
+
+	this.renderInterpretation = function(pResponse) {
+		var result = null;
+
+		result = "<table border='1'>";
+		result += "<tr><td><b>Word</b></td><td><b>Matches</b></td></tr>";
+
+		for (var i in pResponse.words) {
+			result += "<tr>";
+			result += "<td>" + pResponse.words[i] + "</td>";
+			result += "<td>" + seekMatches(i, pResponse) + "</td>";
+			result += "</tr>";
+		}
+
+		result += "</table>";
+
+		result += "<br><br>";
+		
+		result += "<a href=\"javascript:gHudson.answerInterpretation();\">Send this interpretation for answer</a>";
+		
+		result += "<br><br>";
+
+		result += JSON.stringify(pResponse);
+
+		setTextIn(DOM_AT, result);
+	};
+
+	function seekMatches(pIdx, pResponse) {
+		var result = "";
+
+		for (var i in pResponse.concepts) {
+			var thisCon = pResponse.concepts[i];
+
+			if (thisCon.position == pIdx) {
+				result += "\"" + i + "\" = " + htmlForConcept(thisCon);
+			}
+		}
+
+		for (var i in pResponse.properties) {
+			var thisProp = pResponse.properties[i];
+
+			if (thisProp.position == pIdx) {
+				result += "\"" + i + "\" = " + htmlForProperty(thisProp);
+			}
+		}
+
+		for (var i in pResponse.instances) {
+			var thisInst = pResponse.instances[i];
+
+			if (thisInst.position == pIdx) {
+				result += "\"" + i + "\" = " + htmlForInstance(thisInst);
+			}
+		}
+
+		for (var i in pResponse.specials) {
+			var thisSpec = pResponse.specials[i];
+
+			if (thisSpec.position == pIdx) {
+				result += "\"" + i + "\" = " + htmlForSpecial(thisSpec);
+			}
+		}
+
+		return result;
+	}
+
+	function htmlForConcept(pCon) {
+		var result = null;
+
+		result = "<a title='" + JSON.stringify(pCon) + "'><font color='blue'>" + pCon.instance._id + "</font></a> (";
+		result += htmlConceptSummary(pCon.instance) + ")<br>";
+
+		return result;
+	}
+
+	function htmlForProperty(pProp) {
+		var result = null;
+
+		result = "<a title='" + JSON.stringify(pProp) + "'><font color='blue'>" + pProp.instance._id + "</font></a> (";
+		result += htmlPropertySummary(pProp.instance) + ")<br>";
+
+		return result;
+	}
+
+	function htmlForInstance(pInst) {
+		var result = null;
+
+		result = "<a title='" + JSON.stringify(pInst) + "'><font color='blue'>" + pInst.instance._id + "</font></a> (";
+		result += htmlInstanceSummary(pInst.instance) + ")<br>";
+
+		return result;
+	}
+
+	function htmlForSpecial(pSpec) {
+		var result = null;
+
+		result = "<a title='" + JSON.stringify(pSpec) + "'><font color='blue'>" + pSpec.name + "</font></a> (" + pSpec.type + ")<br>";
+
+		return result;
+	}
+
+	function htmlInstanceSummary(pInst) {
+		var result = null;
+		var conList = removeMetaConceptsFrom(pInst._concept);
+
+		result = "instance [" + conList + "]";
+
+		return result;
+	}
+
+	function htmlPropertySummary(pInst) {
+		var result = null;
+		var conList = removeMetaConceptsFrom(pInst._concept);
+
+		result = "property [" + conList + "]";
+
+		return result;
+	}
+
+	function htmlConceptSummary(pInst) {
+		var result = null;
+		var conList = removeMetaConceptsFrom(pInst._concept);
+
+		result = "concept [" + conList + "]";
+
+		return result;
+	}
+
+	function removeMetaConceptsFrom(pList) {
+		var metaList = ["configuration concept", "linguistic thing", "suppressed concept", "local concept", "meaning", "concept", "property concept" ];
+		var result = [];
+
+		for (var i in pList) {
+			var thisItem = pList[i];
+
+			if (metaList.indexOf(thisItem) == -1) {
+				result.push(thisItem);
+			}
+		}
+
+		return result;
+	}
+
 	this.updateAnswer = function(pResponse) {
 		this.cachedAnswer = pResponse;
 
@@ -232,6 +421,12 @@ function Hudson(pJsDebug) {
 
 		if (pResponse != null) {
 			this.renderAnswers(pResponse);
+		}
+	};
+
+	this.updateRawAnswer = function(pResponse) {
+		if (pResponse != null) {
+			setTextIn(DOM_AT, htmlFormat(pResponse));
 		}
 	};
 
@@ -370,7 +565,7 @@ function Hudson(pJsDebug) {
 					pqText += 'Execution time (ms): <font color="red">' + debug.execution_time_ms + '</font>';
 				}
 			} 
-			
+
 			for (var idx in pResponse.suggestions) {
 				var thisSugg = pResponse.suggestions[idx];
 				var qt = thisSugg.question_text;
@@ -379,7 +574,7 @@ function Hudson(pJsDebug) {
 				if (pqText !== '') {
 					pqText += '<br>';
 				}
-				
+
 				var bt = thisSugg.before_text;
 				var at = thisSugg.after_text;
 
@@ -387,15 +582,15 @@ function Hudson(pJsDebug) {
 					pqText += '<b>' + bt + '</b>';
 					wholeSugg += bt;
 				}
-				
+
 				pqText += qt;
 				wholeSugg += qt;
-				
+
 				if (at != null) {
 					pqText += '<b>' + at + '</b>';
 					wholeSugg += at;
 				}
-				
+
 				pqText += ' [<a href="javascript:gHudson.useSuggestion(\'' + wholeSugg + '\');">use</a>]';
 			}
 		} else {
@@ -434,6 +629,16 @@ function Hudson(pJsDebug) {
 
 	function sendAnalyseRequest(pQuestionJson, pCbf, pDebug) {
 		var url = getTextFrom(DOM_EP) + URL_QA;
+		sendAjaxPost(url, pQuestionJson, pCbf, pDebug);
+	}
+
+	function sendInterpretRequest(pQuestionJson, pCbf, pDebug) {
+		var url = getTextFrom(DOM_EP) + URL_QI;
+		sendAjaxPost(url, pQuestionJson, pCbf, pDebug);
+	}
+
+	function sendAnswerInterpretationRequest(pQuestionJson, pCbf, pDebug) {
+		var url = getTextFrom(DOM_EP) + URL_QB;
 		sendAjaxPost(url, pQuestionJson, pCbf, pDebug);
 	}
 
@@ -511,7 +716,7 @@ function Hudson(pJsDebug) {
 		}
 
 		var userName = gHudson.getUserName();
-		
+
 		xhr.open(pType, pUrl, true);
 
 		if (userName != null) {
@@ -524,7 +729,11 @@ function Hudson(pJsDebug) {
 
 		xhr.onload = function(e) {
 			if (this.status === 200) {
-				pCbf(JSON.parse(xhr.response));
+				try {
+					pCbf(JSON.parse(xhr.response));
+				} catch(e) {
+					pCbf(xhr.response);
+				}
 			} else if (this.status === 404) {
 				ajaxError404(pUrl);
 			} else if (this.status === 405) {
@@ -604,9 +813,9 @@ function Hudson(pJsDebug) {
 				hdrs = [ 'id', 'lat', 'lon' , 'postcode', 'address line 1'];
 				rows = [ [ pCoords.id, pCoords.lat, pCoords.lon, pCoords.postcode, , pCoords.address_line_1 ] ];
 			} else {
-				//postcode only
-				hdrs = [ 'id', 'postcode', 'address line 1' ];
-				rows = [ [ pCoords.id, pCoords.postcode, pCoords.address_line_1 ] ];
+				//lat lon only
+				hdrs = [ 'id', 'lat', 'lon' ];
+				rows = [ [ pCoords.id, pCoords.lat, pCoords.lon ] ];
 			}
 		} else {
 			//No lat lon

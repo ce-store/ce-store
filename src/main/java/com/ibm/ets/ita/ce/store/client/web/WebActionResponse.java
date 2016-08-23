@@ -125,22 +125,27 @@ public class WebActionResponse extends ActionResponse {
 			StringBuilder jsonSb = null;
 
 			if (pWrapResponse) {
-				jsonSb = this.jsonPayload.serializeToSb(pAc);
+				if (this.jsonPayload != null) {
+					jsonSb = this.jsonPayload.serializeToSb(pAc);
+				}
 			} else {
 				if (this.structuredResult != null) {
 					jsonSb = this.structuredResult.serializeToSb(pAc);
 				} else {
-					jsonSb = this.jsonPayload.serializeToSb(pAc);
-//					jsonSb = CeWebObject.generateStandardAlertsFrom(this.alerts).serializeToSb(pAc);
+					if (this.jsonPayload != null) {
+						jsonSb = this.jsonPayload.serializeToSb(pAc);
+					}
 				}
 			}
 
-			pOut.append(jsonSb);
+			if (jsonSb != null) {
+				pOut.append(jsonSb);
 
-			//Log to file if needed
-			if (pAc.getCeConfig().logJsonToFiles()) {
-				String jsonFilename = pAc.getCeConfig().getTempPath() + FN_JSON_PREFIX + "_" + this.getTxnName() + "_" + formattedTimeForFilenames() + FN_JSON_SUFFIX;
-				writeToFile(pAc, jsonSb, jsonFilename);
+				//Log to file if needed
+				if (pAc.getCeConfig().logJsonToFiles()) {
+					String jsonFilename = pAc.getCeConfig().getTempPath() + FN_JSON_PREFIX + "_" + this.getTxnName() + "_" + formattedTimeForFilenames() + FN_JSON_SUFFIX;
+					writeToFile(pAc, jsonSb, jsonFilename);
+				}
 			}
 		} catch (IOException e) {
 			reportException(e, pAc, logger, CLASS_NAME, METHOD_NAME);

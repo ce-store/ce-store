@@ -44,7 +44,7 @@ public class QuestionManagementHandler extends QuestionHandler {
 		hm.refreshQuestionLog(this.ac);
 		hm.clearCaches(this.ac);
 
-		setupCeStore(this.ac);
+		setupCeStore(this.ac, ssm, hm);
 
 		result.put(JSON_SM, "The CE Store has been reset");
 		result.put(JSON_ET, System.currentTimeMillis() - this.startTime);
@@ -143,13 +143,11 @@ public class QuestionManagementHandler extends QuestionHandler {
 		return null;
 	}
 
-	protected static void setupCeStore(ActionContext pAc) {
+	protected static void setupCeStore(ActionContext pAc, ServletStateManager pSsm, HudsonManager pHm) {
 		String storeName = ModelBuilder.CESTORENAME_DEFAULT;
-		ServletStateManager ssm = ServletStateManager.getServletStateManager();
-		HudsonManager hm = ServletStateManager.getHudsonManager(pAc);
-		ModelBuilder mb = ssm.getModelBuilder(storeName);
+		ModelBuilder mb = pSsm.getModelBuilder(storeName);
 		boolean storeWasLoaded = false;
-		
+
 		if (mb == null) {
 			//The CE Store is not yet set up, so initialise it
 			mb = loadCeStore(pAc, storeName);
@@ -164,7 +162,7 @@ public class QuestionManagementHandler extends QuestionHandler {
 		pAc.getCeConfig().setCaseInsensitive();
 
 		//DSB 13/10/2015 - See whether rules should be auto executed
-		ConvConfig cc = hm.getConvConfig(pAc);
+		ConvConfig cc = pHm.getConvConfig(pAc);
 
 		if (cc != null) {
 			if (cc.isRunningRules()) {
