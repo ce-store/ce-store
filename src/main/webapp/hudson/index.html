@@ -17,7 +17,6 @@
     <link rel="icon" href="favicon.png" type="image/x-icon">
     <link rel="shortcut icon" href="favicon.png" type="image/x-icon"> 
 	<script src="./js/hudson.js"></script>
-	<script src="./js/questions.js"></script>
 	<link rel="stylesheet" type="text/css" href="./css/hudson.css">
 </head>
 <body>
@@ -43,9 +42,9 @@
 		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
 		<hr/>
 		Question: <input type="text" id="questionText" size="75" onKeyUp="gHudson.keyUpQuestionText();" value="(type your question here)">
-		<a href="javascript:gHudson.loadPreviousCannedQuestion();">&lt;</a>
+		<a href="javascript:gHudson.loadPreviousQuestion();">&lt;</a>
 		<input type="text" id="questionPos" size="2" onKeyUp="gHudson.keyUpQuestionPos();" value="0"/>
-		<a href="javascript:gHudson.loadNextCannedQuestion();">&gt;</a>
+		<a href="javascript:gHudson.loadNextQuestion();">&gt;</a>
 		&nbsp;&nbsp;(<a href="javascript:gHudson.parseQuestionText();">Parse question text</a>)
 		<br/>
 		<a href="javascript:gHudson.executeQuestion();">Execute question</a>&nbsp;&nbsp;&nbsp;

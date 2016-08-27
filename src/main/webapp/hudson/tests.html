@@ -19,10 +19,9 @@
 	<script src="./js/hudson.js"></script>
 	<script src="./js/tester.js"></script>
 	<script src="./js/checker.js"></script>
-	<script src="./js/questions.js"></script>
 	<link rel="stylesheet" type="text/css" href="./css/hudson.css">
 </head>
-<body onload="gTester.initialiseTestPage();">
+<body>
 	<div>
 		Endpoint: <input type="text" id="endpoint" size="40" value=".."/>
 		<a href="javascript:gHudson.swapEndpoint();">swap</a>
@@ -41,10 +40,8 @@
 		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
 		<hr/>
 		Load definitive responses:
-		<a href="javascript:gTester.loadDefinitiveNormalResponses();">normal</a>
-		<span id="normal_loaded"> (0 loaded)</span>,
-		<a href="javascript:gTester.loadDefinitiveDebugResponses();">debug</a>
-		<span id="debug_loaded"> (0 loaded)</span>
+		<a href="javascript:gTester.loadDefinitiveAnswers();">new</a>
+		<span id="new_loaded"> (0 loaded)</span>
 		<hr/>
 		Question range: <input type="text" id="question_range" size="10" onKeyUp="javascript:gTester.keyUpQuestionRange();"/>
 		(e.g. "1-100")<span id="number_of_questions"></span>
@@ -53,10 +50,15 @@
 		<br/>
 		Iterations: <input type="text" id="iterations" size="5" value="1"/>
 		&nbsp;&nbsp;&nbsp;
-		Result set depth: <input type="text" id="result_set_depth" size="5" value="100"/>
+		Result set depth: <input type="text" id="result_set_depth" size="5" value=""/>
+		<input type="checkbox" id="show_details" checked/> Show details
+		&nbsp;&nbsp;&nbsp;<span id="test_results"></span>
 		<br/>
 		<a href="javascript:gTester.executeTestQuestions();">execute test questions</a>
-		&nbsp;&nbsp;&nbsp;<span id="test_results"></span>
+		<input type="checkbox" id="interpret" checked/> Interpret
+		<input type="checkbox" id="answer"/> Answer
+		<input type="checkbox" id="execute" checked/> Execute (Interpret + Answer)
+		<input type="checkbox" id="analyse"/> Analyse
 		<hr/>
 		<table border=1 width="100%">
 		 <tr valign="top">

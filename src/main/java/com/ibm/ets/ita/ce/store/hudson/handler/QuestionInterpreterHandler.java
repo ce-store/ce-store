@@ -30,6 +30,7 @@ import com.ibm.ets.ita.ce.store.model.CePropertyInstance;
 public class QuestionInterpreterHandler extends QuestionHandler {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
+	private static final String JSON_Q_TEXT = "question_text";
 	private static final String JSON_WORDS = "words";
 	private static final String JSON_CONS = "concepts";
 	private static final String JSON_PROPS = "properties";
@@ -205,6 +206,7 @@ public class QuestionInterpreterHandler extends QuestionHandler {
 	protected CeStoreJsonObject createJsonResponse() {
 		CeStoreJsonObject result = new CeStoreJsonObject();
 
+		result.put(JSON_Q_TEXT, getQuestionText());
 		result.put(JSON_WORDS, createJsonForWords());
 		result.put(JSON_CONS, createJsonForConcepts());
 		result.put(JSON_PROPS, createJsonForProperties());

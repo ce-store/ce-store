@@ -5,9 +5,13 @@
 
 var gHudson = new Hudson(true);
 
+gHudson.loadQuestions();
+
 function Hudson(pJsDebug) {
 	var LOCAL_SERVER = '..';
 	var REMOTE_SERVER = 'http://blah.blah.blah:8080/ce-store/';
+	var URL_QUESTIONS_LIST = [ './test_json/questions_core.json', './test_json/questions_extra.json' ];
+
 	var DOM_QT = 'questionText';
 	var DOM_QP = 'questionPos';
 	var DOM_AT = 'answer';
@@ -32,65 +36,135 @@ function Hudson(pJsDebug) {
 	this.cachedHelp = null;
 	this.cachedAnswer = null;
 	this.lastInterpretation = null;
+	this.allQuestions = [];
+
+	this.sendJsonFileRequest = function(pUrl, pCbf) {
+		var xhr = new XMLHttpRequest();
+
+		xhr.open('GET', pUrl, true);
+
+		xhr.onload = function(e) {
+			if (this.status === 200) {
+				pCbf(JSON.parse(xhr.response));
+			} else {
+				ajaxErrorOther(xhr.response, e, this.status, pUrl);
+			}
+		};
+
+		xhr.onerror = function(e) {
+			ajaxErrorOther(xhr.response, e, this.status, pUrl);
+		};
+		
+		xhr.send();
+	};
+
+	this.loadQuestions = function(pCbf) {
+		var cbf = null;
+
+		if (pCbf == null) {
+			cbf = function(pResponse) { gHudson.handleLoadQuestions(pResponse); };
+		} else {
+			cbf = pCbf;
+		}
+
+		for (var i = 0; i < URL_QUESTIONS_LIST.length; i++) {
+			var thisUrl = URL_QUESTIONS_LIST[i];
+
+			this.sendJsonFileRequest(thisUrl, cbf);
+		}
+	};
+
+	this.sortQuestions = function(pList) {
+		pList.sort(sortById);
+	}
+
+	function sortById(a, b) {
+		var result = a.id - b.id;
+		
+		if (a.id < b.id) {
+			result = -1;
+		} else if (a.id > b.id) {
+			result = 1;
+		} else {
+			result = 0;
+		}
+
+		return result;
+	}
+
+	this.handleLoadQuestions = function(pResponse) {
+		for (var i = 0; i < pResponse.length; i++) {
+			var thisQ = pResponse[i];
+			this.allQuestions.push(thisQ);
+		}
+
+		this.sortQuestions(this.allQuestions);
+		this.loadCurrentQuestion();
+	};
 
 	this.isDebug = function() {
-		return getCheckboxValueFrom(DOM_DB);
+		return this.getCheckboxValueFrom(DOM_DB);
 	};
 
 	this.isLoggingResults = function() {
-		return getCheckboxValueFrom(DOM_LR);
+		return this.getCheckboxValueFrom(DOM_LR);
 	};
 
-	this.getCurrentCannedQuestion = function() {
-		return gQuestions.getCannedQuestions()[getCqPos()];
+	this.getCurrentQuestion = function() {
+		return this.allQuestions[getCqPos()];
 	};
 	
-	this.getNextCannedQuestion = function() {
+	this.getNextQuestion = function() {
 		var cqPos = getCqPos();
 
-		if (++cqPos >= gQuestions.getCannedQuestions().length) {
+		if (++cqPos >= this.allQuestions.length) {
 			cqPos = 0;
 		}
+
 		setTextIn(DOM_QP, cqPos);
-		
-		return gQuestions.getCannedQuestions()[cqPos];
+
+		return this.allQuestions[cqPos].question;
 	};
 
-	this.getPreviousCannedQuestion = function() {
+	this.getPreviousQuestion = function() {
 		var cqPos = getCqPos();
 
 		if (--cqPos < 0) {
-			cqPos = gQuestions.getCannedQuestions().length - 1;
+			cqPos = this.allQuestions.length - 1;
 		}
 		setTextIn(DOM_QP, cqPos);
 		
-		return gQuestions.getCannedQuestions()[cqPos];
+		return this.allQuestions[cqPos].question;
 	};
 
-	this.loadCurrentCannedQuestion = function() {
-		var cqPair = this.getCurrentCannedQuestion();
+	this.loadCurrentQuestion = function() {
+		var cq = this.getCurrentQuestion();
+		
+		if (cq != null) {
+			var qText = cq.question;
+
+			this.clearAnswerText();
+
+			setTextIn(DOM_QT, qText);
+			this.parseQuestionText();
+		}
+	};
+
+	this.loadPreviousQuestion = function() {
+		var qText = this.getPreviousQuestion();
 
 		this.clearAnswerText();
 
-		setTextIn(DOM_QT, cqPair[1]);
+		setTextIn(DOM_QT, qText);
 		this.parseQuestionText();
 	};
 
-	this.loadPreviousCannedQuestion = function() {
-		var cqPair = this.getPreviousCannedQuestion();
+	this.loadNextQuestion = function() {
+		var qText = this.getNextQuestion();
 
 		this.clearAnswerText();
 
-		setTextIn(DOM_QT, cqPair[1]);
-		this.parseQuestionText();
-	};
-
-	this.loadNextCannedQuestion = function() {
-		var cqPair = this.getNextCannedQuestion();
-
-		this.clearAnswerText();
-
-		setTextIn(DOM_QT, cqPair[1]);
+		setTextIn(DOM_QT, qText);
 		this.parseQuestionText();
 	};
 
@@ -124,8 +198,8 @@ function Hudson(pJsDebug) {
 					qpos = 0;
 					setTextIn(DOM_QP, qpos);
 				} else {
-					if (qpos >= gQuestions.getCannedQuestions().length) {
-						qpos = gQuestions.getCannedQuestions().length - 1;
+					if (qpos >= this.allQuestions.length) {
+						qpos = this.allQuestions.length - 1;
 						setTextIn(DOM_QP, qpos);
 					} else {
 						setTextIn(DOM_QP, qpos);
@@ -133,12 +207,12 @@ function Hudson(pJsDebug) {
 				}
 			}
 
-			this.loadCurrentCannedQuestion();
+			this.loadCurrentQuestion();
 		}
 	};
 
 	this.changeAnswerCheckbox = function(pDomId) {
-		var isChecked = getCheckboxValueFrom(pDomId);
+		var isChecked = this.getCheckboxValueFrom(pDomId);
 
 		if (pDomId === DOM_AN) {
 			//The "normal" checkbox has changed
@@ -195,6 +269,20 @@ function Hudson(pJsDebug) {
 		sendExecuteRequest(pQuestionText, pCbf, this.isDebug());
 	};
 
+	this.interpretSpecificQuestion = function(pQuestionText, pCbf) {
+		sendInterpretRequest(pQuestionText, pCbf, this.isDebug());
+	};
+
+	this.answerSpecificQuestion = function(pQuestionText, pCbf) {
+		pCbf();  // Temporary as not yet supported
+//		sendAnswerRequest(pQuestionText, pCbf, this.isDebug());
+	};
+
+	this.analyseSpecificQuestion = function(pQuestionText, pCbf) {
+		pCbf();  // Temporary as not yet supported
+//		sendAnswerRequest(pQuestionText, pCbf, this.isDebug());
+	};
+
 	this.analyseQuestion = function() {
 		var qText = getTextFrom(DOM_QT);
 		var cbf = function(pResponse) {gHudson.updateAnswer(pResponse);};
@@ -224,10 +312,6 @@ function Hudson(pJsDebug) {
 
 	this.analyseSpecificQuestion = function(pQuestionText, pCbf) {
 		sendAnalyseRequest(pQuestionText, pCbf, this.isDebug());
-	};
-
-	this.interpretSpecificQuestion = function(pQuestionText, pCbf) {
-		sendInterpretRequest(pQuestionText, pCbf, this.isDebug());
 	};
 
 	this.answerSpecificInterpretation = function(pQuestionText, pCbf) {
@@ -265,6 +349,10 @@ function Hudson(pJsDebug) {
 
 	this.updateInterpretation = function(pResponse) {
 		this.lastInterpretation = pResponse;
+
+		if (this.isLoggingResults()) {
+			reportLog(JSON.stringify(pResponse));
+		}
 
 		if (pResponse != null) {
 			this.renderInterpretation(pResponse);
@@ -416,7 +504,7 @@ function Hudson(pJsDebug) {
 		this.cachedAnswer = pResponse;
 
 		if (this.isLoggingResults()) {
-			console.log(JSON.stringify(pResponse));
+			reportLog(JSON.stringify(pResponse));
 		}
 
 		if (pResponse != null) {
@@ -425,6 +513,10 @@ function Hudson(pJsDebug) {
 	};
 
 	this.updateRawAnswer = function(pResponse) {
+		if (this.isLoggingResults()) {
+			reportLog(JSON.stringify(pResponse));
+		}
+
 		if (pResponse != null) {
 			setTextIn(DOM_AT, htmlFormat(pResponse));
 		}
@@ -663,7 +755,7 @@ function Hudson(pJsDebug) {
 		return contents;
 	}
 
-	function getCheckboxValueFrom(pDomId) {
+	this.getCheckboxValueFrom = function(pDomId) {
 		var elem = window.document.getElementById(pDomId);
 		var result = null;
 		
@@ -672,7 +764,7 @@ function Hudson(pJsDebug) {
 		}
 
 		return result;
-	}
+	};
 	
 	function setCheckboxValueTo(pDomId, pFlag) {
 		var elem = window.document.getElementById(pDomId);
@@ -729,11 +821,16 @@ function Hudson(pJsDebug) {
 
 		xhr.onload = function(e) {
 			if (this.status === 200) {
+				var jResponse = null;
+				
 				try {
-					pCbf(JSON.parse(xhr.response));
+					jResponse = JSON.parse(xhr.response);
 				} catch(e) {
-					pCbf(xhr.response);
+					reportLog('Error parsing response:');
+					reportLog(e);
 				}
+
+				pCbf(jResponse);
 			} else if (this.status === 404) {
 				ajaxError404(pUrl);
 			} else if (this.status === 405) {
@@ -769,8 +866,8 @@ function Hudson(pJsDebug) {
 	}
 
 	function ajaxErrorOther(pResponseText, pError, pCode, pUrl) {
-		console.log(pResponseText);
-		console.log(pCode);
+		reportLog(pResponseText);
+		reportLog(pCode);
 		reportError('Unknown server error [' + pError + '] for url ' + pUrl);
 	}
 	
@@ -892,6 +989,10 @@ function Hudson(pJsDebug) {
 		}
 
 		return result;
+	}
+
+	function reportLog(pText) {
+		console.log(pText);
 	}
 
 }

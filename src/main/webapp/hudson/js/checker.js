@@ -7,27 +7,32 @@ var gChecker = new Checker();
 
 function Checker() {
 
+	this.compareExecuteReplies = function(pAr1, pAr2, pMaxDepth) {
+		//Execute replies are the same as answer replies
+		return this.compareAnswerReplies(pAr1, pAr2, pMaxDepth);
+	};
+
 	this.compareAnswerReplies = function(pAr1, pAr2, pMaxDepth) {
 		var result = '';
 
 		if ((pAr1 != null) && (pAr2 != null)) {
 			//question
-			result += compareQuestions(pAr1.question, pAr2.question);
-			
+			result += compareQuestion(pAr1.question, pAr2.question);
+
 			//answers
 			result += compareAnswerLists(pAr1.answers, pAr2.answers, pMaxDepth);
 
 			//alerts
 			result += compareAlerts(pAr1.alerts, pAr2.alerts);		
-			
+
 			//debug
 			result += compareDebugs(pAr1.debug, pAr2.debug);
 		} else {
 			result += '!R|';	//One or both of the replies is null
 		}
-		
+
 		if (result != '') {
-			console.log('Difference detected:');
+			console.log('Difference in execute result detected:');
 			console.log(JSON.stringify(pAr1));
 			console.log(JSON.stringify(pAr2));
 		}
@@ -35,7 +40,202 @@ function Checker() {
 		return result;
 	};
 
-	function compareQuestions(pQuest1, pQuest2) {
+	this.compareInterpretReplies = function(pAr1, pAr2, pMaxDepth) {
+		var result = '';
+
+		if ((pAr1 != null) && (pAr2 != null)) {
+			//words
+			result += compareArrayValues(pAr1.words, pAr2.words);
+			
+			//concepts
+			result += compareConcepts(pAr1.concepts, pAr2.concepts);
+
+			//properties
+			result += compareProperties(pAr1.properties, pAr2.properties);
+
+			//instances
+			result += compareInstances(pAr1.instances, pAr2.instances);
+
+			//specials
+			result += compareSpecials(pAr1.specials, pAr2.specials);
+		} else {
+			result += '!R|';	//One or both of the replies is null
+		}
+
+		if (result != '') {
+			console.log('Difference in interpret result detected:');
+			console.log(JSON.stringify(pAr1));
+			console.log(JSON.stringify(pAr2));
+		}
+
+		return result;
+	};
+
+	this.compareAnalyseReplies = function(pAr1, pAr2, pMaxDepth) {
+		//TODO: Complete this
+		return 'Not yet implemented';
+	};
+
+	function compareConcepts(pConList1, pConList2) {
+		var result = '';
+		var conList = processEntityLists(pConList1, pConList2);
+
+		if (conList.length > 0) {
+			for (var i = 0; i < conList.length; i++) {
+				var thisItem = conList[i];
+				
+				result += compareTheseConcepts(thisItem[1], thisItem[2], i);
+			}
+		}
+		
+		return result;
+	}
+	
+	function compareProperties(pPropList1, pPropList2) {
+		var result = '';
+		var propList = processEntityLists(pPropList1, pPropList2);
+
+		if (propList.length > 0) {
+			for (var i = 0; i < propList.length; i++) {
+				var thisItem = propList[i];
+				
+				result += compareTheseProperties(thisItem[1], thisItem[2], i);
+			}
+		}
+
+		return result;
+	}
+
+	function compareInstances(pInstList1, pInstList2) {
+		var result = '';
+		var instList = processEntityLists(pInstList1, pInstList2);
+
+		if (instList.length > 0) {
+			for (var i = 0; i < instList.length; i++) {
+				var thisItem = instList[i];
+				
+				result += compareTheseInstances(thisItem[1], thisItem[2], i);
+			}
+		}
+
+		return result;
+	}
+
+	function compareSpecials(pSpecList1, pSpecList2) {
+		var result = '';
+		var specList = processEntityLists(pSpecList1, pSpecList2);
+
+		if (specList.length > 0) {
+			for (var i = 0; i < specList.length; i++) {
+				var thisItem = specList[i];
+				
+				result += compareTheseSpecials(thisItem[1], thisItem[2], i);				
+			}
+		}
+
+		return result;
+	}
+	
+	function compareTheseConcepts(pCon1, pCon2, pPos) {
+		return compareStandardEntity(pCon1, pCon2, pPos, 'C');
+	}
+
+	function compareTheseProperties(pProp1, pProp2, pPos) {
+		return compareStandardEntity(pProp1, pProp2, pPos, 'P');
+	}
+
+	function compareTheseInstances(pInst1, pInst2, pPos) {
+		return compareStandardEntity(pInst1, pInst2, pPos, 'I');
+	}
+	
+	function compareStandardEntity(pEnt1, pEnt2, pPos, pType) {
+		var result = '';
+
+		result += compareSimpleValues(pEnt1.name, pEnt2.name, 'I.' + pType + '.' + pPos + '.N')
+		result += compareSimpleValues(pEnt1.position, pEnt2.position, 'I.' + pType + '.' + pPos + '.P')
+		result += compareSimpleValues(pEnt1.type, pEnt2.type, 'I.' + pType + '.' + pPos + '.T')
+		result += compareMmInstance(pEnt1.instance, pEnt2.instance, pPos, 'I.' + pType + '.' + pPos + '.I-')
+
+		return result;
+	}
+
+	function compareMmInstance(pInst1, pInst2, pPos, pResultRoot) {
+		var result = '';
+		var keyList = [];
+
+		for ( var i in pInst1) {
+			if (keyList.indexOf(i) == -1) {
+				keyList.push(i);
+			}
+		}
+
+		for ( var i in pInst2) {
+			if (keyList.indexOf(i) == -1) {
+				keyList.push(i);
+			}
+		}
+
+		for (var i in keyList) {
+			var thisKey = keyList[i];
+			var vals1 = pInst1[thisKey];
+			var vals2 = pInst2[thisKey];
+			var errCode = pResultRoot + '.' + thisKey;
+			
+			if (typeof vals1 == 'string') {
+				result += compareSimpleValues(vals1, vals2, errCode)
+			} else {
+				result += compareArrayValues(vals1, vals2, true, errCode);
+			}
+		}
+
+		return result;
+	}
+
+	function compareTheseSpecials(pSpec1, pSpec2, pPos) {
+		var result = '';
+
+		//TODO: Complete this
+		console.log('compareTheseSpecials');
+		console.log(pSpec1);
+		console.log(pSpec2);
+		
+		result = 'Implement specials';
+
+		return result;
+	}
+
+	function processEntityLists(pList1, pList2) {
+		var entList = [];
+
+		for ( var i in pList1) {
+			var thisEnt1 = pList1[i];
+			var thisEnt2 = pList2[i];
+
+			entList.push( [i, thisEnt1, thisEnt2 ] );
+		}
+
+		for ( var i in pList2) {
+			var thisEnt1 = pList1[i];
+			var thisEnt2 = pList2[i];
+			var foundMatch = false;
+
+			for ( var j in entList) {
+				var wordName = entList[j][0];
+				
+				if (i == wordName) {
+					foundMatch = true;
+				}
+			}
+			
+			if (!foundMatch) {
+				entList.push( [i, thisEnt1, thisEnt2 ] );
+			}
+		}
+
+		return entList;
+	}
+
+	function compareQuestion(pQuest1, pQuest2) {
 		var result = '';
 
 		if ((pQuest1 != null) && (pQuest2 != null)) {
@@ -174,16 +374,21 @@ function Checker() {
 
 			//result_set.rows
 			var tgtRows = null;
-			if (pRs1.rows.length > pMaxDepth) {
-				tgtRows = [];
-				
-				for (var i = 0; i < pMaxDepth; i++) {
-					tgtRows.push(pRs1.rows[i]);
-				}
-			} else {
-				tgtRows = pRs1.rows;
-			}
 			
+			if (pMaxDepth == -1) {
+				tgtRows = pRs1.rows;
+			} else {
+				if (pRs1.rows.length > pMaxDepth) {
+					tgtRows = [];
+					
+					for (var i = 0; i < pMaxDepth; i++) {
+						tgtRows.push(pRs1.rows[i]);
+					}
+				} else {
+					tgtRows = pRs1.rows;
+				}
+			}
+
 			result += compareArrayOfArrayValues(tgtRows, pRs2.rows, false, 'A.RSR');
 		}
 
@@ -240,7 +445,7 @@ function Checker() {
 						var innerArr2 = pArr2[i];
 
 						result += compareArrayValues(innerArr1, innerArr2, pAllowEmpty, pErrorCode + '[' + i + ']');
-					}					
+					}
 				}
 			} else {
 				//The arrays have different lengths

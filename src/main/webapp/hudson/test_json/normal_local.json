@@ -1,3 +1,0 @@
-{
-  "TEST_001": {"question":{"text":"who is Fred?\n","interpretation_confidence":-1,"ability_to_answer_confidence":-1},"answers":[{"question_interpretation":"What is Fred?","result_text":"Fred is a person.","answer_confidence":-1,"chatty_text":"Fred is a person."}],"alerts":{}}
-}
