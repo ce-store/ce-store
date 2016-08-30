@@ -80,6 +80,10 @@ public class CeConcept extends CeModelEntity {
 		return newConcept;
 	}
 
+	public boolean isConcept() {
+		return true;
+	}
+
 	public String getConceptName() {
 		return this.name;
 	}

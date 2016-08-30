@@ -8,3 +8,4 @@ perform reset store with starting uid '1'.
 perform load sentences from url './hudson/ce/core/cmd/load_core.cecmd'.
 
 perform load sentences from url './ce/medicine/cmd/med_load_hudson.cecmd'.
+--perform load sentences from url '/crick-data/ce/cmd/crick_load.cecmd'.

@@ -32,9 +32,9 @@ function Checker() {
 		}
 
 		if (result != '') {
-			console.log('Difference in execute result detected:');
-			console.log(JSON.stringify(pAr1));
-			console.log(JSON.stringify(pAr2));
+			gHudson.reportLog('Difference in execute result detected (cached, live):');
+			gHudson.reportLog(JSON.stringify(pAr1));
+			gHudson.reportLog(JSON.stringify(pAr2));
 		}
 
 		return result;
@@ -44,28 +44,37 @@ function Checker() {
 		var result = '';
 
 		if ((pAr1 != null) && (pAr2 != null)) {
+			//question_text
+			result += compareSimpleValues(pAr1.question_text, pAr2.question_text, 'I.QT');
+
+			//confidence
+			result += compareSimpleValues(pAr1.confidence, pAr2.confidence, 'I.QC');
+
+			//confidence_explanation
+			result += compareSimpleValues(pAr1.confidence_explanation, pAr2.confidence_explanation, 'I.QE');
+
 			//words
-			result += compareArrayValues(pAr1.words, pAr2.words);
-			
+			result += compareArrayValues(pAr1.words, pAr2.words, 'I.W');
+
 			//concepts
-			result += compareConcepts(pAr1.concepts, pAr2.concepts);
+			result += compareConcepts(pAr1.concepts, pAr2.concepts, 'C');
 
 			//properties
-			result += compareProperties(pAr1.properties, pAr2.properties);
+			result += compareProperties(pAr1.properties, pAr2.properties, 'P');
 
 			//instances
-			result += compareInstances(pAr1.instances, pAr2.instances);
+			result += compareInstances(pAr1.instances, pAr2.instances, 'I');
 
 			//specials
-			result += compareSpecials(pAr1.specials, pAr2.specials);
+			result += compareSpecials(pAr1.specials, pAr2.specials, 'S');
 		} else {
 			result += '!R|';	//One or both of the replies is null
 		}
 
 		if (result != '') {
-			console.log('Difference in interpret result detected:');
-			console.log(JSON.stringify(pAr1));
-			console.log(JSON.stringify(pAr2));
+			gHudson.reportLog('Difference in interpret result detected (cached, live):');
+			gHudson.reportLog(JSON.stringify(pAr1));
+			gHudson.reportLog(JSON.stringify(pAr2));
 		}
 
 		return result;
@@ -76,7 +85,7 @@ function Checker() {
 		return 'Not yet implemented';
 	};
 
-	function compareConcepts(pConList1, pConList2) {
+	function compareConcepts(pConList1, pConList2, pErrCode) {
 		var result = '';
 		var conList = processEntityLists(pConList1, pConList2);
 
@@ -84,14 +93,14 @@ function Checker() {
 			for (var i = 0; i < conList.length; i++) {
 				var thisItem = conList[i];
 				
-				result += compareTheseConcepts(thisItem[1], thisItem[2], i);
+				result += compareTheseConcepts(thisItem[1], thisItem[2], i, pErrCode);
 			}
 		}
 		
 		return result;
 	}
 	
-	function compareProperties(pPropList1, pPropList2) {
+	function compareProperties(pPropList1, pPropList2, pErrCode) {
 		var result = '';
 		var propList = processEntityLists(pPropList1, pPropList2);
 
@@ -99,29 +108,29 @@ function Checker() {
 			for (var i = 0; i < propList.length; i++) {
 				var thisItem = propList[i];
 				
-				result += compareTheseProperties(thisItem[1], thisItem[2], i);
+				result += compareTheseProperties(thisItem[1], thisItem[2], i, pErrCode);
 			}
 		}
 
 		return result;
 	}
 
-	function compareInstances(pInstList1, pInstList2) {
+	function compareInstances(pInstList1, pInstList2, pErrCode) {
 		var result = '';
 		var instList = processEntityLists(pInstList1, pInstList2);
 
 		if (instList.length > 0) {
 			for (var i = 0; i < instList.length; i++) {
 				var thisItem = instList[i];
-				
-				result += compareTheseInstances(thisItem[1], thisItem[2], i);
+
+				result += compareTheseInstances(thisItem[1], thisItem[2], i, pErrCode);
 			}
 		}
 
 		return result;
 	}
 
-	function compareSpecials(pSpecList1, pSpecList2) {
+	function compareSpecials(pSpecList1, pSpecList2, pErrCode) {
 		var result = '';
 		var specList = processEntityLists(pSpecList1, pSpecList2);
 
@@ -129,32 +138,43 @@ function Checker() {
 			for (var i = 0; i < specList.length; i++) {
 				var thisItem = specList[i];
 				
-				result += compareTheseSpecials(thisItem[1], thisItem[2], i);				
+				result += compareTheseSpecials(thisItem[1], thisItem[2], i, pErrCode);
 			}
 		}
 
 		return result;
 	}
 	
-	function compareTheseConcepts(pCon1, pCon2, pPos) {
-		return compareStandardEntity(pCon1, pCon2, pPos, 'C');
+	function compareTheseConcepts(pCon1, pCon2, pPos, pErrCode) {
+		return compareStandardEntity(pCon1, pCon2, pPos, pErrCode);
 	}
 
-	function compareTheseProperties(pProp1, pProp2, pPos) {
-		return compareStandardEntity(pProp1, pProp2, pPos, 'P');
+	function compareTheseProperties(pProp1, pProp2, pPos, pErrCode) {
+		return compareStandardEntity(pProp1, pProp2, pPos, pErrCode);
 	}
 
-	function compareTheseInstances(pInst1, pInst2, pPos) {
-		return compareStandardEntity(pInst1, pInst2, pPos, 'I');
+	function compareTheseInstances(pInst1, pInst2, pPos, pErrCode) {
+		return compareStandardEntity(pInst1, pInst2, pPos, pErrCode);
 	}
 	
-	function compareStandardEntity(pEnt1, pEnt2, pPos, pType) {
+	function compareStandardEntity(pEnt1, pEnt2, pPos, pErrCode) {
 		var result = '';
+		var errText = pErrCode + '.' + pPos;
 
-		result += compareSimpleValues(pEnt1.name, pEnt2.name, 'I.' + pType + '.' + pPos + '.N')
-		result += compareSimpleValues(pEnt1.position, pEnt2.position, 'I.' + pType + '.' + pPos + '.P')
-		result += compareSimpleValues(pEnt1.type, pEnt2.type, 'I.' + pType + '.' + pPos + '.T')
-		result += compareMmInstance(pEnt1.instance, pEnt2.instance, pPos, 'I.' + pType + '.' + pPos + '.I-')
+		if (pEnt1 != null || pEnt2 != null) {
+			if (pEnt1 == null) {
+				result += errText + ".!1";
+			} else if (pEnt2 == null) {
+				result += errText + ".!2";
+			} else {
+				result += compareSimpleValues(pEnt1.name, pEnt2.name, errText + '.N')
+				result += compareSimpleValues(pEnt1.position, pEnt2.position, errText + '.P')
+				result += compareSimpleValues(pEnt1.type, pEnt2.type, errText + '.T')
+				result += compareMmInstance(pEnt1.instance, pEnt2.instance, pPos, errText + '.I-')
+			}
+		} else {
+			//Both are null - nothing needed
+		}
 
 		return result;
 	}
@@ -191,15 +211,118 @@ function Checker() {
 		return result;
 	}
 
-	function compareTheseSpecials(pSpec1, pSpec2, pPos) {
+	function compareTheseSpecials(pSpec1, pSpec2, pPos, pErrCode) {
+		var result = '';
+		var errCode = pErrCode + pPos;
+		
+		if ((pSpec1 != null) || (pSpec2 !=null)) {
+			if (pSpec1 == null) {
+				result += errCode + "!1";
+			} else if (pSpec2 == null) {
+				result += errCode + "!2";
+			} else {
+				result += compareSimpleValues(pSpec1.type, pSpec2.type, errCode + '.T')
+				result += compareSimpleValues(pSpec1.name, pSpec2.name, errCode + '.N')
+				result += compareSimpleValues(pSpec1.position, pSpec2.position, errCode + '.P')
+
+				if (result == '') {
+					if (pSpec1.type == 'collection') {
+						result += compareThisSpecialCollection(pSpec1, pSpec2, errCode);
+					} else if (pSpec1.type == 'number') {
+						result += compareThisSpecialNumber(pSpec1, pSpec2, errCode);
+					} else if (pSpec1.type == 'enumerated-concept') {
+						result += compareThisSpecialEnumeratedConcept(pSpec1, pSpec2, errCode);
+					} else {
+						result += 'Implement special:' + pSpec1.type;
+					}
+				}
+			}
+		} else {
+			//Both are null - nothing needed
+		}
+
+		return result;
+	}
+
+	function compareThisSpecialNumber(pSpec1, pSpec2, pErrCode) {
+		var result = '';
+		
+		result += compareSimpleValues(pSpec1.type, pSpec2.type, pErrCode + '.T')
+		result += compareSimpleValues(pSpec1.name, pSpec2.name, pErrCode + '.N')
+		result += compareSimpleValues(pSpec1.position, pSpec2.position, pErrCode + '.P')
+		
+		return result;
+	}
+
+	function compareThisSpecialEnumeratedConcept(pSpec1, pSpec2, pErrCode) {
+		var result = '';
+		
+		result += compareSimpleValues(pSpec1.type, pSpec2.type, pErrCode + '.T')
+		result += compareSimpleValues(pSpec1.name, pSpec2.name, pErrCode + '.Na')
+		result += compareSimpleValues(pSpec1.position, pSpec2.position, pErrCode + '.P')
+		result += compareSimpleValues(pSpec1.number, pSpec2.number, pErrCode + '.Nu')
+		result += compareConcepts(pSpec1.concepts, pSpec2.concepts, pErrCode);
+		
+		return result;
+	}
+
+	function compareThisSpecialCollection(pSpec1, pSpec2, pErrCode) {
+		var result = '';
+		
+		result += compareSimpleValues(pSpec1.connector, pSpec2.connector, pErrCode + '.Conn')
+		result += compareSpecialCollectionContents(pSpec1.contents, pSpec2.contents, pErrCode + ".Cont");
+		
+		return result;
+	}
+
+	function compareSpecialCollectionContents(pColl1, pColl2, pErrCode) {
 		var result = '';
 
-		//TODO: Complete this
-		console.log('compareTheseSpecials');
-		console.log(pSpec1);
-		console.log(pSpec2);
-		
-		result = 'Implement specials';
+		pColl1.sort(sortByText);
+		pColl2.sort(sortByText);
+
+		if ((pColl1 != null) && (pColl2 != null)) {
+			if (pColl1.length === pColl2.length) {
+				for (var i = 0; i < pColl1.length; i++) {
+					var coll1 = pColl1[i];
+					var coll2 = pColl2[i];
+
+					if ((coll1 != null) && (coll2 != null)) {
+						//individual item
+						result += compareSpecialCollectionContentItem(coll1, coll2, pErrCode + "." + i);
+					} else {
+						result += pErrCode + '~|'; //One or both of the items is null
+					}
+				}
+			} else {
+				result += pErrCode + '#|'; //The number of items don't match
+			}
+		} else {
+			result += pErrCode + '!|'; //One or both item lists is null
+		}
+
+		return result;
+	}
+
+	function sortByText(a, b) {
+		var result = null;
+
+		if (a.text < b.text) {
+			result = -1;
+		} else if (a.text > b.text) {
+			result = 1;
+		} else {
+			result = 0;
+		}
+
+		return result;
+	}
+
+	function compareSpecialCollectionContentItem(pItem1, pItem2, pErrCode) {
+		var result = '';
+
+		result += compareSimpleValues(pItem1.text, pItem2.text, pErrCode + ".T");
+		result += compareInstances(pItem1.items, pItem2.items, pErrCode + ".I");
 
 		return result;
 	}
@@ -207,28 +330,30 @@ function Checker() {
 	function processEntityLists(pList1, pList2) {
 		var entList = [];
 
-		for ( var i in pList1) {
-			var thisEnt1 = pList1[i];
-			var thisEnt2 = pList2[i];
+		if ((pList1 != null) && (pList2 != null)) {
+			for ( var i in pList1) {
+				var thisEnt1 = pList1[i];
+				var thisEnt2 = pList2[i];
 
-			entList.push( [i, thisEnt1, thisEnt2 ] );
-		}
-
-		for ( var i in pList2) {
-			var thisEnt1 = pList1[i];
-			var thisEnt2 = pList2[i];
-			var foundMatch = false;
-
-			for ( var j in entList) {
-				var wordName = entList[j][0];
-				
-				if (i == wordName) {
-					foundMatch = true;
-				}
-			}
-			
-			if (!foundMatch) {
 				entList.push( [i, thisEnt1, thisEnt2 ] );
+			}
+
+			for ( var i in pList2) {
+				var thisEnt1 = pList1[i];
+				var thisEnt2 = pList2[i];
+				var foundMatch = false;
+
+				for ( var j in entList) {
+					var wordName = entList[j][0];
+					
+					if (i == wordName) {
+						foundMatch = true;
+					}
+				}
+				
+				if (!foundMatch) {
+					entList.push( [i, thisEnt1, thisEnt2 ] );
+				}
 			}
 		}
 

@@ -9,12 +9,17 @@ import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportDebug;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 
-import com.ibm.ets.ita.ce.store.client.web.WebActionContext;
+import com.ibm.ets.ita.ce.store.ActionContext;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonParser;
 import com.ibm.ets.ita.ce.store.hudson.helper.Question;
+import com.ibm.ets.ita.ce.store.hudson.helper.SpCollection;
+import com.ibm.ets.ita.ce.store.hudson.helper.SpEnumeratedConcept;
+import com.ibm.ets.ita.ce.store.hudson.helper.SpLinkedInstance;
+import com.ibm.ets.ita.ce.store.hudson.helper.SpMatchedTriple;
 import com.ibm.ets.ita.ce.store.hudson.helper.SpThing;
 import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
@@ -26,7 +31,13 @@ public class QuestionAnswererHandler extends QuestionHandler {
 
 	private static final String SPTYPE_ENCCON = "enumerated-concept";
 	private static final String SPTYPE_COLL = "collection";
+	private static final String SPTYPE_MT = "matched-triple";
+	private static final String SPTYPE_LI = "linked-instance";
+
 	private static final String CON_QPHRASE = "question phrase";
+	private static final String CON_QWORD = "question word";
+	private static final String CON_COMWORD = "common word";
+	private static final String CON_CONNWORD = "connector word";
 	private static final String MOD_EXPAND = "general:expand";
 	private static final String MOD_LINKSFROM = "general:linksFrom";
 	private static final String MOD_LINKSTO = "general:linksTo";
@@ -34,6 +45,8 @@ public class QuestionAnswererHandler extends QuestionHandler {
 	private static final String MOD_COUNT = "general:count";
 	private static final String MOD_LIST = "general:list";
 	private static final String MOD_SHOW = "general:show";
+
+	private static final String[] CONLIST_OTHERS = { CON_QPHRASE, CON_QWORD, CON_COMWORD, CON_MODIFIER, CON_CONNWORD };
 
 	//TODO: All of these need to be handled by the interpreter function
 //	private static final String MOD_RESET = "general:reset";
@@ -50,11 +63,10 @@ public class QuestionAnswererHandler extends QuestionHandler {
 	ArrayList<SpThing> allSpecials = null;
 
 	HashSet<CeInstance> domainInstances = null;
-	HashSet<CeInstance> modifierInstances = null;
-	HashSet<CeInstance> questionInstances = null;
+	HashSet<CeInstance> otherInstances = null;
 
-	public QuestionAnswererHandler(WebActionContext pWc, boolean pDebug, String pQt, long pStartTime) {
-		super(pWc, pDebug, Question.create(pQt), pStartTime);
+	public QuestionAnswererHandler(ActionContext pAc, boolean pDebug, String pQt, long pStartTime) {
+		super(pAc, pDebug, Question.create(pQt), pStartTime);
 	}
 
 	@Override
@@ -102,6 +114,48 @@ public class QuestionAnswererHandler extends QuestionHandler {
 	private void answerQuestion() {
 		debugInstances();
 
+		if (hasMatchedTriples()) {
+			tryMatchedTripleAnswer();
+		} else {
+			tryNormalAnswer();
+		}
+	}
+
+	private boolean hasMatchedTriples() {
+		boolean result = false;
+		
+		if (!this.allSpecials.isEmpty()) {
+			for (SpThing thisSp : this.allSpecials) {
+				if (thisSp.isMatchedTriple()) {
+					result = true;
+					break;
+				}
+			}
+		}
+		
+		return result;
+	}
+	
+	private void tryMatchedTripleAnswer() {
+		for (SpThing thisSp : this.allSpecials) {
+			if (thisSp.isMatchedTriple()) {
+				matchedTripleAnswerFor((SpMatchedTriple)thisSp);
+			}
+		}
+	}
+	
+	private void matchedTripleAnswerFor(SpMatchedTriple pMt) {
+		//TODO: Complete this
+		if (pMt.isFullTriple()) {
+			appendToAnswer("TBC - matchedTripleAnswerFor (full)");			
+		} else if (pMt.isPartialSubjectTriple()) {
+			appendToAnswer("TBC - matchedTripleAnswerFor (subject-based)");			
+		} else {
+			appendToAnswer("TBC - matchedTripleAnswerFor (object-based)");			
+		}
+	}
+	
+	private void tryNormalAnswer() {
 		if (this.allConcepts.isEmpty()) {
 			if (this.allProperties.isEmpty()) {
 				if (this.domainInstances.isEmpty()) {
@@ -140,7 +194,7 @@ public class QuestionAnswererHandler extends QuestionHandler {
 			}
 		}
 	}
-
+	
 	private void handleJustInstances() {
 		for (CeInstance thisInst : this.domainInstances) {
 			answerInstanceQuestionFor(thisInst);
@@ -156,31 +210,110 @@ public class QuestionAnswererHandler extends QuestionHandler {
 	}
 
 	private void handleEverythingEmpty() {
-		appendToAnswer("handleEverythingEmpty");
+		//TODO: Complete this
+		appendToAnswer("TBC - handleEverythingEmpty");
 	}
 
 	private void handleSomePropertiesAndInstances() {
-		appendToAnswer("handleSomePropertiesAndInstances");
+		for (CeInstance thisInst : this.domainInstances) {
+			handlePropertiesFor(thisInst);
+		}
+	}
+	
+	private void handlePropertiesFor(CeInstance pInst) {
+		String result = null;
+		String instName = null;
+		String propName = null;
+		String propVals = null;
+		
+		instName = pInst.getInstanceName();
+		
+		for (CeProperty thisProp : this.allProperties) {
+			for (CePropertyInstance thisPi : pInst.getPropertyInstances()) {
+				CeProperty innerProp = thisPi.getRelatedProperty();
+				
+				if (!innerProp.isStatedProperty()) {
+					innerProp = innerProp.getStatedSourceProperty();
+				}
+
+				if (innerProp.equals(thisProp)) {
+					propName = thisPi.getPropertyName();
+					
+					for (String thisVal : thisPi.getValueList()) {
+						if (propVals == null) {
+							propVals = "";
+						} else {
+							propVals += ", ";
+						}
+
+						propVals += thisVal;
+					}
+				}
+			}
+			
+			if (thisProp.isFunctionalNoun()) {
+				result = instName + " has " + propVals + " as " + propName;
+			} else {
+				result = instName + " " + propName + " " + propVals;
+			}
+
+			appendToAnswer(result);
+		}
 	}
 
 	private void handleJustProperties() {
-		appendToAnswer("handleJustProperties");
+		//TODO: Complete this
+		appendToAnswer("TBC - handleJustProperties");
 	}
 
 	private void handleJustConcepts() {
-		appendToAnswer("handleJustConcepts");
+		if (isList()) {
+			answerListFor(this.allConcepts);
+		} else {
+			for (CeConcept thisCon : this.allConcepts) {
+				answerConceptQuestionFor(thisCon);
+			}
+		}
 	}
 
 	private void handleSomeConceptsAndInstances() {
-		appendToAnswer("handleSomeConceptsAndInstances");
+		if (isLocate()) {
+			ArrayList<CeInstance> instList = filterInstancesByConcepts();
+			String result = "";
+			
+			for (CeInstance thisInst : instList) {
+				result += answerLocateFor(thisInst);
+			}
+			
+			appendToAnswer(result);
+		} else {
+			//TODO: Complete this
+			appendToAnswer("TBC - handleSomeConceptsAndInstances");
+		}
+	}
+	
+	private ArrayList<CeInstance> filterInstancesByConcepts() {
+		ArrayList<CeInstance> result = new ArrayList<CeInstance>();
+
+		for (CeInstance thisInst : this.domainInstances) {
+			for (CeConcept thisCon : this.allConcepts) {
+				if (thisInst.isConcept(thisCon)) {
+					result.add(thisInst);
+				}
+			}
+		}
+
+		return result;
 	}
 
 	private void handleSomeConceptsAndProperties() {
-		appendToAnswer("handleSomeConceptsAndProperties");
+		//TODO: Complete this
+		appendToAnswer("TBC - handleSomeConceptsAndProperties");
 	}
 
 	private void handleSomeConceptsPropertiesAndInstances() {
-		appendToAnswer("handleSomeConceptsPropertiesAndInstances");
+		//TODO: Complete this
+		appendToAnswer("TBC - handleSomeConceptsPropertiesAndInstances");
 	}
 
 	private void answerInstanceQuestionFor(CeInstance pInst) {
@@ -191,7 +324,7 @@ public class QuestionAnswererHandler extends QuestionHandler {
 		} else if (isLinksTo()) {
 			answerLinksToFor(pInst);
 		} else if (isLocate()) {
-			answerLocateFor(pInst);
+			appendToAnswer(answerLocateFor(pInst));
 		} else if (isCount()) {
 			answerCountFor(pInst);
 		} else if (isList()) {
@@ -199,56 +332,159 @@ public class QuestionAnswererHandler extends QuestionHandler {
 		} else if (isShow()) {
 			answerShowFor(pInst);
 		} else {
-			answerSummaryFor(pInst);
+			String answer = answerSummaryFor(pInst);
+			appendToAnswer(answer);
+		}
+	}
+
+	private void answerConceptQuestionFor(CeConcept pCon) {
+		if (isExpand()) {
+			//TODO: Consider other properties like properties, parent concepts, conceptual models etc
+			answerExpandFor(pCon.retrieveMetaModelInstance(this.ac));
+		} else if (isLinksFrom()) {
+			answerLinksFromFor(pCon);
+		} else if (isLinksTo()) {
+			answerLinksToFor(pCon);
+		} else if (isLocate()) {
+			answerLocateFor(pCon);
+		} else if (isCount()) {
+			answerCountFor(pCon);
+		} else if (isShow()) {
+			answerShowFor(pCon);
+		} else {
+			appendToAnswer(answerSummaryFor(pCon));
 		}
 	}
 
 	private void answerExpandFor(CeInstance pInst) {
-		appendToAnswer("answerExpandFor: " + pInst.getInstanceName());
+		String result = answerSummaryFor(pInst);
+		
+		for (CePropertyInstance thisPi : pInst.getPropertyInstances()) {
+			result += "\n";
+			result += "  ";
+			result += thisPi.getPropertyName();
+			result += " -> ";
+
+			boolean firstTime = true;
+
+			for (String thisVal : thisPi.getValueList()) {
+				if (!firstTime) {
+					result += ", ";
+				}
+
+				result += thisVal;
+				firstTime = false;
+			}
+		}
+
+		appendToAnswer(result);
 	}
 
 	private void answerLinksFromFor(CeInstance pInst) {
-		appendToAnswer("answerLinksFromFor: " + pInst.getInstanceName());
+		//TODO: Complete this
+		appendToAnswer("TBC - answerLinksFromForInstance: " + pInst.getInstanceName());
+	}
+
+	private void answerLinksFromFor(CeConcept pCon) {
+		//TODO: Complete this
+		appendToAnswer("TBC - answerLinksFromForConcept: " + pCon.getConceptName());
 	}
 
 	private void answerLinksToFor(CeInstance pInst) {
-		appendToAnswer("answerLinksToFor: " + pInst.getInstanceName());
+		//TODO: Complete this
+		appendToAnswer("TBC - answerLinksToForInstance: " + pInst.getInstanceName());
 	}
 
-	private void answerLocateFor(CeInstance pInst) {
-		appendToAnswer("answerLocateFor: " + pInst.getInstanceName());
+	private void answerLinksToFor(CeConcept pCon) {
+		//TODO: Complete this
+		appendToAnswer("TBC - answerLinksToForConcept: " + pCon.getConceptName());
+	}
+
+	private String answerLocateFor(CeInstance pInst) {
+		String result = "";
+
+		//TODO: Also check for related instances that are spatial things
+		if (pInst.isConceptNamed(this.ac, CON_SPATIAL)) {
+			result += pInst.getInstanceName();
+		}
+
+		return result;
+	}
+
+	private void answerLocateFor(CeConcept pCon) {
+		//TODO: Complete this
+		appendToAnswer("TBC - answerLocateForConcept: " + pCon.getConceptName());
 	}
 
 	private void answerCountFor(CeInstance pInst) {
-		//Does not make sense for a count of one instance
-		appendToAnswer("answerCountFor: " + pInst.getInstanceName());
+		//TODO: Complete this
+		appendToAnswer("TBC - answerCountForInstance: " + pInst.getInstanceName());
+	}
+
+	private void answerCountFor(CeConcept pCon) {
+		String result = null;
+		String pluralName = pCon.pluralFormName(this.ac);
+		int count = this.ac.getModelBuilder().countAllInstancesForConcept(pCon);
+		
+		if (count == 0) {
+			result = "there are no ";
+			result += pluralName;
+			result += " defined";
+		} else if (count == 1) {
+			result = "there is 1 ";
+			result += pCon.getConceptName();
+			result += " defined";
+		} else {
+			result = "there are ";
+			result += count;
+			result += " ";
+			result += pluralName;
+			result += " defined";
+		}
+
+		appendToAnswer(result);
 	}
 
 	private void answerListFor(CeInstance pInst) {
-		appendToAnswer("answerListFor: " + pInst.getInstanceName());
+		//TODO: Complete this
+		appendToAnswer("TBC - answerListForInstance: " + pInst.getInstanceName());
+	}
+
+	private void answerListFor(ArrayList<CeConcept> pConList) {
+		HashSet<String> result = new HashSet<String>();
+
+		for (CeConcept thisCon : pConList) {
+			for (CeInstance thisInst : this.ac.getModelBuilder().getAllInstancesForConceptNamed(this.ac, thisCon.getConceptName())) {
+				String answer = answerSummaryFor(thisInst);
+
+				result.add(answer);
+			}			
+		}
+
+		ArrayList<String> sortedList = new ArrayList<String>(result);
+		Collections.sort(sortedList);
+		
+		for (String thisAnswer : sortedList) {
+			appendToAnswer(thisAnswer);
+		}
 	}
 
 	private void answerShowFor(CeInstance pInst) {
-		appendToAnswer("answerShowFor: " + pInst.getInstanceName());
+		//TODO: Complete this
+		appendToAnswer("TBC - answerShowForInstance: " + pInst.getInstanceName());
 	}
 
-	private void answerSummaryFor(CeInstance pInst) {
-		//TODO: It would be nice to use the original phrase specified in the question
-		String questionText = pInst.getInstanceName();
-		String instName = pInst.getInstanceName();
-		String answerText = "";
+	private void answerShowFor(CeConcept pCon) {
+		//TODO: Complete this
+		appendToAnswer("TBC - answerShowForConcept: " + pCon.getConceptName());
+	}
 
-		if (questionText.equalsIgnoreCase(instName)) {
-			answerText = instName;
-		} else {
-			answerText = questionText + " (" + instName + ")";
-		}
+	private String answerSummaryFor(CeConcept pCon) {
+		return pCon.getConceptName() + textForConcepts(pCon.retrieveMetaModelInstance(this.ac));
+	}
 
-		answerText += textForConcepts(pInst);
-
-System.out.println("answerSummaryFor: " + answerText);
-
-		appendToAnswer(answerText);
+	private String answerSummaryFor(CeInstance pInst) {
+		return pInst.getInstanceName() + textForConcepts(pInst);
 	}
 
 	private String textForConcepts(CeInstance pInst) {
@@ -257,7 +493,9 @@ System.out.println("answerSummaryFor: " + answerText);
 		for (CeConcept thisCon : pInst.getAllLeafConcepts()) {
 			if (isDomainConcept(thisCon)) {
 				if (result.isEmpty()) {
-					result += " is a ";
+					result += " is ";
+					result += thisCon.conceptQualifier();
+					result += " ";
 				} else {
 					result += ", ";
 				}
@@ -304,13 +542,15 @@ System.out.println("answerSummaryFor: " + answerText);
 	private boolean isModifierNamed(String pTgtName) {
 		boolean result = false;
 
-		for (CeInstance thisInst : this.modifierInstances) {
+		for (CeInstance thisInst : this.otherInstances) {
 			CePropertyInstance thisPi = thisInst.getPropertyInstanceNamed(PROP_CORRTO);
 
-			for (CeInstance relInst : thisPi.getValueInstanceList(this.ac)) {
-				if (relInst.getInstanceName().equals(pTgtName)) {
-					result = true;
-					break;
+			if (thisPi != null) {
+				for (CeInstance relInst : thisPi.getValueInstanceList(this.ac)) {
+					if (relInst.getInstanceName().equals(pTgtName)) {
+						result = true;
+						break;
+					}
 				}
 			}
 		}
@@ -325,35 +565,24 @@ System.out.println("Domain instances");
 System.out.println("  " + thisInst.getInstanceName());
 		}
 
-System.out.println("Modifier instances");
+System.out.println("Other instances");
 
-		for (CeInstance thisInst : this.modifierInstances) {
+		for (CeInstance thisInst : this.otherInstances) {
 System.out.println("  " + thisInst.getInstanceName());
 		}
 
-System.out.println("Question instances");
-
-		for (CeInstance thisInst : this.questionInstances) {
-System.out.println("  " + thisInst.getInstanceName());
-		}
 	}
 
 	private void filterInstances() {
 		this.domainInstances = new HashSet<CeInstance>();
-		this.modifierInstances = new HashSet<CeInstance>();
-		this.questionInstances = new HashSet<CeInstance>();
+		this.otherInstances = new HashSet<CeInstance>();
 
 		for (CeInstance thisInst : this.allInstances) {
 			boolean alreadyProcessed = false;
 
 			if (!thisInst.isOnlyConceptNamed(this.ac, CON_CONFCON)) {
-				if (thisInst.isConceptNamed(this.ac, CON_MODIFIER)) {
-					this.modifierInstances.add(thisInst);
-					alreadyProcessed = true;
-				}
-
-				if (thisInst.isConceptNamed(this.ac, CON_QPHRASE)) {
-					this.questionInstances.add(thisInst);
+				if (thisInst.isConceptNamed(this.ac, CONLIST_OTHERS)) {
+					this.otherInstances.add(thisInst);
 					alreadyProcessed = true;
 				}
 
@@ -436,16 +665,21 @@ System.out.println("  " + thisKey + " -> " + name + " ["+ pos +"]");
 System.out.println("specials:");
 
 		for (String thisKey : pJsonObj.keySet()) {
-			String name = pJsonObj.getJsonObject(thisKey).getString("name");
-			String type = pJsonObj.getJsonObject(thisKey).getString("type");
-			int pos = pJsonObj.getJsonObject(thisKey).getInt("position");
-
-System.out.println("  " + thisKey + " -> " + name + " (" + type + ") [" + pos + "]");
+			CeStoreJsonObject jObj = pJsonObj.getJsonObject(thisKey);
+			String type = jObj.getString("type");
 
 			if (type.equals(SPTYPE_ENCCON)) {
-				//Create SpEncodedConcept instance
+				SpEnumeratedConcept spEc = SpEnumeratedConcept.createFromJson(this.ac, jObj);
+				result.add(spEc);
 			} else if (type.equals(SPTYPE_COLL)) {
-				//Create SpCollection instance
+				SpCollection spCo = SpCollection.createFromJson(this.ac, jObj);
+				result.add(spCo);
+			} else if (type.equals(SPTYPE_MT)) {
+				SpMatchedTriple spMt = SpMatchedTriple.createFromJson(this.ac, jObj);
+				result.add(spMt);
+			} else if (type.equals(SPTYPE_LI)) {
+				SpLinkedInstance spLi = SpLinkedInstance.createFromJson(this.ac, jObj);
+				result.add(spLi);
 			} else {
 				System.out.println("Unexpected special type: " + type);
 			}

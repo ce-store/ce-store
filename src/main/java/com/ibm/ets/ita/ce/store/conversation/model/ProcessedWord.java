@@ -472,7 +472,7 @@ public class ProcessedWord extends GeneralItem {
 		}
 	}
 
-	private String depluralise(String pRawText) {
+	public String depluralise(String pRawText) {
 		String result = null;
 
 		//Quick and dirty de-pluralisation
@@ -683,7 +683,7 @@ public class ProcessedWord extends GeneralItem {
 											this.partialStartWord = true;
 											reportMicroDebug("Found multiple word relation reference at: " + decText,
 													pAc);
-											addReferredExactRelation(pAc, tgtProp.formattedFullPropertyName(), tgtProp);
+											addReferredExactRelation(pAc, expVal, tgtProp);
 										}
 									}
 								}
@@ -837,7 +837,9 @@ public class ProcessedWord extends GeneralItem {
 		checkForPluralMatchingInstance(pAc, getDeclutteredText(), pWcc);
 
 		for (CeInstance thisInst : pWcc.getLingThingInstances(pAc)) {
-			checkForInstanceByExpressedBy(pAc, thisInst);
+			if (!thisInst.isMetaModelInstance()) {
+				checkForInstanceByExpressedBy(pAc, thisInst);
+			}
 		}
 	}
 
@@ -954,6 +956,10 @@ public class ProcessedWord extends GeneralItem {
 		} else {
 			reportError("Unable to add exact relation '" + pPropFullName + "' as it could not be located", pAc);
 		}
+	}
+
+	public void removeReferredRelation(String pKey) {
+		this.referredExactRelations.remove(pKey);
 	}
 
 	public Collection<CeProperty> listReferredExactRelations() {

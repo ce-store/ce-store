@@ -6,13 +6,12 @@ package com.ibm.ets.ita.ce.store.hudson.handler;
  *******************************************************************************/
 
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportDebug;
-import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.TreeMap;
 
-import com.ibm.ets.ita.ce.store.client.web.WebActionContext;
+import com.ibm.ets.ita.ce.store.ActionContext;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonArray;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
 import com.ibm.ets.ita.ce.store.client.web.model.CeWebInstance;
@@ -21,6 +20,8 @@ import com.ibm.ets.ita.ce.store.hudson.helper.Question;
 import com.ibm.ets.ita.ce.store.hudson.helper.SpCollection;
 import com.ibm.ets.ita.ce.store.hudson.helper.SpEnumeratedConcept;
 import com.ibm.ets.ita.ce.store.hudson.helper.SpLinkedInstance;
+import com.ibm.ets.ita.ce.store.hudson.helper.SpMatchedTriple;
+import com.ibm.ets.ita.ce.store.hudson.helper.SpNumber;
 import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
 import com.ibm.ets.ita.ce.store.model.CeModelEntity;
@@ -31,6 +32,8 @@ public class QuestionInterpreterHandler extends QuestionHandler {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private static final String JSON_Q_TEXT = "question_text";
+	private static final String JSON_Q_CONF = "confidence";
+	private static final String JSON_Q_CONFEXP = "confidence_explanation";
 	private static final String JSON_WORDS = "words";
 	private static final String JSON_CONS = "concepts";
 	private static final String JSON_PROPS = "properties";
@@ -39,13 +42,58 @@ public class QuestionInterpreterHandler extends QuestionHandler {
 
 	private static final String CON_NUMWORD = "number word";
 	private static final String CON_LINKEDPROP = "linked property";
+	
+	private static final int TYPE_ALL = 0;
+	private static final int TYPE_BEFORE = 1;
+	private static final int TYPE_AFTER = 2;
 
+	private HashMap<ProcessedWord, SpNumber> numbers = new HashMap<ProcessedWord, SpNumber>();
 	private HashMap<ProcessedWord, SpEnumeratedConcept> enumeratedConcepts = new HashMap<ProcessedWord, SpEnumeratedConcept>();
-	private HashMap<ProcessedWord, SpCollection> collections = new HashMap<ProcessedWord, SpCollection>();
+	private HashMap<String, SpCollection> collections = new HashMap<String, SpCollection>();
 	private HashMap<ProcessedWord, SpLinkedInstance> linkedInstances = new HashMap<ProcessedWord, SpLinkedInstance>();
+	private HashMap<ProcessedWord, SpMatchedTriple> matchedTriples = new HashMap<ProcessedWord, SpMatchedTriple>();
 
-	public QuestionInterpreterHandler(WebActionContext pWc, boolean pDebug, String pQt, long pStartTime) {
-		super(pWc, pDebug, Question.create(pQt), pStartTime);		
+	public QuestionInterpreterHandler(ActionContext pAc, boolean pDebug, String pQt, long pStartTime) {
+		super(pAc, pDebug, Question.create(pQt), pStartTime);		
+	}
+
+	public static CeStoreJsonArray jsonFor(ActionContext pAc, ArrayList<CeInstance> pInstList) {
+		CeStoreJsonArray result = new CeStoreJsonArray();
+
+		for (CeInstance thisInst : pInstList) {
+			result.add(QuestionInterpreterHandler.jsonFor(pAc, thisInst));
+		}
+
+		return result;
+	}
+
+	public static CeStoreJsonObject jsonFor(ActionContext pAc, CeInstance pInst) {
+		CeWebInstance webInst = new CeWebInstance(pAc);
+		CeStoreJsonObject result = webInst.generateNormalisedDetailsJsonFor(pInst, null, 0, false, false, null);
+
+		return result;
+	}
+
+	public static CeStoreJsonObject jsonFor(ActionContext pAc, CeConcept pCon) {
+		CeStoreJsonObject result = null;
+		CeInstance mmInst = pCon.retrieveMetaModelInstance(pAc);
+
+		if (mmInst != null) {
+			result = jsonFor(pAc, mmInst);
+		}
+
+		return result;
+	}
+
+	public static CeStoreJsonObject jsonFor(ActionContext pAc, CeProperty pProp) {
+		CeStoreJsonObject result = null;
+		CeInstance mmInst = pProp.getMetaModelInstance(pAc);
+
+		if (mmInst != null) {
+			result = jsonFor(pAc, mmInst);
+		}
+
+		return result;
 	}
 
 	@Override
@@ -53,17 +101,177 @@ public class QuestionInterpreterHandler extends QuestionHandler {
 		CeStoreJsonObject result = null;
 
 		interpretQuestion();
+		refineMatches();
 		analyseSpecialCases();
+		calculateConfidence();
 
 		result = createResult();
 
 		return result;
 	}
+	
+	private void refineMatches() {
+		//TODO: Should this be done with instances and concepts too?
+
+		for (ProcessedWord thisWord : this.allWords) {
+			ProcessedWord prevWord = thisWord.getPreviousProcessedWord();
+			
+			if (prevWord != null) {
+				TreeMap<String, CeProperty> propMap1 = thisWord.listGroundedPropertiesAndKeys();
+				TreeMap<String, CeProperty> propMap2 = prevWord.listGroundedPropertiesAndKeys();
+				
+				if (!propMap1.isEmpty() && !propMap2.isEmpty()) {
+					for (String wordKey1 : propMap1.keySet()) {
+						CeProperty prop1 = propMap1.get(wordKey1);
+						
+						for (String wordKey2 : propMap2.keySet()) {
+							CeProperty prop2 = propMap2.get(wordKey2);
+							
+							if (prop1.equals(prop2)) {
+								if (wordKey2.contains(wordKey1)) {
+									thisWord.removeReferredRelation(wordKey1);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 
 	private void analyseSpecialCases() {
+		analyseNumbers();
 		analyseEnumeratedConcepts();
 		analyseCollections();
 		analyseLinkedConcepts();
+		analyseMatchedTriples();
+	}
+
+	private void analyseMatchedTriples() {
+		for (ProcessedWord thisPw : this.allWords) {
+			TreeMap<String, CeProperty> propList = thisPw.listGroundedPropertiesAndKeys();
+			for (String thisKey : propList.keySet()) {
+				CeProperty thisProp = propList.get(thisKey);
+
+				ArrayList<CeInstance> subjectList = null;
+				ArrayList<CeInstance> objectList = null;
+				
+				if (thisProp.isObjectProperty()) {
+					subjectList = seekPossibleSubjectsFor(thisProp, thisPw);
+					objectList = seekPossibleObjectsFor(thisProp, thisPw);
+				} else {
+					subjectList = seekPossibleSubjectsFor(thisProp);
+					objectList = new ArrayList<CeInstance>();
+				}
+
+				if (!subjectList.isEmpty() || !objectList.isEmpty()) {
+					//This is a triple (2 or 3 of the triple are matched)
+					SpMatchedTriple mt = new SpMatchedTriple(thisKey, thisProp);
+					mt.setSubjects(subjectList);
+					mt.setObjects(objectList);
+
+					this.matchedTriples.put(thisPw, mt);
+				}
+			}
+		}
+	}
+
+	private ArrayList<CeInstance> seekPossibleSubjectsFor(CeProperty pProp, ProcessedWord pWord) {
+		return seekPossibleInstanceMatchesForConcept(pProp.getDomainConcept(), pWord, TYPE_BEFORE);
+	}
+
+	private ArrayList<CeInstance> seekPossibleSubjectsFor(CeProperty pProp) {
+		return seekPossibleInstanceMatchesForConcept(pProp.getDomainConcept(), null, TYPE_ALL);
+	}
+
+	private ArrayList<CeInstance> seekPossibleObjectsFor(CeProperty pProp, ProcessedWord pWord) {
+		ArrayList<CeInstance> result = null;
+
+		if (pProp.isObjectProperty()) {
+			result = seekPossibleInstanceMatchesForConcept(pProp.getRangeConcept(), pWord, TYPE_AFTER);
+		} else {
+			result = new ArrayList<CeInstance>();
+		}
+
+		return result;
+	}
+
+	private ArrayList<CeInstance> seekPossibleInstanceMatchesForConcept(CeConcept pCon, ProcessedWord pWord, int pType) {
+		ArrayList<CeInstance> result = new ArrayList<CeInstance>();
+
+		for (ProcessedWord thisWord : this.allWords) {
+			int thisPos = thisWord.getWordPos();
+			boolean doTest = false;
+
+			if (pType == TYPE_ALL) {
+				doTest = true;
+			} else {
+				int matchPos = pWord.getWordPos();
+				if (thisPos < matchPos) {
+					if (pType == TYPE_BEFORE) {
+						doTest = true;
+					}
+				} else if (thisPos > matchPos) {
+					if (pType == TYPE_AFTER) {
+						doTest = true;
+					}
+				}
+			}
+
+			if (doTest) {
+				for (CeInstance thisInst : thisWord.listGroundedInstances()) {
+					if (thisInst.isConceptNamed(this.ac, pCon.getConceptName())) {
+						result.add(thisInst);
+					}
+				}
+			}
+		}
+
+		return result;
+	}
+
+	private void calculateConfidence() {
+		int computedConfidence = 0;
+		float groundedCount = 0;
+		float wordCount = this.allWords.size();
+		String expText = "";
+
+		for (ProcessedWord thisWord : this.allWords) {
+			if (thisWord.isGrounded() || thisWord.isLaterPartOfPartial() || thisWord.isNumberWord()) {
+				++groundedCount;
+			} else {
+				if (!expText.isEmpty()) {
+					expText += ", ";
+				}
+				expText += "'" + thisWord.getWordText() +"'";
+			}
+		}
+
+		float ratio = groundedCount / wordCount;
+		computedConfidence = new Float(ratio * 100).intValue();
+
+		this.question.setInterpretationConfidence(computedConfidence);
+		
+		if (!expText.isEmpty()) {
+			if ((wordCount - groundedCount) == 1) {
+				expText = "The word " + expText;
+				expText += " was not matched";
+			} else {
+				expText = "The words " + expText;
+				expText += " were not matched";
+			}
+			this.question.setInterpretationConfidenceExplanation(expText);
+		}
+	}
+
+	private void analyseNumbers() {
+		for (ProcessedWord thisWord : this.allWords) {
+			if (isNumberWord(thisWord)) {
+				SpNumber spNum = new SpNumber(thisWord.getWordText());
+
+				this.numbers.put(thisWord, spNum);
+			}
+		}
 	}
 
 	private void analyseEnumeratedConcepts() {
@@ -74,7 +282,7 @@ public class QuestionInterpreterHandler extends QuestionHandler {
 				if (nextWord != null) {
 					if (nextWord.isGroundedOnConcept()) {
 						String label = thisWord.getWordText() + " " + nextWord.getWordText();
-						SpEnumeratedConcept enCon = new SpEnumeratedConcept(thisWord, nextWord, label);
+						SpEnumeratedConcept enCon = new SpEnumeratedConcept(thisWord.getWordText(), nextWord.getWordText(), nextWord.listGroundedConcepts(), label);
 
 						this.enumeratedConcepts.put(thisWord, enCon);
 					}
@@ -128,17 +336,19 @@ public class QuestionInterpreterHandler extends QuestionHandler {
 		SpCollection spColl = null;
 
 		for (ProcessedWord thisWord : this.allWords) {
+			ArrayList<CeModelEntity> matches = null;
+
 			if (isConnector(thisWord)) {
 				ProcessedWord prevWord = thisWord.getPreviousProcessedWord();
 				ProcessedWord nextWord = thisWord.getNextProcessedWord();
 
 				if (spColl == null) {
-					spColl = new SpCollection(prevWord);
+					spColl = new SpCollection(prevWord.getWordText());
 				}
 
-				ArrayList<CeModelEntity> matches = new ArrayList<CeModelEntity>();
-
 				if (prevWord != null) {
+					matches = new ArrayList<CeModelEntity>();
+
 					if (prevWord.isGroundedOnConcept()) {
 						matches.addAll(prevWord.listGroundedConcepts());
 					}
@@ -151,10 +361,12 @@ public class QuestionInterpreterHandler extends QuestionHandler {
 						matches.addAll(prevWord.listGroundedInstances());
 					}
 
-					spColl.addItem(prevWord, matches);
+					spColl.addItem(prevWord.getWordText(), matches);
 				}
 
 				if (nextWord != null) {
+					matches = new ArrayList<CeModelEntity>();
+
 					if (nextWord.isGroundedOnConcept()) {
 						matches.addAll(nextWord.listGroundedConcepts());
 					}
@@ -167,17 +379,17 @@ public class QuestionInterpreterHandler extends QuestionHandler {
 						matches.addAll(nextWord.listGroundedInstances());
 					}
 
-					spColl.addItem(nextWord, matches);
+					spColl.addItem(nextWord.getWordText(), matches);
 				}
 
-				spColl.setConnectorWord(thisWord);
+				spColl.setConnectorWordText(thisWord.getWordText());
 
-				this.collections.put(prevWord, spColl);
+//				this.collections.put(prevWord, spColl);
 			}
 		}
 
 		if (spColl != null) {
-			this.collections.put(spColl.getFirstWord(), spColl);
+			this.collections.put(spColl.getFirstWordText(), spColl);
 		}
 	}
 
@@ -207,6 +419,8 @@ public class QuestionInterpreterHandler extends QuestionHandler {
 		CeStoreJsonObject result = new CeStoreJsonObject();
 
 		result.put(JSON_Q_TEXT, getQuestionText());
+		result.put(JSON_Q_CONF, getInterpretationConfidence());
+		result.put(JSON_Q_CONFEXP, getInterpretationConfidenceExplanation());
 		result.put(JSON_WORDS, createJsonForWords());
 		result.put(JSON_CONS, createJsonForConcepts());
 		result.put(JSON_PROPS, createJsonForProperties());
@@ -214,6 +428,14 @@ public class QuestionInterpreterHandler extends QuestionHandler {
 		result.put(JSON_SPECS, createJsonForSpecials());
 
 		return result;
+	}
+
+	private int getInterpretationConfidence() {
+		return this.question.getInterpretationConfidence();
+	}
+
+	private String getInterpretationConfidenceExplanation() {
+		return this.question.getInterpretationConfidenceExplanation();
 	}
 
 	private CeStoreJsonArray createJsonForWords() {
@@ -242,7 +464,7 @@ public class QuestionInterpreterHandler extends QuestionHandler {
 					jCon.put("type", "concept");
 					jCon.put("name", thisCon.getConceptName());
 					jCon.put("position", ctr);
-					jCon.put("instance", jsonFor(thisCon));
+					jCon.put("instance", jsonFor(this.ac, thisCon));
 
 					result.put(keyText, jCon);
 				}
@@ -268,7 +490,7 @@ public class QuestionInterpreterHandler extends QuestionHandler {
 					jProp.put("type", "property");
 					jProp.put("name", thisProp.formattedFullPropertyName());
 					jProp.put("position", ctr);
-					jProp.put("instance", jsonFor(thisProp));
+					jProp.put("instance", jsonFor(this.ac, thisProp));
 
 					result.put(thisKey, jProp);
 				}
@@ -289,19 +511,45 @@ public class QuestionInterpreterHandler extends QuestionHandler {
 
 				for (String thisKey : instMap.keySet()) {
 					CeInstance thisInst = instMap.get(thisKey);
-					CeStoreJsonObject jInst = new CeStoreJsonObject();
 
-					jInst.put("type", "instance");
-					jInst.put("name", thisInst.getInstanceName());
-					jInst.put("position", ctr);
-					jInst.put("instance", jsonFor(thisInst));
-
-					result.put(thisKey, jInst);
+					if (!isAlreadyMatchedToConceptOrProperty(thisWord, thisInst)) {
+						CeStoreJsonObject jInst = new CeStoreJsonObject();
+	
+						jInst.put("type", "instance");
+						jInst.put("name", thisInst.getInstanceName());
+						jInst.put("position", ctr);
+						jInst.put("instance", jsonFor(this.ac, thisInst));
+	
+						result.put(thisKey, jInst);
+					}
 				}
 			}
 			++ctr;
 		}
 
+		return result;
+	}
+
+	private boolean isAlreadyMatchedToConceptOrProperty(ProcessedWord pWord, CeInstance pInst) {
+		boolean result = false;
+		String instName = pInst.getInstanceName();
+
+		for (CeConcept thisCon : pWord.listGroundedConcepts()) {
+			if (thisCon.getConceptName().equals(instName)) {
+				result = true;
+				break;
+			}
+		}
+		
+		if (!result) {
+			for (CeProperty thisProp : pWord.listGroundedProperties()) {
+				if (thisProp.formattedFullPropertyName().equals(instName)) {
+					result = true;
+					break;
+				}
+			}
+		}
+		
 		return result;
 	}
 
@@ -312,6 +560,7 @@ public class QuestionInterpreterHandler extends QuestionHandler {
 		createJsonForCollectionSpecials(result);
 		createJsonForEnumeratedConceptSpecials(result);
 		createJsonForLinkedInstanceSpecials(result);
+		createJsonForMatchedTripleSpecials(result);
 
 		return result;
 	}
@@ -320,15 +569,13 @@ public class QuestionInterpreterHandler extends QuestionHandler {
 		int ctr = 0;
 
 		for (ProcessedWord thisWord : this.allWords) {
-			if (thisWord.isNumberWord()) {
-				CeStoreJsonObject jSpecial = new CeStoreJsonObject();
-				String thisKey = thisWord.getWordText();
+			for (ProcessedWord numWord : this.numbers.keySet()) {
+				if (thisWord.equals(numWord)) {
+					SpNumber num = this.numbers.get(numWord);
+					CeStoreJsonObject jSpecial = num.toJson(this.ac, ctr);
 
-				jSpecial.put("type", "number");
-				jSpecial.put("name", thisKey);
-				jSpecial.put("position", ctr);
-
-				pResult.put(thisKey, jSpecial);
+					pResult.put(num.getLabel(), jSpecial);
+				}
 			}
 
 			++ctr;
@@ -339,46 +586,12 @@ public class QuestionInterpreterHandler extends QuestionHandler {
 		int ctr = 0;
 
 		for (ProcessedWord thisWord : this.allWords) {
-			for (ProcessedWord colWord : this.collections.keySet()) {
-				if (thisWord.equals(colWord)) {
-					CeStoreJsonObject jSpecial = new CeStoreJsonObject();
-					SpCollection col = this.collections.get(colWord);
-					String thisKey = col.computeLabel();
+			for (String wordText : this.collections.keySet()) {
+				if (thisWord.getWordText().equals(wordText)) {
+					SpCollection col = this.collections.get(wordText);
+					CeStoreJsonObject jSpecial = col.toJson(this.ac, ctr);
 
-					CeStoreJsonArray jEntList = new CeStoreJsonArray();
-
-					for (ProcessedWord innerWord : col.getItems().keySet()) {
-						ArrayList<CeModelEntity> entList = col.getItems().get(innerWord);
-						CeStoreJsonObject jEntry = new CeStoreJsonObject();
-						CeStoreJsonArray jArr = new CeStoreJsonArray();
-	
-						jEntry.put("text", col.getFirstWord().getWordText());
-						jEntry.put("items", jArr);
-
-						for (CeModelEntity thisEnt : entList) {
-							String className = thisEnt.getClass().getSimpleName();
-
-							if (className.equals("CeConcept")) {
-								jArr.add(jsonFor((CeConcept)thisEnt));	
-							} else if (className.equals("CeProperty")) {
-								jArr.add(jsonFor((CeProperty)thisEnt));	
-							} else if (className.equals("CeInstance")) {
-								jArr.add(jsonFor((CeInstance)thisEnt));	
-							} else {
-								reportError("Unexpected class (" + className + ") during SpCollection processing", this.ac);
-							}
-						}
-
-						jEntList.add(jEntry);
-					}
-
-					jSpecial.put("type", "collection");
-					jSpecial.put("name", thisKey);
-					jSpecial.put("position", ctr);
-					jSpecial.put("connector", col.getConnectorWord().getWordText());
-					jSpecial.put("contents", jEntList);
-
-					pResult.put(thisKey, jSpecial);
+					pResult.put(col.computeLabel(), jSpecial);
 				}
 			}
 
@@ -392,23 +605,9 @@ public class QuestionInterpreterHandler extends QuestionHandler {
 		for (ProcessedWord thisWord : this.allWords) {
 			for (ProcessedWord ecWord : this.enumeratedConcepts.keySet()) {
 				if (thisWord.equals(ecWord)) {
-					CeStoreJsonObject jSpecial = new CeStoreJsonObject();
 					SpEnumeratedConcept ec = this.enumeratedConcepts.get(ecWord);
 					String thisKey = ec.getLabel();
-
-					CeStoreJsonArray jConList = new CeStoreJsonArray();
-
-					for (CeConcept thisCon : ec.getConceptWord().listGroundedConcepts()) {
-						CeInstance mmInst = thisCon.retrieveMetaModelInstance(this.ac);
-
-						jConList.add(jsonFor(mmInst));
-					}
-
-					jSpecial.put("type", "enumerated-concept");
-					jSpecial.put("name", thisKey);
-					jSpecial.put("position", ctr);
-					jSpecial.put("number", ec.getNumberWord().getWordText());
-					jSpecial.put("concepts", jConList);
+					CeStoreJsonObject jSpecial = ec.toJson(this.ac, ctr);
 
 					pResult.put(thisKey, jSpecial);
 				}
@@ -424,16 +623,9 @@ public class QuestionInterpreterHandler extends QuestionHandler {
 		for (ProcessedWord thisWord : this.allWords) {
 			for (ProcessedWord liWord : this.linkedInstances.keySet()) {
 				if (thisWord.equals(liWord)) {
-					CeStoreJsonObject jSpecial = new CeStoreJsonObject();
 					SpLinkedInstance li = this.linkedInstances.get(liWord);
 					String thisKey = li.getLabel();
-
-					jSpecial.put("type", "linked-instance");
-					jSpecial.put("name", thisKey);
-					jSpecial.put("position", ctr);
-					jSpecial.put("matched_instance", jsonFor(li.getMatchedInstance()));
-					jSpecial.put("linked_instance", jsonFor(li.getLinkedInstances()));
-					jSpecial.put("property", jsonFor(li.getLinkingProperty()));
+					CeStoreJsonObject jSpecial = li.toJson(this.ac, ctr);
 
 					pResult.put(thisKey, jSpecial);
 				}
@@ -443,43 +635,22 @@ public class QuestionInterpreterHandler extends QuestionHandler {
 		}
 	}
 
-	private CeStoreJsonObject jsonFor(CeInstance pInst) {
-		CeWebInstance webInst = new CeWebInstance(this.ac);
-		CeStoreJsonObject result = webInst.generateNormalisedDetailsJsonFor(pInst, null, 0, false, false, null);
+	private void createJsonForMatchedTripleSpecials(CeStoreJsonObject pResult) {
+		int ctr = 0;
 
-		return result;
-	}
+		for (ProcessedWord thisWord : this.allWords) {
+			for (ProcessedWord mtWord : this.matchedTriples.keySet()) {
+				if (thisWord.equals(mtWord)) {
+					SpMatchedTriple mt = this.matchedTriples.get(mtWord);
+					String thisKey = mt.getLabel();
+					CeStoreJsonObject jSpecial = mt.toJson(this.ac, ctr);
 
-	private CeStoreJsonArray jsonFor(ArrayList<CeInstance> pInstList) {
-		CeStoreJsonArray result = new CeStoreJsonArray();
+					pResult.put(thisKey, jSpecial);
+				}
+			}
 
-		for (CeInstance thisInst : pInstList) {
-			result.add(jsonFor(thisInst));
+			++ctr;
 		}
-
-		return result;
-	}
-
-	private CeStoreJsonObject jsonFor(CeConcept pCon) {
-		CeStoreJsonObject result = null;
-		CeInstance mmInst = pCon.retrieveMetaModelInstance(this.ac);
-
-		if (mmInst != null) {
-			result = jsonFor(mmInst);
-		}
-
-		return result;
-	}
-
-	private CeStoreJsonObject jsonFor(CeProperty pProp) {
-		CeStoreJsonObject result = null;
-		CeInstance mmInst = pProp.getMetaModelInstance(this.ac);
-
-		if (mmInst != null) {
-			result = jsonFor(mmInst);
-		}
-
-		return result;
 	}
 
 }

@@ -1,0 +1,16 @@
+-- --------------------------------------------------------------------------
+-- (C) Copyright IBM Corporation  2011, 2016
+-- All Rights Reserved
+-- --------------------------------------------------------------------------
+
+there is an absolute named 'a:all'.
+there is an absolute named 'a:different'.
+there is an absolute named 'a:greater'.
+there is an absolute named 'a:less'.
+there is an absolute named 'a:max'.
+there is an absolute named 'a:min'.
+there is an absolute named 'a:next'.
+there is an absolute named 'a:none'.
+there is an absolute named 'a:previous'.
+there is an absolute named 'a:same'.
+there is an absolute named 'a:some'.

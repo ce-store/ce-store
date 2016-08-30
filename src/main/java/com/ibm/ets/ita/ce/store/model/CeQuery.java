@@ -80,10 +80,8 @@ public class CeQuery extends CeModelEntity {
 		}
 	}
 
-	@SuppressWarnings("static-method")
-	public boolean isRule() {
-		//This must not become a static method
-		return false;
+	public boolean isQuery() {
+		return true;
 	}
 
 	public String getQueryName() {

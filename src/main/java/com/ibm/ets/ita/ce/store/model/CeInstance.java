@@ -43,6 +43,10 @@ public class CeInstance extends CeModelEntity {
 		return newInst;
 	}
 
+	public boolean isInstance() {
+		return true;
+	}
+
 	public String getInstanceName() {
 		return this.name;
 	}
@@ -302,6 +306,22 @@ public class CeInstance extends CeModelEntity {
 		return result;
 	}
 
+	public boolean hasPropertyInstanceForPropertyNamed(String[] pPropNames) {
+		boolean result = false;
+
+		break_position:
+		for (CePropertyInstance thisPi : this.propertyInstances) {
+			for (String lingName : pPropNames) {
+				if (thisPi.getPropertyName().equals(lingName)) {
+					result = true;
+					break break_position;
+				}
+			}
+		}
+
+		return result;
+	}
+
 	public CePropertyInstance[] getReferringPropertyInstances() {
 		return this.referringPropertyInstances;
 	}
@@ -452,7 +472,30 @@ public class CeInstance extends CeModelEntity {
 
 		return result;
 	}
+
+	public boolean isConceptNamed(ActionContext pAc, String[] pConNames) {
+		boolean result = false;
+
+		for (String conName : pConNames) {
+			if (!result) {
+				CeConcept tgtCon = pAc.getModelBuilder().getConceptNamed(pAc, conName);
 	
+				if (tgtCon != null) {
+					result = isConcept(tgtCon);
+					
+					if (result) {
+						break;
+					}
+				} else {
+					reportWarning("Concept '" + conName + "' could not be located [isConceptNamed]", pAc);
+					result = false;
+				}
+			}
+		}
+
+		return result;
+	}
+
 	//DSB 21/09/2015 - Added
 	//Return true only if there is just one direct concept and that concept (or a parent)
 	//matches the specified concept name.

@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import com.ibm.ets.ita.ce.store.client.web.ServletStateManager;
 import com.ibm.ets.ita.ce.store.client.web.WebActionContext;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
-import com.ibm.ets.ita.ce.store.hudson.handler.QuestionAnalysisHandler;
 import com.ibm.ets.ita.ce.store.hudson.handler.QuestionAnswererHandler;
 import com.ibm.ets.ita.ce.store.hudson.handler.QuestionExecutionHandler;
 import com.ibm.ets.ita.ce.store.hudson.handler.QuestionHelpHandler;
@@ -24,7 +23,6 @@ public class CeStoreRestApiSpecialHudson extends CeStoreRestApi {
 	
 	private static final String REST_HELPER = "helper";
 	private static final String REST_EXECUTOR = "executor";
-	private static final String REST_ANALYSER = "analyser";
 	private static final String REST_INTERPRETER = "interpreter";
 	private static final String REST_ANSWERER = "answerer";
 	private static final String REST_RESET = "reset";
@@ -40,7 +38,6 @@ public class CeStoreRestApiSpecialHudson extends CeStoreRestApi {
 	 * Supported requests:
 	 * 		/special/hudson/helper
 	 * 		/special/hudson/executor
-	 * 		/special/hudson/analyser
 	 * 		/special/hudson/interpreter
 	 * 		/special/hudson/answerer
 	 * 		/special/hudson/reset
@@ -69,8 +66,6 @@ public class CeStoreRestApiSpecialHudson extends CeStoreRestApi {
 				result = processHelperRequest(qt, debug, st);
 			} else if (command.equals(REST_EXECUTOR)) {
 				result = processExecutorRequest(qt, debug, st);
-			} else if (command.equals(REST_ANALYSER)) {
-				result = processAnalyserRequest(qt, debug, st);
 			} else if (command.equals(REST_INTERPRETER)) {
 				result = processInterpreterRequest(qt, debug, st);
 			} else if (command.equals(REST_ANSWERER)) {
@@ -118,15 +113,6 @@ public class CeStoreRestApiSpecialHudson extends CeStoreRestApi {
 
 		QuestionExecutionHandler qe = new QuestionExecutionHandler(this.wc, pDebug, pQuestionText, pStartTime);
 		result = qe.handleQuestion();
-
-		return result;
-	}
-
-	private CeStoreJsonObject processAnalyserRequest(String pQuestionText, boolean pDebug, long pStartTime) {
-		CeStoreJsonObject result = new CeStoreJsonObject();
-
-		QuestionAnalysisHandler qh = new QuestionAnalysisHandler(this.wc, pDebug, pQuestionText, pStartTime);
-		result = qh.handleQuestion();
 
 		return result;
 	}

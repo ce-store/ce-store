@@ -1,5 +1,7 @@
 package com.ibm.ets.ita.ce.store.hudson.helper;
 
+import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
+
 /*******************************************************************************
  * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
@@ -8,50 +10,116 @@ package com.ibm.ets.ita.ce.store.hudson.helper;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.ibm.ets.ita.ce.store.conversation.model.ProcessedWord;
+import com.ibm.ets.ita.ce.store.ActionContext;
+import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonArray;
+import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
+import com.ibm.ets.ita.ce.store.hudson.handler.QuestionInterpreterHandler;
+import com.ibm.ets.ita.ce.store.model.CeConcept;
+import com.ibm.ets.ita.ce.store.model.CeInstance;
 import com.ibm.ets.ita.ce.store.model.CeModelEntity;
+import com.ibm.ets.ita.ce.store.model.CeProperty;
 
 public class SpCollection extends SpThing {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
-	private ProcessedWord firstWord = null;
-	private ProcessedWord connectorWord = null;
-	private HashMap<ProcessedWord, ArrayList<CeModelEntity>> items = new HashMap<ProcessedWord, ArrayList<CeModelEntity>>();
+	private static final String TYPE_NAME = "collection";
+	private static final String JSON_CONNECTOR = "connector";
+	private static final String JSON_CONTENTS = "contents";
+	private static final String JSON_E_TEXT = "text";
+	private static final String JSON_E_ITEMS = "items";
 
-	public SpCollection(ProcessedWord pFirstWord) {
-		this.firstWord = pFirstWord;
+	private String firstWordText = null;
+	private String connectorWordText = null;
+	private HashMap<String, ArrayList<CeModelEntity>> items = new HashMap<String, ArrayList<CeModelEntity>>();
+
+	public SpCollection(String pFirstWordText) {
+		this.firstWordText = pFirstWordText;
 	}
 
-	public ProcessedWord getFirstWord() {
-		return this.firstWord;
+	public static SpCollection createFromJson(ActionContext pAc, CeStoreJsonObject pJo) {
+		SpCollection result = new SpCollection("");
+
+		result.extractStandardFieldsFromJson(pJo);
+
+		//TODO: Complete this
+		return result;
+	}
+	
+	public boolean isCollection() {
+		return true;
+	}
+	
+	public String getFirstWordText() {
+		return this.firstWordText;
 	}
 
-	public HashMap<ProcessedWord, ArrayList<CeModelEntity>> getItems() {
+	public HashMap<String, ArrayList<CeModelEntity>> getItems() {
 		return this.items;
 	}
 
-	public void addItem(ProcessedWord pWord, ArrayList<CeModelEntity> pMe) {
-		this.items.put(pWord, pMe);
+	public void addItem(String pWordText, ArrayList<CeModelEntity> pMe) {
+		this.items.put(pWordText, pMe);
 	}
 
-	public ProcessedWord getConnectorWord() {
-		return this.connectorWord;
+	public String getConnectorWordText() {
+		return this.connectorWordText;
 	}
 
-	public void setConnectorWord(ProcessedWord pWord) {
-		this.connectorWord = pWord;
+	public void setConnectorWordText(String pWordText) {
+		this.connectorWordText = pWordText;
 	}
 	
 	public String computeLabel() {
 		String result = "";
 
-		result += this.firstWord.getWordText();
+		result += this.firstWordText;
 
-		for (ProcessedWord thisWord : this.items.keySet()) {
-			result += " " + this.connectorWord.getWordText() + " ";
-			result += thisWord.getWordText();
+		for (String thisWordText : this.items.keySet()) {
+			if (!thisWordText.equals(this.firstWordText)) {
+				result += " " + this.connectorWordText + " ";
+				result += thisWordText;
+			}
 		}
 
 		return result;
+	}
+	
+	public CeStoreJsonObject toJson(ActionContext pAc, int pCtr) {
+		CeStoreJsonObject jResult = new CeStoreJsonObject();
+		String thisKey = computeLabel();
+		CeStoreJsonArray jEntList = new CeStoreJsonArray();
+
+		for (String innerWordText : getItems().keySet()) {
+			ArrayList<CeModelEntity> entList = getItems().get(innerWordText);
+			CeStoreJsonObject jEntry = new CeStoreJsonObject();
+			CeStoreJsonArray jArr = new CeStoreJsonArray();
+
+			jEntry.put(JSON_E_TEXT, innerWordText);
+			jEntry.put(JSON_E_ITEMS, jArr);
+
+			for (CeModelEntity thisEnt : entList) {
+				if (thisEnt.isConcept()) {
+					jArr.add(QuestionInterpreterHandler.jsonFor(pAc, (CeConcept)thisEnt));	
+				} else if (thisEnt.isProperty()) {
+					jArr.add(QuestionInterpreterHandler.jsonFor(pAc, (CeProperty)thisEnt));	
+				} else if (thisEnt.isInstance()) {
+					jArr.add(QuestionInterpreterHandler.jsonFor(pAc, (CeInstance)thisEnt));	
+				} else {
+					String className = thisEnt.getClass().getSimpleName();
+
+					reportError("Unexpected class (" + className + ") during SpCollection processing", pAc);
+				}
+			}
+
+			jEntList.add(jEntry);
+		}
+
+		jResult.put(JSON_TYPE, TYPE_NAME);
+		jResult.put(JSON_NAME, thisKey);
+		jResult.put(JSON_POS, pCtr);
+		jResult.put(JSON_CONNECTOR, getConnectorWordText());
+		jResult.put(JSON_CONTENTS, jEntList);
+
+		return jResult;
 	}
 }

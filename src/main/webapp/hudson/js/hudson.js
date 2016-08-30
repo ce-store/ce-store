@@ -24,7 +24,6 @@ function Hudson(pJsDebug) {
 	var DOM_LR = 'log_results';
 	var URL_QH = '/special/hudson/helper';
 	var URL_QE = '/special/hudson/executor';
-	var URL_QA = '/special/hudson/analyser';
 	var URL_QB = '/special/hudson/answerer';
 	var URL_QI = '/special/hudson/interpreter';
 	var URL_QMR = '/special/hudson/reset';
@@ -79,7 +78,7 @@ function Hudson(pJsDebug) {
 	}
 
 	function sortById(a, b) {
-		var result = a.id - b.id;
+		var result = null;
 		
 		if (a.id < b.id) {
 			result = -1;
@@ -278,20 +277,6 @@ function Hudson(pJsDebug) {
 //		sendAnswerRequest(pQuestionText, pCbf, this.isDebug());
 	};
 
-	this.analyseSpecificQuestion = function(pQuestionText, pCbf) {
-		pCbf();  // Temporary as not yet supported
-//		sendAnswerRequest(pQuestionText, pCbf, this.isDebug());
-	};
-
-	this.analyseQuestion = function() {
-		var qText = getTextFrom(DOM_QT);
-		var cbf = function(pResponse) {gHudson.updateAnswer(pResponse);};
-
-		setTextIn(DOM_AT, '');
-
-		this.analyseSpecificQuestion(qText, cbf);
-	};
-
 	this.interpretQuestion = function() {
 		var qText = getTextFrom(DOM_QT);
 		var cbf = function(pResponse) {gHudson.updateInterpretation(pResponse);};
@@ -308,10 +293,6 @@ function Hudson(pJsDebug) {
 		setTextIn(DOM_AT, '');
 
 		this.answerSpecificInterpretation(qText, cbf);
-	};
-
-	this.analyseSpecificQuestion = function(pQuestionText, pCbf) {
-		sendAnalyseRequest(pQuestionText, pCbf, this.isDebug());
 	};
 
 	this.answerSpecificInterpretation = function(pQuestionText, pCbf) {
@@ -351,7 +332,7 @@ function Hudson(pJsDebug) {
 		this.lastInterpretation = pResponse;
 
 		if (this.isLoggingResults()) {
-			reportLog(JSON.stringify(pResponse));
+			this.reportLog(JSON.stringify(pResponse));
 		}
 
 		if (pResponse != null) {
@@ -361,6 +342,7 @@ function Hudson(pJsDebug) {
 
 	this.renderInterpretation = function(pResponse) {
 		var result = null;
+		var confExp = null;
 
 		result = "<table border='1'>";
 		result += "<tr><td><b>Word</b></td><td><b>Matches</b></td></tr>";
@@ -374,6 +356,13 @@ function Hudson(pJsDebug) {
 
 		result += "</table>";
 
+		if (pResponse.confidence_explanation != '') {
+			confExp = " (" + pResponse.confidence_explanation + ")";
+		} else {
+			confExp = '';
+		}
+		
+		result += "Confidence = " + pResponse.confidence + "%" + confExp;
 		result += "<br><br>";
 		
 		result += "<a href=\"javascript:gHudson.answerInterpretation();\">Send this interpretation for answer</a>";
@@ -504,7 +493,7 @@ function Hudson(pJsDebug) {
 		this.cachedAnswer = pResponse;
 
 		if (this.isLoggingResults()) {
-			reportLog(JSON.stringify(pResponse));
+			this.reportLog(JSON.stringify(pResponse));
 		}
 
 		if (pResponse != null) {
@@ -514,7 +503,7 @@ function Hudson(pJsDebug) {
 
 	this.updateRawAnswer = function(pResponse) {
 		if (this.isLoggingResults()) {
-			reportLog(JSON.stringify(pResponse));
+			this.reportLog(JSON.stringify(pResponse));
 		}
 
 		if (pResponse != null) {
@@ -526,117 +515,115 @@ function Hudson(pJsDebug) {
 		var answerText = '';
 
 		if (pResponse != null) {
-			var question = pResponse.question;
-			var debug = pResponse.debug;
-			var alerts = pResponse.alerts;
-
-			if (debug != null) {
-				if (debug.execution_time_ms != null) {
-					answerText += 'Execution time (ms): <font color="red">' + debug.execution_time_ms + '</font>';
-				}
-			} 
-
-			if (pResponse.answers != null) {
-				for (var idx in pResponse.answers) {
-					var answer = pResponse.answers[idx];
-					var bullet = '';
-					
-					if (pResponse.answers.length > 1) {
-						bullet = (parseInt(idx) + 1) + ') ';
-					}
-
-					if (answerText !== '') {
-						answerText += '<br/><br/>';
-					}
-
-					var answered = false;
-					var confText = '<i>confidence for this answer=<font color="green">' + answer.answer_confidence + '</font></i>';
-
-					var intText = ', <i>interpretation=<b>' + answer.question_interpretation + '</b></i>'; 
-
-					if (this.chattyAnswers) {
-						if ((answer.chatty_text != null) && (answer.chatty_text != '')) {
-							answerText += bullet + '<b>' + htmlFormat(answer.chatty_text) + '</b>';
-							answerText += '<br/>[' + confText + intText + ']';
-							answered = true;
-						}
-					}
-					
-					if (!answered) {
-						if (answer.result_text != null) {
-							answerText += bullet + '<b>' + htmlFormat(answer.result_text) + '</b>';
-						} else if (answer.result_set != null) {
-							answerText += bullet + createHtmlForResultSet(answer.result_set);
-						} else if (answer.result_media != null) {
-							answerText += bullet + createHtmlForMedia(answer.result_media);
-						} else if (answer.result_coords != null) {
-							answerText += bullet + createHtmlForCoords(answer.result_coords);
-						} else if (answer.result_code != null) {
-							answerText += bullet + '<b>' + answer.result_code + ': ' + answer.chatty_text + '</b>';
-						} else {
-							answerText += bullet + '<b>NO ANSWER FOUND!</b>';
-						}
-
-						if (answer.source != null) {
-							answerText += '<br/>[<i>source:<a href="' + answer.source.url + '">' + answer.source.name + '</a>, ' + confText + intText + '</i>]';
-						} else {
-							answerText += '<br/>[' + confText + intText + ']';
-						}
-					}
-				}
+			if (pResponse.answer != null) {
+				//Remove this temporary code when temporary simple answers are removed
+				answerText = htmlFormat(pResponse.answer);
 			} else {
-				if (pResponse.system_message != null) {
-					answerText = '<font color="green">' + pResponse.system_message + '</font>';
-					//Note that for management responses the execution time comes back in the root, not in the debug
-					answerText += '<br/>Execution time (ms): <font color="red">' + pResponse.execution_time_ms + '</font>';
-				}
-			}
-			
-			if (question != null) {
-				answerText = '[<i>interpretation confidence=<font color="green">' + question.interpretation_confidence + '</font></i>, <i>ability to answer confidence=<font color="green">' + question.ability_to_answer_confidence + '</font></i>]<br/><br/>' + answerText;
+				var question = pResponse.question;
+				var debug = pResponse.debug;
+				var alerts = pResponse.alerts;
 
 				if (debug != null) {
-					if (debug.sql_query != null) {
-//						answerText += '<br/><br/>SQL:<br/><font color="green">' + sqlFormat(debug.sql_query) + '</font>';
-						answerText += '<br/><br/>SQL:<br/><font color="green">' + htmlFormat(debug.sql_query) + '</font>';
+					if (debug.execution_time_ms != null) {
+						answerText += 'Execution time (ms): <font color="red">' + debug.execution_time_ms + '</font>';
 					}
 				} 
-			}
 
-			if (alerts != null) {
-				if (alerts.errors != null) {
-					answerText += '<br/><br/><hr/><u>Errors:</u><ul>';
-					for (var i = 0; i < alerts.errors.length; i++) {
-						var thisError = alerts.errors[i];
+				if (pResponse.answers != null) {
+					for (var idx in pResponse.answers) {
+						var answer = pResponse.answers[idx];
+						var bullet = '';
 						
-						answerText += '<li>' + htmlFormat(thisError) + '</li>';
+						if (pResponse.answers.length > 1) {
+							bullet = (parseInt(idx) + 1) + ') ';
+						}
+
+						if (answerText !== '') {
+							answerText += '<br/><br/>';
+						}
+
+						var answered = false;
+						var confText = '<i>confidence for this answer=<font color="green">' + answer.answer_confidence + '</font></i>';
+
+						var intText = ', <i>interpretation=<b>' + answer.question_interpretation + '</b></i>'; 
+
+						if (this.chattyAnswers) {
+							if ((answer.chatty_text != null) && (answer.chatty_text != '')) {
+								answerText += bullet + '<b>' + htmlFormat(answer.chatty_text) + '</b>';
+								answerText += '<br/>[' + confText + intText + ']';
+								answered = true;
+							}
+						}
+						
+						if (!answered) {
+							if (answer.result_text != null) {
+								answerText += bullet + '<b>' + htmlFormat(answer.result_text) + '</b>';
+							} else if (answer.result_set != null) {
+								answerText += bullet + createHtmlForResultSet(answer.result_set);
+							} else if (answer.result_media != null) {
+								answerText += bullet + createHtmlForMedia(answer.result_media);
+							} else if (answer.result_coords != null) {
+								answerText += bullet + createHtmlForCoords(answer.result_coords);
+							} else if (answer.result_code != null) {
+								answerText += bullet + '<b>' + answer.result_code + ': ' + answer.chatty_text + '</b>';
+							} else {
+								answerText += bullet + '<b>NO ANSWER FOUND!</b>';
+							}
+
+							if (answer.source != null) {
+								answerText += '<br/>[<i>source:<a href="' + answer.source.url + '">' + answer.source.name + '</a>, ' + confText + intText + '</i>]';
+							} else {
+								answerText += '<br/>[' + confText + intText + ']';
+							}
+						}
 					}
-					
-					answerText += '</ul>';
+				} else {
+					if (pResponse.system_message != null) {
+						answerText = '<font color="green">' + pResponse.system_message + '</font>';
+						//Note that for management responses the execution time comes back in the root, not in the debug
+						answerText += '<br/>Execution time (ms): <font color="red">' + pResponse.execution_time_ms + '</font>';
+					}
+				}
+				
+				if (question != null) {
+					answerText = '[<i>interpretation confidence=<font color="green">' + question.interpretation_confidence + '</font></i>, <i>ability to answer confidence=<font color="green">' + question.ability_to_answer_confidence + '</font></i>]<br/><br/>' + answerText;
 				}
 
-				if (alerts.warnings != null) {
-					answerText += '<br/><br/><hr/><u>Warnings:</u><ul>';
-					for (var i = 0; i < alerts.warnings.length; i++) {
-						var thisWarning = alerts.warnings[i];
+				if (alerts != null) {
+					if (alerts.errors != null) {
+						answerText += '<br/><br/><hr/><u>Errors:</u><ul>';
+						for (var i = 0; i < alerts.errors.length; i++) {
+							var thisError = alerts.errors[i];
+							
+							answerText += '<li>' + htmlFormat(thisError) + '</li>';
+						}
 						
-						answerText += '<li>' + htmlFormat(thisWarning) + '</li>';
+						answerText += '</ul>';
 					}
-					
-					answerText += '</ul>';
-				}				
-			}
 
-			if (debug != null) {
-				if (debug.debugs != null) {
-					answerText += '<br/><br/><hr/><u>Debugs:</u><ul>';
-					for (var i = 0; i < debug.debugs.length; i++) {
-						var thisDebug = debug.debugs[i];
+					if (alerts.warnings != null) {
+						answerText += '<br/><br/><hr/><u>Warnings:</u><ul>';
+						for (var i = 0; i < alerts.warnings.length; i++) {
+							var thisWarning = alerts.warnings[i];
+							
+							answerText += '<li>' + htmlFormat(thisWarning) + '</li>';
+						}
 						
-						answerText += '<li>' + htmlFormat(thisDebug) + '</li>';
+						answerText += '</ul>';
+					}				
+				}
+
+				if (debug != null) {
+					if (debug.debugs != null) {
+						answerText += '<br/><br/><hr/><u>Debugs:</u><ul>';
+						for (var i = 0; i < debug.debugs.length; i++) {
+							var thisDebug = debug.debugs[i];
+							
+							answerText += '<li>' + htmlFormat(thisDebug) + '</li>';
+						}
+						
+						answerText += '</ul>';
 					}
-					
-					answerText += '</ul>';
 				}
 			}
 
@@ -716,11 +703,6 @@ function Hudson(pJsDebug) {
 	
 	function sendExecuteRequest(pQuestionJson, pCbf, pDebug) {
 		var url = getTextFrom(DOM_EP) + URL_QE;
-		sendAjaxPost(url, pQuestionJson, pCbf, pDebug);
-	}
-
-	function sendAnalyseRequest(pQuestionJson, pCbf, pDebug) {
-		var url = getTextFrom(DOM_EP) + URL_QA;
 		sendAjaxPost(url, pQuestionJson, pCbf, pDebug);
 	}
 
@@ -826,8 +808,9 @@ function Hudson(pJsDebug) {
 				try {
 					jResponse = JSON.parse(xhr.response);
 				} catch(e) {
-					reportLog('Error parsing response:');
-					reportLog(e);
+//					gHudson.reportLog('Error parsing response:');
+//					gHudson.reportLog(e);
+					jResponse = xhr.response;
 				}
 
 				pCbf(jResponse);
@@ -866,8 +849,8 @@ function Hudson(pJsDebug) {
 	}
 
 	function ajaxErrorOther(pResponseText, pError, pCode, pUrl) {
-		reportLog(pResponseText);
-		reportLog(pCode);
+		gHudson.reportLog(pResponseText);
+		gHudson.reportLog(pCode);
 		reportError('Unknown server error [' + pError + '] for url ' + pUrl);
 	}
 	
@@ -991,7 +974,7 @@ function Hudson(pJsDebug) {
 		return result;
 	}
 
-	function reportLog(pText) {
+	this.reportLog = function(pText) {
 		console.log(pText);
 	}
 

@@ -3,7 +3,10 @@
 -- All Rights Reserved
 -- --------------------------------------------------------------------------
 
-the linguistic thing 'person' has 'people' as plural form.
+the entity concept 'person' has 'people' as plural form.
 
-the linguistic thing 'hospital:picture:media'
+the property concept 'hospital:picture:media'
   is expressed by 'look like'.
+
+the property concept 'person:is closely related to:person'
+  is expressed by 'closely related to'.

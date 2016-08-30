@@ -8,6 +8,11 @@ Version: 1.0
 Date:    24th April 2015
 Author:  Dave Braines
 
+conceptualise a ~ thing ~ T that
+  has the value PF as ~ plural form ~ and
+  has the value PT as ~ past tense ~ and
+  ~ is expressed by ~ the value V.
+
 conceptualise a ~ suppressed concept ~ SC.
 Note: this concept will be suppressed in the queries; no instances will be returned if they are a configuration concept.
 
@@ -15,11 +20,11 @@ conceptualise a ~ configuration concept ~ CC that is a suppressed concept.
 conceptualise an ~ uninteresting concept ~ UC that is a suppressed concept.
 
 --Ensure that the meta-model concepts are all suppressed
-conceptualise a ~ concept ~ C that is a configuration concept.
-conceptualise a ~ conceptual model ~ C that is a configuration concept.
-conceptualise a ~ sequence ~ S that is a configuration concept.
-conceptualise a ~ statement ~ S that is a configuration concept.
-conceptualise a ~ symbol ~ S that is a configuration concept.
+--conceptualise a ~ concept ~ C that is a configuration concept.
+--conceptualise a ~ conceptual model ~ C that is a configuration concept.
+--conceptualise a ~ sequence ~ S that is a configuration concept.
+--conceptualise a ~ statement ~ S that is a configuration concept.
+--conceptualise a ~ symbol ~ S that is a configuration concept.
 
 conceptualise a ~ sourced concept ~ S that
   is a configuration concept and
@@ -35,14 +40,14 @@ conceptualise a ~ externally sourced property concept ~ C that
   is a property concept and
   has the source S as ~ source ~.
 
-conceptualise a ~ linguistic thing ~ L that
-  is a configuration concept and
-  has the value PF as ~ plural form ~ and
-  has the value PT as ~ past tense ~ and
-  has the value DD as ~ default determiner ~ and
-  has the value PQ as ~ property qualifier ~ and
-  ~ is expressed by ~ the value V and
-  ~ is qualified by ~ the entity concept E.
+--conceptualise a ~ linguistic thing ~ L that
+--  is a configuration concept and
+--  has the value PF as ~ plural form ~ and
+--  has the value PT as ~ past tense ~ and
+--  has the value DD as ~ default determiner ~ and
+--  has the value PQ as ~ property qualifier ~ and
+--  ~ is expressed by ~ the value V and
+--  ~ is qualified by ~ the entity concept E.
 
 conceptualise a ~ common word list ~ CWL that
   is a configuration concept and
@@ -87,17 +92,8 @@ conceptualise a ~ config list ~ CL that
   has the value M as ~ marker ~.
 
 conceptualise a ~ modifier ~ M that
---  is a configuration concept and
   ~ corresponds to ~ the general function F and
   ~ uses by default ~ the entity concept E.
-
---conceptualise a ~ database modifier ~ M that
---  is a modifier and
---  ~ corresponds to ~ the database function F.
-
---conceptualise a ~ search modifier ~ M that
---  is a modifier and
---  ~ corresponds to ~ the search function F.
 
 conceptualise a ~ filter modifier ~ M that
   is a modifier and
@@ -109,17 +105,6 @@ conceptualise a ~ CE modifier ~ M that
   has the value U as ~ CE URL ~.
 
 conceptualise an ~ end modifier ~ M that is a modifier.
-
---conceptualise an ~ affector ~ A that
---  ~ corresponds to ~ the database function F.
-
---conceptualise a ~ grouper ~ G that
---  is an affector and
---  has the database concept C as ~ target concept ~.
-
---conceptualise an ~ orderer ~ O that
---  is an affector and
---  has the value C as ~ order column name ~.
 
 conceptualise a ~ local concept ~ L that
   has the source SO as ~ source ~ and
@@ -148,4 +133,21 @@ conceptualise a ~ response ~ R that
   has the value RT as ~ response text ~.
 
 conceptualise a ~ qualified concept ~ Q that
-  has the value UN as ~ unit name ~. 
+  has the value UN as ~ unit name ~.
+
+conceptualise a ~ linked property ~ L that is a relation concept.
+Note: This means that the Hudson interpreter can return the range concept too
+
+conceptualise a ~ connector word ~ C.
+
+conceptualise a ~ number word ~ N.
+
+conceptualise a ~ question word ~ Q.
+conceptualise a ~ common word ~ C.
+
+conceptualise a ~ question phrase ~ Q.
+
+conceptualise an ~ absolute ~ A.
+
+conceptualise a ~ qualifier ~ Q that
+  ~ maps to ~ the absolute A.

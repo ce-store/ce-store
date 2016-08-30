@@ -21,21 +21,16 @@ public class WordCheckerCache {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 	
 	private static final String CON_PROPCON = "property concept";
-	private static final String CON_LINGTHING = "linguistic thing";
-//	private static final String CON_ENTCON = "entity concept";
 
 	private static final String PROP_PROPNAME = "property name";
 	private static final String PROP_PLURAL = "plural form";
-//	private static final String PROP_EXPBY = "is expressed by";
-//	private static final String PROP_PLURAL = "plural form";
-//	private static final String PROP_PAST = "past tense";
+
+	private static final String[] PROPS_LING = {"is expressed by", "plural form", "past tense"};
 
 	private HashMap<String, CeConcept> matchingConcepts = new HashMap<String, CeConcept>();
 	private HashMap<String, TreeMap<String, CeProperty>> matchingRelations = new HashMap<String, TreeMap<String, CeProperty>>();
 	private HashMap<String, ArrayList<CeInstance>> matchingInstances = new HashMap<String, ArrayList<CeInstance>>();
 	
-//	private HashMap<String, TreeMap<String, CeConcept>> referredExactConcepts = new HashMap<String, TreeMap<String, CeConcept>>();
-
 	private ArrayList<String> commonWords = null;
 	private ArrayList<String> negationWords = null;
 	private ArrayList<CeInstance> lingThingInsts = null;
@@ -86,14 +81,23 @@ public class WordCheckerCache {
 	}
 
 	public synchronized void checkForMatchingInstances(ActionContext pAc, ProcessedWord pWord) {
-		String cacheKey = pWord.getDeclutteredText();
+		checkForMatchingInstancesUsing(pAc, pWord, pWord.getDeclutteredText());
+
+		String depText = pWord.depluralise(pWord.getDeclutteredText());
+
+		if (depText != null) {
+			checkForMatchingInstancesUsing(pAc, pWord, depText);
+		}
+	}
+
+	public synchronized void checkForMatchingInstancesUsing(ActionContext pAc, ProcessedWord pWord, String pText) {
 		ArrayList<CeInstance> tgtInsts = null;
 		HudsonManager hm = ServletStateManager.getHudsonManager(pAc);
 
-		if (!this.matchingInstances.containsKey(cacheKey)) {
+		if (!this.matchingInstances.containsKey(pText)) {
 //			reportDebug("Looking live for instance using: " + cacheKey, pAc);
 			tgtInsts = new ArrayList<CeInstance>();
-			ArrayList<CeInstance> possInsts = hm.getIndexedEntityAccessor(pAc.getModelBuilder()).getInstancesNamedOrIdentifiedAs(pAc, cacheKey);
+			ArrayList<CeInstance> possInsts = hm.getIndexedEntityAccessor(pAc.getModelBuilder()).getInstancesNamedOrIdentifiedAs(pAc, pText);
 
 			for (CeInstance possInst : possInsts) {
 				if (isValidMatchingInstance(pAc, possInst)) {	
@@ -101,9 +105,9 @@ public class WordCheckerCache {
 				}
 			}
 
-			this.matchingInstances.put(cacheKey, tgtInsts);
+			this.matchingInstances.put(pText, tgtInsts);
 		} else {
-			tgtInsts = this.matchingInstances.get(cacheKey);
+			tgtInsts = this.matchingInstances.get(pText);
 		}
 
 		if (!tgtInsts.isEmpty()) {
@@ -198,8 +202,8 @@ public class WordCheckerCache {
 
 			this.lingThingInsts = new ArrayList<CeInstance>();
 
-			for (CeInstance thisInst : pAc.getModelBuilder().getAllInstancesForConceptNamed(pAc, CON_LINGTHING)) {
-				if (!thisInst.isMetaModelInstance()) {
+			for (CeInstance thisInst : pAc.getModelBuilder().listAllInstances()) {
+				if (thisInst.hasPropertyInstanceForPropertyNamed(PROPS_LING)) {
 					this.lingThingInsts.add(thisInst);
 				}
 			}
@@ -210,24 +214,17 @@ public class WordCheckerCache {
 
 	public synchronized ArrayList<CeInstance> getLingThingPluralForms(ActionContext pAc, String pTgtText) {
 		if (!this.lingThingPluralFormInsts.containsKey(pTgtText)) {
-//			reportDebug("Creating live lingThing plural form list", pAc);
-//			int totCount = 0;
 			ArrayList<CeInstance> matchedInsts = new ArrayList<CeInstance>();
 
-			for (CeInstance lingInst : pAc.getModelBuilder().getAllInstancesForConceptNamed(pAc, CON_LINGTHING)) {
-				if (!lingInst.isMetaModelInstance()) {
-					for (String thisPf : lingInst.getValueListFromPropertyNamed(PROP_PLURAL)) {
-						if (thisPf.equals(pTgtText)) {
-//							totCount++;
-							matchedInsts.add(lingInst);
-						}
+			for (CeInstance thisInst : getLingThingInstances(pAc)) {
+				for (String thisPf : thisInst.getValueListFromPropertyNamed(PROP_PLURAL)) {
+					if (thisPf.equals(pTgtText)) {
+						matchedInsts.add(thisInst);
 					}
 				}
 			}
 
 			this.lingThingPluralFormInsts.put(pTgtText, matchedInsts);
-
-//			reportDebug("totCount=" + totCount, pAc);
 		}
 
 		return this.lingThingPluralFormInsts.get(pTgtText);

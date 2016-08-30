@@ -83,5 +83,29 @@
 	{
 		"id": "021",
 		"question": "who is closely related to jean"
+	},
+	{
+		"id": "022",
+		"question": "who is closely related to more than 2 people"
+	},
+	{
+		"id": "023",
+		"question": "what is jean doing"
+	},
+	{
+		"id": "024",
+		"question": "who is the parent of john"
+	},
+	{
+		"id": "025",
+		"question": "who is john's parent"
+	},
+	{
+		"id": "026",
+		"question": "who are john's parents"
+	},
+	{
+		"id": "027",
+		"question": "who is john the parent of"
 	}
 ]

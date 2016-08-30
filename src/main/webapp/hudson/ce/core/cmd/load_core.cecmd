@@ -11,3 +11,8 @@ perform load sentences from url './hudson/ce/core/model/misc_model.ce'.
 -- Load the facts
 perform load sentences from url './hudson/ce/core/facts/default_config.ce'.
 perform load sentences from url './hudson/ce/core/facts/modifiers.ce'.
+perform load sentences from url './hudson/ce/core/facts/connectors.ce'.
+perform load sentences from url './hudson/ce/core/facts/absolutes.ce'.
+perform load sentences from url './hudson/ce/core/facts/qualifiers.ce'.
+perform load sentences from url './hudson/ce/core/facts/question_words.ce'.
+perform load sentences from url './hudson/ce/core/facts/common_words.ce'.

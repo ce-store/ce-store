@@ -6,8 +6,11 @@ package com.ibm.ets.ita.ce.store.hudson.handler;
  *******************************************************************************/
 
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
+import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportException;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 import com.ibm.ets.ita.ce.store.client.web.WebActionContext;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonArray;
@@ -26,6 +29,10 @@ import com.ibm.ets.ita.ce.store.model.CeInstance;
 
 public class QuestionExecutionHandler extends QuestionHandler {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+
+	private static final String CLASS_NAME = QuestionHandler.class.getName();
+	private static final String PACKAGE_NAME = QuestionHandler.class.getPackage().getName();
+	private static final Logger logger = Logger.getLogger(PACKAGE_NAME);
 
 	private static final String JSON_QUES = "question";
 	private static final String JSON_ANS = "answers";
@@ -318,6 +325,28 @@ public class QuestionExecutionHandler extends QuestionHandler {
 
 	@Override
 	public CeStoreJsonObject handleQuestion() {
+		String METHOD_NAME = "handleQuestion";
+
+		QuestionInterpreterHandler qih = new QuestionInterpreterHandler(this.ac, this.debug, this.question.getQuestionText(), System.currentTimeMillis());
+		CeStoreJsonObject intResult = qih.handleQuestion();
+		CeStoreJsonObject ansResult = null;
+		String jsonText = null;
+
+		try {
+			jsonText = intResult.serialize(this.ac);
+		} catch (IOException e) {
+			reportException(e, this.ac, logger, CLASS_NAME, METHOD_NAME);
+		}
+
+		if (jsonText != null) {
+			QuestionAnswererHandler qah = new QuestionAnswererHandler(this.ac, this.debug, jsonText, System.currentTimeMillis());
+			ansResult = qah.handleQuestion();
+		}
+
+		return ansResult;
+	}
+
+	public CeStoreJsonObject oldHandleQuestion() {
 		this.reply = AnswerReply.create(this.question);
 
 		interpretQuestion();

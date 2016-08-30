@@ -9,7 +9,14 @@ var gHudson = new Hudson(true);
 gHudson.loadQuestions(gTester.initialiseTestPage);
 
 function Tester(pJsDebug) {
-	var URL_ANSWERS_LIST = [ './test_json/answers_core.json', './test_json/answers_extra.json' ];
+	var URL_ANSWERS_LIST = [
+		{ name: 'core',
+		  url: './test_json/answers_core.json',
+		},
+		{ name: 'extra',
+		  url: './test_json/answers_extra.json'
+		}
+	];
 
 	var DOM_QL = 'question_list';
 	var DOM_QR = 'question_range';
@@ -17,9 +24,7 @@ function Tester(pJsDebug) {
 	var DOM_IT = 'iterations';
 	var DOM_AL = 'answer_list';
 	var DOM_NQ = 'number_of_questions';
-	var DOM_XL = 'new_loaded';
-	var DOM_NL = 'normal_loaded';
-	var DOM_DL = 'debug_loaded';
+	var DOM_XL = 'loaded';
 	var DOM_TR = 'test_results';
 	var DOM_RSD = 'result_set_depth';
 	var DOM_CIN = 'interpret';
@@ -42,7 +47,7 @@ function Tester(pJsDebug) {
 	this.selectedQuestions = null;
 	this.definitiveNormalResponses = null;
 	this.definitiveDebugResponses = null;
-	this.newAnswers = {};
+	this.answers = {};
 	this.testErrors = 0;
 	this.testUnknowns = 0;
 	this.testCount = 0;
@@ -62,29 +67,29 @@ function Tester(pJsDebug) {
 	};
 
 	this.loadDefinitiveAnswers = function() {
-		var cbf = function(pResponse) { gTester.handleStaticNewJsonResponses(pResponse); };
+		var cbf = function(pResponse) { gTester.handleDefinitiveAnswersResponse(pResponse); };
+
+		this.answers = {};
 
 		for (var i = 0; i < URL_ANSWERS_LIST.length; i++) {
-			var thisUrl = URL_ANSWERS_LIST[i];
+			var thisUrl = URL_ANSWERS_LIST[i].url;
 
 			gHudson.sendJsonFileRequest(thisUrl, cbf);
 		}
 	};
 
-	this.handleStaticNewJsonResponses = function(pResponse) {
-		this.newAnswers = {};
-
+	this.handleDefinitiveAnswersResponse = function(pResponse) {
 		for (var i = 0; i < pResponse.length; i++) {
 			var thisAnswer = pResponse[i];
 
-			if (this.newAnswers[thisAnswer.id] != null) {
+			if (this.answers[thisAnswer.id] != null) {
 				gHudson.reportLog("Warning - overwriting answer " + thisAnswer.id);
 			}
 
-			this.newAnswers[thisAnswer.id] = thisAnswer;
+			this.answers[thisAnswer.id] = thisAnswer;
 		}
 
-		var countUrl = hyperlinksForNewWindow(URL_ANSWERS_LIST, definitiveCountTextFor(this.newAnswers));
+		var countUrl = hyperlinksForNewWindow(URL_ANSWERS_LIST, definitiveCountTextFor(this.answers));
 
 		setTextIn(DOM_XL, countUrl);
 	};
@@ -100,7 +105,7 @@ function Tester(pJsDebug) {
 				result += ', ';
 			}
 
-			result += '<a href="' + thisUrl + '"target="_blank">' + i + '</a> ';
+			result += '<a href="' + thisUrl.url + '"target="_blank">' + thisUrl.name + '</a> ';
 			firstTime = false;
 		}
 
@@ -147,16 +152,7 @@ function Tester(pJsDebug) {
 	this.getDefinitiveResponseFor = function(pKey) {
 		var result = null;
 
-//		if (gHudson.isDebug()) {
-//			if (this.definitiveDebugResponses != null) {
-//				dr = this.definitiveDebugResponses[pKey];
-//			}
-//		} else {
-//			if (this.definitiveNormalResponses != null) {
-//				dr = this.definitiveNormalResponses[pKey];
-//			}
-//		}
-		result = this.newAnswers[pKey];
+		result = this.answers[pKey];
 
 		return result;
 	};
@@ -600,7 +596,15 @@ function Tester(pJsDebug) {
 				
 				if (qt != null) {
 					result += '"' + qt + '"';
-					//TODO: Add confidences here
+
+					if (pResponse.confidence != null) {
+						if (pResponse.confidence_explanation != '') {
+							result += ' (<a title="' + pResponse.confidence_explanation + '">' + pResponse.confidence + '</a>)';
+						} else {
+							result += ' (' + pResponse.confidence + ')';
+						}
+					}
+
 				} else {
 					result += '(unknown question)<br/>';
 				}

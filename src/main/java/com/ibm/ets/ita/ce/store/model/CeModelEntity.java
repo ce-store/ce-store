@@ -56,6 +56,34 @@ public abstract class CeModelEntity implements Comparable<CeModelEntity> {
 		Collections.sort(pList, comp);
 	}
 
+	public boolean isConcept() {
+		return false;
+	}
+
+	public boolean isConceptualModel() {
+		return false;
+	}
+
+	public boolean isInstance() {
+		return false;
+	}
+
+	public boolean isProperty() {
+		return false;
+	}
+
+	public boolean isQuery() {
+		return false;
+	}
+
+	public boolean isRule() {
+		return false;
+	}
+
+	public boolean isSource() {
+		return false;
+	}
+
 	public long getSequenceNumber() {
 		return this.seqNum;
 	}

@@ -1,0 +1,63 @@
+-- --------------------------------------------------------------------------
+-- (C) Copyright IBM Corporation  2011, 2016
+-- All Rights Reserved
+-- --------------------------------------------------------------------------
+
+there is a qualifier named 'oldest' that maps to the absolute 'a:max'.
+there is a qualifier named 'youngest' that maps to the absolute 'a:min'.
+there is a qualifier named 'newest' that maps to the absolute 'a:min'.
+
+there is a qualifier named 'first' that maps to the absolute 'a:max'.
+there is a qualifier named 'last' that maps to the absolute 'a:min'.
+
+there is a qualifier named 'next' that maps to the absolute 'a:next'.
+there is a qualifier named 'previous' that maps to the absolute 'a:previous'.
+
+there is a qualifier named 'biggest' that maps to the absolute 'a:max'.
+there is a qualifier named 'largest' that maps to the absolute 'a:max'.
+there is a qualifier named 'smallest' that maps to the absolute 'a:min'.
+
+there is a qualifier named 'same' that maps to the absolute 'a:same'.
+there is a qualifier named 'different' that maps to the absolute 'a:different'.
+
+there is a qualifier named 'cheapest' that maps to the absolute 'a:min'.
+there is a qualifier named 'most expensive' that maps to the absolute 'a:max'.
+
+there is a qualifier named 'ever'.
+there is a qualifier named 'never'.
+
+there is a qualifier named 'before' that maps to the absolute 'a:previous'.
+there is a qualifier named 'after' that maps to the absolute 'a:next'.
+
+there is a qualifier named 'all' that maps to the absolute 'a:all'.
+there is a qualifier named 'none' that maps to the absolute 'a:none'.
+there is a qualifier named 'some' that maps to the absolute 'a:some'.
+there is a qualifier named 'both' that maps to the absolute 'a:all'.
+there is a qualifier named 'neither' that maps to the absolute 'a:none'.
+there is a qualifier named 'nor' that maps to the absolute 'a:none'.
+there is a qualifier named 'between'.
+
+there is a qualifier named 'fastest' that
+  maps to the absolute 'a:max' and
+  and is expressed by 'quickest'.
+
+there is a qualifier named 'slowest' that maps to the absolute 'a:min'.
+
+there is a qualifier named 'highest' that maps to the absolute 'a:max'.
+there is a qualifier named 'fewest' that maps to the absolute 'a:min'.
+there is a qualifier named 'lowest' that maps to the absolute 'a:min'.
+
+there is a qualifier named 'longest' that maps to the absolute 'a:max'.
+there is a qualifier named 'shortest' that maps to the absolute 'a:min'.
+
+there is a qualifier named 'more' that maps to the absolute 'a:greater'.
+there is a qualifier named 'less' that maps to the absolute 'a:less'.
+
+there is a qualifier named 'above' that maps to the absolute 'a:greater'.
+there is a qualifier named 'below' that maps to the absolute 'a:less'.
+
+there is a qualifier named 'most' that maps to the absolute 'a:max'.
+there is a qualifier named 'least' that maps to the absolute 'a:min'.
+
+there is a qualifier named 'record' that maps to the absolute 'a:max'.
+there is a qualifier named 'best' that maps to the absolute 'a:max'.

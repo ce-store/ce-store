@@ -39,6 +39,10 @@ public class CeConceptualModel extends CeModelEntity {
 		return thisCm;
 	}
 
+	public boolean isConceptualModel() {
+		return true;
+	}
+
 	public void addDefinedConceptByName(ActionContext pAc, String pConName) {
 		CeConcept tgtCon = pAc.getModelBuilder().getConceptNamed(pAc,  pConName);
 

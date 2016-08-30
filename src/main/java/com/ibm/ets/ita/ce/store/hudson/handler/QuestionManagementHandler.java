@@ -43,6 +43,7 @@ public class QuestionManagementHandler extends QuestionHandler {
 		hm.deleteConvConfig();
 		hm.refreshQuestionLog(this.ac);
 		hm.clearCaches(this.ac);
+		this.ac.clearIndexedEntityAccessor();
 
 		setupCeStore(this.ac, ssm, hm);
 
@@ -195,6 +196,7 @@ public class QuestionManagementHandler extends QuestionHandler {
 			StoreActions sa = StoreActions.createUsingDefaultConfig(pAc);
 			String tgtUrl = CE_HUDSON_URL;
 			String tgtSrc = CE_HUDSON_SRC;
+
 			sa.loadSentencesFromUrl(tgtUrl, tgtSrc);
 
 			reportDebug("Successfully loaded CE from url " + tgtUrl, pAc);

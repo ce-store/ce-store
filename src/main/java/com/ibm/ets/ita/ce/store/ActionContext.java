@@ -97,6 +97,10 @@ public abstract class ActionContext {
 		return this.iea;
 	}
 
+	public void clearIndexedEntityAccessor() {
+		this.iea = null;
+	}
+
 	public SessionCreations getSessionCreations() {
 		if (this.sc == null) {
 			this.sc = new SessionCreations();

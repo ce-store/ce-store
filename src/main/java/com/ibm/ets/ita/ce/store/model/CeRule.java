@@ -48,6 +48,11 @@ public class CeRule extends CeQuery {
 		return true;
 	}
 	
+	@Override
+	public boolean isQuery() {
+		return false;
+	}
+	
 	public String getRuleName() {
 		return this.name;
 	}

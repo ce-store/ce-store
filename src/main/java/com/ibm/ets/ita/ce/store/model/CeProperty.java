@@ -192,6 +192,10 @@ public class CeProperty extends CeModelEntity {
 		return newProperty;
 	}
 
+	public boolean isProperty() {
+		return true;
+	}
+
 	public boolean isShadow() {
 		return (getPrimarySentences().length == 0);
 	}

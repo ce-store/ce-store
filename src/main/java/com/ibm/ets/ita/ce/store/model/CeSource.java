@@ -139,6 +139,10 @@ public class CeSource extends CeModelEntity {
 		return String.format("%03d", new Long(sourceIdVal.incrementAndGet()));
 	}
 
+	public boolean isSource() {
+		return true;
+	}
+	
 	public String getId() {
 		return this.name;
 	}

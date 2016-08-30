@@ -288,7 +288,7 @@ public class CeQuestionExecutor extends GenericHandler {
 	}
 
 	private void executeShowQuestion() {
-		ArrayList<CeConcept> tgtCons = new ArrayList<CeConcept>();
+//		ArrayList<CeConcept> tgtCons = new ArrayList<CeConcept>();
 		ArrayList<CeInstance> tgtInsts = new ArrayList<CeInstance>();
 
 		// Initialise result set answer

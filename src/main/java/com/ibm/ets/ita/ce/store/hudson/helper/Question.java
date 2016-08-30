@@ -11,6 +11,7 @@ public class Question {
 	private String questionText = null;
 	private String interpretationText = null;
 	private int interpretationConfidence = -1;
+	private String interpretationConfidenceExplanation = null;
 	private int abilityToAnswerConfidence = -1;
 
 	private Question(String pQt) {
@@ -48,6 +49,14 @@ public class Question {
 
 	public void setInterpretationConfidence(int pVal) {
 		this.interpretationConfidence = pVal;
+	}
+
+	public String getInterpretationConfidenceExplanation() {
+		return this.interpretationConfidenceExplanation;
+	}
+
+	public void setInterpretationConfidenceExplanation(String pVal) {
+		this.interpretationConfidenceExplanation = pVal;
 	}
 
 	public boolean endsWithPunctuation() {
