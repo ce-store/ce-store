@@ -57,6 +57,19 @@ docker run --rm -it -p 8080:8080 ce-store
 
 The CE Store will be available at the following URL [http://localhost:8080/ce-store](http://localhost:8080/ce-store)
 
+
+### Using Vagrant
+Requires [Vagrant](https://www.vagrantup.com) to be installed.
+
+```
+vagrant up
+vagrant ssh
+cd /vagrant
+```
+
+Then follow the steps in Using Apache Maven.
+
+
 ## Usage
 
 ### Engineering Panel
