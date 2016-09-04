@@ -22,132 +22,352 @@
 
 <div id="header-1">1. Hudson</div>
 <div id="plain-text">
-Here is some body text.
-<br/><br/>
+"Hudson" is the named given to the simple question answering APIs that are implemented
+on top of the ce-store environment.  Using ce-store and the Controlled English language
+you can quickly and easily define conceptual models and associated instance information
+using a structured form of English.  This data is instantiated as a labelled directed
+graph in memory within the ce-store and a rich set of REST APIs enable the navigation of
+this graph, the definition and execution of logical inference rules and queries, the
+implementation of machine agents and more.
+</div>
+
+<div id="plain-text">
+Hudson provides a Natural Language (i.e. plain text) interface to any data defined in
+Controlled English and loaded into a ce-store.  This can provide a very rapid development
+environment for conversational interactions with structured data.  Through the provision
+of a small set of APIs (see below) Hudson can provide a generic question interpretation
+capability and a default question answering capability to return answers to data held
+within the ce-store environment.  However, in many cases the data itself will not be held
+inside the ce-store and will instead be held in existing data sources (SQL, CSV, XML, JSON etc)
+or behind existing APIs.  In these scenarios the interpreter API can be used to quickly
+interpret natural language text in the context of a ce-store conceptual model with the
+result of the interpretation being returned in JSON for passing on to any number of
+separate answerer APIs.
+</div>
+
+<div id="plain-text">
+There are 4 main APIs provided by Hudson:
+
+<ul>
+ <li><a href="#api-interpret">interpret</a></li>
+ <li><a href="#api-answer">answer</a></li>
+ <li><a href="#api-execute">execute</a></li>
+ <li><a href="#api-help">help</a></li>
+</ul>
+
+In addition to these there are 2 additional management APIs:
+
+<ul>
+ <li><a href="#api-reset">reset</a></li>
+ <li><a href="#api-status">status</a></li>
+</ul>
 </div>
 
 <div id="header-1">2. APIs</div>
 <div id="plain-text">
 The Hudson service presents two main APIs and one management API as described below.
-<br/><br/>
 </div>
+<div id="plain-text"><br/><br/></div>
 
-<div id="header-2">2.1 Common features</div>
-There are a number of common features and considerations for the the Hudson APIs.<br/>
+<div id="header-2">2.1 General information</div>
 
 <a id="common-http-request-headers"></a>
 <div id="header-3">2.1.1 HTTP request headers</div>
+<div id="plain-text">
 The following HTTP headers should be specified in all requests:
 <ul>
  <li><span id="http-header">Accept</span>: <span id="http-value">application/json</span></li>
  <li><span id="http-header">Content-type</span>: <span id="http-value">text/plain; charset=UTF-8</span></li>
 </ul>
-If the above headers are not set then default values corresponding to the expected values (above) will be used by the server.<br/>
-There is also one optional parameter that can be used to specify a unique identity (e.g. name or generated session id) for the Hudson user:<br/>
-<ul>
- <li><span id="http-header">CE_User</span>: <span id="http-value">(a unique identifier for the user/session)</span></li>
-</ul>
-
-<a id="common-url parameters"></a>
-<div id="header-3">2.1.2 URL parameters</div>
-The following additional parameters can be provided to any Hudson request by appending to the url, e.g. <span id="url">?debug=true</span>
-<ul>
- <li>
-  <span id="parameter-name">debug</span>: <span id="parameter-value">true</span> or <span id="parameter-value">false</span><br/>
-  If this parameter is not specified the default value is <span id="parameter-value">false</span><br/>
-  If specified as <span id="parameter-value">true</span> then additional JSON elements are returned in the response.  See each API below for details of these additional elements since they vary by API.
- </li>
-</ul>
-
-<div id="header-2">2.2 Helper API</div>
-<div id="plain-text">
-This can be called as the user is typing a question in order to provide type-ahead style suggestions for completion of the sentence.  The two examples below show cases with suggestions both before and after the currently typed text.<br/>
-To call this API:<br/><br/>
-
-<span id="http-type">HTTP POST</span> to the target url, e.g. <span id="url">http://answers.mytoycode.com:9080/Hudson/QuestionHelper</span><br/>
-...with plain text <span id="http-header">post payload</span> containing the question text typed so far: e.g. <span id="http-value">what is a</span><br/>
-...and http request as <a href="#common-http-request-headers">specified earlier</a><br/>
+If the above headers are not set then default values corresponding to the expected values (i.e. those specified above) will be used by the server.
 </div>
+
+<div id="plain-text"><br/><br/></div>
+
+<div id="header-2"><a id="api-interpret"></a>2.2 Interpret API</div>
+<div id="plain-text">
+This is called when the user submits a question to be interpreted.
 <br/>
-The following example JSON is returned from typical Helper API requests:<br/><br/>
+To call this API:
 
-Simple case with only <span id="http-parameter">after_text</span> returned:<br/>
+<div id="plain-text"><br/><br/></div>
 
-<div id ="code-snippet">
-<pre>
-  <span id="json-object">{</span> <span id="json-key">"suggestions"</span>: <span id="json-array">[</span>
-      <span id="json-object">{</span> <span id="json-key">"question_text"</span>: <span id="json-value">"what is a"</span>, <span id="json-key">"after_text"</span>: <span id="json-value">"ce?"</span><span id="json-object">}</span><span id="json-comma">, </span>
-      <span id="json-object">{</span> <span id="json-key">"question_text"</span>: <span id="json-value">"what is A"</span>, <span id="json-key">"after_text"</span>: <span id="json-value">"TP?"</span> <span id="json-object">}</span>
-    <span id="json-array">]</span>
-  <span id="json-object">}</span>
-</pre>
-</div>
-
-Advanced case with <span id="http-parameter">before_text</span> and <span id="http-parameter">after_text</span> returned:<br/>
-
-<div id ="code-snippet">
-<pre>
-  <span id="json-object">{</span> <span id="json-key">"suggestions"</span>: <span id="json-array">[</span>
-      <span id="json-object">{</span> <span id="json-key">"question_text"</span>: <span id="json-value">"se"</span>, <span id="json-key">"before_text"</span>: <span id="json-value">"fastest "</span>, <span id="json-key">"after_text"</span>: <span id="json-value">"rve?"</span><span id="json-object">}</span><span id="json-comma">, </span>
-      <span id="json-object">{</span> <span id="json-key">"question_text"</span>: <span id="json-value">"se"</span>, <span id="json-key">"before_text"</span>: <span id="json-value">"longest "</span>, <span id="json-key">"after_text"</span>: <span id="json-value">"t?"</span> <span id="json-object">}</span>
-    <span id="json-array">]</span>
-  <span id="json-object">}</span>
-</pre>
-</div>
-
-If the <span id="parameter-name">debug</span> url parameter is set to <span id="parameter-value">true</span> the the following additional JSON element is returned in the root element:<br/>
-
-<div id ="code-snippet">
-<pre>
-  <span id="json-key">"debug"</span>: <span id="json-object">{</span>
-    <span id="json-key">"execution_time_ms"</span>: <span id="json-value">123</span>,
-    <span id="json-key">"interpretations"</span>: <span id="json-object">[</span>
-      <span id="json-value">"what (question word)"</span>,
-      <span id="json-value">"is (corresponds to relation: player:is:nationality)..."</span>,
-      <span id="json-value">"underspin (corresponds to instance of: glossary term)"</span>
-    <span id="json-array">]</span>,
-    <span id="json-key">"alerts"</span>: <span id="json-object">{</span>
-      <span id="json-key">"errors"</span>: <span id="json-array">[</span>
-        <span id="json-value">"an error message may appear here"</span>
-      <span id="json-array">]</span>,
-      <span id="json-key">"debugs"</span>: <span id="json-array">[</span>
-        <span id="json-value">"a debug message may appear here"</span>
-      <span id="json-array">]</span>
-    <span id="json-object">}</span>
-  <span id="json-object">}</span>
-</pre>
-</div>
-
-<div id="header-3">2.2.1 Notes for helper API</div>
-<div id="plain-text">
-<ul>
- <li>The <span id="json-key">question_text</span> is repeated for each <span id="json-key">suggestion</span> object because different capitalisations of the typed question may be required (e.g. see first example)</li>
-</ul>
-</div>
-
-<div id="header-2">2.3 Question Executor API</div>
-<div id="plain-text">
-This is called when the user submits a question to be executed.<br/>
-To call this API:<br/><br/>
-
-<span id="http-type">HTTP POST</span> to the target url, e.g. <span id="url">http://answers.mytoycode.com:9080/Hudson/QuestionExecutor</span><br/>
-...with plain text <span id="http-header">post payload</span> containing the question being asked: e.g. <span id="http-value">what is underspin?</span><br/>
-...and http request as <a href="#common-http-request-headers">specified earlier</a><br/>
-</div>
+<span id="http-type">HTTP POST</span> to the target url, e.g. <span id="url">http://localhost:8080/ce-store/special/hudson/interpreter</span>
 <br/>
-The following example JSON is returned from Question Executor API requests:
+...with plain text <span id="http-header">post payload</span> containing the question being asked: e.g. <span id="http-value">who is Jean?</span>
+<br/>
+...and http request as <a href="#common-http-request-headers">specified earlier</a>
+</div>
+
+<div id="plain-text"><br/><br/></div>
+
+<a id="interpret-json"></a>
+<div id="plain-text">
+The JSON below shows the abstract structure that is returned.  A concrete example of a complex response is shown after this as well:
+</div>
 
 <div id ="code-snippet">
 <pre>
   <span id="json-object">{</span>
     <span id="json-key">"question"</span>: <span id="json-object">{</span>
-      <span id="json-key">"text"</span>: <span id="json-value">"what is underspin?"</span>,
-      <span id="json-key">"interpretation_confidence"</span>: <span id="json-value">100</span>,
-      <span id="json-key">"ability_to_answer_confidence"</span>: <span id="json-value">100</span>
+      <span id="json-key">"text"</span>: <span id="json-comment">(the text of the question)</span>,
+      <span id="json-key">"words"</span>: <span id="json-array">[</span>
+        <span id="json-comment">(each separate word from the question)</span>
+      <span id="json-array">]</span>
+    <span id="json-object">}</span>,
+    <span id="json-key">"interpretations"</span>: <span id="json-array">[</span>
+      <span id="json-object">{</span>
+        <span id="json-key">"confidence"</span>: <span id="json-comment">(the confidence value, from 0-100)</span>,
+        <span id="json-key">"explanation"</span>: <span id="json-comment">(text to explain the confidence if less than 100)</span>,
+        <span id="json-key">"result"</span>: <span id="json-object">{</span>
+          <span id="json-key">"concepts"</span>: <span id="json-array">[</span>
+            <span id="json-comment">(one or more concept <span id="json-key">items</span> that were matched to words in the question)</span>
+          <span id="json-array">]</span>
+          <span id="json-key">"properties"</span>: <span id="json-array">[</span>
+            <span id="json-comment">(one or more property <span id="json-key">items</span>  that were matched to words in the question)</span>
+          <span id="json-array">]</span>
+          <span id="json-key">"instances"</span>: <span id="json-array">[</span>
+            <span id="json-comment">(one or more concept <span id="json-key">items</span> that were matched to words in the question)</span>
+          <span id="json-array">]</span>
+          <span id="json-key">"specials"</span>: <span id="json-array">[</span>
+            <span id="json-comment">(one or more special <span id="json-key">items</span> that were matched to words in the question)</span>
+          <span id="json-array">]</span>
+        <span id="json-object">}</span>
+      <span id="json-object">}</span>
+    <span id="json-array">]</span>
+  <span id="json-object">}</span>
+</pre>
+</div>
+
+<div id="plain-text">
+'Item' JSON looks like this:
+</div>
+
+<div id ="code-snippet">
+<pre>
+  <span id="json-object">{</span>
+    <span id="json-key">"phrase"</span>: <span id="json-comment">(the phrase from the question that caused this match)</span>,
+    <span id="json-key">"start position"</span>: <span id="json-comment">(the word start position of this phrase in the overall question words - zero based)</span>,
+    <span id="json-key">"end position"</span>: <span id="json-comment">(the word end position of this phrase in the overall question words - zero based)</span>,
+    <span id="json-key">"entities"</span>: <span id="json-array">[</span>
+      <span id="json-comment">(the list of entities [concepts, properties, instances or specials] that were matched to this phrase)</span>
+    <span id="json-array">]</span>
+  <span id="json-object">}</span>
+</pre>
+</div>
+
+<div id="plain-text">
+Standard 'entity' JSON (i.e. concept, property or instance entities) looks like this:
+</div>
+
+<div id ="code-snippet">
+<pre>
+  <span id="json-object">{</span>
+    <span id="json-key">"_id"</span>: <span id="json-comment">(the id of the corresponding instance in the ce-store)</span>,
+    <span id="json-key">"_concept"</span>: <span id="json-array">[</span>
+      <span id="json-comment">"(a list of the concept names for this instance in the ce-store)"</span>
+    <span id="json-array">]</span>,
+    <span id="json-comment">"(property name)"</span>: <span id="json-comment">"(the remainder of the object is a list of name/value elements for any properties that are defined for this instance)"</span>
+  <span id="json-object">}</span>
+</pre>
+</div>
+
+<div id="plain-text">
+Special 'entity' JSON comes in a variety of forms:
+<ul>
+ <li>number - a simple identifier of any word which is a valid number, including negative numbers and decimals)</li>
+ <li>enumerated-concept - any "number plus concept name" phrase, e.g. "2 people" or "27 weeks"</li>
+ <li>collection - any pair of instances, concepts or properties separated by a connector word, e.g. "Fred and Bill", or "lump and patient"</li>
+ <li>matched-triple - any predicate (property name) with associated subject (domain) and/or object (range) instances.  For example "is married to Jean" or "Dave age"</li>
+ <li>linked instance - description tbc</li>
+</ul>
+</div>
+
+<div id="plain-text">
+JSON examples of each of the specials needs to be added
+</div>
+
+<div id ="code-snippet">
+<pre>
+  <span id="json-object">{</span>
+    <span id="json-key">"_id"</span>: <span id="json-comment">(the id of the corresponding instance in the ce-store)</span>,
+    <span id="json-key">"_concept"</span>: <span id="json-array">[</span>
+      <span id="json-value">"entity concept"</span>, <span id="json-comment">"(a list of the concept names for this instance in the ce-store)"</span>, <span id="json-value">"meaning"</span>, <span id="json-value">"concept"</span>
+    <span id="json-array">]</span>,
+    <span id="json-comment">"(property name)"</span>: <span id="json-comment">"(the remainder of the object is a list of name/value elements for any properties that are defined for this instance)"</span>
+  <span id="json-object">}</span>
+</pre>
+</div>
+
+<div id="plain-text">
+The following example JSON is returned from interpreter API requests:
+</div>
+
+<div id ="code-snippet">
+<pre>
+  <span id="json-object">{</span>
+    <span id="json-key">"question"</span>: <span id="json-object">{</span>
+      <span id="json-key">"text"</span>: <span id="json-value">"what does Andover War Memorial Hospital look like"</span>,
+      <span id="json-key">"words"</span>: <span id="json-array">[</span>
+        <span id="json-value">"what"</span>, <span id="json-value">"does"</span>, <span id="json-value">"Andover"</span>, <span id="json-value">"War"</span>,, <span id="json-value">"Memorial"</span>, <span id="json-value">"Hospital"</span>, <span id="json-value">"look"</span>, <span id="json-value">"like"</span>
+      <span id="json-array">]</span>
+    <span id="json-object">}</span>,
+    <span id="json-key">"interpretations"</span>: <span id="json-array">[</span>
+      <span id="json-object">{</span>
+        <span id="json-key">"confidence"</span>: <span id="json-value">87</span>,
+           <span id="json-key">"explanation"</span>: <span id="json-value">"The word 'does' was not matched"</span>,
+           <span id="json-key">"result"</span>: <span id="json-object">{</span>
+             <span id="json-key">"concepts"</span>: <span id="json-array">[</span>
+               <span id="json-object">{</span>
+                 <span id="json-key">"phrase"</span>: <span id="json-value">"hospital"</span>,
+                 <span id="json-key">"start position"</span>: <span id="json-value">5</span>,
+                 <span id="json-key">"end position"</span>: <span id="json-value">5</span>,
+                 <span id="json-key">"entities"</span>: <span id="json-array">[</span>
+                   <span id="json-object">{</span>
+                     <span id="json-key">"_id"</span>: <span id="json-value">"hospital"</span>,
+                     <span id="json-key">"_concept"</span>: <span id="json-array">[</span>
+                       <span id="json-value">"entity concept"</span>, <span id="json-value">"renderable thing"</span>, <span id="json-value">"meaning"</span>, <span id="json-value">"concept"</span>
+                     <span id="json-array">]</span>,
+                     <span id="json-key">"icon file name"</span>: <span id="json-value">"/ce-store/icons/medicine/hospital.png"</span>
+                   <span id="json-object">}</span>
+                 <span id="json-array">]</span>
+               <span id="json-object">}</span>
+             <span id="json-array">]</span>,
+             <span id="json-key">"properties"</span>: <span id="json-array">[</span>
+               <span id="json-object">{</span>
+                 <span id="json-key">"phrase"</span>: <span id="json-value">"look like"</span>,
+                 <span id="json-key">"start position"</span>: <span id="json-value">6</span>,
+                 <span id="json-key">"end position"</span>: <span id="json-value">7</span>,
+                 <span id="json-key">"entities"</span>: <span id="json-array">[</span>
+                   <span id="json-object">{</span>
+                     <span id="json-key">"_id"</span>: <span id="json-value">"hospital:picture:media"</span>,
+                     <span id="json-key">"_concept"</span>: <span id="json-array">[</span>
+                       <span id="json-key">"attribute concept"</span>, <span id="json-value">"object property"</span>, <span id="json-value">"meaning"</span>, <span id="json-value">"concept"</span>, <span id="json-value">"property concept"</span>
+                       <span id="json-array">]</span>,
+                       <span id="json-key"> "property name"</span>: <span id="json-value">"picture"</span>,
+                       <span id="json-key">"domain"</span>: <span id="json-value">"hospital"</span>,
+                       <span id="json-key">"range"</span>: <span id="json-value">"media"</span>,
+                       <span id="json-key">"is expressed by"</span>: <span id="json-value">"look like"</span>
+                     <span id="json-object">}</span>
+                   <span id="json-array">]</span>
+                 <span id="json-object">}</span>
+               <span id="json-array">]</span>,
+               <span id="json-key">"instances"</span>: <span id="json-array">[</span>
+                 <span id="json-object">{</span>
+                   <span id="json-key">"phrase"</span>: <span id="json-value">"what"</span>,
+                   <span id="json-key">"start position"</span>: <span id="json-value">0</span>,
+                   <span id="json-key">"end position"</span>: <span id="json-value">0</span>,
+                   <span id="json-key">"entities"</span>: <span id="json-array">[</span>
+                     <span id="json-array">{</span>
+                       <span id="json-key">"_id"</span>: <span id="json-value">"what"</span>,
+                       <span id="json-key">"_concept"</span>: <span id="json-array">[</span>
+                         <span id="json-value">"question word"</span>
+                       <span id="json-array">]</span>
+                     <span id="json-object">}</span>
+                   <span id="json-array">]</span>
+                 <span id="json-object">}</span>,
+                 <span id="json-object">{</span>
+                   <span id="json-key">"phrase"</span>: <span id="json-value">"andover war memorial hospital"</span>,
+                   <span id="json-key">"start position"</span>: <span id="json-value">2</span>,
+                   <span id="json-key">"end position"</span>: <span id="json-value">5</span>,
+                   <span id="json-key">"entities"</span>: <span id="json-array">[</span>
+                     <span id="json-object">{</span>
+                       <span id="json-key">"_id"</span>: <span id="json-value">"Andover War Memorial Hospital"</span>,
+                       <span id="json-key">"_concept"</span>: <span id="json-array">[</span>
+                         <span id="json-value">"spatial thing"</span>, <span id="json-value">"place"</span>, <span id="json-value">"hospital"</span>
+                         <span id="json-array">]</span>,
+                         <span id="json-key">"latitude"</span>: <span id="json-value">"51.2157949"</span>,
+                         <span id="json-key">"longitude"</span>: <span id="json-value">"-1.4948623"</span>,
+                         <span id="json-key">"picture"</span>: <span id="json-value">"media_001"</span>
+                       <span id="json-object">}</span>
+                     <span id="json-array">]</span>
+                   <span id="json-object">}</span>
+                 <span id="json-array">]</span>,
+                 <span id="json-key">"specials"</span>: <span id="json-array">[</span>
+                   <span id="json-object">{</span>
+                     <span id="json-key">"type"</span>: <span id="json-value">"matched-triple"</span>,
+                     <span id="json-key">"phrase"</span>: <span id="json-value">"andover war memorial hospital look like"</span>,
+                     <span id="json-key">"start position"</span>: <span id="json-value">2</span>,
+                     <span id="json-key">"end position"</span>: <span id="json-value">7</span>,
+                     <span id="json-key">"predicate"</span>: <span id="json-object">{</span>
+                       <span id="json-key">"phrase"</span>: <span id="json-value">"look like"</span>,
+                       <span id="json-key">"start position"</span>: <span id="json-value">6</span>,
+                       <span id="json-key">"end position"</span>: <span id="json-value">7</span>,
+                       <span id="json-key">"entities"</span>: <span id="json-array">[</span>
+                         <span id="json-object">{</span>
+                           <span id="json-key">"_id"</span>: <span id="json-value">"hospital:picture:media"</span>,
+                           <span id="json-key">"_concept"</span>: [
+                             <span id="json-value">"attribute concept"</span>, <span id="json-value">"object property"</span>, <span id="json-value">"meaning"</span>, <span id="json-value">"concept"</span>, <span id="json-value">"property concept"</span>
+                           <span id="json-array">]</span>,
+                           <span id="json-key">"property name"</span>: <span id="json-value">"picture"</span>,
+                           <span id="json-key">"domain"</span>: <span id="json-value">"hospital"</span>,
+                           <span id="json-key">"range"</span>: <span id="json-value">"media"</span>,
+                           <span id="json-key">"is expressed by"</span>: <span id="json-value">"look like"</span>
+                         <span id="json-object">}</span>
+                       <span id="json-array">]</span>
+                     <span id="json-object">}</span>,
+                   <span id="json-key">"subject instances"</span>: <span id="json-array">[</span>
+                     <span id="json-object">{</span>
+                       <span id="json-key">"phrase"</span>: <span id="json-value">"andover war memorial hospital"</span>,
+                       <span id="json-key">"start position"</span>: <span id="json-value">2</span>,
+                       <span id="json-key">"end position"</span>: <span id="json-value">5</span>,
+                       <span id="json-key">"entities"</span>: <span id="json-array">[</span>
+                         <span id="json-object">{</span>
+                           <span id="json-key">"_id"</span>: <span id="json-value">"Andover War Memorial Hospital"</span>,
+                           <span id="json-key">"_concept"</span>: <span id="json-array">[</span>
+                             <span id="json-value">"spatial thing"</span>, <span id="json-value">"place"</span>, <span id="json-value">"hospital"</span>
+                           <span id="json-array">]</span>,
+                           <span id="json-key">"latitude"</span>: <span id="json-value">"51.2157949"</span>,
+                           <span id="json-key">"longitude"</span>: <span id="json-value">"-1.4948623"</span>,
+                           <span id="json-key">"picture"</span>: <span id="json-value">"media_001"</span>
+                         <span id="json-object">}</span>
+                       <span id="json-array">]</span>
+                     <span id="json-object">}</span>
+                   <span id="json-array">]</span>
+                 <span id="json-object">}</span>
+               <span id="json-array">]</span>
+             <span id="json-object">}</span>
+           <span id="json-object">}</span>
+         <span id="json-array">]</span>
+       <span id="json-object">}</span>
+</pre>
+</div>
+
+<div id="plain-text">
+A full description of the above JSON needs to be provided
+</div>
+
+<div id="plain-text"><br/><br/></div>
+
+<div id="header-2"><a id="api-answer"></a>2.3 Answer API</div>
+<div id="plain-text">
+This is called when the user submits <a href="#interpret-JSON">interpretation JSON</a> to be answered.
+<br/>
+To call this API:
+
+<div id="plain-text"><br/><br/></div>
+
+<span id="http-type">HTTP POST</span> to the target url, e.g. <span id="url">http://localhost:8080/ce-store/special/hudson/executor</span>
+<br/>
+...with plain text <span id="http-header">post payload</span> containing the question being asked: e.g. <span id="http-value">who is Jean?</span>
+<br/>
+...and http request as <a href="#common-http-request-headers">specified earlier</a>
+</div>
+
+<div id="plain-text"><br/><br/></div>
+
+<div id="plain-text">
+The following example JSON is returned from answerer API requests:
+</div>
+
+<div id ="code-snippet">
+<pre>
+  <span id="json-object">{</span>
+    <span id="json-key">"question"</span>: <span id="json-object">{</span>
+      <span id="json-key">"text"</span>: <span id="json-value">"what is underspin?"</span>
     <span id="json-object">}</span><span id="json-comma">, </span>
     <span id="json-key">"answers"</span>: <span id="json-array">[</span>
       <span id="json-object">{</span>
-        <span id="json-key">"question_interpretation"</span>: <span id="json-value">"what is underspin?"</span>,
         <span id="json-key">"result_text"</span>: <span id="json-value">"Spin of a ball where the top of the ball rotates away..."</span>,
         <span id="json-key">"chatty_text"</span>: <span id="json-value">"According to wikipedia ‘underspin’ means: Spin of a ball..."</span>,
         <span id="json-key">"source"</span>: <span id="json-object">{</span>
@@ -164,15 +384,18 @@ The following example JSON is returned from Question Executor API requests:
 In the example above a simple <span id="json-key">result_text</span> response is shown, however this element can be replaced by any one of the more complex alternatives depending on the type of answer that is returned:
 <ul>
  <li>
-  A simple single answer (<span id="json-key">result_text</span>)<br/>
+  A simple single answer (<span id="json-key">result_text</span>)
+  <br/>
   e.g. returned when asking: <span id="http-value">what is underspin?</span>
   <pre>
     <span id="json-key">"result_text"</span>: <span id="json-value">"Spin of a ball where the top of the ball rotates away..."</span>,
   </pre>
  </li>
  <li>
-  A table of values (<span id="json-key">result_set</span>)<br/>
-  e.g. returned when asking: <span id="http-value">how many aces from deuce by year?</span><br/>
+  A table of values (<span id="json-key">result_set</span>)
+  <br/>
+  e.g. returned when asking: <span id="http-value">how many aces from deuce by year?</span>
+  <br/>
   Note that when locations are returned they use this structure with <span id="json-value">lat</span> and <span id="json-value">lon</span> headers.
   <pre>
     <span id="json-key">"result_set"</span>: <span id="json-object">{</span>
@@ -185,16 +408,20 @@ In the example above a simple <span id="json-key">result_text</span> response is
   </pre>
  </li>
  <li>
-  A code as an answer, to signify a specific situation like an error or an unhandled question (<span id="json-key">result_code</span>)<br/>
-  e.g. returned when asking: <span id="http-value">what does Andy Murray look like?</span><br/>
-  Use of these codes enables the UI to substitute an appropriate response to the user but there will also be a <span id="json_key">chatty_text</span> element in the reponse too which contains more description.<br/>
+  A code as an answer, to signify a specific situation like an error or an unhandled question (<span id="json-key">result_code</span>)
+  <br/>
+  e.g. returned when asking: <span id="http-value">what does Andy Murray look like?</span>
+  <br/>
+  Use of these codes enables the UI to substitute an appropriate response to the user but there will also be a <span id="json_key">chatty_text</span> element in the reponse too which contains more description.
+  <br/>
   For a full list of <span id="json-key">result_code</span> values <a href="#result_code_values">click here</a>.
   <pre>
     <span id="json-key">"result_code"</span>: <span id="json-value">"NO_MEDIA"</span>
   </pre>
  </li>
  <li>
-  A link to external media (e.g. imagery) as an answer, to enable pictures and videos to be shown (<span id="json-key">result_media</span>)<br/>
+  A link to external media (e.g. imagery) as an answer, to enable pictures and videos to be shown (<span id="json-key">result_media</span>)
+  <br/>
   e.g. returned when asking: <span id="http-value">what does Roger Federer look like?</span>
   <pre>
     <span id="json-key">"result_media"</span>: <span id="json-object">{</span>
@@ -205,7 +432,8 @@ In the example above a simple <span id="json-key">result_text</span> response is
   </pre>
  </li>
  <li>
-  A link to geospatial coordinates (e.g. lat/lon) as an answer, to enable rendering on a map (<span id="json-key">result_coords</span>)<br/>
+  A link to geospatial coordinates (e.g. lat/lon) as an answer, to enable rendering on a map (<span id="json-key">result_coords</span>)
+  <br/>
   e.g. returned when asking: <span id="http-value">where is centre court?</span>
   <pre>
     <span id="json-key">"result_coords"</span>: <span id="json-object">{</span>
@@ -216,26 +444,8 @@ In the example above a simple <span id="json-key">result_text</span> response is
   </pre>
  </li>
 </ul>
-If the <span id="parameter-name">debug</span> url parameter is set to <span id="parameter-value">true</span> the the following additional JSON element is returned in the root element:<br/>
 
-<div id ="code-snippet">
-<pre>
-  <span id="json-key">"debug"</span>: <span id="json-object">{</span>
-    <span id="json-key">"execution_time_ms"</span>: <span id="json-value">123</span>,
-    <span id="json-key">"sql_query"</span>: <span id="json-value">"SELECT COUNT(*) FROM table"</span>,
-    <span id="json-key">"alerts"</span>: <span id="json-object">{</span>
-      <span id="json-key">"errors"</span>: <span id="json-array">[</span>
-        <span id="json-value">"an error message may appear here"</span>
-      <span id="json-array">]</span>,
-      <span id="json-key">"debugs"</span>: <span id="json-array">[</span>
-        <span id="json-value">"a debug message may appear here"</span>
-      <span id="json-array">]</span>
-    <span id="json-object">}</span>
-  <span id="json-object">}</span>
-</pre>
-</div>
-
-<div id="header-3">2.3.1 Notes for question executor API</div>
+<div id="header-3">2.3.1 Notes for answer API</div>
 <div id="plain-text">
 <ul>
  <li>The <span id="json-key">question_text</span> is repeated for each <span id="json-key">suggestion</span> object because different capitalisations of the typed question may be required (e.g. see first example)</li>
@@ -248,8 +458,10 @@ If the <span id="parameter-name">debug</span> url parameter is set to <span id="
 There are three confidence values returned by the question executor API.  Each will be an integer in the range 0 - 100.  These confidences are:
 <ul>
  <li>
-  <span id="json-key">interpretation_confidence</span> (applies to the <span id="json-key">question</span>)<br/>
-  This is the "main" confidence value and is computed according to how many of the words in the question from the user were matched to the knowledge base either as concepts (e.g. "match", "win" etc), instances (e.g. glossary terms like "love" or "underspin", events like "Ladies' Doubles", rounds like "Quarter-Finals", or properties that link concepts together).<br/>
+  <span id="json-key">interpretation_confidence</span> (applies to the <span id="json-key">question</span>)
+  <br/>
+  This is the "main" confidence value and is computed according to how many of the words in the question from the user were matched to the knowledge base either as concepts (e.g. "match", "win" etc), instances (e.g. glossary terms like "love" or "underspin", events like "Ladies' Doubles", rounds like "Quarter-Finals", or properties that link concepts together).
+  <br/>
   The algorithm (introduced in v1.0.11) is very basic: It splits the incoming words into three categories:
   <ul>
    <li>
@@ -257,28 +469,38 @@ There are three confidence values returned by the question executor API.  Each w
     <span id="emphasize">"common"</span>: common words such as "and", "or", "it", and questioon words such as "who", "when" etc.
     <span id="emphasize">"missed"</span>: words which are neither <span id="emphasize">matched</span> or <span id="emphasize">common</span>.  These are words outside of Hudson's realm of knowledge.
    </li>
-   Using the above classifications the <span id="emphasize">common</span> words are ignored and the confidence is computed as: <span id="emphasize">matched</span> / (<span id="emphasize">matched</span> + (<span id="emphasize">missed</span> * 3)).<br/>
-   This is a crude mechanism for ensuring 100% confidence when all non-common words are matched, and a steep reduction in confidence as the percentage of matched words declines.<br/>
+   Using the above classifications the <span id="emphasize">common</span> words are ignored and the confidence is computed as: <span id="emphasize">matched</span> / (<span id="emphasize">matched</span> + (<span id="emphasize">missed</span> * 3)).
+   <br/>
+   This is a crude mechanism for ensuring 100% confidence when all non-common words are matched, and a steep reduction in confidence as the percentage of matched words declines.
+   <br/>
    This algorithm is likely to be refined in future releases, and will ideally be made available via CE configuration to allow easy modification.
   </ul>
  </li>
  <li>
-  <span id="json-key">ability_to_answer_confidence</span> (applies to the <span id="json-key">question</span>)<br/>
-  This value is not currently populated but an algorithm will be introduced shortly.  The purpose of this value is to convey how likely the question is able to be answered.<br/>
-  The algorithm will involve investigating the sources for each of the matched words to determine if data is available.<br/>
-  This confidence is important because the Hudson knowledge base will define a model which may be broader than the available data sources, allowing questions to be understood but not answered.  It is essential for user confidence reasons that Hudson is able to convey that the question was understood but could not be answered due to lack of data, rather than simply appearing to have not understood the question.<br/>
+  <span id="json-key">ability_to_answer_confidence</span> (applies to the <span id="json-key">question</span>)
+  <br/>
+  This value is not currently populated but an algorithm will be introduced shortly.  The purpose of this value is to convey how likely the question is able to be answered.
+  <br/>
+  The algorithm will involve investigating the sources for each of the matched words to determine if data is available.
+  <br/>
+  This confidence is important because the Hudson knowledge base will define a model which may be broader than the available data sources, allowing questions to be understood but not answered.  It is essential for user confidence reasons that Hudson is able to convey that the question was understood but could not be answered due to lack of data, rather than simply appearing to have not understood the question.
+  <br/>
   Conveying the lack of data back to the users may inspire additional efforts by the community to crowd source the missing data, or map additional data sources that contain it.
  </li>
  <li>
-  <span id="json-key">answer_confidence</span> (applies to each <span id="json-key">answer</span>)<br/>
-  This is computed for each answer that it returned.  It may be different for different answers.<br/>
-  The baseline value is the <span id="emphasize">interpretation_confidence</span> from the question (described earlier).  This is the maximum value that can be returned for an answer.<br/>
-  Each answer may be modified by the credibility of the source (e.g. a source with 80% credibility will result in 80% of the <span id="emphasize">interpretation_confidence</span> being returned for that question).<br/>
-  In the event of a technical error such as a SQL failure the <span id="emphasize">answer_confidence</span> is set to 0.<br/>  
+  <span id="json-key">answer_confidence</span> (applies to each <span id="json-key">answer</span>)
+  <br/>
+  This is computed for each answer that it returned.  It may be different for different answers.
+  <br/>
+  The baseline value is the <span id="emphasize">interpretation_confidence</span> from the question (described earlier).  This is the maximum value that can be returned for an answer.
+  <br/>
+  Each answer may be modified by the credibility of the source (e.g. a source with 80% credibility will result in 80% of the <span id="emphasize">interpretation_confidence</span> being returned for that question).
+  <br/>
+  In the event of a technical error such as a SQL failure the <span id="emphasize">answer_confidence</span> is set to 0.
+  <br/>  
   Additionally, certain <span id="json-key">result_code</span> responses return predefined <span id="emphasize">answer_confidence</span> values.
  </li>
 </ul>
-<br/><br/>
 </div>
 
 <div id="header-3">2.3.3 result_code values</div>
@@ -286,8 +508,6 @@ There are three confidence values returned by the question executor API.  Each w
 The following <span id="json-key">result_code</span> values are possible to return:
 <ul>
  <li><span id="json-value">GENERAL</span>: A general unhandled error.</li>
- <li><span id="json-value">ERROR_SQL</span>: An error executing the generated SQL query.</li>
- <li><span id="json-value">NEGATION</span>: The user specified some kind of negation (like "no" or "not") that is not currently handled.</li>
  <li><span id="json-value">NOT_UNDERSTOOD</span>: The question was not understood at all (will have a corresponding <span id="json-key">interpretation_confidence</span> of <span id="json-value">0</span>).</li>
  <li><span id="json-value">CANNOT_LOCATE</span>: When the question identified a need for a location to be returned but nothing locatable was specified.</li>
  <li><span id="json-value">NO_COORDS</span>: When the question identified a need for a location to be returned but none was found.</li>
@@ -298,213 +518,109 @@ The following <span id="json-key">result_code</span> values are possible to retu
 </ul>
 </div>
 
+<div id="plain-text"><br/><br/></div>
 
-<div id="header-2">2.4 Management API</div>
+<div id="header-2"><a id="api-execute"></a>2.4 Execute API</div>
+<div id="plain-text">
+The execute API is simply a concatenation of the <a href="#api-interpret">interpret API</a> and the <a href="#api-answer">answer API</a> and therefore takes the input information required by the interpret API and provides the response specified for the answer API.  The intermediate call between the interpret and the answer is not exposed.  This can be useful for quickly creating a question answering system without too much configuration, however it does not provide the flexibility for having a single interpretation service and multiple answerer services.
+</div>
+
+<div id="plain-text"><br/><br/></div>
+
+<div id="header-2"><a id="api-help"></a>2.5 Helper API</div>
+<div id="plain-text">
+Note: The algorithm behind this API is currently very simplistic so fairly simple lists of help suggestions are returned.
+In a future update additional context sensitivity will be added to improve the suggestions that are returned.
+ 
+This can be called as the user is typing a question in order to provide type-ahead style suggestions for completion of the sentence.  The two examples below show cases with suggestions both before and after the currently typed text.
+<br/>
+To call this API:
+
+<div id="plain-text"><br/><br/></div>
+
+<span id="http-type">HTTP POST</span> to the target url, e.g. <span id="url">http://localhost:8080/ce-store/special/hudson/helper</span>
+<br/>
+...with plain text <span id="http-header">post payload</span> containing the question text typed so far: e.g. <span id="http-value">what is a</span>
+<br/>
+...and http request as <a href="#common-http-request-headers">specified earlier</a>
+<br/>
+</div>
+<br/>
+The following example JSON is returned from typical Helper API requests:
+
+<div id="plain-text"><br/><br/></div>
+
+Simple case with only <span id="http-parameter">after_text</span> returned:
+<br/>
+
+<div id ="code-snippet">
+<pre>
+  <span id="json-object">{</span> <span id="json-key">"suggestions"</span>: <span id="json-array">[</span>
+      <span id="json-object">{</span> <span id="json-key">"question_text"</span>: <span id="json-value">"what is a"</span>, <span id="json-key">"after_text"</span>: <span id="json-value">"ce?"</span><span id="json-object">}</span><span id="json-comma">, </span>
+      <span id="json-object">{</span> <span id="json-key">"question_text"</span>: <span id="json-value">"what is A"</span>, <span id="json-key">"after_text"</span>: <span id="json-value">"TP?"</span> <span id="json-object">}</span>
+    <span id="json-array">]</span>
+  <span id="json-object">}</span>
+</pre>
+</div>
+
+Advanced case with <span id="http-parameter">before_text</span> and <span id="http-parameter">after_text</span> returned:
+<br/>
+
+<div id ="code-snippet">
+<pre>
+  <span id="json-object">{</span> <span id="json-key">"suggestions"</span>: <span id="json-array">[</span>
+      <span id="json-object">{</span> <span id="json-key">"question_text"</span>: <span id="json-value">"se"</span>, <span id="json-key">"before_text"</span>: <span id="json-value">"fastest "</span>, <span id="json-key">"after_text"</span>: <span id="json-value">"rve?"</span><span id="json-object">}</span><span id="json-comma">, </span>
+      <span id="json-object">{</span> <span id="json-key">"question_text"</span>: <span id="json-value">"se"</span>, <span id="json-key">"before_text"</span>: <span id="json-value">"longest "</span>, <span id="json-key">"after_text"</span>: <span id="json-value">"t?"</span> <span id="json-object">}</span>
+    <span id="json-array">]</span>
+  <span id="json-object">}</span>
+</pre>
+</div>
+
+<div id="header-3">2.2.1 Notes for helper API</div>
+<div id="plain-text">
+<ul>
+ <li>The <span id="json-key">question_text</span> is repeated for each <span id="json-key">suggestion</span> object because different capitalisations of the typed question may be required (e.g. see first example)</li>
+</ul>
+</div>
+
+<div id="header-2">2.4 Management APIs</div>
 <div id="plain text">
-API tbd
+There are two simple management APIs for Hudson:
+</div>
+
+<div id="header-3"><a id="api-reset"></a>2.4.1 Reset API</div>
+<div id="plain text">
+tbc
+</div>
+
+<div id="header-3"><a id="api-status"></a>2.4.2 Status API</div>
+<div id="plain text">
+tbc
 </div>
 
 <div id="header-1">3. Controlled English</div>
 <div id="plain-text">
-Here is some body text.
-<br/><br/>
+Please refer to the <a href="https://github.com/ce-store/ce-store/blob/master/README.md">ce-store README</a> for an introduction to the Controlled English language and the <a href="https://github.com/ce-store/ce-store/">ce-store</a> environment.
 </div>
-<div id="ce">
-there is a person named 'fred'.
-<br/><br/>
-</div>
+
+<div id="plain-text"><br/><br/></div>
 
 <div id="header-1">4. Installation guide</div>
-
-<div id="header-2">4.1 Pre-requisites</div>
 <div id="plain-text">
-In order to install and configure the Hudson component you need the following:
-<ol>
- <li>An environment in which:
-  <ul>
-   <li><a href="https://developer.ibm.com/wasdev/websphere-liberty/">WebSphere Liberty</a> is installed</li>
-   <li>The db2 java client libraries (db2jcc4.jar) available in a known location 
-  </ul>
- </li>
- <li>A copy of the Hudson.war file</li>
- <li>
-  The connection details for the remote db2 database hosting the live data<br/>
-  (JDBC URL, server name, port, database name, userid, password)
- </li>
-</ol>
+There is no special installation required for Hudson.  The Hudson APIs are provided as part of the open source ce-store environment.
+Simply follow the <a href= "https://github.com/ce-store/ce-store#installation-and-setup">standard installation procedures for ce-store</a>.
 </div>
 
-<div id="header-2">4.2 Initial configuration</div>
-<div id="plain-text">
-To initially configure this environment simply edit the <i>server.xml</i> file for the WebSphere Liberty environment.<br/>
-<br/>
-First add the <i>JDBC</i> feature by specifying the appropriate line in the features list:
-</div>
-<pre id="code-snippet">
-    &lt;featureManager&gt;
-        ...
-        &lt;feature&gt;jdbc-4.0&lt;/feature&gt;
-    &lt;/featureManager&gt;
-</pre>
-<div id="plain-text">
-Then add the following to define the required datasource:
-</div>
-<pre id="code-snippet">
-    &lt;library id="DB2JCC4Lib"&gt;
-        &lt;fileset dir="<i>{DB2_JAVA_PATH}</i>" includes="db2jcc4.jar db2jcc_license_cisuz.jar"/&gt;
-    &lt;/library&gt;
+<div id="plain-text"><br/><br/></div>
 
-    &lt;dataSource id="db2" jndiName="jdbc/db2" connectionSharing="MatchCurrentState"
-            isolationLevel="TRANSACTION_READ_COMMITTED" statementCacheSize="20"&gt;
-        &lt;connectionManager maxPoolSize="20" minPoolSize="5" connectionTimeout="10s" agedTimeout="30m"/&gt;
-        &lt;jdbcDriver libraryRef="DB2JCC4Lib"/&gt;
-        &lt;properties.db2.jcc databaseName="<i>{DB_NAME}</i>" serverName="<i>{DB_SERVERNAME}</i>"
-            portNumber="<i>{DB_PORT}</i>" currentLockTimeout="30s" user="<i>{DB_USER}</i>" password="<i>{DB_PASS}</i>"/&gt;
-    &lt;/dataSource&gt;
-</pre>
-<div id="plain-text">
-Where:
-<ul>
- <li><i>{DB2_JAVA_PATH}</i> is the location where the db2jcc4.jar file can be found, e.g. <i>/opt/ibm/db2/V10.5/java</i></li>
- <li><i>{DB_NAME}</i> is the name of the database, e.g. <i>WAREHSE</i></li>
- <li><i>{DB_SERVERNAME}</i> is the hostname or url where the database is located, e.g. <i>localhost</i></li>
- <li><i>{DB_PORT}</i> is the port which must be used to access the database server, e.g. <i>60000</i></li>
- <li><i>{DB_USER}</i> is the database username, e.g. <i>db2inst1</i></li>
- <li><i>{DB_PASS}</i> is the password for the above database username</li>
-</ul>
-Note: If you also wish to enable (optional) file logging of all questions received by the server make the following additional changes to <i>server.xml</i>:
-</div>
-<pre id="code-snippet">
-    &lt;featureManager&gt;
-        ...
-        &lt;feature&gt;jndi-1.0&lt;/feature&gt;
-    &lt;/featureManager&gt;
-
-    &lt;jndiEntry jndiName="Hudson/question_directoryname" value='<i>{LOG_DIR}</i>'/&gt;
-</pre>
-<div id="plain-text">
-Where:
-<ul>
- <li>
-  <i>{LOG_DIR}</i> is the directory where the questions will be logged, e.g. <i>/home/davebraines/logged_questions/</i><br/>
-  Ensure that this directory exists and can be written by the user running the WebSphere Liberty process.
- </li>
-</ul>
-If you enable file logging, all received questions will be logged as single lines in a plain text file named <i>logged_questions.txt</i> in the specified directory.
-Save the <i>server.xml</i> file.  You should not need to restart WebSphere Liberty.
-<br/><br/>
-</div>
-
-<div id="header-2">4.3 Deploying the Hudson application</div>
-<div id="plain-text">
-Simply copy the <i>Hudson.war</i> file into the Liberty "dropins" folder, e.g. <i>/opt/ibm/liberty/wlp/usr/servers/defaultServer/dropins</i>.<br/>
-Liberty will automatically deploy the file and you can then test the application via the tester UI, e.g. http://localhost:9080/Hudson/<br/>
-Note: the version of the Hudson application is displayed at the top of the test page
-<br/><br/>
-</div>
 
 <div id="header-1">5. Change summary</div>
-<div id="header-2">V1.0.01-05 (Early May, 2015)</div>
+<div id="header-2">V1.0.01 (Mon 5th Sept, 2016)</div>
 <div id="plain-text">
-No changes were recorded.
-<br/><br/>
+Initial version.
 </div>
 
-<div id="header-2">V1.0.06 (Mon 18th May, 2015)</div>
-<div id="plain-text">
-The following changes were made:
- <ul>
-  <li>Added JDBC connection pooling</li>
-  <li>Added file logging for questions</li>
-  <li>Added installation guide to documentation</li>
- </ul>
-</div>
-
-<div id="header-2">V1.0.07 (Tue 19th May, 2015)</div>
-<div id="plain-text">
-The following minor changes were made:
- <ul>
-  <li>Added some locations with coordinates, e.g. centre court, courts 1-19, henman hill etc</li>
-  <li>Added support for "where is x?" questions - e.g. "where is Henman Hill?"</li>
-  <li>Added definitions for wimbledon and tennis</li>
-  <li>Added all Stacey's questions to the Hudson test UI</li>
-  <li>Minor bug fixes</li>
- </ul>
-</div>
-
-<div id="header-2">V1.0.08 (Tue 26th May, 2015)</div>
-<div id="plain-text">
-The following changes were made:
- <ul>
-  <li>Removed old "stubbed" functionality</li>
-  <li>Improved local CE question handling</li>
-  <li>API change: Moved <i>question_text</i> from root element to each <i>suggestion</i> object in Helper response - to enabled the correct capitalisation to be preserved</li>
- </ul>
-</div>
-
-<div id="header-2">V1.0.09 (Wed 27th May, 2015)</div>
-<div id="plain-text">
-The following changes were made:
- <ul>
-  <li>Added "group by" capability</li>
-  <li>Added new "result_media" response type - can be tested with "What does Roger Federer look like?" (and the null case can be tested by "What does Andy Murray look like?")</li>
-  <li>Improved error handling and reporting</li>
-  <li>More documentation improvements</li>
- </ul>
-</div>
-
-<div id="header-2">V1.0.10 (Thu 28th May, 2015)</div>
-<div id="plain-text">
-The following changes were made:
- <ul>
-  <li>Added attendance data (totals only, from 1992-2013) - Thanks Stacey</li>
-  <li>Added <a href="./tests.html">regression testing UI</a></li>
-  <li>Added new result_coords answer type</li>
- </ul>
-</div>
-
-<div id="header-2">V1.0.11 (Thu 28th May, 2015)</div>
-<div id="plain-text">
-The following changes were made:
- <ul>
-  <li>Improved regression testing UI</li>
-  <li>Removed old lat/lon result_set style responses (replaced with result_coords)</li>
-  <li>Lots of fixes to SQL generation</li>
- </ul>
-</div>
-
-<div id="header-2">V1.0.12 (Mon 1st June, 2015)</div>
-<div id="plain-text">
-The following changes were made:
- <ul>
-  <li>Added support for lots of additional questions: See the first 50 on the tester page for examples</li>
-  <li>Added new response codes for NEGATION, GREETINGS, PREDICTION</li>
-  <li>Lots of bug fixing</li>
- </ul>
-</div>
-
-<div id="header-2">V1.0.13 (Tue 26th June, 2015)</div>
-<div id="plain-text">
-The following changes were made:
- <ul>
-  <li>Added <span id="json-key">question_interpretation</span> element to the answer JSON response</li>
-  <li>Reduced answer confidence for result_coords answers when the question did not include "where" (-50%)</li>
-  <li>Improved "where" question error handling</li>
-  <li>Fully qualified player image urls (using http://www.wimbledon.com/images/players/)</li>
- </ul>
-</div>
-
-<div id="header-2">V1.0.14 (Wed 27th June, 2015)</div>
-<div id="plain-text">
-The following changes were made:
- <ul>
-  <li>Normalised sourece names (e.g. no longer "Chris Thomas" and "Darren Shaw" but more generic terms)</li>
-  <li>Exported profile pictures for all players (747 images/players)</li>
-  <li>Added additional player records - for players with surnames only</li>
-  <li>Created better chatty text responses for queries to the database with a single response</li>
-  <li>Incorporated units for qualified concepts (e.g. mph for serve speed)</li>
- </ul>
-</div>
+<div id="plain-text"><br/><br/></div>
 
 </body>
 </html>
