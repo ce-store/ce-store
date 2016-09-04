@@ -15,8 +15,6 @@ import com.ibm.ets.ita.ce.store.conversation.model.ConvPhrase;
 import com.ibm.ets.ita.ce.store.conversation.model.ConvWord;
 import com.ibm.ets.ita.ce.store.conversation.model.ProcessedWord;
 import com.ibm.ets.ita.ce.store.hudson.helper.Question;
-import com.ibm.ets.ita.ce.store.model.CeConcept;
-import com.ibm.ets.ita.ce.store.model.CeInstance;
 
 public abstract class QuestionHandler extends GenericHandler {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
@@ -50,26 +48,6 @@ public abstract class QuestionHandler extends GenericHandler {
 		//This is the original CE processing
 		this.phrase = originalCePhraseProcessing();
 		originalCeWordClassifying(this.phrase);
-
-		extractUnitName();
-	}
-
-	private void extractUnitName() {
-		for (ProcessedWord thisWord : this.allWords) {
-			if (thisWord.isGroundedOnConcept()) {
-				for (CeConcept thisCon : thisWord.listGroundedConcepts()) {
-					CeInstance mmInst = thisCon.retrieveMetaModelInstance(this.ac);
-
-					if (mmInst != null) {
-						if (mmInst.isConceptNamed(this.ac, CON_QUALCON)) {
-							if (this.unitName == null) {
-								this.unitName = mmInst.getSingleValueFromPropertyNamed(PROP_UNITNAME);
-							}
-						}
-					}
-				}
-			}
-		}
 	}
 
 	private ConvPhrase originalCePhraseProcessing() {
@@ -91,7 +69,7 @@ public abstract class QuestionHandler extends GenericHandler {
 			this.allWords.add(newPw);
 		}
 
-		markQuestionWords();
+//		markQuestionWords();
 
 		//Then classify the processed words
 		for (ProcessedWord thisWord : this.allWords) {
@@ -99,21 +77,21 @@ public abstract class QuestionHandler extends GenericHandler {
 		}
 	}
 
-	private void markQuestionWords() {
-		ArrayList<String> qsws = null;
-
-		if (getConvConfig() != null) {
-			qsws = getConvConfig().getQuestionStartMarkers();
-
-			for (ProcessedWord thisPw : this.allWords) {
-				for (String thisQsw : qsws) {
-					if (thisPw.getLcWordText().equals(thisQsw)) {
-						thisPw.markAsQuestionWord();
-					}
-				}
-			}
-		}
-	}
+//	private void markQuestionWords() {
+//		ArrayList<String> qsws = null;
+//
+//		if (getConvConfig() != null) {
+//			qsws = getConvConfig().getQuestionStartMarkers();
+//
+//			for (ProcessedWord thisPw : this.allWords) {
+//				for (String thisQsw : qsws) {
+//					if (thisPw.getLcWordText().equals(thisQsw)) {
+//						thisPw.markAsQuestionWord();
+//					}
+//				}
+//			}
+//		}
+//	}
 
 	protected void createJsonDebugs(CeStoreJsonObject pResult) {
 		ActionResponse ar = this.ac.getActionResponse();

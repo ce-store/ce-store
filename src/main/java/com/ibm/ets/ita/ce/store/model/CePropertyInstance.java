@@ -480,19 +480,6 @@ public class CePropertyInstance implements Comparable<CePropertyInstance> {
 	}
 
 	@Override
-	public boolean equals(Object pObj) {
-		boolean result = false;
-		
-		if (pObj.hashCode() == hashCode()) {
-			//The hash codes match so these objects MAY be the same.  Now check on the strings
-			CePropertyInstance pPi = (CePropertyInstance) pObj;
-			result = identityKey().equals(pPi.identityKey());
-		}
-		
-		return result;
-	}
-
-	@Override
 	public int hashCode() {
 		return identityKey().hashCode();
 	}

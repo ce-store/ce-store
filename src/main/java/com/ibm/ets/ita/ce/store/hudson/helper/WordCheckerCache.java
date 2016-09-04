@@ -37,7 +37,17 @@ public class WordCheckerCache {
 	private HashMap<String, ArrayList<CeInstance>> lingThingPluralFormInsts = new HashMap<String, ArrayList<CeInstance>>();
 	
 	public synchronized void checkForMatchingConcept(ActionContext pAc, ProcessedWord pWord) {
-		String cacheKey = pWord.getDeclutteredText();
+		checkForMatchingConceptUsing(pAc, pWord, pWord.getDeclutteredText());
+
+		String depText = pWord.depluralise(pWord.getDeclutteredText());
+
+		if (depText != null) {
+			checkForMatchingConceptUsing(pAc, pWord, depText);
+		}
+	}
+
+	public synchronized void checkForMatchingConceptUsing(ActionContext pAc, ProcessedWord pWord, String pText) {
+		String cacheKey = pText;
 		CeConcept tgtCon = null;
 		
 		if (!this.matchingConcepts.containsKey(cacheKey)) {
@@ -48,14 +58,25 @@ public class WordCheckerCache {
 			tgtCon = this.matchingConcepts.get(cacheKey);
 		}
 
-		pWord.setMatchingConcept(tgtCon);
+		if (tgtCon != null) {
+			pWord.setMatchingConcept(tgtCon);
+		}
 	}
 
 	public synchronized void checkForMatchingRelation(ActionContext pAc, ProcessedWord pWord) {
-		String cacheKey = pWord.getDeclutteredText();
+		checkForMatchingRelationUsing(pAc, pWord, pWord.getDeclutteredText());
+
+		String depText = pWord.depluralise(pWord.getDeclutteredText());
+
+		if (depText != null) {
+			checkForMatchingRelationUsing(pAc, pWord, depText);
+		}
+	}
+
+	public synchronized void checkForMatchingRelationUsing(ActionContext pAc, ProcessedWord pWord, String pText) {
 		TreeMap<String, CeProperty> tgtProps = null;
 		
-		if (!this.matchingRelations.containsKey(cacheKey)) {
+		if (!this.matchingRelations.containsKey(pText)) {
 //			reportDebug("Looking live for property using: " + cacheKey, pAc);
 			tgtProps = new TreeMap<String, CeProperty>();
 
@@ -63,16 +84,16 @@ public class WordCheckerCache {
 				String propFullName = thisInst.getInstanceName();
 
 				for (String expVal : thisInst.getValueListFromPropertyNamed(PROP_PROPNAME)) {
-					if (expVal.equals(cacheKey)) {
+					if (expVal.equals(pText)) {
 						CeProperty tgtProp = pAc.getModelBuilder().getPropertyFullyNamed(propFullName);
 						tgtProps.put(expVal, tgtProp);
 					}
 				}
 			}
 
-			this.matchingRelations.put(cacheKey, tgtProps);
+			this.matchingRelations.put(pText, tgtProps);
 		} else {
-			tgtProps = this.matchingRelations.get(cacheKey);
+			tgtProps = this.matchingRelations.get(pText);
 		}
 
 		if (!tgtProps.isEmpty()) {

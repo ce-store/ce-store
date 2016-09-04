@@ -111,7 +111,7 @@ public abstract class TokenizerPropertyClause extends TokenizerNormalClause {
 					result += " ";
 					result += currToken;
 				}
-				
+
 				ArrayList<CeProperty> possProps = calculatePropertiesStartingWith(result);
 				ArrayList<CeProperty> actualProps = calculatePropertiesNamed(result);
 

@@ -10,3 +10,5 @@ the property concept 'hospital:picture:media'
 
 the property concept 'person:is closely related to:person'
   is expressed by 'closely related to'.
+
+the relation concept 'medical report:mentions:person' is a linked property.

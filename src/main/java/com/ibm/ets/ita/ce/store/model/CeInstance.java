@@ -773,19 +773,6 @@ public class CeInstance extends CeModelEntity {
 	}
 
 	@Override
-	public boolean equals(Object pObj) {
-		boolean result = false;
-
-		if (pObj!=null && pObj.hashCode()==hashCode()) {
-			//The hash codes match so these objects MAY be the same.  Now check on the strings
-			CeInstance pInst = (CeInstance)pObj;
-			result = (identityKey().equals(pInst.identityKey()));
-		}
-
-		return result;
-	}
-
-	@Override
 	public int hashCode() {
 		return identityKey().hashCode();
 	}

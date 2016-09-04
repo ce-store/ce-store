@@ -7,7 +7,6 @@ package com.ibm.ets.ita.ce.store.conversation.model;
 
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.stripDelimitingQuotesFrom;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportMicroDebug;
-import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,57 +28,62 @@ public class ProcessedWord extends GeneralItem {
 
 	private static final String CON_ENTCON = "entity concept";
 	private static final String CON_PROPCON = "property concept";
-	private static final String CON_PROWORD = "processed word";
-	private static final String CON_UNMWORD = "unmatched word";
 	private static final String PROP_PLURAL = "plural form";
 	private static final String PROP_PAST = "past tense";
 	private static final String PROP_EXPBY = "is expressed by";
-	private static final String DET_A = "a";
-	private static final String DET_AN = "an";
-	private static final String DET_THE = "the";
-	private static final String Q_WHAT = "what";
-	private static final String Q_WHO = "who";
-	private static final String Q_WHERE = "where";
-	private static final String Q_WHICH = "which";
-	private static final String Q_WHY = "why";
-	private static final String Q_COUNT = "count";
-	private static final String Q_LIST = "list";
-	private static final String Q_SUMM1 = "summarise";
-	private static final String Q_SUMM2 = "summarize";
-	private static final String Q_ALL = "all";
 
 	private ConvWord convWord = null;
-	private ArrayList<ExtractedItem> extractedItems = null;
 	private String lcText = null;
 	private int wordPos = -1;
+	private boolean isNumberWord = false;
+	private String matchedText = null;
 
+	private ArrayList<MatchedItem> matchedItems = new ArrayList<MatchedItem>();
+	private ArrayList<MatchedItem> otherMatchedItems = new ArrayList<MatchedItem>();
+
+//	private static final String CON_PROWORD = "processed word";
+//	private static final String CON_UNMWORD = "unmatched word";
+//	private static final String DET_A = "a";
+//	private static final String DET_AN = "an";
+//	private static final String DET_THE = "the";
+//	private static final String Q_WHAT = "what";
+//	private static final String Q_WHO = "who";
+//	private static final String Q_WHERE = "where";
+//	private static final String Q_WHICH = "which";
+//	private static final String Q_WHY = "why";
+//	private static final String Q_COUNT = "count";
+//	private static final String Q_LIST = "list";
+//	private static final String Q_SUMM1 = "summarise";
+//	private static final String Q_SUMM2 = "summarize";
+//	private static final String Q_ALL = "all";
+
+//	private ArrayList<ExtractedItem> extractedItems = null;
 	// Matched (directly, by the name)
-	private CeConcept matchingConcept = null;
-	private TreeMap<String, CeProperty> matchingRelations = null;
-	private ArrayList<CeInstance> matchingInstances = null;
+//	private CeConcept matchingConcept = null;
+//	private TreeMap<String, CeProperty> matchingRelations = null;
+//	private ArrayList<CeInstance> matchingInstances = null;
 
 	// Referred (indirectly
-	private TreeMap<String, CeConcept> referredExactConcepts = null;
-	private TreeMap<String, CeProperty> referredExactRelations = null;
-	private TreeMap<String, CeInstance> referredExactInstances = null;
-	private TreeMap<String, CeConcept> referredExactConceptsPlural = null;
-	private TreeMap<String, CeConcept> referredExactConceptsPastTense = null;
-	private TreeMap<String, CeInstance> referredExactInstancesPlural = null;
+//	private TreeMap<String, CeConcept> referredExactConcepts = null;
+//	private TreeMap<String, CeProperty> referredExactRelations = null;
+//	private TreeMap<String, CeInstance> referredExactInstances = null;
+//	private TreeMap<String, CeConcept> referredExactConceptsPlural = null;
+//	private TreeMap<String, CeConcept> referredExactConceptsPastTense = null;
+//	private TreeMap<String, CeInstance> referredExactInstancesPlural = null;
 
 	// Types of words
-	private boolean isStandardWord = false;
-	private boolean isNegationWord = false;
-	private boolean isValueWord = false;
-	private boolean isNumberWord = false;
-	private boolean isQuestionWord = false;
+//	private boolean isStandardWord = false;
+//	private boolean isNegationWord = false;
+//	private boolean isValueWord = false;
+//	private boolean isQuestionWord = false;
 
-	private boolean partialStartWord = false;
-	private boolean partialConceptReference = false;
-	private boolean partialRelationReference = false;
-	private boolean partialInstanceReference = false;
+//	private boolean partialStartWord = false;
+//	private boolean partialConceptReference = false;
+//	private boolean partialRelationReference = false;
+//	private boolean partialInstanceReference = false;
 
-	private CeInstance chosenInstance = null;
-	private String tempLabel = null;
+//	private CeInstance chosenInstance = null;
+//	private String tempLabel = null;
 
 	private ProcessedWord(ConvWord pConvWord, int pWordPos) {
 		this.id = pConvWord.getId();
@@ -102,38 +106,6 @@ public class ProcessedWord extends GeneralItem {
 		return this.wordPos;
 	}
 
-	public CeInstance getChosenInstance() {
-		return this.chosenInstance;
-	}
-
-	public String getConceptName() {
-		String result = null;
-
-		if (isUnmatchedWord()) {
-			result = CON_UNMWORD;
-		} else {
-			result = CON_PROWORD;
-		}
-
-		return result;
-	}
-
-	public String getDeterminer() {
-		String result = null;
-
-		if (isUnmatchedWord()) {
-			result = DET_AN;
-		} else {
-			result = DET_A;
-		}
-
-		return result;
-	}
-
-	public void setChosenInstance(CeInstance pInst) {
-		this.chosenInstance = pInst;
-	}
-
 	public static ProcessedWord createFrom(ConvWord pConvWord, int pWordPos) {
 		ProcessedWord newGw = new ProcessedWord(pConvWord, pWordPos);
 
@@ -150,58 +122,35 @@ public class ProcessedWord extends GeneralItem {
 		return this.convWord.getWordText();
 	}
 
-	public String getWholePhraseText() {
-		String result = null;
-
-		result = getWordText();
-
-		if (this.partialStartWord) {
-			ProcessedWord nextWord = getNextProcessedWord();
-
-			if (nextWord != null) {
-				result += nextWord.getFollowingPartialText();
-			}
-		}
-
-		return result;
-	}
-
-	public String getFollowingPartialText() {
-		String result = null;
-
-		if (this.isLaterPartOfPartial()) {
-			result = " " + getWordText();
-
-			ProcessedWord nextWord = getNextProcessedWord();
-
-			if (nextWord != null) {
-				result += nextWord.getFollowingPartialText();
-			}
-		} else {
-			result = "";
-		}
-
-		return result;
-	}
-
 	public CeConcept getMatchingConcept() {
-		return this.matchingConcept;
+		CeConcept result = null;
+
+		for (MatchedItem mi : this.matchedItems) {
+			if (mi.isMatchedConcept()) {
+				result = mi.getConcept();
+				break;
+			}
+		}
+
+		return result;
 	}
 
 	public void setMatchingConcept(CeConcept pCon) {
-		this.matchingConcept = pCon;
+		saveMatchedItem(MatchedItem.createForMatchedConcept(this, pCon));
+
+//		this.matchingConcept = pCon;
+	}
+
+	private void saveMatchedItem(MatchedItem pMi) {
+		this.matchedItems.add(pMi);
 	}
 
 	public ArrayList<CeInstance> getMatchingInstances() {
-		return this.matchingInstances;
-	}
-
-	public CeInstance getFirstMatchingInstance() {
-		CeInstance result = null;
-
-		if (this.matchingInstances != null) {
-			if (!this.matchingInstances.isEmpty()) {
-				result = this.matchingInstances.get(0);
+		ArrayList<CeInstance> result = new ArrayList<CeInstance>();
+		
+		for (MatchedItem mi : this.matchedItems) {
+			if (mi.isMatchedInstance()) {
+				result.add(mi.getInstance());
 			}
 		}
 
@@ -209,34 +158,46 @@ public class ProcessedWord extends GeneralItem {
 	}
 
 	public void setMatchingInstances(ArrayList<CeInstance> pInsts) {
-		this.matchingInstances = pInsts;
+		for (CeInstance thisInst : pInsts) {
+			saveMatchedItem(MatchedItem.createForMatchedInstance(this, thisInst));
+		}
+
+//		this.matchingInstances = pInsts;
+	}
+
+	public CeInstance getFirstMatchingInstance() {
+		CeInstance result = null;
+
+		if (!getMatchingInstances().isEmpty()) {
+			result = getMatchingInstances().get(0);
+		}
+
+		return result;
 	}
 
 	public boolean matchesToConcept() {
-		return this.matchingConcept != null;
+		return getMatchingConcept() != null;
 	}
 
 	public boolean matchesToRelations() {
-		return (this.matchingRelations != null) && !this.matchingRelations.isEmpty();
+		return (getMatchingRelations() != null) && !getMatchingRelations().isEmpty();
 	}
 
 	public boolean matchesToInstance() {
-		return this.matchingInstances != null;
+		return !getMatchingInstances().isEmpty();
 	}
 
 	public boolean refersToConceptsExactly() {
-		return (this.referredExactConcepts != null) && !this.referredExactConcepts.isEmpty();
+		return !getReferredExactConcepts().isEmpty();
 	}
 
 	public boolean refersToInstanceOfConceptNamed(ActionContext pAc, String pConName) {
 		boolean result = false;
 
-		if (this.matchingInstances != null) {
-			for (CeInstance thisInst : this.matchingInstances) {
-				if (thisInst.isConceptNamed(pAc, pConName)) {
-					result = true;
-					break;
-				}
+		for (CeInstance thisInst : getMatchingInstances()) {
+			if (thisInst.isConceptNamed(pAc, pConName)) {
+				result = true;
+				break;
 			}
 		}
 
@@ -244,125 +205,45 @@ public class ProcessedWord extends GeneralItem {
 	}
 
 	public boolean refersToPluralConceptsExactly() {
-		return (this.referredExactConceptsPlural != null) && !this.referredExactConceptsPlural.isEmpty();
+		return !getReferredExactConceptsPlural().isEmpty();
 	}
 
 	public boolean refersToPastTenseConceptsExactly() {
-		return (this.referredExactConceptsPastTense != null) && !this.referredExactConceptsPastTense.isEmpty();
+		return !getReferredExactConceptsPastTense().isEmpty();
 	}
 
 	public boolean refersToPluralInstancesExactly() {
-		return (this.referredExactInstancesPlural != null) && !this.referredExactInstancesPlural.isEmpty();
+		return !getReferredExactInstancesPlural().isEmpty();
 	}
 
 	public boolean refersToRelationsExactly() {
-		return (this.referredExactRelations != null) && !this.referredExactRelations.isEmpty();
+		return !getReferredExactRelations().isEmpty();
 	}
 
 	public boolean refersToInstancesExactly() {
-		return (this.referredExactInstances != null) && !this.referredExactInstances.isEmpty();
-	}
-
-	public ArrayList<ExtractedItem> getExtractedItems() {
-		return this.extractedItems;
-	}
-
-	public void addExtractedItem(ExtractedItem pEi) {
-		if (this.extractedItems == null) {
-			this.extractedItems = new ArrayList<ExtractedItem>();
-		}
-
-		this.extractedItems.add(pEi);
+		return !getReferredExactInstances().isEmpty();
 	}
 
 	public String getLcWordText() {
 		return this.lcText;
 	}
 
-	public boolean isStandardWord() {
-		return this.isStandardWord;
-	}
-
-	public boolean isNegationWord() {
-		return this.isNegationWord;
-	}
-
-	public boolean isPureNegation() {
-		return this.isNegationWord && (!isGrounded() && !this.partialStartWord);
-	}
-
-	public boolean isWhat() {
-		return this.lcText.equals(Q_WHAT);
-	}
-
-	public boolean isWho() {
-		return this.lcText.equals(Q_WHO);
-	}
-
-	public boolean isWhere() {
-		return this.lcText.equals(Q_WHERE);
-	}
-
-	public boolean isWhich() {
-		return this.lcText.equals(Q_WHICH);
-	}
-
-	public boolean isWhy() {
-		return this.lcText.equals(Q_WHY);
-	}
-
-	public boolean isCount() {
-		return this.lcText.equals(Q_COUNT);
-	}
-
-	public boolean isList() {
-		return this.lcText.equals(Q_LIST);
-	}
-
-	public boolean isSummarise() {
-		return this.lcText.equals(Q_SUMM1) || this.lcText.equals(Q_SUMM2);
-	}
-
-	public boolean isAll() {
-		return this.lcText.equals(Q_ALL);
-	}
-
-	public boolean isValueWord() {
-		return this.isValueWord;
-	}
-
 	public boolean isNumberWord() {
 		return this.isNumberWord;
 	}
 
-	public boolean isQuestionWord() {
-		return this.isQuestionWord;
-	}
-
-	public void markAsQuestionWord() {
-		this.isQuestionWord = true;
-	}
-
-	public boolean isDeterminer() {
-		String decText = getDeclutteredText();
-
-		// TODO: This should not be hardcoded
-		return (decText.equals(DET_A)) || (decText.equals(DET_AN)) || (decText.equals(DET_THE));
-	}
-
 	public boolean isUnmatchedWord() {
-
-		return (this.matchingConcept == null) && !matchesToRelations() && (this.matchingInstances == null)
+//		return (getMatchingConcept() == null) && !matchesToRelations() && (getMatchingInstances().isEmpty())
+//				&& !refersToConceptsExactly() && !refersToPluralConceptsExactly() && !refersToRelationsExactly()
+//				&& !refersToInstancesExactly() && !refersToPluralInstancesExactly() && (!this.isStandardWord)
+//				&& (!this.isNegationWord) && (!this.isValueWord) && (!this.isNumberWord)
+//				&& (!this.partialConceptReference) && (!this.partialRelationReference)
+//				&& (!this.partialInstanceReference) && (!isDeterminer()) && (!isQuestionWord());
+		return (getMatchingConcept() == null) && !matchesToRelations() && (getMatchingInstances().isEmpty())
 				&& !refersToConceptsExactly() && !refersToPluralConceptsExactly() && !refersToRelationsExactly()
-				&& !refersToInstancesExactly() && !refersToPluralInstancesExactly() && (!this.isStandardWord)
-				&& (!this.isNegationWord) && (!this.isValueWord) && (!this.isNumberWord)
-				&& (!this.partialConceptReference) && (!this.partialRelationReference)
-				&& (!this.partialInstanceReference) && (!isDeterminer()) && (!isQuestionWord());
-	}
-
-	public boolean isLaterPartOfPartial() {
-		return (this.partialConceptReference || this.partialRelationReference || this.partialInstanceReference)
-				&& !this.partialStartWord;
+				&& !refersToInstancesExactly() && !refersToPluralInstancesExactly()
+				&& !this.isNumberWord;
+//				&& ((!isDeterminer()));
 	}
 
 	public String getDeclutteredText() {
@@ -371,24 +252,6 @@ public class ProcessedWord extends GeneralItem {
 
 	private static String declutter(String pRawText) {
 		String result = stripDelimitingQuotesFrom(pRawText);
-
-//		if (result.startsWith("@")) {
-//			result = result.substring(1, result.length());
-//		}
-//
-//		if (result.startsWith("#")) {
-//			result = result.substring(1, result.length());
-//		}
-//
-//		// DSB 21/09/2015 - Simply remove apostrophes from the text.
-//		// TODO: Is the declutter phase the best place for this?
-//		if (result.contains("'")) {
-//			result = result.replaceAll("'", "");
-//		}
-//
-//		if (result.contains("’")) {
-//			result = result.replaceAll("’", "");
-//		}
 
 		return result;
 	}
@@ -404,7 +267,7 @@ public class ProcessedWord extends GeneralItem {
 		checkForReferringRelations(pAc);
 		checkForReferringInstances(pAc, wcc);
 
-		checkForStandardWords(pCc, wcc, pAc);
+//		checkForStandardWords(pCc, wcc, pAc);
 
 		String decText = getDeclutteredText();
 
@@ -444,16 +307,18 @@ public class ProcessedWord extends GeneralItem {
 
 			CeConcept tgtCon = pAc.getModelBuilder().getConceptNamed(pAc, conName);
 
-			if (match) {
-				if (exact) {
-					if (this.matchingConcept != tgtCon) {
-						addReferredExactConcept(pAc, conName, tgtCon);
-					}
-				} else {
-					if (testForFullConceptReferenceWithLaterWords(pAc, decText, lcExpList, 1)) {
-						reportMicroDebug("Found multiple word concept reference at: " + decText, pAc);
-						this.partialStartWord = true;
-						this.addReferredExactConcept(pAc, conName, tgtCon);
+			if (tgtCon != null) {
+				if (match) {
+					if (exact) {
+						if (getMatchingConcept() != tgtCon) {
+							addReferredExactConcept(pAc, decText, tgtCon);
+						}
+					} else {
+						ArrayList<ProcessedWord> otherWords = new ArrayList<ProcessedWord>();
+						if (testForFullConceptReferenceWithLaterWords(pAc, decText, lcExpList, 1, otherWords)) {
+							reportMicroDebug("Found multiple word concept reference at: " + decText, pAc);
+							this.addReferredExactConceptFromMultipleWords(pAc, conName, tgtCon, otherWords);
+						}
 					}
 				}
 			}
@@ -491,6 +356,8 @@ public class ProcessedWord extends GeneralItem {
 		ArrayList<String> expList = pPossInst.getValueListFromPropertyNamed(PROP_EXPBY);
 		ArrayList<String> lcExpList = new ArrayList<String>();
 
+		this.matchedText = null;
+
 		for (String thisExp : expList) {
 			lcExpList.add(thisExp.toLowerCase());
 		}
@@ -516,17 +383,18 @@ public class ProcessedWord extends GeneralItem {
 						this.addReferredExactInstance(expVal, pPossInst);
 					}
 				} else {
-					if (testForFullInstanceReferenceWithLaterWords(pAc, pDecText, lcExpList, 1)) {
+					ArrayList<ProcessedWord> otherWords = new ArrayList<ProcessedWord>();
+
+					if (testForFullInstanceReferenceWithLaterWords(pAc, pDecText, lcExpList, 1, otherWords)) {
 						reportMicroDebug("Found multiple word instance reference at: " + pDecText, pAc);
-						this.partialStartWord = true;
 
 						if (pLongText != null) {
-							this.addReferredExactInstance(pLongText, pPossInst);
+							this.addReferredExactInstanceFromMultipleWords(pLongText, pPossInst, otherWords);
 						} else {
-							if (this.tempLabel != null) {
-								this.addReferredExactInstance(this.tempLabel, pPossInst);
+							if (this.matchedText != null) {
+								this.addReferredExactInstanceFromMultipleWords(this.matchedText, pPossInst, otherWords);
 							} else {
-								this.addReferredExactInstance(expVal, pPossInst);
+								this.addReferredExactInstanceFromMultipleWords(expVal, pPossInst, otherWords);
 							}
 						}
 					}
@@ -561,14 +429,15 @@ public class ProcessedWord extends GeneralItem {
 
 			if (match) {
 				if (exact) {
-					if (this.matchingConcept != tgtCon) {
-						addReferredExactConceptPlural(pAc, conName, tgtCon);
+					if (getMatchingConcept() != tgtCon) {
+						addReferredExactConceptPlural(pAc, decText, tgtCon);
 					}
 				} else {
-					if (testForFullConceptReferenceWithLaterWords(pAc, decText, lcExpList, 1)) {
+					ArrayList<ProcessedWord> otherWords = new ArrayList<ProcessedWord>();
+
+					if (testForFullConceptReferenceWithLaterWords(pAc, decText, lcExpList, 1, otherWords)) {
 						reportMicroDebug("Found multiple word concept reference at: " + decText, pAc);
-						this.partialStartWord = true;
-						this.addReferredExactConceptPlural(pAc, conName, tgtCon);
+						this.addReferredExactConceptPluralFromMultipleWords(pAc, conName, tgtCon, otherWords);
 					}
 				}
 			}
@@ -601,29 +470,65 @@ public class ProcessedWord extends GeneralItem {
 
 			if (match) {
 				if (exact) {
-					if (this.matchingConcept != tgtCon) {
+					if (getMatchingConcept() != tgtCon) {
 						addReferredExactConceptPastTense(pAc, conName, tgtCon);
 					}
 				} else {
-					if (testForFullConceptReferenceWithLaterWords(pAc, decText, lcExpList, 1)) {
+					ArrayList<ProcessedWord> otherWords = new ArrayList<ProcessedWord>();
+
+					if (testForFullConceptReferenceWithLaterWords(pAc, decText, lcExpList, 1, otherWords)) {
 						reportMicroDebug("Found multiple word concept reference at: " + decText, pAc);
-						this.partialStartWord = true;
-						this.addReferredExactConceptPastTense(pAc, conName, tgtCon);
+						this.addReferredExactConceptPastTenseFromMultipleWords(pAc, conName, tgtCon, otherWords);
 					}
 				}
 			}
 		}
 	}
 
+	public ArrayList<MatchedItem> getMatchedItems() {
+		return this.matchedItems;
+	}
+
+	public ArrayList<MatchedItem> getOtherMatchedItems() {
+		return this.otherMatchedItems;
+	}
+
+	public void addOtherMatchedItem(MatchedItem pItem) {
+		if (!this.otherMatchedItems.contains(pItem)) {
+			this.otherMatchedItems.add(pItem);
+		}
+	}
+
+	public boolean hasOtherMatchedItems() {
+		return !this.otherMatchedItems.isEmpty();
+	}
+
+	public TreeMap<String, CeProperty> getMatchingRelations() {
+		TreeMap<String, CeProperty> result = new TreeMap<String, CeProperty>();
+		
+		for (MatchedItem mi : this.matchedItems) {
+			if (mi.isMatchedProperty()) {
+				result.put(mi.getPhraseText(), mi.getProperty());
+			}
+		}
+		
+		return result;
+	}
+
 	public void setMatchingRelations(TreeMap<String, CeProperty> pProps) {
-		this.matchingRelations = pProps;
+//		this.matchingRelations = pProps;
+		
+		for (String thisKey : pProps.keySet()) {
+			CeProperty thisProp = pProps.get(thisKey);
+			saveMatchedItem(MatchedItem.createForMatchedProperty(this, thisProp));
+		}
 	}
 
 	public Collection<CeProperty> listMatchingRelations() {
 		Collection<CeProperty> result = null;
 
-		if (this.matchingRelations != null) {
-			result = this.matchingRelations.values();
+		if (getMatchingRelations() != null) {
+			result = getMatchingRelations().values();
 		} else {
 			result = new ArrayList<CeProperty>();
 		}
@@ -635,7 +540,7 @@ public class ProcessedWord extends GeneralItem {
 		boolean result = false;
 
 		if (refersToRelationsExactly()) {
-			result = this.referredExactRelations.containsValue(pProp);
+			result = getReferredExactRelations().containsValue(pProp);
 		} else {
 			result = false;
 		}
@@ -679,11 +584,12 @@ public class ProcessedWord extends GeneralItem {
 							if (tgtProp != null) {
 								if (!alreadyMatchesRelation(tgtProp)) {
 									if (!alreadyRefersToExactRelation(tgtProp)) {
-										if (testForFullRelationReferenceWithLaterWords(pAc, decText, lcExpList, 1)) {
-											this.partialStartWord = true;
+										ArrayList<ProcessedWord> otherWords = new ArrayList<ProcessedWord>();
+
+										if (testForFullRelationReferenceWithLaterWords(pAc, decText, lcExpList, 1, otherWords)) {
 											reportMicroDebug("Found multiple word relation reference at: " + decText,
 													pAc);
-											addReferredExactRelation(pAc, expVal, tgtProp);
+											addReferredExactRelationFromMultipleWords(pAc, expVal, tgtProp, otherWords);
 										}
 									}
 								}
@@ -701,13 +607,14 @@ public class ProcessedWord extends GeneralItem {
 	}
 
 	private boolean testForFullRelationReferenceWithLaterWords(ActionContext pAc, String pLcWordText,
-			ArrayList<String> pExpList, int pDepth) {
+			ArrayList<String> pExpList, int pDepth, ArrayList<ProcessedWord> pOtherWords) {
 		boolean result = false;
 		int depth = pDepth;
 		ProcessedWord nextWord = getNextProcessedWord();
 
 		if (nextWord != null) {
 			String concatText = pLcWordText + " " + nextWord.getDeclutteredText();
+			pOtherWords.add(nextWord);
 
 			if (pExpList.contains(concatText)) {
 				reportMicroDebug("Matched '" + concatText + "' at depth " + pDepth, pAc);
@@ -715,7 +622,7 @@ public class ProcessedWord extends GeneralItem {
 				nextWord.markWordsAsRelationReferenceMatchedToDepth(pDepth);
 				result = true;
 			} else {
-				result = nextWord.testForFullRelationReferenceWithLaterWords(pAc, concatText, pExpList, ++depth);
+				result = nextWord.testForFullRelationReferenceWithLaterWords(pAc, concatText, pExpList, ++depth, pOtherWords);
 			}
 		} else {
 			result = false;
@@ -725,7 +632,7 @@ public class ProcessedWord extends GeneralItem {
 	}
 
 	private boolean testForFullConceptReferenceWithLaterWords(ActionContext pAc, String pLcWordText,
-			ArrayList<String> pExpList, int pDepth) {
+			ArrayList<String> pExpList, int pDepth, ArrayList<ProcessedWord> pOtherWords) {
 		boolean result = false;
 		int depth = pDepth;
 		ProcessedWord nextWord = getNextProcessedWord();
@@ -737,9 +644,10 @@ public class ProcessedWord extends GeneralItem {
 				reportMicroDebug("Matched '" + concatText + "' at depth " + pDepth, pAc);
 
 				nextWord.markWordsAsConceptReferenceMatchedToDepth(pDepth);
+				pOtherWords.add(nextWord);
 				result = true;
 			} else {
-				result = nextWord.testForFullConceptReferenceWithLaterWords(pAc, concatText, pExpList, ++depth);
+				result = nextWord.testForFullConceptReferenceWithLaterWords(pAc, concatText, pExpList, ++depth, pOtherWords);
 			}
 		} else {
 			result = false;
@@ -748,22 +656,22 @@ public class ProcessedWord extends GeneralItem {
 		return result;
 	}
 
-	private boolean testForFullInstanceReferenceWithLaterWords(ActionContext pAc, String pLcWordText, ArrayList<String> pExpList, int pDepth) {
+	private boolean testForFullInstanceReferenceWithLaterWords(ActionContext pAc, String pLcWordText, ArrayList<String> pExpList, int pDepth, ArrayList<ProcessedWord> pOtherWords) {
 		boolean result = false;
 		ProcessedWord nextWord = getNextProcessedWord();
 
 		if (nextWord != null) {
 			String concatText = pLcWordText + " " + nextWord.getDeclutteredText();
 
-			result = doInstRefTest(pAc, pExpList, pDepth, nextWord, concatText);
+			result = doInstRefTest(pAc, pExpList, pDepth, nextWord, concatText, pOtherWords);
 
 			if (!result) {
 				String depText = depluralise(concatText);
 
 				if (depText != null) {
-					result = doInstRefTest(pAc, pExpList, pDepth, nextWord, depText);
+					result = doInstRefTest(pAc, pExpList, pDepth, nextWord, depText, pOtherWords);
 
-					this.tempLabel = concatText;
+					this.matchedText = concatText;
 				}
 			}
 		} else {
@@ -773,17 +681,18 @@ public class ProcessedWord extends GeneralItem {
 		return result;
 	}
 
-	private boolean doInstRefTest(ActionContext pAc, ArrayList<String> pExpList, int pDepth, ProcessedWord pNextWord, String pConcatText) {
+	private boolean doInstRefTest(ActionContext pAc, ArrayList<String> pExpList, int pDepth, ProcessedWord pNextWord, String pConcatText, ArrayList<ProcessedWord> pOtherWords) {
 		boolean result = false;
 		int depth = pDepth;
 
 		if (pExpList.contains(pConcatText)) {
 			reportMicroDebug("Matched '" + pConcatText + "' at depth " + pDepth, pAc);
 
+			pOtherWords.add(pNextWord);
 			pNextWord.markWordsAsInstanceReferenceMatchedToDepth(pDepth);
 			result = true;
 		} else {
-			result = pNextWord.testForFullInstanceReferenceWithLaterWords(pAc, pConcatText, pExpList, ++depth);
+			result = pNextWord.testForFullInstanceReferenceWithLaterWords(pAc, pConcatText, pExpList, ++depth, pOtherWords);
 		}
 
 		return result;
@@ -792,7 +701,7 @@ public class ProcessedWord extends GeneralItem {
 	public void markWordsAsRelationReferenceMatchedToDepth(int pDepth) {
 		if (pDepth > 0) {
 			int depth = pDepth;
-			this.partialRelationReference = true;
+//			this.partialRelationReference = true;
 			ProcessedWord prevWord = getPreviousProcessedWord();
 
 			if (prevWord != null) {
@@ -804,7 +713,7 @@ public class ProcessedWord extends GeneralItem {
 	public void markWordsAsConceptReferenceMatchedToDepth(int pDepth) {
 		if (pDepth > 0) {
 			int depth = pDepth;
-			this.partialConceptReference = true;
+//			this.partialConceptReference = true;
 			ProcessedWord prevWord = getPreviousProcessedWord();
 
 			if (prevWord != null) {
@@ -816,7 +725,7 @@ public class ProcessedWord extends GeneralItem {
 	public void markWordsAsInstanceReferenceMatchedToDepth(int pDepth) {
 		if (pDepth > 0) {
 			int depth = pDepth;
-			this.partialInstanceReference = true;
+//			this.partialInstanceReference = true;
 			ProcessedWord prevWord = getPreviousProcessedWord();
 
 			if (prevWord != null) {
@@ -824,14 +733,6 @@ public class ProcessedWord extends GeneralItem {
 			}
 		}
 	}
-
-	public void markWordAsValue() {
-		this.isValueWord = true;
-	}
-
-//	public void markWordAsNumber() {
-//		this.isNumberWord = true;
-//	}
 
 	private void checkForReferringInstances(ActionContext pAc, WordCheckerCache pWcc) {
 		checkForPluralMatchingInstance(pAc, getDeclutteredText(), pWcc);
@@ -843,27 +744,106 @@ public class ProcessedWord extends GeneralItem {
 		}
 	}
 
-	private void addReferredExactConcept(ActionContext pAc, String pConName, CeConcept pTgtCon) {
-		if (pTgtCon != null) {
-			if (this.referredExactConcepts == null) {
-				this.referredExactConcepts = new TreeMap<String, CeConcept>();
+	private TreeMap<String, CeConcept> getReferredExactConcepts() {
+		TreeMap<String, CeConcept> result = new TreeMap<String, CeConcept>();
+		
+		for (MatchedItem mi : this.matchedItems) {
+			if (mi.isReferredConceptExact()) {
+				result.put(mi.getPhraseText(), mi.getConcept());
 			}
-
-			this.referredExactConcepts.put(pConName, pTgtCon);
-		} else {
-			reportError("Unable to add exact concept '" + pConName + "' as it could not be located", pAc);
 		}
+		
+		return result;
+	}
+	
+	private TreeMap<String, CeConcept> getReferredExactConceptsPlural() {
+		TreeMap<String, CeConcept> result = new TreeMap<String, CeConcept>();
+		
+		for (MatchedItem mi : this.matchedItems) {
+			if (mi.isReferredConceptPlural()) {
+				result.put(mi.getPhraseText(), mi.getConcept());
+			}
+		}
+		
+		return result;
 	}
 
-	// public void setReferredExactConcepts(TreeMap<String, CeConcept> pCons) {
-	// this.referredExactConcepts = pCons;
-	// }
+	private TreeMap<String, CeInstance> getReferredExactInstancesPlural() {
+		TreeMap<String, CeInstance> result = new TreeMap<String, CeInstance>();
+		
+		for (MatchedItem mi : this.matchedItems) {
+			if (mi.isReferredInstancePlural()) {
+				result.put(mi.getPhraseText(), mi.getInstance());
+			}
+		}
+		
+		return result;
+	}
+
+	private TreeMap<String, CeConcept> getReferredExactConceptsPastTense() {
+		TreeMap<String, CeConcept> result = new TreeMap<String, CeConcept>();
+		
+		for (MatchedItem mi : this.matchedItems) {
+			if (mi.isReferredConceptPastTense()) {
+				result.put(mi.getPhraseText(), mi.getConcept());
+			}
+		}
+		
+		return result;
+	}
+
+	private TreeMap<String, CeProperty> getReferredExactRelations() {
+		TreeMap<String, CeProperty> result = new TreeMap<String, CeProperty>();
+		
+		for (MatchedItem mi : this.matchedItems) {
+			if (mi.isReferredPropertyExact()) {
+				result.put(mi.getPhraseText(), mi.getProperty());
+			}
+		}
+		
+		return result;
+	}
+
+	private TreeMap<String, CeInstance> getReferredExactInstances() {
+		TreeMap<String, CeInstance> result = new TreeMap<String, CeInstance>();
+		
+		for (MatchedItem mi : this.matchedItems) {
+			if (mi.isReferredInstanceExact()) {
+				result.put(mi.getPhraseText(), mi.getInstance());
+			}
+		}
+		
+		return result;
+	}
+
+	private void addReferredExactConceptFromMultipleWords(ActionContext pAc, String pConName, CeConcept pTgtCon, ArrayList<ProcessedWord> pOtherWords) {
+		MatchedItem thisMi = MatchedItem.createForReferredConceptExact(this, pTgtCon, pConName, pOtherWords);
+
+		saveMatchedItem(thisMi);
+//		this.partialStartWord = true;
+	}
+
+	private void addReferredExactConcept(ActionContext pAc, String pConName, CeConcept pTgtCon) {
+		MatchedItem thisMi = MatchedItem.createForReferredConceptExact(this, pTgtCon, pConName);
+
+		saveMatchedItem(thisMi);
+
+//		if (pTgtCon != null) {
+//			if (getReferredExactConcepts() == null) {
+//				this.referredExactConcepts = new TreeMap<String, CeConcept>();
+//			}
+//
+//			this.referredExactConcepts.put(pConName, pTgtCon);
+//		} else {
+//			reportError("Unable to add exact concept '" + pConName + "' as it could not be located", pAc);
+//		}
+	}
 
 	public Collection<CeConcept> listReferredExactConcepts() {
 		Collection<CeConcept> result = null;
 
-		if (this.referredExactConcepts != null) {
-			result = this.referredExactConcepts.values();
+		if (!getReferredExactConcepts().isEmpty()) {
+			result = getReferredExactConcepts().values();
 		} else {
 			result = new ArrayList<CeConcept>();
 		}
@@ -871,23 +851,34 @@ public class ProcessedWord extends GeneralItem {
 		return result;
 	}
 
-	private void addReferredExactConceptPlural(ActionContext pAc, String pConName, CeConcept pTgtCon) {
-		if (pTgtCon != null) {
-			if (this.referredExactConceptsPlural == null) {
-				this.referredExactConceptsPlural = new TreeMap<String, CeConcept>();
-			}
+	private void addReferredExactConceptPluralFromMultipleWords(ActionContext pAc, String pConName, CeConcept pTgtCon, ArrayList<ProcessedWord> pOtherWords) {
+		MatchedItem thisMi = MatchedItem.createForReferredConceptPlural(this, pTgtCon, pConName, pOtherWords);
 
-			this.referredExactConceptsPlural.put(pConName, pTgtCon);
-		} else {
-			reportError("Unable to add exact concept plural '" + pConName + "' as it could not be located", pAc);
-		}
+		saveMatchedItem(thisMi);
+//		this.partialStartWord = true;
+	}
+
+	private void addReferredExactConceptPlural(ActionContext pAc, String pConName, CeConcept pTgtCon) {
+		MatchedItem thisMi = MatchedItem.createForReferredConceptPlural(this, pTgtCon, pConName);
+
+		saveMatchedItem(thisMi);
+
+//		if (pTgtCon != null) {
+//			if (this.referredExactConceptsPlural == null) {
+//				this.referredExactConceptsPlural = new TreeMap<String, CeConcept>();
+//			}
+//
+//			this.referredExactConceptsPlural.put(pConName, pTgtCon);
+//		} else {
+//			reportError("Unable to add exact concept plural '" + pConName + "' as it could not be located", pAc);
+//		}
 	}
 
 	public Collection<CeConcept> listReferredExactConceptsPlural() {
 		Collection<CeConcept> result = null;
 
-		if (this.referredExactConceptsPlural != null) {
-			result = this.referredExactConceptsPlural.values();
+		if (!getReferredExactConceptsPlural().isEmpty()) {
+			result = getReferredExactConceptsPlural().values();
 		} else {
 			result = new ArrayList<CeConcept>();
 		}
@@ -895,23 +886,34 @@ public class ProcessedWord extends GeneralItem {
 		return result;
 	}
 
-	private void addReferredExactConceptPastTense(ActionContext pAc, String pConName, CeConcept pTgtCon) {
-		if (pTgtCon != null) {
-			if (this.referredExactConceptsPastTense == null) {
-				this.referredExactConceptsPastTense = new TreeMap<String, CeConcept>();
-			}
+	private void addReferredExactConceptPastTenseFromMultipleWords(ActionContext pAc, String pConName, CeConcept pTgtCon, ArrayList<ProcessedWord> pOtherWords) {
+		MatchedItem thisMi = MatchedItem.createForReferredConceptPastTense(this, pTgtCon, pConName, pOtherWords);
 
-			this.referredExactConceptsPastTense.put(pConName, pTgtCon);
-		} else {
-			reportError("Unable to add exact concept past tense '" + pConName + "' as it could not be located", pAc);
-		}
+		saveMatchedItem(thisMi);
+//		this.partialStartWord = true;
+	}
+
+	private void addReferredExactConceptPastTense(ActionContext pAc, String pConName, CeConcept pTgtCon) {
+		MatchedItem thisMi = MatchedItem.createForReferredConceptPastTense(this, pTgtCon, pConName);
+
+		saveMatchedItem(thisMi);
+		
+//		if (pTgtCon != null) {
+//			if (this.referredExactConceptsPastTense == null) {
+//				this.referredExactConceptsPastTense = new TreeMap<String, CeConcept>();
+//			}
+//
+//			this.referredExactConceptsPastTense.put(pConName, pTgtCon);
+//		} else {
+//			reportError("Unable to add exact concept past tense '" + pConName + "' as it could not be located", pAc);
+//		}
 	}
 
 	public Collection<CeConcept> listReferredExactConceptsPastTense() {
 		Collection<CeConcept> result = null;
 
-		if (this.referredExactConceptsPastTense != null) {
-			result = this.referredExactConceptsPastTense.values();
+		if (!getReferredExactConceptsPastTense().isEmpty()) {
+			result = getReferredExactConceptsPastTense().values();
 		} else {
 			result = new ArrayList<CeConcept>();
 		}
@@ -920,25 +922,29 @@ public class ProcessedWord extends GeneralItem {
 	}
 
 	private void addReferredExactInstancesPlural(ActionContext pAc, String pInstName, CeInstance pTgtInst) {
-		if (pTgtInst != null) {
-			if (this.referredExactInstancesPlural == null) {
-				this.referredExactInstancesPlural = new TreeMap<String, CeInstance>();
-			}
+		MatchedItem thisMi = MatchedItem.createForReferredInstancePlural(this, pTgtInst, pInstName);
 
-			// DSB 23/10/2015 - Metamodel instances should not be used
-			if (!WordCheckerCache.isOnlyConfigCon(pAc, pTgtInst)) {
-				this.referredExactInstancesPlural.put(pInstName, pTgtInst);
-			}
-		} else {
-			reportError("Unable to add exact instance plural '" + pInstName + "' as it could not be located", pAc);
-		}
+		saveMatchedItem(thisMi);
+
+//		if (pTgtInst != null) {
+//			if (this.referredExactInstancesPlural == null) {
+//				this.referredExactInstancesPlural = new TreeMap<String, CeInstance>();
+//			}
+//
+//			// DSB 23/10/2015 - Metamodel instances should not be used
+//			if (!WordCheckerCache.isOnlyConfigCon(pAc, pTgtInst)) {
+//				this.referredExactInstancesPlural.put(pInstName, pTgtInst);
+//			}
+//		} else {
+//			reportError("Unable to add exact instance plural '" + pInstName + "' as it could not be located", pAc);
+//		}
 	}
 
 	public Collection<CeInstance> listReferredExactInstancesPlural() {
 		Collection<CeInstance> result = null;
 
-		if (this.referredExactInstancesPlural != null) {
-			result = this.referredExactInstancesPlural.values();
+		if (!getReferredExactInstancesPlural().isEmpty()) {
+			result = getReferredExactInstancesPlural().values();
 		} else {
 			result = new ArrayList<CeInstance>();
 		}
@@ -946,27 +952,154 @@ public class ProcessedWord extends GeneralItem {
 		return result;
 	}
 
-	private void addReferredExactRelation(ActionContext pAc, String pPropFullName, CeProperty pTgtProp) {
-		if (pTgtProp != null) {
-			if (this.referredExactRelations == null) {
-				this.referredExactRelations = new TreeMap<String, CeProperty>();
-			}
+	private void addReferredExactRelationFromMultipleWords(ActionContext pAc, String pPropFullName, CeProperty pTgtProp, ArrayList<ProcessedWord> pOtherWords) {
+		MatchedItem thisMi = MatchedItem.createForReferredPropertyExact(this, pTgtProp, pPropFullName, pOtherWords);
 
-			this.referredExactRelations.put(pPropFullName, pTgtProp);
-		} else {
-			reportError("Unable to add exact relation '" + pPropFullName + "' as it could not be located", pAc);
+		saveMatchedItem(thisMi);
+//		this.partialStartWord = true;
+	}
+
+	private void addReferredExactRelation(ActionContext pAc, String pPropFullName, CeProperty pTgtProp) {
+		MatchedItem thisMi = MatchedItem.createForReferredPropertyExact(this, pTgtProp, pPropFullName);
+
+		saveMatchedItem(thisMi);
+
+//		if (pTgtProp != null) {
+//			if (this.referredExactRelations == null) {
+//				this.referredExactRelations = new TreeMap<String, CeProperty>();
+//			}
+//
+//			this.referredExactRelations.put(pPropFullName, pTgtProp);
+//		} else {
+//			reportError("Unable to add exact relation '" + pPropFullName + "' as it could not be located", pAc);
+//		}
+	}
+
+	public TreeMap<String, ArrayList<MatchedItem>> getMatchedItemConceptMap() {
+		TreeMap<String, ArrayList<MatchedItem>> conMap = new TreeMap<String, ArrayList<MatchedItem>>();
+
+		for (MatchedItem mi : getMatchedItems()) {
+			if (mi.getConcept() != null) {
+				ArrayList<MatchedItem> conList = null;
+
+				if (!conMap.containsKey(mi.getPhraseText())) {
+					conList = new ArrayList<MatchedItem>();
+					conMap.put(mi.getPhraseText(), conList);
+				} else {
+					conList = conMap.get(mi.getPhraseText());
+				}
+
+				conList.add(mi);
+			}				
 		}
+
+		return conMap;
+	}
+
+	public TreeMap<String, ArrayList<MatchedItem>> getMatchedItemPropertyMap() {
+		TreeMap<String, ArrayList<MatchedItem>> propMap = new TreeMap<String, ArrayList<MatchedItem>>();
+
+		for (MatchedItem mi : getMatchedItems()) {
+			if (mi.getProperty() != null) {
+				ArrayList<MatchedItem> propList = null;
+
+				if (!propMap.containsKey(mi.getPhraseText())) {
+					propList = new ArrayList<MatchedItem>();
+					propMap.put(mi.getPhraseText(), propList);
+				} else {
+					propList = propMap.get(mi.getPhraseText());
+				}
+
+				propList.add(mi);
+			}				
+		}
+
+		return propMap;
+	}
+
+	public TreeMap<String, ArrayList<MatchedItem>> getMatchedItemInstanceMap() {
+		TreeMap<String, ArrayList<MatchedItem>> instMap = new TreeMap<String, ArrayList<MatchedItem>>();
+
+		for (MatchedItem mi : getMatchedItems()) {
+			if (mi.getInstance() != null) {
+				ArrayList<MatchedItem> instList = null;
+
+				if (!instMap.containsKey(mi.getPhraseText())) {
+					instList = new ArrayList<MatchedItem>();
+					instMap.put(mi.getPhraseText(), instList);
+				} else {
+					instList = instMap.get(mi.getPhraseText());
+				}
+
+				instList.add(mi);
+			}				
+		}
+
+		return instMap;
 	}
 
 	public void removeReferredRelation(String pKey) {
-		this.referredExactRelations.remove(pKey);
+		MatchedItem itemToRemove = null;
+
+		for (MatchedItem mi : this.matchedItems) {
+			if (mi.isReferredPropertyExact()) {
+				if (mi.getPhraseText().equals(pKey)) {
+					itemToRemove = mi;
+					break;
+				}
+			}
+		}
+
+		if (itemToRemove != null) {
+			this.matchedItems.remove(itemToRemove);
+		}
+
+//		this.referredExactRelations.remove(pKey);
+	}
+
+	public void removeReferredConcept(String pKey) {
+		MatchedItem itemToRemove = null;
+
+		for (MatchedItem mi : this.matchedItems) {
+			if (mi.getPhraseText().equals(pKey)) {
+				if (mi.isReferredConceptExact()) {
+					itemToRemove = mi;
+					break;
+				}
+			}
+		}
+
+		if (itemToRemove != null) {
+			this.matchedItems.remove(itemToRemove);
+		}
+
+//		this.referredExactConcepts.remove(pKey);
+	}
+
+	public void removeReferredInstance(String pKey) {
+		MatchedItem itemToRemove = null;
+
+		for (MatchedItem mi : this.matchedItems) {
+			if (mi.getPhraseText().equals(pKey)) {
+				if (mi.isReferredInstanceExact()) {
+					itemToRemove = mi;
+					break;
+				}
+			}
+		}
+
+		if (itemToRemove != null) {
+			this.matchedItems.remove(itemToRemove);
+		}
+
+//		this.referredExactInstances.remove(pKey);
 	}
 
 	public Collection<CeProperty> listReferredExactRelations() {
 		Collection<CeProperty> result = null;
 
-		if (this.referredExactRelations != null) {
-			result = this.referredExactRelations.values();
+		if (!getReferredExactRelations().isEmpty()) {
+			result = getReferredExactRelations().values();
 		} else {
 			result = new ArrayList<CeProperty>();
 		}
@@ -974,50 +1107,37 @@ public class ProcessedWord extends GeneralItem {
 		return result;
 	}
 
-	private void checkForStandardWords(ConvConfig pCc, WordCheckerCache pWcc, ActionContext pAc) {
-		String myText = getDeclutteredText();
-
-		ArrayList<String> cWords = pWcc.getCommonWords(pCc, pAc);
-		ArrayList<String> nWords = pWcc.getNegationWords(pCc, pAc);
-
-		if ((cWords != null) && (cWords.contains(myText))) {
-			this.isStandardWord = true;
-		}
-
-		if ((nWords != null) && (nWords.contains(myText))) {
-			this.isNegationWord = true;
-		}
-	}
-
 	private void checkForPartialMatchingConcepts(ActionContext pAc, String pLcWordText) {
-		CeConcept result = checkForPartialMatchingConcept(pAc, pLcWordText, true);
+		ArrayList<ProcessedWord> otherWords = new ArrayList<ProcessedWord>();
+		CeConcept result = checkForPartialMatchingConcept(pAc, pLcWordText, true, otherWords);
 
 		if (result != null) {
-			if (result != this.matchingConcept) {
+			if (result != getMatchingConcept()) {
 				reportMicroDebug("Partial matched concept (" + result.getConceptName() + ") found for " + getWordText(),
 						pAc);
-				this.partialStartWord = true;
-				addReferredExactConcept(pAc, result.getConceptName(), result);
+				addReferredExactConceptFromMultipleWords(pAc, pLcWordText, result, otherWords);
 			}
 		}
 	}
 
-	private CeConcept checkForPartialMatchingConcept(ActionContext pAc, String pLcWordText, boolean pFirstTime) {
+	private CeConcept checkForPartialMatchingConcept(ActionContext pAc, String pLcWordText, boolean pFirstTime, ArrayList<ProcessedWord> pOtherWords) {
 		CeConcept result = null;
 		String strippedWord = stripDelimitingQuotesFrom(pLcWordText);
 
-		result = tryForPartialConceptMatchUsing(pAc, strippedWord, pFirstTime);
+		result = tryForPartialConceptMatchUsing(pAc, strippedWord, pFirstTime, pOtherWords);
 
-		if ((result == null) && (strippedWord.endsWith("s"))) {
-			// Strip the trailing "s" and try again (in case it was pluralised)
-			strippedWord = strippedWord.substring(0, (strippedWord.length() - 1));
-			result = tryForPartialConceptMatchUsing(pAc, strippedWord, pFirstTime);
+		if (result == null) {
+			String depluralised = depluralise(strippedWord);
+			
+			if (depluralised != null) {
+				result = tryForPartialConceptMatchUsing(pAc, depluralised, pFirstTime, pOtherWords);
+			}
 		}
 
 		return result;
 	}
 
-	private CeConcept tryForPartialConceptMatchUsing(ActionContext pAc, String pPossibleName, boolean pFirstTime) {
+	private CeConcept tryForPartialConceptMatchUsing(ActionContext pAc, String pPossibleName, boolean pFirstTime, ArrayList<ProcessedWord> pOtherWords) {
 		CeConcept result = null;
 
 		if (pAc.getModelBuilder().isThereAConceptNameStartingButNotExactly(pAc, pPossibleName)) {
@@ -1027,11 +1147,12 @@ public class ProcessedWord extends GeneralItem {
 
 			if (nextWord != null) {
 				String concatLcText = pPossibleName + " " + getNextProcessedWord().getDeclutteredText();
-				result = nextWord.checkForPartialMatchingConcept(pAc, concatLcText, false);
+				result = nextWord.checkForPartialMatchingConcept(pAc, concatLcText, false, pOtherWords);
 			}
 
 			if (result != null) {
-				nextWord.partialConceptReference = true;
+//				nextWord.partialConceptReference = true;
+				pOtherWords.add(nextWord);
 			}
 		} else {
 			result = pAc.getModelBuilder().getConceptNamed(pAc, pPossibleName);
@@ -1045,7 +1166,7 @@ public class ProcessedWord extends GeneralItem {
 		if (result == null) {
 			result = pAc.getModelBuilder().getConceptNamed(pAc, pPossibleName);
 		}
-
+		
 		return result;
 	}
 
@@ -1053,7 +1174,7 @@ public class ProcessedWord extends GeneralItem {
 		boolean result = false;
 
 		if (matchesToRelations()) {
-			result = this.matchingRelations.containsValue(pProp);
+			result = getMatchingRelations().containsValue(pProp);
 		} else {
 			result = false;
 		}
@@ -1062,7 +1183,8 @@ public class ProcessedWord extends GeneralItem {
 	}
 
 	private void checkForPartialMatchingRelations(ActionContext pAc, String pLcWordText) {
-		TreeMap<String, ArrayList<CeProperty>> result = checkForPartialMatchingRelation(pAc, pLcWordText, true);
+		ArrayList<ProcessedWord> otherWords = new ArrayList<ProcessedWord>();
+		TreeMap<String, ArrayList<CeProperty>> result = checkForPartialMatchingRelation(pAc, pLcWordText, true, otherWords);
 
 		if (result != null) {
 			for (String thisKey : result.keySet()) {
@@ -1073,8 +1195,7 @@ public class ProcessedWord extends GeneralItem {
 						reportMicroDebug(
 								"Partial matched relation (" + thisProp.getPropertyName() + ") found for " + getWordText(),
 								pAc);
-						this.partialStartWord = true;
-						addReferredExactRelation(pAc, thisKey, thisProp);
+						addReferredExactRelationFromMultipleWords(pAc, thisKey, thisProp, otherWords);
 					}
 				}
 			}
@@ -1082,7 +1203,7 @@ public class ProcessedWord extends GeneralItem {
 	}
 
 	private TreeMap<String, ArrayList<CeProperty>> checkForPartialMatchingRelation(ActionContext pAc, String pLcWordText,
-			boolean pFirstTime) {
+			boolean pFirstTime, ArrayList<ProcessedWord> pOtherWords) {
 		TreeMap<String, ArrayList<CeProperty>> result = null;
 
 		if (pAc.getModelBuilder().isThereADefinedPropertyNameStartingButNotExactly(pLcWordText)) {
@@ -1092,7 +1213,7 @@ public class ProcessedWord extends GeneralItem {
 
 			if (nextWord != null) {
 				String concatLcText = pLcWordText + " " + getNextProcessedWord().getDeclutteredText();
-				result = nextWord.checkForPartialMatchingRelation(pAc, concatLcText, false);
+				result = nextWord.checkForPartialMatchingRelation(pAc, concatLcText, false, pOtherWords);
 			}
 		} else {
 			if (!pFirstTime) {
@@ -1137,33 +1258,39 @@ public class ProcessedWord extends GeneralItem {
 		}
 
 		if ((result != null) && (!result.isEmpty()) && (result.size() > 0)) {
-			this.partialRelationReference = true;
+//			this.partialRelationReference = true;
+			if (!pFirstTime) {
+				pOtherWords.add(this);
+			}
 		}
 
 		return result;
 	}
 
-	private void addReferredExactInstance(CeInstance pInst) {
-		if (this.referredExactInstances == null) {
-			this.referredExactInstances = new TreeMap<String, CeInstance>();
-		}
+	private void addReferredExactInstanceFromMultipleWords(String pKey, CeInstance pInst, ArrayList<ProcessedWord> pOtherWords) {
+		MatchedItem thisMi = MatchedItem.createForReferredInstanceExact(this, pInst, pKey, pOtherWords);
 
-		this.referredExactInstances.put(pInst.getInstanceName(), pInst);
+		saveMatchedItem(thisMi);
+//		this.partialStartWord = true;
 	}
 
 	private void addReferredExactInstance(String pKey, CeInstance pInst) {
-		if (this.referredExactInstances == null) {
-			this.referredExactInstances = new TreeMap<String, CeInstance>();
-		}
+		MatchedItem thisMi = MatchedItem.createForReferredInstanceExact(this, pInst, pKey);
 
-		this.referredExactInstances.put(pKey, pInst);
+		saveMatchedItem(thisMi);
+
+//		if (this.referredExactInstances == null) {
+//			this.referredExactInstances = new TreeMap<String, CeInstance>();
+//		}
+//
+//		this.referredExactInstances.put(pKey, pInst);
 	}
 
 	public Collection<CeInstance> listReferredExactInstances() {
 		Collection<CeInstance> result = null;
 
-		if (this.referredExactInstances != null) {
-			result = this.referredExactInstances.values();
+		if (!getReferredExactInstances().isEmpty()) {
+			result = getReferredExactInstances().values();
 		} else {
 			result = new ArrayList<CeInstance>();
 		}
@@ -1172,26 +1299,27 @@ public class ProcessedWord extends GeneralItem {
 	}
 
 	private void checkForPartialMatchingInstances(ActionContext pAc, String pLcWordText) {
-		ArrayList<CeInstance> result = checkForPartialMatchingInstanceList(pAc, pLcWordText, true);
+		ArrayList<ProcessedWord> otherWords = new ArrayList<ProcessedWord>();
+		TreeMap<String, ArrayList<CeInstance>> result = checkForPartialMatchingInstanceList(pAc, pLcWordText, true, otherWords);
 
 		if (result != null) {
-			for (CeInstance thisInst : result) {
-				if ((this.matchingInstances == null) || (!this.matchingInstances.contains(thisInst))) {
-					reportMicroDebug(
-							"Partial matched instance (" + thisInst.getInstanceName() + ") found for " + getWordText(),
-							pAc);
-					this.partialInstanceReference = true;
-					this.partialStartWord = true;
-
-					addReferredExactInstance(thisInst);
+			for (String phraseText : result.keySet()) {
+				for (CeInstance thisInst : result.get(phraseText)) {
+					if (!getMatchingInstances().contains(thisInst)) {
+						reportMicroDebug(
+								"Partial matched instance (" + thisInst.getInstanceName() + ") found for " + phraseText,
+								pAc);
+//						this.partialInstanceReference = true;
+	
+						addReferredExactInstanceFromMultipleWords(phraseText, thisInst, otherWords);
+					}
 				}
 			}
 		}
 	}
 
-	private ArrayList<CeInstance> checkForPartialMatchingInstanceList(ActionContext pAc, String pLcWordText,
-			boolean pFirstTime) {
-		ArrayList<CeInstance> result = null;
+	private TreeMap<String, ArrayList<CeInstance>> checkForPartialMatchingInstanceList(ActionContext pAc, String pLcWordText, boolean pFirstTime, ArrayList<ProcessedWord> pOtherWords) {
+		TreeMap<String, ArrayList<CeInstance>> result = null;
 		HudsonManager hm = ServletStateManager.getHudsonManager(pAc);
 		String strippedWord = stripDelimitingQuotesFrom(pLcWordText);
 
@@ -1215,29 +1343,32 @@ public class ProcessedWord extends GeneralItem {
 					variants.add(concatLcText);
 					variants.add(concatLcText.substring(0, (concatLcText.length() - 1)));
 
-					result = new ArrayList<CeInstance>();
+					result = new TreeMap<String, ArrayList<CeInstance>>();
 
 					for (String thisVariant : variants) {
-						ArrayList<CeInstance> instList = nextWord.checkForPartialMatchingInstanceList(pAc, thisVariant,
-								false);
+						TreeMap<String, ArrayList<CeInstance>> matches = nextWord.checkForPartialMatchingInstanceList(pAc, thisVariant, false, pOtherWords);
 
-						if (instList != null) {
-							result.addAll(instList);
+						if (matches != null) {
+							for (String thisKey : matches.keySet()) {
+								ArrayList<CeInstance> instList = matches.get(thisKey);
+								result.put(thisKey, instList);
+							}
 						}
 					}
 				} else {
-					result = nextWord.checkForPartialMatchingInstanceList(pAc, concatLcText, false);
+					result = nextWord.checkForPartialMatchingInstanceList(pAc, concatLcText, false, pOtherWords);
 				}
 
 				if ((result != null) && (!result.isEmpty())) {
-					nextWord.partialInstanceReference = true;
-					nextWord.partialStartWord = false;
+					pOtherWords.add(nextWord);
+//					nextWord.partialInstanceReference = true;
+//					nextWord.partialStartWord = false;
 				}
 			}
 		}
 
 		if (result == null) {
-			result = new ArrayList<CeInstance>();
+			result = new TreeMap<String, ArrayList<CeInstance>>();
 		}
 
 		// DSB 20/10/2015 - Moved this processing out so it is always done (even
@@ -1246,7 +1377,7 @@ public class ProcessedWord extends GeneralItem {
 		ArrayList<CeInstance> extraResult = hm.getWordCheckerCache().checkForMatchingInstances(pAc, strippedWord);
 
 		if (!extraResult.isEmpty()) {
-			result.addAll(extraResult);
+			result.put(strippedWord, extraResult);
 		}
 
 		if (!pFirstTime && (result.isEmpty())) {
@@ -1324,75 +1455,101 @@ public class ProcessedWord extends GeneralItem {
 	}
 
 	public boolean isGroundedOnConcept() {
-		return matchesToConcept() || refersToConceptsExactly() || refersToPluralConceptsExactly() || this.partialConceptReference;
+//		return matchesToConcept() || refersToConceptsExactly() || refersToPluralConceptsExactly() || this.partialConceptReference;
+		return matchesToConcept() || refersToConceptsExactly() || refersToPluralConceptsExactly();
 	}
 
 	public boolean isGroundedOnProperty() {
-		return matchesToRelations() || refersToRelationsExactly() || this.partialRelationReference;
+//		return matchesToRelations() || refersToRelationsExactly() || this.partialRelationReference;
+		return matchesToRelations() || refersToRelationsExactly();
 	}
 
 	public boolean isGroundedOnInstance() {
 //		return (matchesToInstance() && !isLaterPartOfPartial()) || refersToInstancesExactly()
 //				|| refersToPluralInstancesExactly() || (this.partialInstanceReference && this.partialStartWord);
-		return matchesToInstance() || refersToInstancesExactly() || refersToPluralInstancesExactly() || (this.partialInstanceReference && this.partialStartWord);
+//		return matchesToInstance() || refersToInstancesExactly() || refersToPluralInstancesExactly() || (this.partialInstanceReference && this.partialStartWord);
+		return matchesToInstance() || refersToInstancesExactly() || refersToPluralInstancesExactly();
 	}
 
 	public ArrayList<CeConcept> listGroundedConcepts() {
 		ArrayList<CeConcept> result = null;
 
-		if (this.partialConceptReference) {
-			result = getPreviousProcessedWord().listGroundedConcepts();
-		} else {
+//		if (this.partialConceptReference) {
+//			result = getPreviousProcessedWord().listGroundedConcepts();
+//		} else {
 			HashSet<CeConcept> set = new HashSet<CeConcept>();
 
-			if (this.matchingConcept != null) {
-				set.add(this.matchingConcept);
+			if (getMatchingConcept() != null) {
+				set.add(getMatchingConcept());
 			}
 
 			if (refersToConceptsExactly()) {
-				set.addAll(this.referredExactConcepts.values());
+				set.addAll(getReferredExactConcepts().values());
 			}
 
 			if (refersToPluralConceptsExactly()) {
-				set.addAll(this.referredExactConceptsPlural.values());
+				set.addAll(getReferredExactConceptsPlural().values());
 			}
 
 			if (refersToPastTenseConceptsExactly()) {
-				set.addAll(this.referredExactConceptsPastTense.values());
+				set.addAll(getReferredExactConceptsPastTense().values());
 			}
 
-			result = winnowConcepts(set);
-		}
+//			result = winnowConcepts(set);
+			result = new ArrayList<CeConcept>(set);
+//		}
 
 		return result;
 	}
 
-	public TreeMap<String, CeConcept> listGroundedConceptsAndKeys() {
-		TreeMap<String, CeConcept> result = new TreeMap<String, CeConcept>();
+	public TreeMap<String, ArrayList<CeConcept>> listGroundedConceptsAndKeys() {
+		TreeMap<String, ArrayList<CeConcept>> result = new TreeMap<String, ArrayList<CeConcept>>();
 
-		if (this.matchingConcept != null) {
-			result.put(getWordText(), this.matchingConcept);
+		ArrayList<CeConcept> conList = null;
+
+		if (getMatchingConcept() != null) {
+			if (result.get(getWordText()) == null) {
+				conList = new ArrayList<CeConcept>();
+				result.put(getWordText(), conList);
+			} else {
+				conList = result.get(getWordText());
+			}
+			conList.add(getMatchingConcept());
 		}
 
-		if (this.referredExactConcepts != null) {
-			for (String thisKey : this.referredExactConcepts.keySet()) {
-				CeConcept thisCon = this.referredExactConcepts.get(thisKey);
-				result.put(thisKey, thisCon);
+		if (getReferredExactConcepts() != null) {
+			for (String thisKey : getReferredExactConcepts().keySet()) {
+				CeConcept thisCon = getReferredExactConcepts().get(thisKey);
+				if (result.get(thisKey) == null) {
+					conList = new ArrayList<CeConcept>();
+					result.put(thisKey, conList);
+				} else {
+					conList = result.get(thisKey);
+				}
+				conList.add(thisCon);
 			}
 		}
 
-		if (this.referredExactConceptsPlural != null) {
-			for (String thisKey : this.referredExactConceptsPlural.keySet()) {
-				CeConcept thisCon = this.referredExactConceptsPlural.get(thisKey);
-				result.put(thisKey, thisCon);
+		for (String thisKey : getReferredExactConceptsPlural().keySet()) {
+			CeConcept thisCon = getReferredExactConceptsPlural().get(thisKey);
+			if (result.get(thisKey) == null) {
+				conList = new ArrayList<CeConcept>();
+				result.put(thisKey, conList);
+			} else {
+				conList = result.get(thisKey);
 			}
+			conList.add(thisCon);
 		}
 
-		if (this.referredExactConceptsPastTense != null) {
-			for (String thisKey : this.referredExactConceptsPastTense.keySet()) {
-				CeConcept thisCon = this.referredExactConceptsPastTense.get(thisKey);
-				result.put(thisKey, thisCon);
+		for (String thisKey : getReferredExactConceptsPastTense().keySet()) {
+			CeConcept thisCon = getReferredExactConceptsPastTense().get(thisKey);
+			if (result.get(thisKey) != null) {
+				conList = new ArrayList<CeConcept>();
+				result.put(thisKey, conList);
+			} else {
+				conList = result.get(thisKey);
 			}
+			conList.add(thisCon);
 		}
 
 		return result;
@@ -1401,21 +1558,22 @@ public class ProcessedWord extends GeneralItem {
 	public ArrayList<CeConcept> listGroundedConceptsNoPlural() {
 		ArrayList<CeConcept> result = null;
 
-		if (this.partialConceptReference) {
-			result = getPreviousProcessedWord().listGroundedConcepts();
-		} else {
+//		if (this.partialConceptReference) {
+//			result = getPreviousProcessedWord().listGroundedConcepts();
+//		} else {
 			HashSet<CeConcept> set = new HashSet<CeConcept>();
 
-			if (this.matchingConcept != null) {
-				set.add(this.matchingConcept);
+			if (getMatchingConcept() != null) {
+				set.add(getMatchingConcept());
 			}
 
 			if (refersToConceptsExactly()) {
-				set.addAll(this.referredExactConcepts.values());
+				set.addAll(getReferredExactConcepts().values());
 			}
 
-			result = winnowConcepts(set);
-		}
+//			result = winnowConcepts(set);
+			result = new ArrayList<CeConcept>(set);
+//		}
 
 		return result;
 	}
@@ -1423,32 +1581,44 @@ public class ProcessedWord extends GeneralItem {
 	public ArrayList<CeProperty> listGroundedProperties() {
 		HashSet<CeProperty> result = new HashSet<CeProperty>();
 
-		if (this.matchingRelations != null) {
-			result.addAll(this.matchingRelations.values());
+		if (getMatchingRelations() != null) {
+			result.addAll(getMatchingRelations().values());
 		}
 
 		if (refersToRelationsExactly()) {
-			result.addAll(this.referredExactRelations.values());
+			result.addAll(getReferredExactRelations().values());
 		}
 
-		return winnowProperties(result);
+//		return winnowProperties(result);
+		return new ArrayList<CeProperty>(result);
 	}
 
-	public TreeMap<String, CeProperty> listGroundedPropertiesAndKeys() {
-		TreeMap<String, CeProperty> result = new TreeMap<String, CeProperty>();
+	public TreeMap<String, ArrayList<CeProperty>> listGroundedPropertiesAndKeys() {
+		TreeMap<String, ArrayList<CeProperty>> result = new TreeMap<String, ArrayList<CeProperty>>();
+		ArrayList<CeProperty> propList = null;
 
-		if (this.matchingRelations != null) {
-			for (String thisKey : this.matchingRelations.keySet()) {
-				CeProperty thisProp = this.matchingRelations.get(thisKey);
-				result.put(thisKey, thisProp);
+		if (getMatchingRelations() != null) {
+			for (String thisKey : getMatchingRelations().keySet()) {
+				CeProperty thisProp = getMatchingRelations().get(thisKey);
+				if (result.get(thisKey) == null) {
+					propList = new ArrayList<CeProperty>();
+					result.put(thisKey, propList);
+				} else {
+					propList = result.get(thisKey);
+				}
+				propList.add(thisProp);
 			}
 		}
 
-		if (this.referredExactRelations != null) {
-			for (String thisKey : this.referredExactRelations.keySet()) {
-				CeProperty thisProp = this.referredExactRelations.get(thisKey);
-				result.put(thisKey, thisProp);
+		for (String thisKey : getReferredExactRelations().keySet()) {
+			CeProperty thisProp = getReferredExactRelations().get(thisKey);
+			if (result.get(thisKey) == null) {
+				propList = new ArrayList<CeProperty>();
+				result.put(thisKey, propList);
+			} else {
+				propList = result.get(thisKey);
 			}
+			propList.add(thisProp);
 		}
 
 		return result;
@@ -1456,118 +1626,67 @@ public class ProcessedWord extends GeneralItem {
 
 	public ArrayList<CeInstance> listGroundedInstances() {
 		ArrayList<CeInstance> result = new ArrayList<CeInstance>();
-		if (this.partialConceptReference) {
-			result = getPreviousProcessedWord().listGroundedInstances();
-		} else {
+//		if (this.partialConceptReference) {
+//			result = getPreviousProcessedWord().listGroundedInstances();
+//		} else {
 			HashSet<CeInstance> set = new HashSet<CeInstance>();
 
-			if (!this.partialInstanceReference) {
-				if (this.matchingInstances != null) {
-					set.addAll(this.matchingInstances);
+//			if (!this.partialInstanceReference) {
+				if (!getMatchingInstances().isEmpty()) {
+					set.addAll(getMatchingInstances());
 				}
-			}
+//			}
 
 			if (refersToInstancesExactly()) {
-				set.addAll(this.referredExactInstances.values());
+				set.addAll(getReferredExactInstances().values());
 			}
 
 			if (refersToPluralInstancesExactly()) {
-				set.addAll(this.referredExactInstancesPlural.values());
+				set.addAll(getReferredExactInstancesPlural().values());
 			}
 
-			result = winnowInstances(set);
-		}
+//			result = winnowInstances(set);
+			result = new ArrayList<CeInstance>(set);
+//		}
 
 		return result;
 	}
 
-	public TreeMap<String, CeInstance> listGroundedInstancesAndKeys() {
-		TreeMap<String, CeInstance> result = new TreeMap<String, CeInstance>();
-
-		if (this.matchingInstances != null) {
-			for (CeInstance thisInst : this.matchingInstances) {
-				result.put(getWordText(), thisInst);
+	public TreeMap<String, ArrayList<CeInstance>> listGroundedInstancesAndKeys() {
+		TreeMap<String, ArrayList<CeInstance>> result = new TreeMap<String, ArrayList<CeInstance>>();
+		ArrayList<CeInstance> instList = null;
+		
+		for (CeInstance thisInst : getMatchingInstances()) {
+			if (result.get(getWordText()) == null) {
+				instList = new ArrayList<CeInstance>();
+				result.put(getWordText(), instList);
+			} else {
+				instList = result.get(getWordText());
 			}
+			instList.add(thisInst);
 		}
 
-		if (this.referredExactInstances != null) {
-			for (String thisKey : this.referredExactInstances.keySet()) {
-				result.put(thisKey, this.referredExactInstances.get(thisKey));
+		for (String thisKey : getReferredExactInstances().keySet()) {
+			if (result.get(thisKey) == null) {
+				instList = new ArrayList<CeInstance>();
+				result.put(thisKey, instList);
+			} else {
+				instList = result.get(thisKey);
 			}
+			instList.add(getReferredExactInstances().get(thisKey));
 		}
 
-		if (this.referredExactInstancesPlural != null) {
-			for (String thisKey : this.referredExactInstancesPlural.keySet()) {
-				result.put(thisKey, this.referredExactInstancesPlural.get(thisKey));
+		for (String thisKey : getReferredExactInstancesPlural().keySet()) {
+			if (result.get(thisKey) == null) {
+				instList = new ArrayList<CeInstance>();
+				result.put(thisKey, instList);
+			} else {
+				instList = result.get(thisKey);
 			}
-		}
-
-		return result;
-	}
-
-	private static ArrayList<CeConcept> winnowConcepts(HashSet<CeConcept> pCons) {
-		ArrayList<CeConcept> result = new ArrayList<CeConcept>();
-
-		for (CeConcept thisCon : pCons) {
-			if (!hasChildConceptIn(thisCon, pCons)) {
-				result.add(thisCon);
-			}
-		}
-
-		return result;
-	}
-
-	private static ArrayList<CeProperty> winnowProperties(HashSet<CeProperty> pProps) {
-		ArrayList<CeProperty> result = new ArrayList<CeProperty>();
-
-		// TODO: Implement this
-		for (CeProperty thisProp : pProps) {
-			result.add(thisProp);
+			instList.add(this.getReferredExactInstancesPlural().get(thisKey));
 		}
 
 		return result;
-	}
-
-	private static ArrayList<CeInstance> winnowInstances(HashSet<CeInstance> pInsts) {
-		ArrayList<CeInstance> result = new ArrayList<CeInstance>();
-
-		// Instances cannot be winnowed
-		for (CeInstance thisInst : pInsts) {
-			result.add(thisInst);
-		}
-
-		return result;
-	}
-
-	private static boolean hasChildConceptIn(CeConcept tgtCon, HashSet<CeConcept> pCandidates) {
-		for (CeConcept thisCand : pCandidates) {
-			if (tgtCon.isParentOf(thisCand)) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	public void addConnectedWordsTo(ExtractedItem pExtItem) {
-		if (this.partialStartWord) {
-			ProcessedWord nw = getNextProcessedWord();
-
-			if ((nw != null) && (nw.partialConceptReference)) {
-				pExtItem.addOtherWord(nw);
-				nw.addConnectedWordsTo(pExtItem);
-			}
-
-			if ((nw != null) && (nw.partialRelationReference)) {
-				pExtItem.addOtherWord(nw);
-				nw.addConnectedWordsTo(pExtItem);
-			}
-
-			if ((nw != null) && (nw.partialInstanceReference)) {
-				pExtItem.addOtherWord(nw);
-				nw.addConnectedWordsTo(pExtItem);
-			}
-		}
 	}
 
 	public ArrayList<ProcessedWord> getFollowingUnprocessedWords() {
@@ -1642,14 +1761,14 @@ public class ProcessedWord extends GeneralItem {
 		String result = getWordText();
 
 		if (matchesToConcept()) {
-			result += " (corresponds to concept: " + this.matchingConcept.getConceptName() + ")";
+			result += " (corresponds to concept: " + getMatchingConcept().getConceptName() + ")";
 		}
 
 		if (matchesToRelations()) {
 			boolean firstTime = true;
 			result += " (corresponds to relation: ";
 
-			for (CeProperty thisProp : this.matchingRelations.values()) {
+			for (CeProperty thisProp : getMatchingRelations().values()) {
 				if (!firstTime) {
 					result += ", ";
 				}
@@ -1665,7 +1784,7 @@ public class ProcessedWord extends GeneralItem {
 			boolean firstTime = true;
 			result += " (corresponds to instance of: ";
 
-			for (CeInstance thisInst : this.matchingInstances) {
+			for (CeInstance thisInst : getMatchingInstances()) {
 				if (!firstTime) {
 					result += ", ";
 				}
@@ -1679,7 +1798,7 @@ public class ProcessedWord extends GeneralItem {
 
 		if (refersToConceptsExactly()) {
 			String refConText = "";
-			for (CeConcept refCon : this.referredExactConcepts.values()) {
+			for (CeConcept refCon : getReferredExactConcepts().values()) {
 				if (!refConText.isEmpty()) {
 					refConText += ", ";
 				}
@@ -1692,7 +1811,7 @@ public class ProcessedWord extends GeneralItem {
 
 		if (refersToPluralConceptsExactly()) {
 			String refConText = "";
-			for (CeConcept refCon : this.referredExactConceptsPlural.values()) {
+			for (CeConcept refCon : getReferredExactConceptsPlural().values()) {
 				if (!refConText.isEmpty()) {
 					refConText += ", ";
 				}
@@ -1705,7 +1824,7 @@ public class ProcessedWord extends GeneralItem {
 
 		if (refersToPastTenseConceptsExactly()) {
 			String refConText = "";
-			for (CeConcept refCon : this.referredExactConceptsPastTense.values()) {
+			for (CeConcept refCon : getReferredExactConceptsPastTense().values()) {
 				if (!refConText.isEmpty()) {
 					refConText += ", ";
 				}
@@ -1718,7 +1837,7 @@ public class ProcessedWord extends GeneralItem {
 
 		if (refersToRelationsExactly()) {
 			String refPropText = "";
-			for (CeProperty refProp : this.referredExactRelations.values()) {
+			for (CeProperty refProp : getReferredExactRelations().values()) {
 				if (!refPropText.isEmpty()) {
 					refPropText += ", ";
 				}
@@ -1731,7 +1850,7 @@ public class ProcessedWord extends GeneralItem {
 
 		if (refersToInstancesExactly()) {
 			String refInstText = "";
-			for (CeInstance refInst : this.referredExactInstances.values()) {
+			for (CeInstance refInst : getReferredExactInstances().values()) {
 				if (!refInstText.isEmpty()) {
 					refInstText += ", ";
 				}
@@ -1744,7 +1863,7 @@ public class ProcessedWord extends GeneralItem {
 
 		if (refersToPluralInstancesExactly()) {
 			String refInstText = "";
-			for (CeInstance refInst : this.referredExactInstancesPlural.values()) {
+			for (CeInstance refInst : getReferredExactInstancesPlural().values()) {
 				if (!refInstText.isEmpty()) {
 					refInstText += ", ";
 				}
@@ -1755,39 +1874,295 @@ public class ProcessedWord extends GeneralItem {
 			result += refInstText;
 		}
 
-		if (this.isQuestionWord) {
-			result += " (question word)";
-		}
+//		if (this.isQuestionWord) {
+//			result += " (question word)";
+//		}
 
-		if (this.isStandardWord) {
-			result += " (standard word)";
-		}
+//		if (this.isStandardWord) {
+//			result += " (standard word)";
+//		}
 
-		if (this.isNegationWord) {
-			result += " (negation word)";
-		}
+//		if (this.isNegationWord) {
+//			result += " (negation word)";
+//		}
 
-		if (this.isValueWord) {
-			result += " (value word)";
-		}
+//		if (this.isValueWord) {
+//			result += " (value word)";
+//		}
 
 		if (this.isNumberWord) {
 			result += " (number word)";
 		}
 
-		if (this.partialInstanceReference) {
-			result += " (partial instance reference)";
-		}
+//		if (this.partialInstanceReference) {
+//			result += " (partial instance reference)";
+//		}
 
-		if (this.partialConceptReference) {
-			result += " (partial concept reference)";
-		}
+//		if (this.partialConceptReference) {
+//			result += " (partial concept reference)";
+//		}
 
-		if (this.partialRelationReference) {
-			result += " (partial relation reference)";
-		}
+//		if (this.partialRelationReference) {
+//			result += " (partial relation reference)";
+//		}
 
 		return result;
 	}
+
+//	public CeInstance getChosenInstance() {
+//	return this.chosenInstance;
+//}
+
+//public String getConceptName() {
+//	String result = null;
+//
+//	if (isUnmatchedWord()) {
+//		result = CON_UNMWORD;
+//	} else {
+//		result = CON_PROWORD;
+//	}
+//
+//	return result;
+//}
+
+//public String getDeterminer() {
+//	String result = null;
+//
+//	if (isUnmatchedWord()) {
+//		result = DET_AN;
+//	} else {
+//		result = DET_A;
+//	}
+//
+//	return result;
+//}
+
+//public void setChosenInstance(CeInstance pInst) {
+//	this.chosenInstance = pInst;
+//}
+
+//	public String getWholePhraseText() {
+//	String result = null;
+//
+//	result = getWordText();
+//
+////	if (this.partialStartWord) {
+////		ProcessedWord nextWord = getNextProcessedWord();
+////
+////		if (nextWord != null) {
+////			result += nextWord.getFollowingPartialText();
+////		}
+////	}
+//
+//	return result;
+//}
+
+//public String getFollowingPartialText() {
+//	String result = null;
+//
+//	if (this.isLaterPartOfPartial()) {
+//		result = " " + getWordText();
+//
+//		ProcessedWord nextWord = getNextProcessedWord();
+//
+//		if (nextWord != null) {
+//			result += nextWord.getFollowingPartialText();
+//		}
+//	} else {
+//		result = "";
+//	}
+//
+//	return result;
+//}
+
+//public CeConcept getMatchingConcept() {
+//	return this.matchingConcept;
+//}
+
+//	public ArrayList<CeInstance> getMatchingInstances() {
+//	return this.matchingInstances;
+//}
+
+//	public ArrayList<ExtractedItem> getExtractedItems() {
+//		return this.extractedItems;
+//	}
+
+//	public void addExtractedItem(ExtractedItem pEi) {
+//		if (this.extractedItems == null) {
+//			this.extractedItems = new ArrayList<ExtractedItem>();
+//		}
+//
+//		this.extractedItems.add(pEi);
+//	}
+
+//	public boolean isStandardWord() {
+//		return this.isStandardWord;
+//	}
+
+//	public boolean isNegationWord() {
+//		return this.isNegationWord;
+//	}
+
+//	public boolean isPureNegation() {
+////		return this.isNegationWord && (!isGrounded() && !this.partialStartWord);
+//		return this.isNegationWord && !isGrounded();
+//	}
+
+//	public boolean isWhat() {
+//		return this.lcText.equals(Q_WHAT);
+//	}
+
+//	public boolean isWho() {
+//		return this.lcText.equals(Q_WHO);
+//	}
+
+//	public boolean isWhere() {
+//		return this.lcText.equals(Q_WHERE);
+//	}
+
+//	public boolean isWhich() {
+//		return this.lcText.equals(Q_WHICH);
+//	}
+
+//	public boolean isWhy() {
+//		return this.lcText.equals(Q_WHY);
+//	}
+
+//	public boolean isCount() {
+//		return this.lcText.equals(Q_COUNT);
+//	}
+
+//	public boolean isList() {
+//		return this.lcText.equals(Q_LIST);
+//	}
+
+//	public boolean isSummarise() {
+//		return this.lcText.equals(Q_SUMM1) || this.lcText.equals(Q_SUMM2);
+//	}
+
+//	public boolean isAll() {
+//		return this.lcText.equals(Q_ALL);
+//	}
+
+//	public boolean isValueWord() {
+//		return this.isValueWord;
+//	}
+
+//	public boolean isQuestionWord() {
+//	return this.isQuestionWord;
+//}
+
+//public void markAsQuestionWord() {
+//	this.isQuestionWord = true;
+//}
+
+//public boolean isDeterminer() {
+//	String decText = getDeclutteredText();
+//
+//	// TODO: This should not be hardcoded
+//	return (decText.equals(DET_A)) || (decText.equals(DET_AN)) || (decText.equals(DET_THE));
+//}
+
+//	public boolean isLaterPartOfPartial() {
+////		return (this.partialConceptReference || this.partialRelationReference || this.partialInstanceReference)
+////				&& !this.partialStartWord;
+//		return (this.partialConceptReference || this.partialRelationReference || this.partialInstanceReference);
+//	}
+
+//	public TreeMap<String, CeProperty> getMatchingRelations() {
+//	return this.matchingRelations;
+//}
+
+//	public void markWordAsValue() {
+//		this.isValueWord = true;
+//	}
+
+//	public void markWordAsNumber() {
+//		this.isNumberWord = true;
+//	}
+
+//	private TreeMap<String, CeConcept> getReferredExactConcepts() {
+//		return this.referredExactConcepts;
+//	}
+
+//	private void checkForStandardWords(ConvConfig pCc, WordCheckerCache pWcc, ActionContext pAc) {
+//		String myText = getDeclutteredText();
+//
+////		ArrayList<String> cWords = pWcc.getCommonWords(pCc, pAc);
+////		ArrayList<String> nWords = pWcc.getNegationWords(pCc, pAc);
+//
+////		if ((cWords != null) && (cWords.contains(myText))) {
+////			this.isStandardWord = true;
+////		}
+//
+////		if ((nWords != null) && (nWords.contains(myText))) {
+////			this.isNegationWord = true;
+////		}
+//	}
+
+//	private static ArrayList<CeConcept> winnowConcepts(HashSet<CeConcept> pCons) {
+//		ArrayList<CeConcept> result = new ArrayList<CeConcept>();
+//
+//		for (CeConcept thisCon : pCons) {
+//			if (!hasChildConceptIn(thisCon, pCons)) {
+//				result.add(thisCon);
+//			}
+//		}
+//
+//		return result;
+//	}
+
+//	private static ArrayList<CeProperty> winnowProperties(HashSet<CeProperty> pProps) {
+//		ArrayList<CeProperty> result = new ArrayList<CeProperty>();
+//
+//		// TODO: Implement this
+//		for (CeProperty thisProp : pProps) {
+//			result.add(thisProp);
+//		}
+//
+//		return result;
+//	}
+
+//	private static ArrayList<CeInstance> winnowInstances(HashSet<CeInstance> pInsts) {
+//		ArrayList<CeInstance> result = new ArrayList<CeInstance>();
+//
+//		// Instances cannot be winnowed
+//		for (CeInstance thisInst : pInsts) {
+//			result.add(thisInst);
+//		}
+//
+//		return result;
+//	}
+
+//	private static boolean hasChildConceptIn(CeConcept tgtCon, HashSet<CeConcept> pCandidates) {
+//		for (CeConcept thisCand : pCandidates) {
+//			if (tgtCon.isParentOf(thisCand)) {
+//				return true;
+//			}
+//		}
+//
+//		return false;
+//	}
+
+//	public void addConnectedWordsTo(ExtractedItem pExtItem) {
+//		if (this.partialStartWord) {
+//			ProcessedWord nw = getNextProcessedWord();
+//
+//			if ((nw != null) && (nw.partialConceptReference)) {
+//				pExtItem.addOtherWord(nw);
+//				nw.addConnectedWordsTo(pExtItem);
+//			}
+//
+//			if ((nw != null) && (nw.partialRelationReference)) {
+//				pExtItem.addOtherWord(nw);
+//				nw.addConnectedWordsTo(pExtItem);
+//			}
+//
+//			if ((nw != null) && (nw.partialInstanceReference)) {
+//				pExtItem.addOtherWord(nw);
+//				nw.addConnectedWordsTo(pExtItem);
+//			}
+//		}
+//	}
 
 }

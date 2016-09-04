@@ -39,11 +39,6 @@ public class CeRule extends CeQuery {
 	}
 
 	@Override
-	public String identityKey() {
-		return this.name;
-	}
-	
-	@Override
 	public boolean isRule() {
 		return true;
 	}

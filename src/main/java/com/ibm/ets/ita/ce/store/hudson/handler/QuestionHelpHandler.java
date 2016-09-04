@@ -107,13 +107,13 @@ public class QuestionHelpHandler extends QuestionHandler {
 		interpretQuestion();
 
 		if (!this.question.endsWithPunctuation()) {
-			if (!isCeText()) {
+//			if (!isCeText()) {
 				ArrayList<Suggestion> theseSuggs = new ArrayList<Suggestion>();
 				computeSuggestions(0, theseSuggs);
 				Collections.sort(theseSuggs);
 		
 				this.suggestions = theseSuggs;
-			}
+//			}
 		}
 
 		result = createResult();
@@ -122,9 +122,9 @@ public class QuestionHelpHandler extends QuestionHandler {
 		return result;
 	}
 
-	private boolean isCeText() {
-		return ModifierHandler.isCeModifier(this.ac, this.allWords);
-	}
+//	private boolean isCeText() {
+//		return ModifierHandler.isCeModifier(this.ac, this.allWords);
+//	}
 
 	private void computeSuggestions(int pStartIndex, ArrayList<Suggestion> pSuggs) {
 		String lcSeekPhrase = getPartialText(pStartIndex);

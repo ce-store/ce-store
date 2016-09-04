@@ -583,35 +583,37 @@ function Tester(pJsDebug) {
 		result += '[' + pIteration + ':' + pIdx + '] ';
 
 		if (pResponse != null) {
-			var q = pResponse.question;
-			var a = pResponse.answers;
-			var d = pResponse.debug;
+			var q = null;
+			var i = null;
+			var a = null;
+			var qtext = null;
+			var conf = null;
+			var expText = null;
 
-			if (q != null) {
-				result += '"' + q.text + '"';
-				result += ' (' + q.interpretation_confidence + ', ' + q.ability_to_answer_confidence + ')';
+			q = pResponse.question;
+			a = pResponse.answers;
 
-			} else {
-				var qt = pResponse.question_text;
-				
-				if (qt != null) {
-					result += '"' + qt + '"';
-
-					if (pResponse.confidence != null) {
-						if (pResponse.confidence_explanation != '') {
-							result += ' (<a title="' + pResponse.confidence_explanation + '">' + pResponse.confidence + '</a>)';
-						} else {
-							result += ' (' + pResponse.confidence + ')';
-						}
-					}
-
-				} else {
-					result += '(unknown question)<br/>';
-				}
+			if (pResponse.interpretations != null) {
+				i = pResponse.interpretations[0];
 			}
 			
-			if (d != null) {
-				result += ' - ' + d.execution_time_ms + 'ms';
+			if (q != null) {
+				qText = q.text;
+			} else {
+				qText = "???";
+			}
+
+			result += '"' + qText + '"';
+
+			if (i != null) {
+				conf = i.confidence;
+				expText = i.explanation;
+			}
+			
+			if (expText != '') {
+				result += ' (<a title="' + expText + '">' + conf + '</a>)';
+			} else {
+				result += ' (' + conf + ')';
 			}
 
 			if (this.isShowingDetails()) {

@@ -10,7 +10,6 @@ import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.getBooleanValu
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.substituteCeParameters;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportException;
-import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportWarning;
 
 import java.util.ArrayList;
 import java.util.TreeMap;
@@ -20,14 +19,11 @@ import com.ibm.ets.ita.ce.store.ActionContext;
 import com.ibm.ets.ita.ce.store.ModelBuilder;
 import com.ibm.ets.ita.ce.store.StoreActions;
 import com.ibm.ets.ita.ce.store.agent.CeNotifyHandler;
-import com.ibm.ets.ita.ce.store.conversation.generator.AnswerCeGenerator;
 import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
 import com.ibm.ets.ita.ce.store.model.CePropertyInstance;
 import com.ibm.ets.ita.ce.store.model.CeSource;
 import com.ibm.ets.ita.ce.store.model.container.ContainerSentenceLoadResult;
-import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentence;
-import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentenceFactNormal;
 
 public abstract class GeneralConversationHandler extends CeNotifyHandler {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
@@ -44,7 +40,7 @@ public abstract class GeneralConversationHandler extends CeNotifyHandler {
 
 	protected static final String CON_TELLCARD = "tell card";
 	private static final String CON_SERVICE = "service";
-	private static final String CON_QUES = "question";
+//	private static final String CON_QUES = "question";
 	private static final String PROP_FROMCON = "from concept";
 	private static final String PROP_FROMINST = "from instance";
 	private static final String PROP_MSDELAY = "milliseconds delay";
@@ -73,7 +69,7 @@ public abstract class GeneralConversationHandler extends CeNotifyHandler {
 	protected boolean isGeneratingConvCe = false;
 	private boolean runRulesOnSave = false;
 	private boolean useDefaultScoring = false;
-	private ArrayList<CeInstance> allQuestions = null;
+//	private ArrayList<CeInstance> allQuestions = null;
 
 	public boolean isGeneratingConvCe() {
 		return this.isGeneratingConvCe;
@@ -252,94 +248,96 @@ public abstract class GeneralConversationHandler extends CeNotifyHandler {
 	}
 
 	private ContainerSentenceLoadResult validateCeText(String pCeText, String pUserName) {
-		StringBuilder sb = new StringBuilder();
-		StoreActions sa = StoreActions.createUsingDefaultConfig(this.ac);
-		ContainerSentenceLoadResult result = sa.validateCeSentence(pCeText);
+//		StringBuilder sb = new StringBuilder();
+//		StoreActions sa = StoreActions.createUsingDefaultConfig(this.ac);
+//		ContainerSentenceLoadResult result = sa.validateCeSentence(pCeText);
+//
+//		if ((result != null) && (result.getValidatedSentences() != null)) {
+//			this.allQuestions = this.ac.getModelBuilder().getAllInstancesForConceptNamed(this.ac, CON_QUES);
+//
+//			for (BuilderSentence bfSen : result.getValidatedSentences()) {
+//				generateAnswerCeFor(sb, bfSen, pUserName);
+//			}
+//
+//			if (sb.length() > 0) {
+//				saveCeTextWithFlag(sb.toString(), "src_answers", false);
+//			} else {
+//				reportWarning("No answer CE generated for incoming CE: " + pCeText, this.ac);
+//			}
+//		}
+//
+//		return result;
 
-		if ((result != null) && (result.getValidatedSentences() != null)) {
-			this.allQuestions = this.ac.getModelBuilder().getAllInstancesForConceptNamed(this.ac, CON_QUES);
-
-			for (BuilderSentence bfSen : result.getValidatedSentences()) {
-				generateAnswerCeFor(sb, bfSen, pUserName);
-			}
-
-			if (sb.length() > 0) {
-				saveCeTextWithFlag(sb.toString(), "src_answers", false);
-			} else {
-				reportWarning("No answer CE generated for incoming CE: " + pCeText, this.ac);
-			}
-		}
-
-		return result;
+		return null;
 	}
 
-	private void generateAnswerCeFor(StringBuilder pSb, BuilderSentence pSen, String pUserName) {
-		//TODO: Move this elsewhere
+//	private void generateAnswerCeFor(StringBuilder pSb, BuilderSentence pSen, String pUserName) {
+//		//TODO: Move this elsewhere
+//
+//		if (pSen.isFactSentenceNormal()) {
+//			AnswerCeGenerator acg = new AnswerCeGenerator(this.ac, pSb);
+//			BuilderSentenceFactNormal fSen = (BuilderSentenceFactNormal)pSen;
+//
+//			if (fSen.getTargetConcept() != null) {
+//				String domCon = fSen.getTargetConcept().getConceptName();
+//				
+//				String domName = fSen.getInstanceName();
+//	
+//				for (CePropertyInstance pi : fSen.getObjectProperties()) {
+//					String propName = pi.getPropertyName();
+//					String fullPropName = pi.getRelatedProperty().formattedFullPropertyName();
+//					
+//					int i = 0;
+//					for (String thisVal : pi.getValueList()) {
+//						String rangeCon = pi.getRangeNameList().get(i++);
+//						String answerId = domName + "_" + propName + "_" + thisVal;
+//	
+//						acg.generateCeForAnswer(answerId, domCon, domName, rangeCon, thisVal, fullPropName, pUserName);
+//						
+//						for (CeInstance ques : findAllQuestionsMatching(domName, fullPropName, thisVal)) {
+//							acg.generateCeLinkingQuestionToAnswer(ques.getInstanceName(), answerId);
+//						}
+//					}
+//				}
+//				
+//	//			for (CePropertyInstance pi : fSen.getDatatypeProperties()) {
+//	//				String propName = pi.getPropertyName();
+//	//				String fullPropName = pi.getRelatedProperty().formattedFullPropertyName();
+//	//				
+//	//				for (String thisVal : pi.getValueList()) {
+//	//					String answerId = domName + "_" + propName + "_" + thisVal;
+//	//
+//	//					acg.generateCeForAnswer(answerId, domCon, domName, null, thisVal, fullPropName, pUserName);
+//	//					
+//	//					for (CeInstance ques : findAllQuestionsMatching(domName, fullPropName, thisVal)) {
+//	//						acg.generateCeLinkingQuestionToAnswer(ques.getInstanceName(), answerId);
+//	//					}
+//	//				}
+//	//			}
+//
+//				//TODO: Add support for datatype properties
+//			}
+//		} else {
+//			reportWarning("Unsupported sentence type encountered: " + pSen.toString(), this.ac);
+//		}
+//	}
 
-		if (pSen.isFactSentenceNormal()) {
-			AnswerCeGenerator acg = new AnswerCeGenerator(this.ac, pSb);
-			BuilderSentenceFactNormal fSen = (BuilderSentenceFactNormal)pSen;
-
-			if (fSen.getTargetConcept() != null) {
-				String domCon = fSen.getTargetConcept().getConceptName();
-				
-				String domName = fSen.getInstanceName();
-	
-				for (CePropertyInstance pi : fSen.getObjectProperties()) {
-					String propName = pi.getPropertyName();
-					String fullPropName = pi.getRelatedProperty().formattedFullPropertyName();
-					
-					int i = 0;
-					for (String thisVal : pi.getValueList()) {
-						String rangeCon = pi.getRangeNameList().get(i++);
-						String answerId = domName + "_" + propName + "_" + thisVal;
-	
-						acg.generateCeForAnswer(answerId, domCon, domName, rangeCon, thisVal, fullPropName, pUserName);
-						
-						for (CeInstance ques : findAllQuestionsMatching(domName, fullPropName, thisVal)) {
-							acg.generateCeLinkingQuestionToAnswer(ques.getInstanceName(), answerId);
-						}
-					}
-				}
-				
-	//			for (CePropertyInstance pi : fSen.getDatatypeProperties()) {
-	//				String propName = pi.getPropertyName();
-	//				String fullPropName = pi.getRelatedProperty().formattedFullPropertyName();
-	//				
-	//				for (String thisVal : pi.getValueList()) {
-	//					String answerId = domName + "_" + propName + "_" + thisVal;
-	//
-	//					acg.generateCeForAnswer(answerId, domCon, domName, null, thisVal, fullPropName, pUserName);
-	//					
-	//					for (CeInstance ques : findAllQuestionsMatching(domName, fullPropName, thisVal)) {
-	//						acg.generateCeLinkingQuestionToAnswer(ques.getInstanceName(), answerId);
-	//					}
-	//				}
-	//			}
-
-				//TODO: Add support for datatype properties
-			}
-		} else {
-			reportWarning("Unsupported sentence type encountered: " + pSen.toString(), this.ac);
-		}
-	}
-
-	private ArrayList<CeInstance> findAllQuestionsMatching(String pDomName, String pFullPropName, String pRangeName) {
-		ArrayList<CeInstance> result = new ArrayList<CeInstance>();
-
-		for (CeInstance thisQues : this.allQuestions) {
-			String qSub = thisQues.getSingleValueFromPropertyNamed(PROP_SUBJ);
-			String qPred = thisQues.getSingleValueFromPropertyNamed(PROP_PRED);
-			
-			if ((qSub.equals(pDomName)) || (qSub.equals(pRangeName))) {
-				if (qPred.equals(pFullPropName)) {
-					result.add(thisQues);
-				}
-			}			
-		}
-
-		return result;
-	}
+//	private ArrayList<CeInstance> findAllQuestionsMatching(String pDomName, String pFullPropName, String pRangeName) {
+//		ArrayList<CeInstance> result = new ArrayList<CeInstance>();
+//
+//		for (CeInstance thisQues : this.allQuestions) {
+//			String qSub = thisQues.getSingleValueFromPropertyNamed(PROP_SUBJ);
+//			String qPred = thisQues.getSingleValueFromPropertyNamed(PROP_PRED);
+//			
+//			if ((qSub.equals(pDomName)) || (qSub.equals(pRangeName))) {
+//				if (qPred.equals(pFullPropName)) {
+//					result.add(thisQues);
+//				}
+//			}			
+//		}
+//
+//		return result;
+//	}
 
 	protected void waitForSomeTime() {
 		final String METHOD_NAME = "waitForSomeTime";
