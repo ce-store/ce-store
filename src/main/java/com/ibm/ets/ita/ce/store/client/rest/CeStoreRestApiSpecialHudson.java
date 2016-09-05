@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.ibm.ets.ita.ce.store.client.web.ServletStateManager;
 import com.ibm.ets.ita.ce.store.client.web.WebActionContext;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
+import com.ibm.ets.ita.ce.store.hudson.handler.ModelDirectoryHandler;
 import com.ibm.ets.ita.ce.store.hudson.handler.QuestionAnswererHandler;
 import com.ibm.ets.ita.ce.store.hudson.handler.QuestionExecutionHandler;
 import com.ibm.ets.ita.ce.store.hudson.handler.QuestionHelpHandler;
@@ -27,6 +28,9 @@ public class CeStoreRestApiSpecialHudson extends CeStoreRestApi {
 	private static final String REST_ANSWERER = "answerer";
 	private static final String REST_RESET = "reset";
 	private static final String REST_STATUS = "status";
+	
+	private static final String REST_DIR_LIST = "directory_list";
+	private static final String REST_DIR_LOAD = "directory_load";
 
 	private static final String PARM_DEBUG = "debug";
 
@@ -42,6 +46,8 @@ public class CeStoreRestApiSpecialHudson extends CeStoreRestApi {
 	 * 		/special/hudson/answerer
 	 * 		/special/hudson/reset
 	 * 		/special/hudson/status
+	 * 		/special/hudson/directory_list
+	 * 		/special/hudson/directory_load
 	 */
 	public boolean processRequest() {
 		if (this.restParts.size() == 3) {
@@ -59,6 +65,7 @@ public class CeStoreRestApiSpecialHudson extends CeStoreRestApi {
 		String command = this.restParts.get(2);
 		boolean debug = getBooleanParameterNamed(PARM_DEBUG, false);
 		String qt = getTextFromRequest();
+		
 		boolean plainText = false;
 
 		if (isPost()) {
@@ -71,6 +78,8 @@ public class CeStoreRestApiSpecialHudson extends CeStoreRestApi {
 			} else if (command.equals(REST_ANSWERER)) {
 				result = processAnswererRequest(qt, debug, st);
 				plainText = true;
+			} else if(command.equals(REST_DIR_LOAD)){
+				result = processLoadDirectoryModel(debug,st,getParameterNamed("model"));
 			} else {
 				reportUnhandledUrl();
 			}
@@ -80,7 +89,9 @@ public class CeStoreRestApiSpecialHudson extends CeStoreRestApi {
 				result = processResetRequest(debug, st);
 			} else if (command.equals(REST_STATUS)) {
 				result = processStatusRequest(debug, st);
-			} else {
+			} else if(command.equals(REST_DIR_LIST)){
+				result = processListDirectoryModels(debug,st);
+			}else {
 				reportUnhandledUrl();
 			}
 		} else {
@@ -141,6 +152,21 @@ public class CeStoreRestApiSpecialHudson extends CeStoreRestApi {
 		QuestionManagementHandler qh = new QuestionManagementHandler(this.wc, pDebug, pStartTime);
 		result = qh.handleReset();
 
+		return result;
+	}
+	
+	private CeStoreJsonObject processListDirectoryModels(boolean pDebug, long pStartTime) {
+		CeStoreJsonObject result = new CeStoreJsonObject();
+		ModelDirectoryHandler mdh = new ModelDirectoryHandler(this.wc, pDebug, pStartTime);
+		result = mdh.handleList();
+		return result;
+	}
+	
+	
+	private CeStoreJsonObject processLoadDirectoryModel(boolean pDebug, long pStartTime, String modelName) {
+		CeStoreJsonObject result = new CeStoreJsonObject();
+		ModelDirectoryHandler mdh = new ModelDirectoryHandler(this.wc, pDebug, pStartTime);
+		result = mdh.handleLoad(modelName);
 		return result;
 	}
 
