@@ -6,6 +6,15 @@
 var gHudson = new Hudson(true);
 
 gHudson.loadQuestions();
+gHudson.listDirectoryModels();
+
+window.onload = function(){
+
+	document.getElementById("directory_load").onclick = function(e){
+		var directoryModlel = document.getElementById("directory_model").options[document.getElementById("directory_model").selectedIndex].value;
+		gHudson.loadDirectoryModel(directoryModlel);
+	}
+};
 
 function Hudson(pJsDebug) {
 	var LOCAL_SERVER = '..';
@@ -53,7 +62,7 @@ function Hudson(pJsDebug) {
 		xhr.onerror = function(e) {
 			ajaxErrorOther(xhr.response, e, this.status, pUrl);
 		};
-		
+
 		xhr.send();
 	};
 
@@ -79,7 +88,7 @@ function Hudson(pJsDebug) {
 
 	function sortById(a, b) {
 		var result = null;
-		
+
 		if (a.id < b.id) {
 			result = -1;
 		} else if (a.id > b.id) {
@@ -101,6 +110,47 @@ function Hudson(pJsDebug) {
 		this.loadCurrentQuestion();
 	};
 
+	this.listDirectoryModels = function(){
+		var xhr = new XMLHttpRequest();
+		xhr.onreadystatechange = function() {
+		  if (this.readyState == 4 && this.status == 200) {
+				var html = '<option>Default</option>';
+				if(this.responseText){
+					var directory = JSON.parse(this.responseText);
+					if(directory && directory.models){
+						for(var i=0; i <directory.models.length; i++){
+							html = html + "<option value='"+directory.models[i]+"'>"+directory.models[i]+'</option>';
+						}
+					}
+					document.getElementById("directory_model").innerHTML = html;
+
+				}
+
+		  }
+		};
+
+		xhr.open("GET", '../special/hudson/directory_list', true);
+		xhr.send();
+	};
+
+	this.loadDirectoryModel = function(model){
+		document.getElementById('directory_load_message').innerHTML = "Loading " + model + ".";
+
+		var xhr = new XMLHttpRequest();
+		xhr.onreadystatechange = function() {
+		  if(this.readyState == 4 && this.status == 200) {
+				document.getElementById('directory_load_message').innerHTML = "Finished loading.";
+		  }
+			else if(this.readyState == 4 && this.status != 200) {
+				document.getElementById('directory_load_message').innerHTML = "Error loading. " + this.responseText;
+			}
+		};
+
+		xhr.open("POST", '../special/hudson/directory_load', true);
+		xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		xhr.send("model="+model);
+	};
+
 	this.isDebug = function() {
 		return this.getCheckboxValueFrom(DOM_DB);
 	};
@@ -112,7 +162,7 @@ function Hudson(pJsDebug) {
 	this.getCurrentQuestion = function() {
 		return this.allQuestions[getCqPos()];
 	};
-	
+
 	this.getNextQuestion = function() {
 		var cqPos = getCqPos();
 
@@ -132,13 +182,13 @@ function Hudson(pJsDebug) {
 			cqPos = this.allQuestions.length - 1;
 		}
 		setTextIn(DOM_QP, cqPos);
-		
+
 		return this.allQuestions[cqPos].question;
 	};
 
 	this.loadCurrentQuestion = function() {
 		var cq = this.getCurrentQuestion();
-		
+
 		if (cq != null) {
 			var qText = cq.question;
 
@@ -169,26 +219,26 @@ function Hudson(pJsDebug) {
 
 	this.resetCeStore = function() {
 		var cbf = function(pResponse) {gHudson.updateAnswer(pResponse);};
-		
+
 		sendResetRequest(cbf, false);
 	};
 
 	this.getCeStoreStatus = function() {
 		var cbf = function(pResponse) {gHudson.updateAnswer(pResponse);};
-		
+
 		sendStatusRequest(cbf, false);
 	};
 
 	this.keyUpQuestionText = function() {
 		this.parseQuestionText();
 	};
-	
+
 	this.keyUpQuestionPos = function() {
 		var rawText = getTextFrom(DOM_QP);
 
 		if (rawText != '') {
 			var qpos = parseInt(rawText);
-			
+
 			if (isNaN(qpos)) {
 				qpos = 0;
 				setTextIn(DOM_QP, '0');
@@ -243,7 +293,7 @@ function Hudson(pJsDebug) {
 	this.parseQuestionText = function() {
 		var qText = getTextFrom(DOM_QT);
 		var cbf = function(pResponse) {gHudson.updateParsedQuestion(pResponse);};
-		
+
 		sendHelpRequest(qText, cbf, this.isDebug());
 	};
 
@@ -301,7 +351,7 @@ function Hudson(pJsDebug) {
 
 	this.showInterpretations = function() {
 		var intText = '';
-		
+
 		if (this.cachedHelp != null) {
 			if (this.cachedHelp.debug != null) {
 				var rawInts = this.cachedHelp.debug.interpretations;
@@ -361,12 +411,12 @@ function Hudson(pJsDebug) {
 		} else {
 			confExp = '';
 		}
-		
+
 		result += "Confidence = " + pResponse.confidence + "%" + confExp;
 		result += "<br><br>";
-		
+
 		result += "<a href=\"javascript:gHudson.answerInterpretation();\">Send this interpretation for answer</a>";
-		
+
 		result += "<br><br>";
 
 		result += JSON.stringify(pResponse);
@@ -527,13 +577,13 @@ function Hudson(pJsDebug) {
 					if (debug.execution_time_ms != null) {
 						answerText += 'Execution time (ms): <font color="red">' + debug.execution_time_ms + '</font>';
 					}
-				} 
+				}
 
 				if (pResponse.answers != null) {
 					for (var idx in pResponse.answers) {
 						var answer = pResponse.answers[idx];
 						var bullet = '';
-						
+
 						if (pResponse.answers.length > 1) {
 							bullet = (parseInt(idx) + 1) + ') ';
 						}
@@ -545,7 +595,7 @@ function Hudson(pJsDebug) {
 						var answered = false;
 						var confText = '<i>confidence for this answer=<font color="green">' + answer.answer_confidence + '</font></i>';
 
-						var intText = ', <i>interpretation=<b>' + answer.question_interpretation + '</b></i>'; 
+						var intText = ', <i>interpretation=<b>' + answer.question_interpretation + '</b></i>';
 
 						if (this.chattyAnswers) {
 							if ((answer.chatty_text != null) && (answer.chatty_text != '')) {
@@ -554,7 +604,7 @@ function Hudson(pJsDebug) {
 								answered = true;
 							}
 						}
-						
+
 						if (!answered) {
 							if (answer.result_text != null) {
 								answerText += bullet + '<b>' + htmlFormat(answer.result_text) + '</b>';
@@ -584,7 +634,7 @@ function Hudson(pJsDebug) {
 						answerText += '<br/>Execution time (ms): <font color="red">' + pResponse.execution_time_ms + '</font>';
 					}
 				}
-				
+
 				if (question != null) {
 					answerText = '[<i>interpretation confidence=<font color="green">' + question.interpretation_confidence + '</font></i>, <i>ability to answer confidence=<font color="green">' + question.ability_to_answer_confidence + '</font></i>]<br/><br/>' + answerText;
 				}
@@ -594,10 +644,10 @@ function Hudson(pJsDebug) {
 						answerText += '<br/><br/><hr/><u>Errors:</u><ul>';
 						for (var i = 0; i < alerts.errors.length; i++) {
 							var thisError = alerts.errors[i];
-							
+
 							answerText += '<li>' + htmlFormat(thisError) + '</li>';
 						}
-						
+
 						answerText += '</ul>';
 					}
 
@@ -605,12 +655,12 @@ function Hudson(pJsDebug) {
 						answerText += '<br/><br/><hr/><u>Warnings:</u><ul>';
 						for (var i = 0; i < alerts.warnings.length; i++) {
 							var thisWarning = alerts.warnings[i];
-							
+
 							answerText += '<li>' + htmlFormat(thisWarning) + '</li>';
 						}
-						
+
 						answerText += '</ul>';
-					}				
+					}
 				}
 
 				if (debug != null) {
@@ -618,10 +668,10 @@ function Hudson(pJsDebug) {
 						answerText += '<br/><br/><hr/><u>Debugs:</u><ul>';
 						for (var i = 0; i < debug.debugs.length; i++) {
 							var thisDebug = debug.debugs[i];
-							
+
 							answerText += '<li>' + htmlFormat(thisDebug) + '</li>';
 						}
-						
+
 						answerText += '</ul>';
 					}
 				}
@@ -643,7 +693,7 @@ function Hudson(pJsDebug) {
 				if (debug.execution_time_ms != null) {
 					pqText += 'Execution time (ms): <font color="red">' + debug.execution_time_ms + '</font>';
 				}
-			} 
+			}
 
 			for (var idx in pResponse.suggestions) {
 				var thisSugg = pResponse.suggestions[idx];
@@ -678,7 +728,7 @@ function Hudson(pJsDebug) {
 
 		setTextIn(DOM_PQ, pqText);
 	};
-	
+
 	this.useSuggestion = function(pText) {
 		setTextIn(DOM_QT, pText);
 		this.keyUpQuestionText();
@@ -700,7 +750,7 @@ function Hudson(pJsDebug) {
 		var url = getTextFrom(DOM_EP) + URL_QH;
 		sendAjaxPost(url, pQuestionText, pCbf, pDebug);
 	}
-	
+
 	function sendExecuteRequest(pQuestionJson, pCbf, pDebug) {
 		var url = getTextFrom(DOM_EP) + URL_QE;
 		sendAjaxPost(url, pQuestionJson, pCbf, pDebug);
@@ -740,14 +790,14 @@ function Hudson(pJsDebug) {
 	this.getCheckboxValueFrom = function(pDomId) {
 		var elem = window.document.getElementById(pDomId);
 		var result = null;
-		
+
 		if (elem != null) {
 			result = elem.checked;
 		}
 
 		return result;
 	};
-	
+
 	function setCheckboxValueTo(pDomId, pFlag) {
 		var elem = window.document.getElementById(pDomId);
 
@@ -759,7 +809,7 @@ function Hudson(pJsDebug) {
 	function getCqPos() {
 		return parseInt(getTextFrom(DOM_QP));
 	}
-	
+
 	function setTextIn(pDomId, pText) {
 		var elem = window.document.getElementById(pDomId);
 
@@ -804,7 +854,7 @@ function Hudson(pJsDebug) {
 		xhr.onload = function(e) {
 			if (this.status === 200) {
 				var jResponse = null;
-				
+
 				try {
 					jResponse = JSON.parse(xhr.response);
 				} catch(e) {
@@ -828,7 +878,7 @@ function Hudson(pJsDebug) {
 		xhr.onerror = function(e) {
 			ajaxErrorOther(xhr.response, e, this.status, pUrl);
 		};
-		
+
 		if ((pType === 'POST') && (pPostParms != null)) {
 			xhr.send(pPostParms);
 		} else {
@@ -853,11 +903,11 @@ function Hudson(pJsDebug) {
 		gHudson.reportLog(pCode);
 		reportError('Unknown server error [' + pError + '] for url ' + pUrl);
 	}
-	
+
 	function reportError(pErrorText) {
 		setTextIn('answer', '<font color="red">' + pErrorText + '</font>');
 	}
-	
+
 	function createHtmlForResultSet(pAnswerSet) {
 		var result = '';
 		var hdrs = pAnswerSet.headers;
@@ -886,7 +936,7 @@ function Hudson(pJsDebug) {
 		var result = '';
 		var hdrs = null;
 		var rows = null;
-		
+
 		if (pCoords.lat != null) {
 			if (pCoords.postcode != null) {
 				//lat lon and postcode
@@ -902,7 +952,7 @@ function Hudson(pJsDebug) {
 			hdrs = [ 'id', 'postcode', 'address line 1' ];
 			rows = [ [ pCoords.id, pCoords.postcode, pCoords.address_line_1 ] ];
 		}
-		
+
 		result = renderTable(hdrs, rows);
 
 		return result;
@@ -910,7 +960,7 @@ function Hudson(pJsDebug) {
 
 	function renderTable(pHdrs, pRows) {
 		var result = '';
-		
+
 		result += '<table border="1">';
 
 		result += '<tr>';
@@ -929,12 +979,12 @@ function Hudson(pJsDebug) {
 			}
 			result += '</tr>';
 		}
-		
+
 		result += '</table>';
 
 		return result;
 	}
-	
+
 	function htmlFormat(pText) {
 		var result = pText;
 

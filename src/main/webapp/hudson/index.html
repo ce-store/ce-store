@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- 
+<!--
  * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
 
@@ -15,7 +15,7 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<title>Hudson - Test UI</title>
     <link rel="icon" href="favicon.png" type="image/x-icon">
-    <link rel="shortcut icon" href="favicon.png" type="image/x-icon"> 
+    <link rel="shortcut icon" href="favicon.png" type="image/x-icon">
 	<script src="./js/hudson.js"></script>
 	<link rel="stylesheet" type="text/css" href="./css/hudson.css">
 </head>
@@ -40,6 +40,10 @@
 		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
 		Log results: <input type="checkbox" id="log_results"/>
 		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+		<hr/>
+		<select id="directory_model"></select>
+		<button id="directory_load" type="button">Load</button>
+		<span id="directory_load_message"></span>
 		<hr/>
 		Question: <input type="text" id="questionText" size="75" onKeyUp="gHudson.keyUpQuestionText();" value="(type your question here)">
 		<a href="javascript:gHudson.loadPreviousQuestion();">&lt;</a>
