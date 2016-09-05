@@ -14,13 +14,13 @@ public class ConvPhrase extends ConvItem {
 
 	private static final String CON_NAME = "conv phrase";
 
-	private static final String CON_ASSERTION = "conv assertion";
-	private static final String CON_QUESTION = "conv question";
+//	private static final String CON_ASSERTION = "conv assertion";
+//	private static final String CON_QUESTION = "conv question";
 
-	private static final int TYPE_ASSERTION = 1;
-	private static final int TYPE_QUESTION = 2;
+//	private static final int TYPE_ASSERTION = 1;
+//	private static final int TYPE_QUESTION = 2;
 
-	private int phraseType = TYPE_ASSERTION;
+//	private int phraseType = TYPE_ASSERTION;
 
 	private ArrayList<ConvWord> allWords = null;
 	private ArrayList<ConvSentence> childSentences = new ArrayList<ConvSentence>();
@@ -40,17 +40,17 @@ public class ConvPhrase extends ConvItem {
 		super(pAc, CON_NAME, pPhraseText);
 	}
 
-	public String getConceptName() {
-		String result = "";
-
-		if (isQuestion()) {
-			result = CON_QUESTION;
-		} else {
-			result = CON_ASSERTION;
-		}
-
-		return result;
-	}
+//	public String getConceptName() {
+//		String result = "";
+//
+//		if (isQuestion()) {
+//			result = CON_QUESTION;
+//		} else {
+//			result = CON_ASSERTION;
+//		}
+//
+//		return result;
+//	}
 
 	public String getPhraseText() {
 		return this.itemText;
@@ -110,13 +110,13 @@ public class ConvPhrase extends ConvItem {
 		this.qemList[0] = "?";
 	}
 
-	public boolean isAssertion() {
-		return this.phraseType == TYPE_ASSERTION;
-	}
+//	public boolean isAssertion() {
+//		return this.phraseType == TYPE_ASSERTION;
+//	}
 
-	public boolean isQuestion() {
-		return (this.phraseType == TYPE_QUESTION) || this.firstWordIsQuestion();
-	}
+//	public boolean isQuestion() {
+//		return (this.phraseType == TYPE_QUESTION) || this.firstWordIsQuestion();
+//	}
 
 	public ProcessedWord getFirstProcessedWord() {
 		ProcessedWord result = null;
@@ -128,16 +128,16 @@ public class ConvPhrase extends ConvItem {
 		return result;
 	}
 
-	public boolean firstWordIsQuestion() {
-		boolean result = false;
-		ProcessedWord fpw = getFirstProcessedWord();
-
-		if (fpw != null) {
-			result = fpw.isQuestionWord();
-		}
-
-		return result;
-	}
+//	public boolean firstWordIsQuestion() {
+//		boolean result = false;
+//		ProcessedWord fpw = getFirstProcessedWord();
+//
+//		if (fpw != null) {
+//			result = fpw.isQuestionWord();
+//		}
+//
+//		return result;
+//	}
 
 	@Override
 	protected void parse(ActionContext pAc) {
@@ -157,27 +157,27 @@ public class ConvPhrase extends ConvItem {
 			ConvSentence.createNewSentence(pAc, thisSen, this);
 		}
 
-		classifyPhrase();
+//		classifyPhrase();
 	}
 
-	private void classifyPhrase() {
-		String lcPt = getPhraseText().toLowerCase();
-
-		this.phraseType = TYPE_ASSERTION;
-
-		for (String qem : this.qemList) {
-			if (lcPt.endsWith(qem)) {
-				this.phraseType = TYPE_QUESTION;
-				break;
-			}
-		}
-
-		for (String qsm : this.qsmList) {
-			if (lcPt.startsWith(qsm)) {
-				this.phraseType = TYPE_QUESTION;
-				break;
-			}
-		}
-	}
+//	private void classifyPhrase() {
+//		String lcPt = getPhraseText().toLowerCase();
+//
+//		this.phraseType = TYPE_ASSERTION;
+//
+//		for (String qem : this.qemList) {
+//			if (lcPt.endsWith(qem)) {
+//				this.phraseType = TYPE_QUESTION;
+//				break;
+//			}
+//		}
+//
+//		for (String qsm : this.qsmList) {
+//			if (lcPt.startsWith(qsm)) {
+//				this.phraseType = TYPE_QUESTION;
+//				break;
+//			}
+//		}
+//	}
 
 }

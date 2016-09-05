@@ -14,9 +14,6 @@ import com.ibm.ets.ita.ce.store.ActionContext;
 import com.ibm.ets.ita.ce.store.ModelBuilder;
 import com.ibm.ets.ita.ce.store.StoreActions;
 import com.ibm.ets.ita.ce.store.client.web.ServletStateManager;
-import com.ibm.ets.ita.ce.store.hudson.helper.Answer;
-import com.ibm.ets.ita.ce.store.hudson.helper.AnswerReply;
-import com.ibm.ets.ita.ce.store.hudson.helper.ChosenWord;
 import com.ibm.ets.ita.ce.store.hudson.helper.ConvConfig;
 import com.ibm.ets.ita.ce.store.hudson.helper.HudsonManager;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
@@ -125,7 +122,7 @@ public abstract class GenericHandler {
 	public static final String PROP_OUTPROP = "output property";
 	public static final String PROP_CEURL = "CE URL";
 
-	private static final String ANSKEY_ERR = "error";
+//	private static final String ANSKEY_ERR = "error";
 	protected static final String ANSCODE_GENERROR = "GENERAL";
 
 	protected static final String ANSCODE_SQLERROR = "ERROR_SQL";
@@ -178,68 +175,68 @@ public abstract class GenericHandler {
 		return this.cc;
 	}
 
-	public static Answer handleExceptionAsAnswer(ActionContext pAc, Exception pE, String pErrCode, AnswerReply pReply) {
-		Answer err = Answer.createError(ANSKEY_ERR + "_" + pErrCode, ERR_CONF);
-		err.setAnswerCode(pErrCode);
-		err.setChattyAnswerText(CHATTY_ERROR + pE.getMessage());
-		pReply.addAnswer(pAc, err);
+//	public static Answer handleExceptionAsAnswer(ActionContext pAc, Exception pE, String pErrCode, AnswerReply pReply) {
+//		Answer err = Answer.createError(ANSKEY_ERR + "_" + pErrCode, ERR_CONF);
+//		err.setAnswerCode(pErrCode);
+//		err.setChattyAnswerText(CHATTY_ERROR + pE.getMessage());
+//		pReply.addAnswer(pAc, err);
+//
+//		pE.printStackTrace();
+//
+//		return err;
+//	}
 
-		pE.printStackTrace();
-
-		return err;
-	}
-
-	public static void handleGeneralErrorAsAnswer(ActionContext pAc, String pErrorMsg, AnswerReply pReply) {
-		Answer err = Answer.createError(ANSKEY_ERR + "_" + ANSCODE_GENERROR, ERR_CONF);
-		err.setAnswerCode(ANSCODE_GENERROR);
-		err.setChattyAnswerText(pErrorMsg);
-		pReply.addAnswer(pAc, err);
-	}
+//	public static void handleGeneralErrorAsAnswer(ActionContext pAc, String pErrorMsg, AnswerReply pReply) {
+//		Answer err = Answer.createError(ANSKEY_ERR + "_" + ANSCODE_GENERROR, ERR_CONF);
+//		err.setAnswerCode(ANSCODE_GENERROR);
+//		err.setChattyAnswerText(pErrorMsg);
+//		pReply.addAnswer(pAc, err);
+//	}
 	
-	public static void handleNotUnderstoodError(ActionContext pAc, AnswerReply pReply) {
-		Answer err = Answer.createError(ANSKEY_ERR + "_" + ANSCODE_NOTUNDERSTOOD, ERR_CONF);
-		err.setAnswerCode(ANSCODE_NOTUNDERSTOOD);
-		err.setChattyAnswerText(CHATTY_NOTUNDERSTOOD);
-		pReply.addAnswer(pAc, err);
-	}
+//	public static void handleNotUnderstoodError(ActionContext pAc, AnswerReply pReply) {
+//		Answer err = Answer.createError(ANSKEY_ERR + "_" + ANSCODE_NOTUNDERSTOOD, ERR_CONF);
+//		err.setAnswerCode(ANSCODE_NOTUNDERSTOOD);
+//		err.setChattyAnswerText(CHATTY_NOTUNDERSTOOD);
+//		pReply.addAnswer(pAc, err);
+//	}
 
-	public static void handleSomethingWentWrongError(ActionContext pAc, AnswerReply pReply) {
-		Answer err = Answer.createError(ANSKEY_ERR + "_" + ANSCODE_SQLERROR, ERR_CONF);
-		err.setAnswerCode(ANSCODE_SQLERROR);
-		err.setChattyAnswerText(CHATTY_ERROR);
-		pReply.addAnswer(pAc, err);
-	}
+//	public static void handleSomethingWentWrongError(ActionContext pAc, AnswerReply pReply) {
+//		Answer err = Answer.createError(ANSKEY_ERR + "_" + ANSCODE_SQLERROR, ERR_CONF);
+//		err.setAnswerCode(ANSCODE_SQLERROR);
+//		err.setChattyAnswerText(CHATTY_ERROR);
+//		pReply.addAnswer(pAc, err);
+//	}
 
-	public static void handleNoCoordinatesError(ActionContext pAc, AnswerReply pReply, ArrayList<ChosenWord> pWords) {
-		Answer err = Answer.create(ANSKEY_ERR + "_" + ANSCODE_NOCOORDS, pWords, ERR_CONF);
-		err.setAnswerCode(ANSCODE_NOCOORDS);
-		err.setChattyAnswerText(CHATTY_NOCOORDS);
-		pReply.addAnswer(pAc, err);
-	}
+//	public static void handleNoCoordinatesError(ActionContext pAc, AnswerReply pReply, ArrayList<ChosenWord> pWords) {
+//		Answer err = Answer.create(ANSKEY_ERR + "_" + ANSCODE_NOCOORDS, pWords, ERR_CONF);
+//		err.setAnswerCode(ANSCODE_NOCOORDS);
+//		err.setChattyAnswerText(CHATTY_NOCOORDS);
+//		pReply.addAnswer(pAc, err);
+//	}
 
-	public static void handleCannotLocateError(ActionContext pAc, AnswerReply pReply, ArrayList<ChosenWord> pWords) {
-		String chattyText = CHATTY_CANNOTLOC;
-		String repText = "";
+//	public static void handleCannotLocateError(ActionContext pAc, AnswerReply pReply, ArrayList<ChosenWord> pWords) {
+//		String chattyText = CHATTY_CANNOTLOC;
+//		String repText = "";
+//
+//		for (ChosenWord thisCw : pWords) {
+//			repText += thisCw.interpretationText(pAc, false);
+//		}
+//
+//		chattyText = chattyText.replace("%1", repText);
+//
+//		Answer err = Answer.create(ANSKEY_ERR + "_" + ANSCODE_CANNOTLOC, pWords, ERR_CONF);
+//		err.setAnswerCode(ANSCODE_CANNOTLOC);
+//		err.setChattyAnswerText(chattyText);
+//		err.markAsWhere();
+//		pReply.addAnswer(pAc, err);
+//	}
 
-		for (ChosenWord thisCw : pWords) {
-			repText += thisCw.interpretationText(pAc, false);
-		}
-
-		chattyText = chattyText.replace("%1", repText);
-
-		Answer err = Answer.create(ANSKEY_ERR + "_" + ANSCODE_CANNOTLOC, pWords, ERR_CONF);
-		err.setAnswerCode(ANSCODE_CANNOTLOC);
-		err.setChattyAnswerText(chattyText);
-		err.markAsWhere();
-		pReply.addAnswer(pAc, err);
-	}
-
-	public static void handleNoMediaError(ActionContext pAc, AnswerReply pReply, String pChattyText, ArrayList<ChosenWord> pWords) {
-		Answer err = Answer.create(ANSKEY_ERR + "_" + ANSCODE_NOMEDIA, pWords, ERR_CONF);
-		err.setAnswerCode(ANSCODE_NOMEDIA);
-		err.setChattyAnswerText(pChattyText);
-		pReply.addAnswer(pAc, err);
-	}
+//	public static void handleNoMediaError(ActionContext pAc, AnswerReply pReply, String pChattyText, ArrayList<ChosenWord> pWords) {
+//		Answer err = Answer.create(ANSKEY_ERR + "_" + ANSCODE_NOMEDIA, pWords, ERR_CONF);
+//		err.setAnswerCode(ANSCODE_NOMEDIA);
+//		err.setChattyAnswerText(pChattyText);
+//		pReply.addAnswer(pAc, err);
+//	}
 
 	public static String columnNameFor(ActionContext pAc, CeInstance pInst) {
 		CeInstance tableInst = null;

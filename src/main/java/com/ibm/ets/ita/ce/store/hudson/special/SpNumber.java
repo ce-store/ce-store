@@ -1,4 +1,4 @@
-package com.ibm.ets.ita.ce.store.hudson.helper;
+package com.ibm.ets.ita.ce.store.hudson.special;
 
 /*******************************************************************************
  * (C) Copyright IBM Corporation  2011, 2016
@@ -13,34 +13,22 @@ public class SpNumber extends SpThing {
 
 	private static final String TYPE_NAME = "number";
 
-	private String label = null;
-
-	public SpNumber(String pLabel) {
-		this.label = pLabel;
+	public SpNumber(String pPhraseText, int pWordPos) {
+		super(pPhraseText, pWordPos, pWordPos);
 	}
 
-	public static SpNumber createFromJson(ActionContext pAc, CeStoreJsonObject pJo) {
-		SpNumber result = new SpNumber("");
-
-		result.extractStandardFieldsFromJson(pJo);
-
-		return result;
+	public SpNumber(CeStoreJsonObject pJo) {
+		super(pJo);
 	}
-	
+
 	public boolean isNumber() {
 		return true;
 	}
-	
-	public String getLabel() {
-		return this.label;
-	}
-	
-	public CeStoreJsonObject toJson(ActionContext pAc, int pCtr) {
+
+	public CeStoreJsonObject toJson(ActionContext pAc) {
 		CeStoreJsonObject jResult = new CeStoreJsonObject();
 
-		jResult.put(JSON_TYPE, TYPE_NAME);
-		jResult.put(JSON_NAME, getLabel());
-		jResult.put(JSON_POS, pCtr);
+		addStandardFields(jResult, TYPE_NAME);
 
 		return jResult;
 	}

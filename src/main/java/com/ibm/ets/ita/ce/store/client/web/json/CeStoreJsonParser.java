@@ -53,8 +53,6 @@ public class CeStoreJsonParser {
 	public void parse() {
 		final String METHOD_NAME = "doParsing";
 
-//System.out.println(this.jsonText);
-
 		BufferedReader r = bufferedReaderFromString(this.jsonText);
 
 		try {
@@ -86,8 +84,6 @@ public class CeStoreJsonParser {
 		if (jArr != null) {
 			summariseArray(jArr, INDENT, sb);
 		}
-
-		System.out.println(sb.toString());
 	}
 
 	private void summariseObject(CeStoreJsonObject pObj, String pIndent, StringBuilder pSb) {
@@ -220,6 +216,10 @@ public class CeStoreJsonParser {
 			// A quote character
 			doEscapedQuote();
 			break;
+		case '/':
+			// A forward quote character
+			doEscapedForwardSlash();
+			break;
 		default:
 			// Anything else should not occur in this position
 			reportError("Unexpected character (" + this.currentChar + ") following backslash", this.ac);
@@ -263,14 +263,17 @@ public class CeStoreJsonParser {
 	}
 
 	private void doEscapedBackslash() {
-//System.out.println("doEscapedBackslash: " + this.currentChar);
 		//Simply add any escaped backslash to currentItem
 		doDefault();
 	}
 
 	private void doEscapedQuote() {
-//System.out.println("doEscapedQuote: " + this.currentChar);
 		//Simply add any escaped quote to currentItem
+		doDefault();
+	}
+
+	private void doEscapedForwardSlash() {
+		//Simply add any escaped forward slash to currentItem
 		doDefault();
 	}
 
@@ -311,7 +314,6 @@ public class CeStoreJsonParser {
 	}
 
 	private void startObject() {
-//System.out.println("startObject: " + this.currentChar);
 		resetState();
 
 		if (!hasRoot()) {
@@ -333,8 +335,6 @@ public class CeStoreJsonParser {
 	}
 
 	private void endObject() {
-//System.out.println("endObject: " + this.currentChar + " - elemName:" + this.elemName);
-
 		if (this.currentItem != null) {
 			saveCurrentItem();
 		}
@@ -344,7 +344,6 @@ public class CeStoreJsonParser {
 	}
 
 	private void startArray() {
-//System.out.println("startArray: " + this.currentChar);
 		if (!hasRoot()) {
 			pushStack(new CeStoreJsonArray());
 		} else {
@@ -366,7 +365,6 @@ public class CeStoreJsonParser {
 	}
 
 	private void endArray() {
-//System.out.println("endArray: " + this.currentChar + " - elemName:" + this.elemName);
 		if (this.currentItem != null) {
 			saveCurrentItem();
 		}
@@ -376,7 +374,6 @@ public class CeStoreJsonParser {
 	}
 
 	private void doBackslash() {
-//System.out.println("doBackslash: " + this.currentChar);
 		this.lastCharBs = !this.lastCharBs;
 	}
 
@@ -392,18 +389,15 @@ public class CeStoreJsonParser {
 
 	private void doEnterQuote() {
 		//Nothing is needed
-//System.out.println("doEnterQuote: " + this.currentChar);
 	}
 
 	private void doExitQuote() {
-//System.out.println("doExitQuote: " + this.currentChar);
 		this.wasQuoted = true;
 		saveCurrentItem();
 		this.wasQuoted = false;
 	}
 
 	private void doComma() {
-//System.out.println("doComma: " + this.currentChar);
 		if (this.inQuote) {
 			doDefault();
 		} else {
@@ -412,7 +406,6 @@ public class CeStoreJsonParser {
 	}
 
 	private void doColon() {
-//System.out.println("doColon: " + this.currentChar);
 		if (this.inQuote) {
 			doDefault();
 		} else {
@@ -421,7 +414,6 @@ public class CeStoreJsonParser {
 	}
 
 	private void doDefault() {
-//System.out.println("doDefault: " + this.currentChar);
 		if (this.currentItem == null) {
 			this.currentItem = new StringBuilder();
 		}
@@ -456,7 +448,6 @@ public class CeStoreJsonParser {
 
 	private void saveElementName() {
 		this.elemName = this.currentItem.toString();
-//System.out.println("saveElementName: " + this.elemName);
 		this.state = STATE_ELEMVAL;
 	}
 

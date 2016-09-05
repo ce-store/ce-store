@@ -66,6 +66,47 @@ function Hudson(pJsDebug) {
 		xhr.send();
 	};
 
+	this.listDirectoryModels = function(){
+		var xhr = new XMLHttpRequest();
+		xhr.onreadystatechange = function() {
+		  if (this.readyState == 4 && this.status == 200) {
+				var html = '<option>Default</option>';
+				if(this.responseText){
+					var directory = JSON.parse(this.responseText);
+					if(directory && directory.models){
+						for(var i=0; i <directory.models.length; i++){
+							html = html + "<option value='"+directory.models[i]+"'>"+directory.models[i]+'</option>';
+						}
+					}
+					document.getElementById("directory_model").innerHTML = html;
+
+				}
+
+		  }
+		};
+
+		xhr.open("GET", '../special/hudson/directory_list', true);
+		xhr.send();
+	};
+
+	this.loadDirectoryModel = function(model){
+		document.getElementById('directory_load_message').innerHTML = "Loading " + model + ".";
+
+		var xhr = new XMLHttpRequest();
+		xhr.onreadystatechange = function() {
+		  if(this.readyState == 4 && this.status == 200) {
+				document.getElementById('directory_load_message').innerHTML = "Finished loading.";
+		  }
+			else if(this.readyState == 4 && this.status != 200) {
+				document.getElementById('directory_load_message').innerHTML = "Error loading. " + this.responseText;
+			}
+		};
+
+		xhr.open("POST", '../special/hudson/directory_load', true);
+		xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		xhr.send("model="+model);
+	};
+
 	this.loadQuestions = function(pCbf) {
 		var cbf = null;
 

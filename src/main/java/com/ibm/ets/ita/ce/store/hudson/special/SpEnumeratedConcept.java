@@ -1,10 +1,12 @@
-package com.ibm.ets.ita.ce.store.hudson.helper;
+package com.ibm.ets.ita.ce.store.hudson.special;
 
 import java.util.ArrayList;
 
 import com.ibm.ets.ita.ce.store.ActionContext;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonArray;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
+import com.ibm.ets.ita.ce.store.conversation.model.MatchedItem;
+import com.ibm.ets.ita.ce.store.conversation.model.ProcessedWord;
 import com.ibm.ets.ita.ce.store.hudson.handler.QuestionInterpreterHandler;
 import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
@@ -22,23 +24,17 @@ public class SpEnumeratedConcept extends SpThing {
 	private static final String JSON_CONS = "concepts";
 
 	private String numberWordText = null;
-	private String conceptWordText = null;
-	private ArrayList<CeConcept> concepts = null;
+	private ArrayList<MatchedItem> conceptItems = null;
 
-	public SpEnumeratedConcept(String pNumWordText, String pConWordText, ArrayList<CeConcept> pCons, String pLabel) {
-		this.label = pLabel;
-		this.numberWordText = pNumWordText;
-		this.conceptWordText = pConWordText;
-		this.concepts = pCons;
+	public SpEnumeratedConcept(CeStoreJsonObject pJo) {
+		super(pJo);
 	}
 
-	public static SpEnumeratedConcept createFromJson(ActionContext pAc, CeStoreJsonObject pJo) {
-		SpEnumeratedConcept result = new SpEnumeratedConcept("", "", null, "");
+	public SpEnumeratedConcept(String pPhraseText, int pEndPos, ProcessedWord pNumWord, ArrayList<MatchedItem> pConItems) {
+		super(pPhraseText, pNumWord.getWordPos(), pEndPos);
 
-		result.extractStandardFieldsFromJson(pJo);
-
-		//TODO: Complete this
-		return result;
+		this.numberWordText = pNumWord.getWordText();
+		this.conceptItems = pConItems;
 	}
 
 	public boolean isEnumeratedConcept() {
@@ -49,27 +45,23 @@ public class SpEnumeratedConcept extends SpThing {
 		return this.numberWordText;
 	}
 
-	public String getConceptWordText() {
-		return this.conceptWordText;
+	public ArrayList<MatchedItem> getConceptItems() {
+		return this.conceptItems;
 	}
 
-	public ArrayList<CeConcept> getConcepts() {
-		return this.concepts;
-	}
-
-	public CeStoreJsonObject toJson(ActionContext pAc, int pCtr) {
+	public CeStoreJsonObject toJson(ActionContext pAc) {
 		CeStoreJsonObject jResult = new CeStoreJsonObject();
 		CeStoreJsonArray jConList = new CeStoreJsonArray();
 
-		for (CeConcept thisCon : getConcepts()) {
+		for (MatchedItem thisConItem : getConceptItems()) {
+			CeConcept thisCon = thisConItem.getConcept();
 			CeInstance mmInst = thisCon.retrieveMetaModelInstance(pAc);
 
-			jConList.add(QuestionInterpreterHandler.jsonFor(pAc, mmInst));
+			jConList.add(QuestionInterpreterHandler.jsonFor(pAc, mmInst, thisConItem));
 		}
 
-		jResult.put(JSON_TYPE, TYPE_NAME);
-		jResult.put(JSON_NAME, getLabel());
-		jResult.put(JSON_POS, pCtr);
+		addStandardFields(jResult, TYPE_NAME);
+
 		jResult.put(JSON_NUM, getNumberWordText());
 		jResult.put(JSON_CONS, jConList);
 

@@ -78,6 +78,11 @@ body {
 	color:blue;
 }
 
+#json-comment {
+	color:black;
+	font-style: italic;
+}
+
 #http-type {
 	color:blue;
 }

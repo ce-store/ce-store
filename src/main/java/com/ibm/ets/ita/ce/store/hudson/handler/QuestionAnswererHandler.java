@@ -16,11 +16,11 @@ import com.ibm.ets.ita.ce.store.ActionContext;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonParser;
 import com.ibm.ets.ita.ce.store.hudson.helper.Question;
-import com.ibm.ets.ita.ce.store.hudson.helper.SpCollection;
-import com.ibm.ets.ita.ce.store.hudson.helper.SpEnumeratedConcept;
-import com.ibm.ets.ita.ce.store.hudson.helper.SpLinkedInstance;
-import com.ibm.ets.ita.ce.store.hudson.helper.SpMatchedTriple;
-import com.ibm.ets.ita.ce.store.hudson.helper.SpThing;
+import com.ibm.ets.ita.ce.store.hudson.special.SpCollection;
+import com.ibm.ets.ita.ce.store.hudson.special.SpEnumeratedConcept;
+import com.ibm.ets.ita.ce.store.hudson.special.SpLinkedInstance;
+import com.ibm.ets.ita.ce.store.hudson.special.SpMatchedTriple;
+import com.ibm.ets.ita.ce.store.hudson.special.SpThing;
 import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
 import com.ibm.ets.ita.ce.store.model.CeProperty;
@@ -34,10 +34,6 @@ public class QuestionAnswererHandler extends QuestionHandler {
 	private static final String SPTYPE_MT = "matched-triple";
 	private static final String SPTYPE_LI = "linked-instance";
 
-	private static final String CON_QPHRASE = "question phrase";
-	private static final String CON_QWORD = "question word";
-	private static final String CON_COMWORD = "common word";
-	private static final String CON_CONNWORD = "connector word";
 	private static final String MOD_EXPAND = "general:expand";
 	private static final String MOD_LINKSFROM = "general:linksFrom";
 	private static final String MOD_LINKSTO = "general:linksTo";
@@ -45,6 +41,11 @@ public class QuestionAnswererHandler extends QuestionHandler {
 	private static final String MOD_COUNT = "general:count";
 	private static final String MOD_LIST = "general:list";
 	private static final String MOD_SHOW = "general:show";
+
+	private static final String CON_QPHRASE = "question phrase";
+	private static final String CON_QWORD = "question word";
+	private static final String CON_COMWORD = "common word";
+	private static final String CON_CONNWORD = "connector word";
 
 	private static final String[] CONLIST_OTHERS = { CON_QPHRASE, CON_QWORD, CON_COMWORD, CON_MODIFIER, CON_CONNWORD };
 
@@ -102,17 +103,36 @@ public class QuestionAnswererHandler extends QuestionHandler {
 			CeStoreJsonObject jInsts = (CeStoreJsonObject)jObj.get(this.ac, "instances");
 			CeStoreJsonObject jSpecs = (CeStoreJsonObject)jObj.get(this.ac, "specials");
 
-			this.allConcepts = extractConceptsFrom(jCons);
-			this.allProperties = extractPropertiesFrom(jProps);
-			this.allInstances = extractInstancesFrom(jInsts);
-			this.allSpecials = extractSpecialsFrom(jSpecs);
+			if (jCons != null) {
+				this.allConcepts = extractConceptsFrom(jCons);
+			} else {
+				this.allConcepts = new ArrayList<CeConcept>();
+			}
+
+			if (jProps != null) {
+				this.allProperties = extractPropertiesFrom(jProps);
+			} else {
+				this.allProperties = new ArrayList<CeProperty>();
+			}
+
+			if (jInsts != null) {
+				this.allInstances = extractInstancesFrom(jInsts);
+			} else {
+				this.allInstances = new ArrayList<CeInstance>();
+			}
+
+			if (jSpecs != null) {
+				this.allSpecials = extractSpecialsFrom(jSpecs);
+			} else {
+				this.allSpecials = new ArrayList<SpThing>();
+			}
 
 			filterInstances();
 		}
 	}
 
 	private void answerQuestion() {
-		debugInstances();
+//		debugInstances();
 
 		if (hasMatchedTriples()) {
 			tryMatchedTripleAnswer();
@@ -558,20 +578,19 @@ public class QuestionAnswererHandler extends QuestionHandler {
 		return result;
 	}
 
-	private void debugInstances() {
-System.out.println("Domain instances");
-
-		for (CeInstance thisInst : this.domainInstances) {
-System.out.println("  " + thisInst.getInstanceName());
-		}
-
-System.out.println("Other instances");
-
-		for (CeInstance thisInst : this.otherInstances) {
-System.out.println("  " + thisInst.getInstanceName());
-		}
-
-	}
+//	private void debugInstances() {
+//System.out.println("Domain instances");
+//
+//		for (CeInstance thisInst : this.domainInstances) {
+//System.out.println("  " + thisInst.getInstanceName());
+//		}
+//
+//System.out.println("Other instances");
+//
+//		for (CeInstance thisInst : this.otherInstances) {
+//System.out.println("  " + thisInst.getInstanceName());
+//		}
+//	}
 
 	private void filterInstances() {
 		this.domainInstances = new HashSet<CeInstance>();
@@ -669,16 +688,16 @@ System.out.println("specials:");
 			String type = jObj.getString("type");
 
 			if (type.equals(SPTYPE_ENCCON)) {
-				SpEnumeratedConcept spEc = SpEnumeratedConcept.createFromJson(this.ac, jObj);
+				SpEnumeratedConcept spEc = new SpEnumeratedConcept(jObj);
 				result.add(spEc);
 			} else if (type.equals(SPTYPE_COLL)) {
-				SpCollection spCo = SpCollection.createFromJson(this.ac, jObj);
+				SpCollection spCo = new SpCollection(jObj);
 				result.add(spCo);
 			} else if (type.equals(SPTYPE_MT)) {
-				SpMatchedTriple spMt = SpMatchedTriple.createFromJson(this.ac, jObj);
+				SpMatchedTriple spMt = new SpMatchedTriple(jObj);
 				result.add(spMt);
 			} else if (type.equals(SPTYPE_LI)) {
-				SpLinkedInstance spLi = SpLinkedInstance.createFromJson(this.ac, jObj);
+				SpLinkedInstance spLi = new SpLinkedInstance(jObj);
 				result.add(spLi);
 			} else {
 				System.out.println("Unexpected special type: " + type);

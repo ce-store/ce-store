@@ -12,7 +12,6 @@ import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportWarnin
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.ibm.ets.ita.ce.store.ActionContext;
-import com.ibm.ets.ita.ce.store.conversation.processor.ConversationProcessor;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
 import com.ibm.ets.ita.ce.store.model.CePropertyInstance;
 
@@ -103,8 +102,9 @@ public class ConversationTriggerHandler extends GeneralConversationHandler {
 
 		waitForSomeTime();	//The duration to wait is specified in the trigger CE
 
-		ConversationProcessor cp = new ConversationProcessor(this.ac, this);
-		cp.dealWithThisInstance(pCardInst);
+		//TODO: Convert this over to the new Hudson implementation
+//		ConversationProcessor cp = new ConversationProcessor(this.ac, this);
+//		cp.dealWithThisInstance(pCardInst);
 
 		reportDebug("Conversation processing took " + formattedDuration(startTime) + " seconds", this.ac);
 	}
