@@ -33,7 +33,7 @@ import java.util.logging.Logger;
 import com.ibm.ets.ita.ce.store.ActionContext;
 import com.ibm.ets.ita.ce.store.NotifyActionContext;
 import com.ibm.ets.ita.ce.store.StoreActions;
-import com.ibm.ets.ita.ce.store.agent.CeNotifyHandler;
+import com.ibm.ets.ita.ce.store.agents.CeNotifyHandler;
 import com.ibm.ets.ita.ce.store.model.CeAnnotation;
 import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.model.CeConceptualModel;

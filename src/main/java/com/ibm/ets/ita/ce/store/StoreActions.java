@@ -35,7 +35,7 @@ import java.util.Properties;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 
-import com.ibm.ets.ita.ce.store.agent.CeAgent;
+import com.ibm.ets.ita.ce.store.agents.CeAgent;
 import com.ibm.ets.ita.ce.store.api.CEStore;
 import com.ibm.ets.ita.ce.store.handler.QueryHandler;
 import com.ibm.ets.ita.ce.store.model.CeConcept;

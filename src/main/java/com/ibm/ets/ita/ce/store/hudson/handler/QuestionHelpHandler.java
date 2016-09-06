@@ -15,11 +15,9 @@ import java.util.TreeMap;
 import com.ibm.ets.ita.ce.store.client.web.WebActionContext;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonArray;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
-import com.ibm.ets.ita.ce.store.conversation.model.ProcessedWord;
-import com.ibm.ets.ita.ce.store.hudson.helper.Interpretation;
-import com.ibm.ets.ita.ce.store.hudson.helper.InterpretationSummary;
-import com.ibm.ets.ita.ce.store.hudson.helper.Question;
-import com.ibm.ets.ita.ce.store.hudson.helper.Suggestion;
+import com.ibm.ets.ita.ce.store.hudson.model.Question;
+import com.ibm.ets.ita.ce.store.hudson.model.Suggestion;
+import com.ibm.ets.ita.ce.store.hudson.model.conversation.ProcessedWord;
 import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
 import com.ibm.ets.ita.ce.store.model.CeProperty;
@@ -27,20 +25,20 @@ import com.ibm.ets.ita.ce.store.model.CeProperty;
 public class QuestionHelpHandler extends QuestionHandler {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
-	private static final String JSON_QT = "question_text";
+	private static final String JSON_QT = "question text";
 	private static final String JSON_SUGGS = "suggestions";
-	private static final String JSON_D_INTS = "interpretations";
-	private static final String JSON_BT = "before_text";
-	private static final String JSON_AT = "after_text";
+//	private static final String JSON_D_INTS = "interpretations";
+	private static final String JSON_BT = "before text";
+	private static final String JSON_AT = "after text";
 
 	protected ArrayList<Suggestion> suggestions = null;
-	protected ArrayList<Interpretation> interpretations = null;
+//	protected ArrayList<Interpretation> interpretations = null;
 	private int maxSuggs = 10;	//TODO: Abstract this
 
 	public QuestionHelpHandler(WebActionContext pWc, boolean pDebug, String pQt, long pStartTime) {
 		super(pWc, pDebug, Question.create(pQt), pStartTime);
 
-		this.interpretations = new ArrayList<Interpretation>();
+//		this.interpretations = new ArrayList<Interpretation>();
 
 		if (getConvConfig() != null) {
 			this.maxSuggs = getConvConfig().getMaxSuggestions();
@@ -49,24 +47,24 @@ public class QuestionHelpHandler extends QuestionHandler {
 
 	protected CeStoreJsonObject createJsonResponse() {
 		CeStoreJsonObject result = new CeStoreJsonObject();
-		CeStoreJsonArray jInts = new CeStoreJsonArray();
+//		CeStoreJsonArray jInts = new CeStoreJsonArray();
 
 		result.put(JSON_SUGGS, jsonForSuggestions());
 
-		if (this.debug) {
-			CeStoreJsonObject jDebug = new CeStoreJsonObject();
-			jDebug.put(JSON_ET, System.currentTimeMillis() - this.startTime);
-			createJsonAlerts(jDebug);
-
-			if (!this.interpretations.isEmpty()) {
-				for (Interpretation thisInt : this.interpretations) {
-					jInts.add(thisInt.textSummary());
-				}
-				jDebug.put(JSON_D_INTS, jInts);
-			}
-
-			result.put(JSON_DEBUG, jDebug);
-		}
+//		if (this.debug) {
+//			CeStoreJsonObject jDebug = new CeStoreJsonObject();
+//			jDebug.put(JSON_ET, System.currentTimeMillis() - this.startTime);
+//			createJsonAlerts(jDebug);
+//
+//			if (!this.interpretations.isEmpty()) {
+//				for (Interpretation thisInt : this.interpretations) {
+//					jInts.add(thisInt.textSummary());
+//				}
+//				jDebug.put(JSON_D_INTS, jInts);
+//			}
+//
+//			result.put(JSON_DEBUG, jDebug);
+//		}
 
 		return result;
 	}
@@ -306,9 +304,9 @@ public class QuestionHelpHandler extends QuestionHandler {
 			Collections.sort(this.suggestions);
 		}
 
-		if (this.debug) {
-			this.interpretations = InterpretationSummary.generateInterpretations(this.allWords);
-		}
+//		if (this.debug) {
+//			this.interpretations = InterpretationSummary.generateInterpretations(this.allWords);
+//		}
 
 		result = createJsonResponse();
 		reportDebug("createResult=" + new Long(System.currentTimeMillis() - st).toString(), this.ac);

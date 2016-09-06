@@ -19,11 +19,9 @@ import com.ibm.ets.ita.ce.store.StoreActions;
 import com.ibm.ets.ita.ce.store.client.web.ServletStateManager;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonParser;
-import com.ibm.ets.ita.ce.store.hudson.helper.ConvConfig;
 import com.ibm.ets.ita.ce.store.hudson.helper.HudsonManager;
+import com.ibm.ets.ita.ce.store.hudson.model.ConvConfig;
 import com.ibm.ets.ita.ce.store.model.CeRule;
-import com.ibm.ets.ita.ce.store.model.container.ContainerSentenceLoadResult;
-import com.ibm.ets.ita.ce.store.utilities.GeneralUtilities;
 
 public class ModelDirectoryHandler extends QuestionHandler {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
@@ -47,7 +45,7 @@ public class ModelDirectoryHandler extends QuestionHandler {
 		CeStoreJsonObject result = new CeStoreJsonObject();	
 		StringBuilder stringBuilder = new StringBuilder();
 		try{
-		    URL url = new URL("http://ce-models.eu-gb.mybluemix.net");
+		    URL url = new URL(this.ac.getModelBuilder().getModelDirectoryUrl());
 		    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 		    conn.setRequestMethod("GET");
 		    BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));

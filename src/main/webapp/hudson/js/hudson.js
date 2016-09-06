@@ -24,6 +24,7 @@ function Hudson(pJsDebug) {
 	var DOM_QT = 'questionText';
 	var DOM_QP = 'questionPos';
 	var DOM_AT = 'answer';
+	var DOM_JT = 'json';
 	var DOM_PQ = 'parsedQuestion';
 	var DOM_EP = 'endpoint';
 	var DOM_DB = 'debug';
@@ -353,6 +354,7 @@ function Hudson(pJsDebug) {
 
 	this.clearAnswerText = function() {
 		setTextIn(DOM_AT, '');
+		setTextIn(DOM_JT, '');
 	};
 
 	this.executeSpecificQuestion = function(pQuestionText, pCbf) {
@@ -372,7 +374,7 @@ function Hudson(pJsDebug) {
 		var qText = getTextFrom(DOM_QT);
 		var cbf = function(pResponse) {gHudson.updateInterpretation(pResponse);};
 
-		setTextIn(DOM_AT, '');
+		this.clearAnswerText();
 
 		this.interpretSpecificQuestion(qText, cbf);
 	};
@@ -381,42 +383,13 @@ function Hudson(pJsDebug) {
 		var qText = JSON.stringify(this.lastInterpretation);
 		var cbf = function(pResponse) {gHudson.updateRawAnswer(pResponse);};
 
-		setTextIn(DOM_AT, '');
+		this.clearAnswerText();
 
 		this.answerSpecificInterpretation(qText, cbf);
 	};
 
 	this.answerSpecificInterpretation = function(pQuestionText, pCbf) {
 		sendAnswerInterpretationRequest(pQuestionText, pCbf, this.isDebug());
-	};
-
-	this.showInterpretations = function() {
-		var intText = '';
-
-		if (this.cachedHelp != null) {
-			if (this.cachedHelp.debug != null) {
-				var rawInts = this.cachedHelp.debug.interpretations;
-
-				if (rawInts != null) {
-					intText += '<ol>';
-					for (var i = 0; i < rawInts.length; i++) {
-						var thisInt = rawInts[i];
-						intText += '<li>' + thisInt + '</li>';
-					}
-					intText += '</ol>';
-				}
-			}
-		}
-
-		if (intText == '') {
-			if (this.isDebug()) {
-				intText = 'No interpretations were returned<br/><br/>';
-			} else {
-				intText = 'You need to switch on debug mode before interpretations are returned<br/><br/>';
-			}
-		}
-
-		setTextIn(DOM_PQ, intText);
 	};
 
 	this.updateInterpretation = function(pResponse) {
@@ -434,35 +407,36 @@ function Hudson(pJsDebug) {
 	this.renderInterpretation = function(pResponse) {
 		var result = null;
 		var confExp = null;
+		var question = pResponse.question;
+		var interpretation = pResponse.interpretations[0];
 
 		result = "<table border='1'>";
 		result += "<tr><td><b>Word</b></td><td><b>Matches</b></td></tr>";
 
-		for (var i in pResponse.words) {
+		for (var i in question.words) {
 			result += "<tr>";
-			result += "<td>" + pResponse.words[i] + "</td>";
-			result += "<td>" + seekMatches(i, pResponse) + "</td>";
+			result += "<td>" + question.words[i] + "</td>";
+			result += "<td>" + seekMatches(i, interpretation.result) + "</td>";
 			result += "</tr>";
 		}
 
 		result += "</table>";
 
-		if (pResponse.confidence_explanation != '') {
-			confExp = " (" + pResponse.confidence_explanation + ")";
+		if (interpretation.explanation) {
+			confExp = " (" + interpretation.explanation + ")";
 		} else {
 			confExp = '';
 		}
-
-		result += "Confidence = " + pResponse.confidence + "%" + confExp;
+		
+		result += "Confidence = " + interpretation.confidence + "%" + confExp;
 		result += "<br><br>";
 
 		result += "<a href=\"javascript:gHudson.answerInterpretation();\">Send this interpretation for answer</a>";
 
 		result += "<br><br>";
 
-		result += JSON.stringify(pResponse);
-
 		setTextIn(DOM_AT, result);
+		setTextIn(DOM_JT, JSON.stringify(pResponse, null, 4));
 	};
 
 	function seekMatches(pIdx, pResponse) {
@@ -471,32 +445,32 @@ function Hudson(pJsDebug) {
 		for (var i in pResponse.concepts) {
 			var thisCon = pResponse.concepts[i];
 
-			if (thisCon.position == pIdx) {
-				result += "\"" + i + "\" = " + htmlForConcept(thisCon);
+			if (thisCon["start position"] == pIdx) {
+				result += "\"" + thisCon.phrase + "\" = " + htmlForConcept(thisCon);
 			}
 		}
 
 		for (var i in pResponse.properties) {
 			var thisProp = pResponse.properties[i];
 
-			if (thisProp.position == pIdx) {
-				result += "\"" + i + "\" = " + htmlForProperty(thisProp);
+			if (thisProp["start position"] == pIdx) {
+				result += "\"" + thisProp.phrase + "\" = " + htmlForProperty(thisProp);
 			}
 		}
 
 		for (var i in pResponse.instances) {
 			var thisInst = pResponse.instances[i];
 
-			if (thisInst.position == pIdx) {
-				result += "\"" + i + "\" = " + htmlForInstance(thisInst);
+			if (thisInst["start position"] == pIdx) {
+				result += "\"" + thisInst.phrase + "\" = " + htmlForInstance(thisInst);
 			}
 		}
 
 		for (var i in pResponse.specials) {
 			var thisSpec = pResponse.specials[i];
 
-			if (thisSpec.position == pIdx) {
-				result += "\"" + i + "\" = " + htmlForSpecial(thisSpec);
+			if (thisSpec["start position"] == pIdx) {
+				result += "\"" + thisSpec.phrase + "\" = " + htmlForSpecial(thisSpec);
 			}
 		}
 
@@ -504,28 +478,52 @@ function Hudson(pJsDebug) {
 	}
 
 	function htmlForConcept(pCon) {
-		var result = null;
+		var result = "";
 
-		result = "<a title='" + JSON.stringify(pCon) + "'><font color='blue'>" + pCon.instance._id + "</font></a> (";
-		result += htmlConceptSummary(pCon.instance) + ")<br>";
+		for (var i in pCon.entities) {
+			var entity = pCon.entities[i];
+			
+			if (result != "") {
+				result += ", ";
+			}
+
+			result += "<a title='" + JSON.stringify(entity) + "'><font color='blue'>" + entity._id + "</font></a> (";
+			result += htmlConceptSummary(entity) + ")<br>";
+		}
 
 		return result;
 	}
 
 	function htmlForProperty(pProp) {
-		var result = null;
+		var result = "";
 
-		result = "<a title='" + JSON.stringify(pProp) + "'><font color='blue'>" + pProp.instance._id + "</font></a> (";
-		result += htmlPropertySummary(pProp.instance) + ")<br>";
+		for (var i in pProp.entities) {
+			var entity = pProp.entities[i];
+			
+			if (result != "") {
+				result += ", ";
+			}
+
+			result = "<a title='" + JSON.stringify(entity) + "'><font color='blue'>" + entity._id + "</font></a> (";
+			result += htmlPropertySummary(entity) + ")<br>";
+		}
 
 		return result;
 	}
 
 	function htmlForInstance(pInst) {
-		var result = null;
+		var result = "";
 
-		result = "<a title='" + JSON.stringify(pInst) + "'><font color='blue'>" + pInst.instance._id + "</font></a> (";
-		result += htmlInstanceSummary(pInst.instance) + ")<br>";
+		for (var i in pInst.entities) {
+			var entity = pInst.entities[i];
+			
+			if (result != "") {
+				result += ", ";
+			}
+
+			result = "<a title='" + JSON.stringify(entity) + "'><font color='blue'>" + entity._id + "</font></a> (";
+			result += htmlInstanceSummary(entity) + ")<br>";
+		}
 
 		return result;
 	}
@@ -533,7 +531,7 @@ function Hudson(pJsDebug) {
 	function htmlForSpecial(pSpec) {
 		var result = null;
 
-		result = "<a title='" + JSON.stringify(pSpec) + "'><font color='blue'>" + pSpec.name + "</font></a> (" + pSpec.type + ")<br>";
+		result = "<a title='" + JSON.stringify(pSpec) + "'><font color='blue'>" + pSpec.phrase + "</font></a> (" + pSpec.type + ")<br>";
 
 		return result;
 	}
@@ -583,6 +581,8 @@ function Hudson(pJsDebug) {
 	this.updateAnswer = function(pResponse) {
 		this.cachedAnswer = pResponse;
 
+		this.clearAnswerText();
+
 		if (this.isLoggingResults()) {
 			this.reportLog(JSON.stringify(pResponse));
 		}
@@ -599,6 +599,7 @@ function Hudson(pJsDebug) {
 
 		if (pResponse != null) {
 			setTextIn(DOM_AT, htmlFormat(pResponse));
+			setTextIn(DOM_JT, pResponse);
 		}
 	};
 
@@ -634,51 +635,51 @@ function Hudson(pJsDebug) {
 						}
 
 						var answered = false;
-						var confText = '<i>confidence for this answer=<font color="green">' + answer.answer_confidence + '</font></i>';
+						var confText = '<i>confidence for this answer=<font color="green">' + answer.confidence + '</font></i>';
 
-						var intText = ', <i>interpretation=<b>' + answer.question_interpretation + '</b></i>';
+//						var intText = ', <i>interpretation=<b>' + answer.question_interpretation + '</b></i>'; 
 
 						if (this.chattyAnswers) {
 							if ((answer.chatty_text != null) && (answer.chatty_text != '')) {
 								answerText += bullet + '<b>' + htmlFormat(answer.chatty_text) + '</b>';
-								answerText += '<br/>[' + confText + intText + ']';
+								answerText += '<br/>[' + confText  + ']';
 								answered = true;
 							}
 						}
 
 						if (!answered) {
-							if (answer.result_text != null) {
-								answerText += bullet + '<b>' + htmlFormat(answer.result_text) + '</b>';
-							} else if (answer.result_set != null) {
-								answerText += bullet + createHtmlForResultSet(answer.result_set);
-							} else if (answer.result_media != null) {
-								answerText += bullet + createHtmlForMedia(answer.result_media);
-							} else if (answer.result_coords != null) {
-								answerText += bullet + createHtmlForCoords(answer.result_coords);
-							} else if (answer.result_code != null) {
-								answerText += bullet + '<b>' + answer.result_code + ': ' + answer.chatty_text + '</b>';
+							if (answer["result text"] != null) {
+								answerText += bullet + '<b>' + htmlFormat(answer["result text"]) + '</b>';
+							} else if (answer["result set"] != null) {
+								answerText += bullet + createHtmlForResultSet(answer["result set"]);
+							} else if (answer["result media"] != null) {
+								answerText += bullet + createHtmlForMedia(answer["result media"]);
+							} else if (answer["result coords"] != null) {
+								answerText += bullet + createHtmlForCoords(answer["result coords"]);
+							} else if (answer["result code"] != null) {
+								answerText += bullet + '<b>' + answer["result code"] + ': ' + answer["chatty text"] + '</b>';
 							} else {
 								answerText += bullet + '<b>NO ANSWER FOUND!</b>';
 							}
 
 							if (answer.source != null) {
-								answerText += '<br/>[<i>source:<a href="' + answer.source.url + '">' + answer.source.name + '</a>, ' + confText + intText + '</i>]';
+								answerText += '<br/>[<i>source:<a href="' + answer.source.url + '">' + answer.source.name + '</a>, ' + confText + '</i>]';
 							} else {
-								answerText += '<br/>[' + confText + intText + ']';
+								answerText += '<br/>[' + confText + ']';
 							}
 						}
 					}
 				} else {
-					if (pResponse.system_message != null) {
-						answerText = '<font color="green">' + pResponse.system_message + '</font>';
+					if (pResponse["system message"] != null) {
+						answerText = '<font color="green">' + pResponse["system message"] + '</font>';
 						//Note that for management responses the execution time comes back in the root, not in the debug
-						answerText += '<br/>Execution time (ms): <font color="red">' + pResponse.execution_time_ms + '</font>';
+						answerText += '<br/>Execution time (ms): <font color="red">' + pResponse["execution time"] + '</font>';
 					}
 				}
 
-				if (question != null) {
-					answerText = '[<i>interpretation confidence=<font color="green">' + question.interpretation_confidence + '</font></i>, <i>ability to answer confidence=<font color="green">' + question.ability_to_answer_confidence + '</font></i>]<br/><br/>' + answerText;
-				}
+//				if (question != null) {
+//					answerText = '[<i>interpretation confidence=<font color="green">' + question.confidence + '</font></i>, <i>ability to answer confidence=<font color="green">' + question.ability_to_answer_confidence + '</font></i>]<br/><br/>' + answerText;
+//				}
 
 				if (alerts != null) {
 					if (alerts.errors != null) {
@@ -719,6 +720,7 @@ function Hudson(pJsDebug) {
 			}
 
 			setTextIn(DOM_AT, answerText);
+			setTextIn(DOM_JT, JSON.stringify(pResponse, null, 4));
 		}
 	};
 
@@ -731,22 +733,22 @@ function Hudson(pJsDebug) {
 			var debug = pResponse.debug;
 
 			if (debug != null) {
-				if (debug.execution_time_ms != null) {
-					pqText += 'Execution time (ms): <font color="red">' + debug.execution_time_ms + '</font>';
+				if (debug["execution time"] != null) {
+					pqText += 'Execution time (ms): <font color="red">' + debug["execution time"] + '</font>';
 				}
 			}
 
 			for (var idx in pResponse.suggestions) {
 				var thisSugg = pResponse.suggestions[idx];
-				var qt = thisSugg.question_text;
+				var qt = thisSugg["question text"];
 				var wholeSugg = '';
 
 				if (pqText !== '') {
 					pqText += '<br>';
 				}
 
-				var bt = thisSugg.before_text;
-				var at = thisSugg.after_text;
+				var bt = thisSugg["before text"];
+				var at = thisSugg["after text"];
 
 				if (bt != null) {
 					pqText += '<b>' + bt + '</b>';
@@ -982,7 +984,7 @@ function Hudson(pJsDebug) {
 			if (pCoords.postcode != null) {
 				//lat lon and postcode
 				hdrs = [ 'id', 'lat', 'lon' , 'postcode', 'address line 1'];
-				rows = [ [ pCoords.id, pCoords.lat, pCoords.lon, pCoords.postcode, , pCoords.address_line_1 ] ];
+				rows = [ [ pCoords.id, pCoords.lat, pCoords.lon, pCoords.postcode, , pCoords["address line 1"] ] ];
 			} else {
 				//lat lon only
 				hdrs = [ 'id', 'lat', 'lon' ];
@@ -991,7 +993,7 @@ function Hudson(pJsDebug) {
 		} else {
 			//No lat lon
 			hdrs = [ 'id', 'postcode', 'address line 1' ];
-			rows = [ [ pCoords.id, pCoords.postcode, pCoords.address_line_1 ] ];
+			rows = [ [ pCoords.id, pCoords.postcode, pCoords["address line 1"] ] ];
 		}
 
 		result = renderTable(hdrs, rows);

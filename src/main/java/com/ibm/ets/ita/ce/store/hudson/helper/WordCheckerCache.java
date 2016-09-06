@@ -11,8 +11,9 @@ import java.util.TreeMap;
 
 import com.ibm.ets.ita.ce.store.ActionContext;
 import com.ibm.ets.ita.ce.store.client.web.ServletStateManager;
-import com.ibm.ets.ita.ce.store.conversation.model.ProcessedWord;
 import com.ibm.ets.ita.ce.store.hudson.handler.GenericHandler;
+import com.ibm.ets.ita.ce.store.hudson.model.ConvConfig;
+import com.ibm.ets.ita.ce.store.hudson.model.conversation.ProcessedWord;
 import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
 import com.ibm.ets.ita.ce.store.model.CeProperty;

@@ -14,14 +14,15 @@ import com.ibm.ets.ita.ce.store.ActionContext;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonArray;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
 import com.ibm.ets.ita.ce.store.client.web.model.CeWebInstance;
-import com.ibm.ets.ita.ce.store.conversation.model.MatchedItem;
-import com.ibm.ets.ita.ce.store.conversation.model.ProcessedWord;
-import com.ibm.ets.ita.ce.store.hudson.helper.Question;
-import com.ibm.ets.ita.ce.store.hudson.special.SpCollection;
-import com.ibm.ets.ita.ce.store.hudson.special.SpEnumeratedConcept;
-import com.ibm.ets.ita.ce.store.hudson.special.SpLinkedInstance;
-import com.ibm.ets.ita.ce.store.hudson.special.SpMatchedTriple;
-import com.ibm.ets.ita.ce.store.hudson.special.SpNumber;
+import com.ibm.ets.ita.ce.store.hudson.model.Question;
+import com.ibm.ets.ita.ce.store.hudson.model.conversation.MatchedItem;
+import com.ibm.ets.ita.ce.store.hudson.model.conversation.ProcessedWord;
+import com.ibm.ets.ita.ce.store.hudson.model.special.SpCollection;
+import com.ibm.ets.ita.ce.store.hudson.model.special.SpEnumeratedConcept;
+import com.ibm.ets.ita.ce.store.hudson.model.special.SpLinkedInstance;
+import com.ibm.ets.ita.ce.store.hudson.model.special.SpMatchedTriple;
+import com.ibm.ets.ita.ce.store.hudson.model.special.SpMultiMatch;
+import com.ibm.ets.ita.ce.store.hudson.model.special.SpNumber;
 import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
 import com.ibm.ets.ita.ce.store.model.CeProperty;
@@ -56,6 +57,7 @@ public class QuestionInterpreterHandler extends QuestionHandler {
 	private static final String CON_QWORD = "question word";
 	private static final String CON_COMWORD = "common word";
 	private static final String CON_CONNWORD = "connector word";
+	private static final String CON_MULTIMATCH = "multimatch thing";
 
 	private static final String[] CONLIST_OTHERS = { CON_QPHRASE, CON_QWORD, CON_COMWORD, CON_MODIFIER, CON_CONNWORD };
 
@@ -68,6 +70,7 @@ public class QuestionInterpreterHandler extends QuestionHandler {
 	private ArrayList<SpCollection> collections = new ArrayList<SpCollection>();
 	private ArrayList<SpLinkedInstance> linkedInstances = new ArrayList<SpLinkedInstance>();
 	private ArrayList<SpMatchedTriple> matchedTriples = new ArrayList<SpMatchedTriple>();
+	private ArrayList<SpMultiMatch> multiMatches = new ArrayList<SpMultiMatch>();
 
 	public QuestionInterpreterHandler(ActionContext pAc, boolean pDebug, String pQt, long pStartTime) {
 		super(pAc, pDebug, Question.create(pQt), pStartTime);		
@@ -106,6 +109,30 @@ public class QuestionInterpreterHandler extends QuestionHandler {
 
 					result.add(jInst);
 				}
+			}
+		}
+
+		return result;
+	}
+
+	public static CeStoreJsonObject jsonForMatchedItemInstance(ActionContext pAc, MatchedItem pMi) {
+		CeStoreJsonObject result = new CeStoreJsonObject();
+
+		if (pMi.hasInstance()) {
+			ProcessedWord thisWord = pMi.getFirstWord();
+
+			TreeMap<String, ArrayList<MatchedItem>> instMap = thisWord.getMatchedItemInstanceMap();
+
+			for (String thisKey : instMap.keySet()) {
+				ArrayList<MatchedItem> instList = instMap.get(thisKey);
+				CeStoreJsonArray eArr = new CeStoreJsonArray();
+				MatchedItem firstItem = instList.get(0);
+
+				for (MatchedItem mi : instList) {
+					eArr.add(jsonFor(pAc, mi.getInstance()));
+				}
+
+				result = jsonForMatchedItem(firstItem, eArr);
 			}
 		}
 
@@ -284,6 +311,7 @@ public class QuestionInterpreterHandler extends QuestionHandler {
 		analyseCollections();
 		analyseLinkedConcepts();
 		analyseMatchedTriples();
+		analyseMultiMatches();
 	}
 
 	private void analyseMatchedTriples() {
@@ -340,6 +368,52 @@ public class QuestionInterpreterHandler extends QuestionHandler {
 
 						SpMatchedTriple mt = new SpMatchedTriple(phraseText, startPos, endPos, thisMi, subjectList, objectList);
 						this.matchedTriples.add(mt);
+					}
+				}
+			}
+		}
+	}
+
+	private void analyseMultiMatches() {
+		ArrayList<MatchedItem> allInstMis = new ArrayList<MatchedItem>();
+
+		for (ProcessedWord thisWord : this.allWords) {
+			for (MatchedItem thisMi : thisWord.getMatchedItems()) {
+				if (thisMi.hasInstance()) {
+					if (!allInstMis.contains(thisMi)) {
+						allInstMis.add(thisMi);
+					}
+				}
+			}
+		}
+
+		if (allInstMis.size() > 1) {
+			for (MatchedItem mi1 : allInstMis) {
+				CeInstance inst1 = mi1.getInstance();
+
+				for (CePropertyInstance thisPi : inst1.getReferringPropertyInstances()) {
+					CeInstance relInst = thisPi.getRelatedInstance();
+
+					if (relInst != null) {
+						if (relInst.isConceptNamed(this.ac, CON_MULTIMATCH)) {
+							for (CeInstance inst2 : relInst.getAllRelatedInstances(this.ac)) {
+								if (!inst2.equals(inst1)) {
+									for (MatchedItem mi2 : allInstMis) {
+										if (mi2.getInstance().equals(inst2)) {
+											int pos1 = mi1.getStartPos();
+											int pos2 = mi2.getEndPos();
+											
+											if (pos2 > pos1) {
+												String phraseText = mi1.getPhraseText() + " " + mi2.getPhraseText();
+												SpMultiMatch smm = new SpMultiMatch(phraseText, pos1, pos2, mi1, mi2, relInst);
+
+												this.multiMatches.add(smm);
+											}
+										}
+									}
+								}
+							}
+						}
 					}
 				}
 			}
@@ -853,6 +927,7 @@ public class QuestionInterpreterHandler extends QuestionHandler {
 		createJsonForEnumeratedConceptSpecials(result);
 		createJsonForLinkedInstanceSpecials(result);
 		createJsonForMatchedTripleSpecials(result);
+		createJsonForMultiMatchSpecials(result);
 
 		return result;
 	}
@@ -902,6 +977,16 @@ public class QuestionInterpreterHandler extends QuestionHandler {
 			for (SpMatchedTriple smt : this.matchedTriples) {
 				if (thisWord.getWordPos() == smt.getStartPos()) {
 					pResult.add(smt.toJson(this.ac));
+				}
+			}
+		}
+	}
+
+	private void createJsonForMultiMatchSpecials(CeStoreJsonArray pResult) {
+		for (ProcessedWord thisWord : this.allWords) {
+			for (SpMultiMatch smm : this.multiMatches) {
+				if (thisWord.getWordPos() == smm.getStartPos()) {
+					pResult.add(smm.toJson(this.ac));
 				}
 			}
 		}

@@ -23,6 +23,7 @@ import javax.naming.NamingException;
 import com.ibm.ets.ita.ce.store.ActionContext;
 import com.ibm.ets.ita.ce.store.IndexedEntityAccessor;
 import com.ibm.ets.ita.ce.store.ModelBuilder;
+import com.ibm.ets.ita.ce.store.hudson.model.ConvConfig;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
 
 public class HudsonManager {

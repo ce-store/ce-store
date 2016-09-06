@@ -95,6 +95,7 @@ public class ModelBuilder implements PersistableStore {
 	private ArrayList<String> tempWarnings = null;
 
 	private UidManager uidMgr = null;
+	private String modelDirectoryUrl = "http://ce-models.eu-gb.mybluemix.net";
 
 	private ModelBuilder(ActionContext pAc, String pCeStoreName) {
 		// private so new instances can only be created via the static method
@@ -108,6 +109,14 @@ public class ModelBuilder implements PersistableStore {
 		return newMb;
 	}
 
+	public String getModelDirectoryUrl() {
+		return this.modelDirectoryUrl;
+	}
+
+	public void setModelDirectoryUrl(String pVal) {
+		this.modelDirectoryUrl = pVal;
+	}
+	
 	@Override
 	public void reset(ActionContext pAc) {
 		// Create empty collections for each of the relevant properties

@@ -21,6 +21,7 @@ public class BuilderSentenceCommand extends BuilderSentence {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
 
 	private static final String VARNAME_ARR = "autorun rules";
+	private static final String VARNAME_MDU = "model directory url";
 	private static final String VARVAL_TRUE = "true";
 
 	private static final String CMD_RESET = "reset";
@@ -634,6 +635,8 @@ public class BuilderSentenceCommand extends BuilderSentence {
 				pAc.getCeConfig().setAutoRunRules(false);
 				pAc.markAsAutoExecuteRules(false);
 			}
+		} else if (varName.equals(VARNAME_MDU)) {
+			pAc.getModelBuilder().setModelDirectoryUrl(varVal);
 		}
 	}
 

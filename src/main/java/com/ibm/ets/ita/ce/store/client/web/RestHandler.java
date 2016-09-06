@@ -11,7 +11,6 @@ import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportExcept
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;

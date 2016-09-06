@@ -8,13 +8,11 @@ package com.ibm.ets.ita.ce.store.hudson.handler;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportException;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import com.ibm.ets.ita.ce.store.client.web.WebActionContext;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
-import com.ibm.ets.ita.ce.store.hudson.helper.ChosenWord;
-import com.ibm.ets.ita.ce.store.hudson.helper.Question;
+import com.ibm.ets.ita.ce.store.hudson.model.Question;
 
 public class QuestionExecutionHandler extends QuestionHandler {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
@@ -70,7 +68,7 @@ public class QuestionExecutionHandler extends QuestionHandler {
 
 //	private QuestionInterpreter qi = null;
 //	private AnswerReply reply = null;
-	protected ArrayList<ChosenWord> chosenWords = null;
+//	protected ArrayList<ChosenWord> chosenWords = null;
 	String resultTitleSingle = null;
 	String resultTitlePlural = null;
 
@@ -79,7 +77,7 @@ public class QuestionExecutionHandler extends QuestionHandler {
 	public QuestionExecutionHandler(WebActionContext pWc, boolean pDebug, String pQt, long pStartTime) {
 		super(pWc, pDebug, Question.create(pQt), pStartTime);
 
-		this.chosenWords = new ArrayList<ChosenWord>();
+//		this.chosenWords = new ArrayList<ChosenWord>();
 	}
 
 	@Override

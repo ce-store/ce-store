@@ -368,27 +368,27 @@ The following example JSON is returned from answerer API requests:
     <span id="json-object">}</span><span id="json-comma">, </span>
     <span id="json-key">"answers"</span>: <span id="json-array">[</span>
       <span id="json-object">{</span>
-        <span id="json-key">"result_text"</span>: <span id="json-value">"Spin of a ball where the top of the ball rotates away..."</span>,
-        <span id="json-key">"chatty_text"</span>: <span id="json-value">"According to wikipedia ‘underspin’ means: Spin of a ball..."</span>,
+        <span id="json-key">"result text"</span>: <span id="json-value">"Spin of a ball where the top of the ball rotates away..."</span>,
+        <span id="json-key">"chatty text"</span>: <span id="json-value">"According to wikipedia ‘underspin’ means: Spin of a ball..."</span>,
         <span id="json-key">"source"</span>: <span id="json-object">{</span>
           <span id="json-key">"name"</span>: <span id="json-value">"wikipedia:Glossary_of_tennis_terms"</span>,
           <span id="json-key">"url"</span>: <span id="json-value">"http:\/\/en.wikipedia.org\/wiki\/Glossary_of_tennis_terms"</span>
         <span id="json-object">}</span>,
-        <span id="json-key">"answer_confidence"</span>: <span id="json-value">100</span>
+        <span id="json-key">"confidence"</span>: <span id="json-value">100</span>
       <span id="json-object">}</span>
     <span id="json-array">]</span>
   <span id="json-object">}</span>
 </pre>
 </div>
 
-In the example above a simple <span id="json-key">result_text</span> response is shown, however this element can be replaced by any one of the more complex alternatives depending on the type of answer that is returned:
+In the example above a simple <span id="json-key">result text</span> response is shown, however this element can be replaced by any one of the more complex alternatives depending on the type of answer that is returned:
 <ul>
  <li>
-  A simple single answer (<span id="json-key">result_text</span>)
+  A simple single answer (<span id="json-key">result text</span>)
   <br/>
   e.g. returned when asking: <span id="http-value">what is underspin?</span>
   <pre>
-    <span id="json-key">"result_text"</span>: <span id="json-value">"Spin of a ball where the top of the ball rotates away..."</span>,
+    <span id="json-key">"result text"</span>: <span id="json-value">"Spin of a ball where the top of the ball rotates away..."</span>,
   </pre>
  </li>
  <li>
@@ -412,7 +412,7 @@ In the example above a simple <span id="json-key">result_text</span> response is
   <br/>
   e.g. returned when asking: <span id="http-value">what does Andy Murray look like?</span>
   <br/>
-  Use of these codes enables the UI to substitute an appropriate response to the user but there will also be a <span id="json_key">chatty_text</span> element in the reponse too which contains more description.
+  Use of these codes enables the UI to substitute an appropriate response to the user but there will also be a <span id="json_key">chatty text</span> element in the reponse too which contains more description.
   <br/>
   For a full list of <span id="json-key">result_code</span> values <a href="#result_code_values">click here</a>.
   <pre>
@@ -477,7 +477,7 @@ There are three confidence values returned by the question executor API.  Each w
   </ul>
  </li>
  <li>
-  <span id="json-key">ability_to_answer_confidence</span> (applies to the <span id="json-key">question</span>)
+  <span id="json-key">ability_to_confidence</span> (applies to the <span id="json-key">question</span>)
   <br/>
   This value is not currently populated but an algorithm will be introduced shortly.  The purpose of this value is to convey how likely the question is able to be answered.
   <br/>
@@ -488,7 +488,7 @@ There are three confidence values returned by the question executor API.  Each w
   Conveying the lack of data back to the users may inspire additional efforts by the community to crowd source the missing data, or map additional data sources that contain it.
  </li>
  <li>
-  <span id="json-key">answer_confidence</span> (applies to each <span id="json-key">answer</span>)
+  <span id="json-key">confidence</span> (applies to each <span id="json-key">answer</span>)
   <br/>
   This is computed for each answer that it returned.  It may be different for different answers.
   <br/>
@@ -496,9 +496,9 @@ There are three confidence values returned by the question executor API.  Each w
   <br/>
   Each answer may be modified by the credibility of the source (e.g. a source with 80% credibility will result in 80% of the <span id="emphasize">interpretation_confidence</span> being returned for that question).
   <br/>
-  In the event of a technical error such as a SQL failure the <span id="emphasize">answer_confidence</span> is set to 0.
+  In the event of a technical error such as a SQL failure the <span id="emphasize">confidence</span> is set to 0.
   <br/>  
-  Additionally, certain <span id="json-key">result_code</span> responses return predefined <span id="emphasize">answer_confidence</span> values.
+  Additionally, certain <span id="json-key">result_code</span> responses return predefined <span id="emphasize">confidence</span> values.
  </li>
 </ul>
 </div>

@@ -9,18 +9,21 @@ import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportDebug;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 
 import com.ibm.ets.ita.ce.store.ActionContext;
+import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonArray;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonParser;
-import com.ibm.ets.ita.ce.store.hudson.helper.Question;
-import com.ibm.ets.ita.ce.store.hudson.special.SpCollection;
-import com.ibm.ets.ita.ce.store.hudson.special.SpEnumeratedConcept;
-import com.ibm.ets.ita.ce.store.hudson.special.SpLinkedInstance;
-import com.ibm.ets.ita.ce.store.hudson.special.SpMatchedTriple;
-import com.ibm.ets.ita.ce.store.hudson.special.SpThing;
+import com.ibm.ets.ita.ce.store.hudson.model.ConceptPhrase;
+import com.ibm.ets.ita.ce.store.hudson.model.InstancePhrase;
+import com.ibm.ets.ita.ce.store.hudson.model.Interpretation;
+import com.ibm.ets.ita.ce.store.hudson.model.PropertyPhrase;
+import com.ibm.ets.ita.ce.store.hudson.model.Question;
+import com.ibm.ets.ita.ce.store.hudson.model.SpecialPhrase;
+import com.ibm.ets.ita.ce.store.hudson.model.special.SpMatchedTriple;
+import com.ibm.ets.ita.ce.store.hudson.model.special.SpMultiMatch;
+import com.ibm.ets.ita.ce.store.hudson.model.special.SpThing;
 import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
 import com.ibm.ets.ita.ce.store.model.CeProperty;
@@ -28,11 +31,6 @@ import com.ibm.ets.ita.ce.store.model.CePropertyInstance;
 
 public class QuestionAnswererHandler extends QuestionHandler {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
-
-	private static final String SPTYPE_ENCCON = "enumerated-concept";
-	private static final String SPTYPE_COLL = "collection";
-	private static final String SPTYPE_MT = "matched-triple";
-	private static final String SPTYPE_LI = "linked-instance";
 
 	private static final String MOD_EXPAND = "general:expand";
 	private static final String MOD_LINKSFROM = "general:linksFrom";
@@ -58,10 +56,7 @@ public class QuestionAnswererHandler extends QuestionHandler {
 	private String interpretationJson = null;
 	private String answerText = "";
 
-	ArrayList<CeConcept> allConcepts = null;
-	ArrayList<CeProperty> allProperties = null;
-	ArrayList<CeInstance> allInstances = null;
-	ArrayList<SpThing> allSpecials = null;
+	private Interpretation interpretation = null;
 
 	HashSet<CeInstance> domainInstances = null;
 	HashSet<CeInstance> otherInstances = null;
@@ -85,6 +80,26 @@ public class QuestionAnswererHandler extends QuestionHandler {
 		return result;
 	}
 
+	public Interpretation getInterpretation() {
+		return this.interpretation;
+	}
+
+	public ArrayList<ConceptPhrase> getConceptPhrases() {
+		return this.interpretation.getConceptPhrases();
+	}
+	
+	public ArrayList<InstancePhrase> getInstancePhrases() {
+		return this.interpretation.getBestInstancePhrases();
+	}
+	
+	public ArrayList<PropertyPhrase> getPropertyPhrases() {
+		return this.interpretation.getPropertyPhrases();
+	}
+	
+	public ArrayList<SpecialPhrase> getSpecialPhrases() {
+		return this.interpretation.getSpecialPhrases();
+	}
+	
 	private void processInterpretation() {
 		CeStoreJsonObject jObj = null;
 
@@ -98,33 +113,19 @@ public class QuestionAnswererHandler extends QuestionHandler {
 		}
 
 		if (jObj != null) {
-			CeStoreJsonObject jCons = (CeStoreJsonObject)jObj.get(this.ac, "concepts");
-			CeStoreJsonObject jProps = (CeStoreJsonObject)jObj.get(this.ac, "properties");
-			CeStoreJsonObject jInsts = (CeStoreJsonObject)jObj.get(this.ac, "instances");
-			CeStoreJsonObject jSpecs = (CeStoreJsonObject)jObj.get(this.ac, "specials");
+			CeStoreJsonObject jQues = (CeStoreJsonObject)jObj.get(this.ac, "question");
+			CeStoreJsonArray jInts = (CeStoreJsonArray)jObj.get(this.ac, "interpretations");
 
-			if (jCons != null) {
-				this.allConcepts = extractConceptsFrom(jCons);
-			} else {
-				this.allConcepts = new ArrayList<CeConcept>();
-			}
+			this.question = new Question(jQues);
 
-			if (jProps != null) {
-				this.allProperties = extractPropertiesFrom(jProps);
-			} else {
-				this.allProperties = new ArrayList<CeProperty>();
-			}
+			if (!jInts.isEmpty()) {
+				CeStoreJsonObject jFirstInt = (CeStoreJsonObject)jInts.get(0);
 
-			if (jInsts != null) {
-				this.allInstances = extractInstancesFrom(jInsts);
-			} else {
-				this.allInstances = new ArrayList<CeInstance>();
-			}
+				if (jFirstInt != null) {
+					this.interpretation = new Interpretation(this.ac, jFirstInt);
+				}
 
-			if (jSpecs != null) {
-				this.allSpecials = extractSpecialsFrom(jSpecs);
-			} else {
-				this.allSpecials = new ArrayList<SpThing>();
+				//TODO: Need to handle additional interpretations
 			}
 
 			filterInstances();
@@ -134,7 +135,9 @@ public class QuestionAnswererHandler extends QuestionHandler {
 	private void answerQuestion() {
 //		debugInstances();
 
-		if (hasMatchedTriples()) {
+		if (hasMultiMatches()) {
+			tryMultiMatchAnswer();
+		} else if (hasMatchedTriples()) {
 			tryMatchedTripleAnswer();
 		} else {
 			tryNormalAnswer();
@@ -143,9 +146,11 @@ public class QuestionAnswererHandler extends QuestionHandler {
 
 	private boolean hasMatchedTriples() {
 		boolean result = false;
-		
-		if (!this.allSpecials.isEmpty()) {
-			for (SpThing thisSp : this.allSpecials) {
+
+		if (!getSpecialPhrases().isEmpty()) {
+			for (SpecialPhrase thisSpecPhrase : getSpecialPhrases()) {
+				SpThing thisSp = thisSpecPhrase.getSpecial();
+
 				if (thisSp.isMatchedTriple()) {
 					result = true;
 					break;
@@ -155,15 +160,44 @@ public class QuestionAnswererHandler extends QuestionHandler {
 		
 		return result;
 	}
-	
+
+	private boolean hasMultiMatches() {
+		boolean result = false;
+
+		if (!getSpecialPhrases().isEmpty()) {
+			for (SpecialPhrase thisSpecPhrase : getSpecialPhrases()) {
+				SpThing thisSp = thisSpecPhrase.getSpecial();
+
+				if (thisSp.isMultiMatch()) {
+					result = true;
+					break;
+				}
+			}
+		}
+		
+		return result;
+	}
+
 	private void tryMatchedTripleAnswer() {
-		for (SpThing thisSp : this.allSpecials) {
+		for (SpecialPhrase thisSpecPhrase : getSpecialPhrases()) {
+			SpThing thisSp = thisSpecPhrase.getSpecial();
+
 			if (thisSp.isMatchedTriple()) {
 				matchedTripleAnswerFor((SpMatchedTriple)thisSp);
 			}
 		}
 	}
 	
+	private void tryMultiMatchAnswer() {
+		for (SpecialPhrase thisSpecPhrase : getSpecialPhrases()) {
+			SpThing thisSp = thisSpecPhrase.getSpecial();
+
+			if (thisSp.isMultiMatch()) {
+				multiMatchAnswerFor((SpMultiMatch)thisSp);
+			}
+		}
+	}
+
 	private void matchedTripleAnswerFor(SpMatchedTriple pMt) {
 		//TODO: Complete this
 		if (pMt.isFullTriple()) {
@@ -174,10 +208,26 @@ public class QuestionAnswererHandler extends QuestionHandler {
 			appendToAnswer("TBC - matchedTripleAnswerFor (object-based)");			
 		}
 	}
-	
+
+	private void multiMatchAnswerFor(SpMultiMatch pMm) {
+		CeInstance matchedInst = pMm.getMatchedInstance();
+
+		if (matchedInst != null) {
+			String desc = matchedInst.getSingleValueFromPropertyNamed("description");
+
+			if ((desc!= null) && (!desc.isEmpty())) {
+				appendToAnswer(desc);
+			} else {
+				appendToAnswer("TBC - multiMatchAnswerFor (no description)");
+			}
+		} else {
+			appendToAnswer("TBC - multiMatchAnswerFor (no matched instance)");
+		}
+	}
+
 	private void tryNormalAnswer() {
-		if (this.allConcepts.isEmpty()) {
-			if (this.allProperties.isEmpty()) {
+		if (getConceptPhrases().isEmpty()) {
+			if (getPropertyPhrases().isEmpty()) {
 				if (this.domainInstances.isEmpty()) {
 					//no concepts, no properties, no domain instances
 					handleEverythingEmpty();
@@ -195,7 +245,7 @@ public class QuestionAnswererHandler extends QuestionHandler {
 				}
 			}
 		} else {
-			if (this.allProperties.isEmpty()) {
+			if (getPropertyPhrases().isEmpty()) {
 				if (this.domainInstances.isEmpty()) {
 					//some concepts, no properties, no domain instances
 					handleJustConcepts();
@@ -239,7 +289,7 @@ public class QuestionAnswererHandler extends QuestionHandler {
 			handlePropertiesFor(thisInst);
 		}
 	}
-	
+
 	private void handlePropertiesFor(CeInstance pInst) {
 		String result = null;
 		String instName = null;
@@ -248,36 +298,38 @@ public class QuestionAnswererHandler extends QuestionHandler {
 		
 		instName = pInst.getInstanceName();
 		
-		for (CeProperty thisProp : this.allProperties) {
-			for (CePropertyInstance thisPi : pInst.getPropertyInstances()) {
-				CeProperty innerProp = thisPi.getRelatedProperty();
-				
-				if (!innerProp.isStatedProperty()) {
-					innerProp = innerProp.getStatedSourceProperty();
-				}
-
-				if (innerProp.equals(thisProp)) {
-					propName = thisPi.getPropertyName();
+		for (PropertyPhrase thisPp : getPropertyPhrases()) {
+			for (CeProperty thisProp : thisPp.getProperties()) {
+				for (CePropertyInstance thisPi : pInst.getPropertyInstances()) {
+					CeProperty innerProp = thisPi.getRelatedProperty();
 					
-					for (String thisVal : thisPi.getValueList()) {
-						if (propVals == null) {
-							propVals = "";
-						} else {
-							propVals += ", ";
-						}
+					if (!innerProp.isStatedProperty()) {
+						innerProp = innerProp.getStatedSourceProperty();
+					}
 
-						propVals += thisVal;
+					if (innerProp.equals(thisProp)) {
+						propName = thisPi.getPropertyName();
+						
+						for (String thisVal : thisPi.getValueList()) {
+							if (propVals == null) {
+								propVals = "";
+							} else {
+								propVals += ", ";
+							}
+
+							propVals += thisVal;
+						}
 					}
 				}
-			}
-			
-			if (thisProp.isFunctionalNoun()) {
-				result = instName + " has " + propVals + " as " + propName;
-			} else {
-				result = instName + " " + propName + " " + propVals;
-			}
+				
+				if (thisProp.isFunctionalNoun()) {
+					result = instName + " has " + propVals + " as " + propName;
+				} else {
+					result = instName + " " + propName + " " + propVals;
+				}
 
-			appendToAnswer(result);
+				appendToAnswer(result);
+			}
 		}
 	}
 
@@ -288,10 +340,12 @@ public class QuestionAnswererHandler extends QuestionHandler {
 
 	private void handleJustConcepts() {
 		if (isList()) {
-			answerListFor(this.allConcepts);
+			answerListFor(getConceptPhrases());
 		} else {
-			for (CeConcept thisCon : this.allConcepts) {
-				answerConceptQuestionFor(thisCon);
+			for (ConceptPhrase thisCp : getConceptPhrases()) {
+				for (CeConcept thisCon : thisCp.getConcepts()) {
+					answerConceptQuestionFor(thisCon);
+				}
 			}
 		}
 	}
@@ -316,9 +370,11 @@ public class QuestionAnswererHandler extends QuestionHandler {
 		ArrayList<CeInstance> result = new ArrayList<CeInstance>();
 
 		for (CeInstance thisInst : this.domainInstances) {
-			for (CeConcept thisCon : this.allConcepts) {
-				if (thisInst.isConcept(thisCon)) {
-					result.add(thisInst);
+			for (ConceptPhrase thisCp : getConceptPhrases()) {
+				for (CeConcept thisCon : thisCp.getConcepts()) {
+					if (thisInst.isConcept(thisCon)) {
+						result.add(thisInst);
+					}
 				}
 			}
 		}
@@ -470,23 +526,17 @@ public class QuestionAnswererHandler extends QuestionHandler {
 		appendToAnswer("TBC - answerListForInstance: " + pInst.getInstanceName());
 	}
 
-	private void answerListFor(ArrayList<CeConcept> pConList) {
-		HashSet<String> result = new HashSet<String>();
-
-		for (CeConcept thisCon : pConList) {
-			for (CeInstance thisInst : this.ac.getModelBuilder().getAllInstancesForConceptNamed(this.ac, thisCon.getConceptName())) {
-				String answer = answerSummaryFor(thisInst);
-
-				result.add(answer);
-			}			
+	private void answerListFor(ArrayList<ConceptPhrase> pConList) {
+		for (ConceptPhrase thisCp : pConList) {
+			for (CeConcept thisCon : thisCp.getConcepts()) {
+				answerListFor(thisCon);
+			}
 		}
+	}
 
-		ArrayList<String> sortedList = new ArrayList<String>(result);
-		Collections.sort(sortedList);
-		
-		for (String thisAnswer : sortedList) {
-			appendToAnswer(thisAnswer);
-		}
+	private void answerListFor(CeConcept pCon) {
+		//TODO: Complete this
+		appendToAnswer("TBC - answerListForConcept: " + pCon.getConceptName());
 	}
 
 	private void answerShowFor(CeInstance pInst) {
@@ -504,7 +554,16 @@ public class QuestionAnswererHandler extends QuestionHandler {
 	}
 
 	private String answerSummaryFor(CeInstance pInst) {
-		return pInst.getInstanceName() + textForConcepts(pInst);
+		String result = null;
+		String descText = pInst.getSingleValueFromPropertyNamed("description");
+		
+		if ((descText != null) && (!descText.isEmpty())) {
+			result = descText;
+		} else {
+			result = pInst.getInstanceName() + textForConcepts(pInst);
+		}
+		
+		return result;
 	}
 
 	private String textForConcepts(CeInstance pInst) {
@@ -596,115 +655,22 @@ public class QuestionAnswererHandler extends QuestionHandler {
 		this.domainInstances = new HashSet<CeInstance>();
 		this.otherInstances = new HashSet<CeInstance>();
 
-		for (CeInstance thisInst : this.allInstances) {
-			boolean alreadyProcessed = false;
+		for (InstancePhrase thisIp : getInstancePhrases()) {
+			for (CeInstance thisInst : thisIp.getInstances()) {
+				boolean alreadyProcessed = false;
 
-			if (!thisInst.isOnlyConceptNamed(this.ac, CON_CONFCON)) {
-				if (thisInst.isConceptNamed(this.ac, CONLIST_OTHERS)) {
-					this.otherInstances.add(thisInst);
-					alreadyProcessed = true;
+				if (!thisInst.isOnlyConceptNamed(this.ac, CON_CONFCON)) {
+					if (thisInst.isConceptNamed(this.ac, CONLIST_OTHERS)) {
+						this.otherInstances.add(thisInst);
+						alreadyProcessed = true;
+					}
+
+					if (!alreadyProcessed) {
+						this.domainInstances.add(thisInst);
+					}
 				}
-
-				if (!alreadyProcessed) {
-					this.domainInstances.add(thisInst);
-				}
 			}
 		}
-	}
-
-	private ArrayList<CeConcept> extractConceptsFrom(CeStoreJsonObject pJsonObj) {
-		ArrayList<CeConcept> result = new ArrayList<CeConcept>();
-
-System.out.println("concepts:");
-
-		for (String thisKey : pJsonObj.keySet()) {
-			String name = pJsonObj.getJsonObject(thisKey).getString("name");
-			int pos = pJsonObj.getJsonObject(thisKey).getInt("position");
-			CeConcept thisCon = this.ac.getModelBuilder().getConceptNamed(this.ac, name);
-
-System.out.println("  " + thisKey + " -> " + name + " ["+ pos +"]");
-
-			if (thisCon != null) {
-				result.add(thisCon);
-			}
-		}
-
-		return result;
-	}
-
-	private ArrayList<CeProperty> extractPropertiesFrom(CeStoreJsonObject pJsonObj) {
-		ArrayList<CeProperty> result = new ArrayList<CeProperty>();
-
-System.out.println("properties:");
-
-		for (String thisKey : pJsonObj.keySet()) {
-			CeStoreJsonObject jObj = null;
-
-			jObj = pJsonObj.getJsonObject(thisKey);
-			String name = jObj.getString("name");
-
-			jObj = pJsonObj.getJsonObject(thisKey);
-			int pos = jObj.getInt("position");
-
-			CeProperty thisProp = this.ac.getModelBuilder().getPropertyFullyNamed(name);
-
-System.out.println("  " + thisKey + " -> " + name + " ["+ pos +"]");
-
-			if (thisProp != null) {
-				result.add(thisProp);
-			}
-		}
-
-		return result;
-	}
-
-	private ArrayList<CeInstance> extractInstancesFrom(CeStoreJsonObject pJsonObj) {
-		ArrayList<CeInstance> result = new ArrayList<CeInstance>();
-
-System.out.println("instances:");
-
-		for (String thisKey : pJsonObj.keySet()) {
-			String name = pJsonObj.getJsonObject(thisKey).getString("name");
-			int pos = pJsonObj.getJsonObject(thisKey).getInt("position");
-			CeInstance thisInst = this.ac.getModelBuilder().getInstanceNamed(this.ac, name);
-
-System.out.println("  " + thisKey + " -> " + name + " ["+ pos +"]");
-
-			if (thisInst != null) {
-				result.add(thisInst);
-			}
-		}
-
-		return result;
-	}
-
-	private ArrayList<SpThing> extractSpecialsFrom(CeStoreJsonObject pJsonObj) {
-		ArrayList<SpThing> result = new ArrayList<SpThing>();
-
-System.out.println("specials:");
-
-		for (String thisKey : pJsonObj.keySet()) {
-			CeStoreJsonObject jObj = pJsonObj.getJsonObject(thisKey);
-			String type = jObj.getString("type");
-
-			if (type.equals(SPTYPE_ENCCON)) {
-				SpEnumeratedConcept spEc = new SpEnumeratedConcept(jObj);
-				result.add(spEc);
-			} else if (type.equals(SPTYPE_COLL)) {
-				SpCollection spCo = new SpCollection(jObj);
-				result.add(spCo);
-			} else if (type.equals(SPTYPE_MT)) {
-				SpMatchedTriple spMt = new SpMatchedTriple(jObj);
-				result.add(spMt);
-			} else if (type.equals(SPTYPE_LI)) {
-				SpLinkedInstance spLi = new SpLinkedInstance(jObj);
-				result.add(spLi);
-			} else {
-				System.out.println("Unexpected special type: " + type);
-			}
-		}
-
-		return result;
 	}
 
 	protected CeStoreJsonObject createResult() {
@@ -718,11 +684,22 @@ System.out.println("specials:");
 	}
 
 	protected CeStoreJsonObject createJsonResponse() {
-		CeStoreJsonObject result = new CeStoreJsonObject();
+		CeStoreJsonObject jResult = new CeStoreJsonObject();
+		CeStoreJsonArray jAnswers = new CeStoreJsonArray();
+		CeStoreJsonObject jFirstAnswer = new CeStoreJsonObject();
+		CeStoreJsonObject jQuestion = new CeStoreJsonObject();
+		
+		jQuestion.put("text", this.question.getQuestionText());
 
-		result.put("answer", this.answerText);
+		jFirstAnswer.put("result text", this.answerText);
+		jFirstAnswer.put("confidence", 100);
 
-		return result;
+		jAnswers.add(jFirstAnswer);
+
+		jResult.put("question", jQuestion);
+		jResult.put("answers", jAnswers);
+
+		return jResult;
 	}
 
 }

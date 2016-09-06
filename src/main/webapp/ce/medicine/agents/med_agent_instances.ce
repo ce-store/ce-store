@@ -4,7 +4,7 @@
 -- --------------------------------------------------------------------------
 
 there is a rule executor agent named 'med_rules' that
-  has 'com.ibm.ets.ita.ce.agent.general.RuleExecutor' as class name and
+  has 'com.ibm.ets.ita.ce.store.agents.general.RuleExecutor' as class name and
 --  has 'true' as save CE to file and
   has 'true' as execute all rules and
   has 'true' as iterate and

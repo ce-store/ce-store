@@ -15,7 +15,7 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import com.ibm.ets.ita.ce.store.ActionContext;
-import com.ibm.ets.ita.ce.store.agent.CeNotifyHandler;
+import com.ibm.ets.ita.ce.store.agents.CeNotifyHandler;
 import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
 import com.ibm.ets.ita.ce.store.model.CeProperty;

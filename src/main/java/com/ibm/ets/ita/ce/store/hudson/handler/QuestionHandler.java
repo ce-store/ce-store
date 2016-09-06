@@ -11,16 +11,16 @@ import com.ibm.ets.ita.ce.store.ActionContext;
 import com.ibm.ets.ita.ce.store.ActionResponse;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonArray;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
-import com.ibm.ets.ita.ce.store.conversation.model.ConvPhrase;
-import com.ibm.ets.ita.ce.store.conversation.model.ConvWord;
-import com.ibm.ets.ita.ce.store.conversation.model.ProcessedWord;
-import com.ibm.ets.ita.ce.store.hudson.helper.Question;
+import com.ibm.ets.ita.ce.store.hudson.model.Question;
+import com.ibm.ets.ita.ce.store.hudson.model.conversation.ConvPhrase;
+import com.ibm.ets.ita.ce.store.hudson.model.conversation.ConvWord;
+import com.ibm.ets.ita.ce.store.hudson.model.conversation.ProcessedWord;
 
 public abstract class QuestionHandler extends GenericHandler {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	protected static final String JSON_DEBUG = "debug";
-	protected static final String JSON_ET = "execution_time_ms";
+	protected static final String JSON_ET = "execution time";
 	protected static final String JSON_ALERTS = "alerts";
 	protected static final String JSON_ERRORS = "errors";
 	protected static final String JSON_WARNINGS = "warnings";

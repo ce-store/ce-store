@@ -14,8 +14,8 @@ import com.ibm.ets.ita.ce.store.ModelBuilder;
 import com.ibm.ets.ita.ce.store.StoreActions;
 import com.ibm.ets.ita.ce.store.client.web.ServletStateManager;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
-import com.ibm.ets.ita.ce.store.hudson.helper.ConvConfig;
 import com.ibm.ets.ita.ce.store.hudson.helper.HudsonManager;
+import com.ibm.ets.ita.ce.store.hudson.model.ConvConfig;
 import com.ibm.ets.ita.ce.store.model.CeRule;
 import com.ibm.ets.ita.ce.store.model.container.ContainerSentenceLoadResult;
 import com.ibm.ets.ita.ce.store.utilities.GeneralUtilities;
@@ -26,7 +26,7 @@ public class QuestionManagementHandler extends QuestionHandler {
 	private static final String CE_HUDSON_URL = "./hudson/ce/cmd/load_hudson.cecmd";
 	private static final String CE_HUDSON_SRC = "HUDSON";
 
-	private static final String JSON_SM = "system_message";
+	private static final String JSON_SM = "system message";
 
 	public QuestionManagementHandler(ActionContext pAc, boolean pDebug, long pStartTime) {
 		super(pAc, pDebug, null, pStartTime);
