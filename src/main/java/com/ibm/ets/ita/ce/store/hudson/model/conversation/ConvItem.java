@@ -1,16 +1,16 @@
 package com.ibm.ets.ita.ce.store.hudson.model.conversation;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
 import java.util.ArrayList;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
 
 public abstract class ConvItem extends GeneralItem {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private static final String DETERMINER = "a";
 	private static final String UID_PREFIX = "conv";

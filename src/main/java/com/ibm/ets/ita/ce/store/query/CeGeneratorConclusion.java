@@ -1,11 +1,18 @@
 package com.ibm.ets.ita.ce.store.query;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
-import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.NL;
+import static com.ibm.ets.ita.ce.store.names.CeNames.RANGE_VALUE;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.CESEN_SEPARATOR;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_COUNT;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_SUM;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.HDR_CE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_CONSTANT;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_VARIABLE;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.NL;
 import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.appendToSb;
 import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.appendToSbNoNl;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.substituteCeParameters;
@@ -15,19 +22,16 @@ import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportWarnin
 import java.util.ArrayList;
 import java.util.TreeMap;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
 import com.ibm.ets.ita.ce.store.model.CeClause;
 import com.ibm.ets.ita.ce.store.model.CeConcatenatedValue;
 import com.ibm.ets.ita.ce.store.model.CeConcept;
-import com.ibm.ets.ita.ce.store.model.CeProperty;
 import com.ibm.ets.ita.ce.store.model.CePropertyInstance;
 import com.ibm.ets.ita.ce.store.model.CeRule;
 import com.ibm.ets.ita.ce.store.model.container.ContainerCeResult;
-import com.ibm.ets.ita.ce.store.model.container.ContainerQueryResult;
 
 public class CeGeneratorConclusion {
-
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private static final String CONNECTOR_THAT = "that";
 	private static final String CONNECTOR_AND = "and";
@@ -115,7 +119,7 @@ public class CeGeneratorConclusion {
 		String rName = pPi.getSingleOrFirstRangeName();
 		
 		if (rName != null) {
-			if (rName != CeProperty.RANGE_VALUE) {
+			if (rName != RANGE_VALUE) {
 				formattedRange = "the " + pPi.getSingleOrFirstRangeName();
 			}
 		}
@@ -153,8 +157,8 @@ public class CeGeneratorConclusion {
 
 			//To suppress the rendering of non-relevant columns simply remove them from the hdrIndexes list
 			for (String thisHdr : this.hdrIndexes.keySet()) {
-				if ((!thisHdr.startsWith(ContainerQueryResult.COUNT_INDICATOR)) && (!thisHdr.startsWith(ContainerQueryResult.SUM_INDICATOR))) {
-					if (!thisHdr.equals(ContainerCeResult.HDR_CE)) {
+				if ((!thisHdr.startsWith(TOKEN_COUNT)) && (!thisHdr.startsWith(TOKEN_SUM))) {
+					if (!thisHdr.equals(HDR_CE)) {
 						if (!this.uniqueTgtVars.containsKey(thisHdr)) {
 							hdrsToRemove.add(thisHdr);
 						}
@@ -173,7 +177,7 @@ public class CeGeneratorConclusion {
 		boolean result = false;
 
 		for (String thisHdr : this.ceResult.getHeaders()) {
-			if (thisHdr.startsWith(ContainerQueryResult.COUNT_INDICATOR)) {
+			if (thisHdr.startsWith(TOKEN_COUNT)) {
 				result = true;
 				break;
 			}
@@ -186,7 +190,7 @@ public class CeGeneratorConclusion {
 		boolean result = false;
 
 		for (String thisHdr : this.ceResult.getHeaders()) {
-			if (thisHdr.startsWith(ContainerQueryResult.SUM_INDICATOR)) {
+			if (thisHdr.startsWith(TOKEN_SUM)) {
 				result = true;
 				break;
 			}
@@ -207,11 +211,11 @@ public class CeGeneratorConclusion {
 			for (String thisHdr : this.ceResult.getHeaders()) {
 				int hdrIndex = this.ceResult.getIndexForHeader(thisHdr);
 
-				if (thisHdr.startsWith(ContainerQueryResult.COUNT_INDICATOR)) {
+				if (thisHdr.startsWith(TOKEN_COUNT)) {
 					//This is the variable to be counted
 					countIndex = hdrIndex;
 				} else {
-					if (!thisHdr.equals(ContainerCeResult.HDR_CE)) {
+					if (!thisHdr.equals(HDR_CE)) {
 						if (this.uniqueTgtVars.containsKey(thisHdr)) {
 							String thisVal = thisRow.get(hdrIndex);
 
@@ -276,7 +280,7 @@ public class CeGeneratorConclusion {
 			for (String thisHdr : this.ceResult.getHeaders()) {
 				int hdrIndex = this.ceResult.getIndexForHeader(thisHdr);
 
-				if (thisHdr.startsWith(ContainerQueryResult.SUM_INDICATOR)) {
+				if (thisHdr.startsWith(TOKEN_SUM)) {
 					//This is the variable to be summed
 					sumIndex = hdrIndex;
 					sumText = thisRow.get(sumIndex);
@@ -287,7 +291,7 @@ public class CeGeneratorConclusion {
 						reportWarning("Unable to sum '" + sumText + "' during rule processing", this.ac);
 					}
 				} else {
-					if (!thisHdr.equals(ContainerCeResult.HDR_CE)) {
+					if (!thisHdr.equals(HDR_CE)) {
 						if (this.uniqueTgtVars.containsKey(thisHdr)) {
 							String thisVal = thisRow.get(hdrIndex);
 
@@ -372,7 +376,7 @@ public class CeGeneratorConclusion {
 				if ((lastTgtCon != null) && (!lastTgtCon.equalsOrHasParent(thisTgtCon))) {
 					//The concept is not compatible with the previous so a new sentence must be started
 					generateRationaleAndCloseSentence(sb, pRow);
-					sb.append(ContainerCeResult.CESEN_SEPARATOR);
+					sb.append(CESEN_SEPARATOR);
 					connectorText = "";
 					generatedStart = false;
 					splitSentence = true;
@@ -395,7 +399,7 @@ public class CeGeneratorConclusion {
 		generateRationaleAndCloseSentence(sb, pRow);
 		
 		if (splitSentence) {
-			pSb.append(ContainerCeResult.CESEN_SEPARATOR);
+			pSb.append(CESEN_SEPARATOR);
 		}
 		
 		pSb.append(sb);
@@ -618,7 +622,7 @@ public class CeGeneratorConclusion {
 		String parts[] = pTgtVar.split("_");
 		
 		for (String thisPart : parts) {
-			if (!thisPart.startsWith(CeConclusionRow.TOKEN_VARIABLE) && !thisPart.startsWith(CeConclusionRow.TOKEN_CONSTANT)) {
+			if (!thisPart.startsWith(TOKEN_VARIABLE) && !thisPart.startsWith(TOKEN_CONSTANT)) {
 				if (!result.isEmpty()) {
 					result += "_";
 				}
@@ -630,7 +634,7 @@ public class CeGeneratorConclusion {
 	}
 
 	private static String trimHashFrom(String pCvt) {
-		return pCvt.replaceFirst(CeConclusionRow.TOKEN_CONSTANT, "");
+		return pCvt.replaceFirst(TOKEN_CONSTANT, "");
 	}
 
 	private String calculatePiVal(CePropertyInstance pPi, CeConclusionRow pRow) {
@@ -671,5 +675,5 @@ public class CeGeneratorConclusion {
 //		return NL + "because" + NL + existingCe + NL + "[ " + this.ceRule.getRuleName() + " ]." + NL + NL;
 		return NL + "because" + NL + existingCe + NL + "[ " + this.ceRule.getRuleName() + " ].";
 	}
-	
+
 }

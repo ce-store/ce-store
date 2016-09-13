@@ -1,10 +1,18 @@
 package com.ibm.ets.ita.ce.store.client.rest;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSONTYPE_SOURCE;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_AGENTINSTNAME;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_RUNRULES;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_DETAIL;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_RETCE;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_RETINSTS;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_SENTENCE;
+import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.appendNewLineToSb;
 import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.appendToSb;
 
 import java.util.ArrayList;
@@ -12,10 +20,10 @@ import java.util.Collection;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.ibm.ets.ita.ce.store.StoreActions;
 import com.ibm.ets.ita.ce.store.client.web.WebActionContext;
 import com.ibm.ets.ita.ce.store.client.web.model.CeWebContainerResult;
 import com.ibm.ets.ita.ce.store.client.web.model.CeWebSource;
+import com.ibm.ets.ita.ce.store.core.StoreActions;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
 import com.ibm.ets.ita.ce.store.model.CeSentence;
 import com.ibm.ets.ita.ce.store.model.CeSource;
@@ -24,13 +32,7 @@ import com.ibm.ets.ita.ce.store.model.container.ContainerResult;
 import com.ibm.ets.ita.ce.store.model.container.ContainerSentenceLoadResult;
 
 public class CeStoreRestApiSource extends CeStoreRestApi {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
-
-	private static final String TYPE_SOURCE = "source";
-
-	private static final String PARM_RUNRULES = "runRules";
-	private static final String PARM_AGENTINSTNAME = "filterByAgentInstanceName";
-	private static final String PARM_DETAIL = "filterByDetail";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	public CeStoreRestApiSource(WebActionContext pWc, ArrayList<String> pRestParts, HttpServletRequest pRequest) {
 		super(pWc, pRestParts, pRequest);
@@ -141,8 +143,8 @@ public class CeStoreRestApiSource extends CeStoreRestApi {
 	}
 
 	private void jsonListSources() {
-		String agentInstName = this.getUrlParameterValueNamed(PARM_AGENTINSTNAME);
-		String detail = this.getUrlParameterValueNamed(PARM_DETAIL);
+		String agentInstName = getUrlParameterValueNamed(PARM_AGENTINSTNAME);
+		String detail = getUrlParameterValueNamed(PARM_DETAIL);
 
 		Collection<CeSource> srcList = null;
 		
@@ -164,7 +166,7 @@ public class CeStoreRestApiSource extends CeStoreRestApi {
 
 		for (CeSource thisSrc : getModelBuilder().getAllSources().values()) {
 			generateTextForSource(this.wc, sb, thisSrc, isFullStyle());
-			appendToSb(sb, "");
+			appendNewLineToSb(sb);
 		}
 
 		getWebActionResponse().setPlainTextPayload(this.wc, sb.toString());
@@ -267,17 +269,17 @@ public class CeStoreRestApiSource extends CeStoreRestApi {
 	private ContainerResult actionAddSentences(CeSource pTgtSrc) {
 		ContainerResult result = null;
 		String ceText = getCeTextFromRequest();
-		String returnCe = this.getUrlParameterValueNamed(PARM_RETCE);
+		boolean returnCe = getBooleanUrlParameterValueNamed(PARM_RETCE, false);
 
 		//Save sentences
 		StoreActions sa = StoreActions.createUsingDefaultConfig(this.wc);
 
-		boolean runRules = this.getBooleanUrlParameterValueNamed(PARM_RUNRULES, this.wc.getCeConfig().getAutoRunRules());
+		boolean runRules = getBooleanUrlParameterValueNamed(PARM_RUNRULES, this.wc.getCeConfig().getAutoRunRules());
 		this.wc.markAsAutoExecuteRules(runRules);
 
 		result = sa.saveCeText(ceText, pTgtSrc);
 
-		if (returnCe.equals("true")) {
+		if (returnCe) {
 			result.setCreatedSentences(this.wc.getSessionCreations().getValidSentencesCreated());
 		}
 
@@ -331,11 +333,11 @@ public class CeStoreRestApiSource extends CeStoreRestApi {
 		StringBuilder sb = new StringBuilder();
 
 		appendToSb(sb, "-- All sentences for source " + pTgtSrc.getId());
-		appendToSb(sb, "");
+		appendNewLineToSb(sb);
 
 		for (CeSentence thisSen : pTgtSrc.listAllSentences()) {
 			CeStoreRestApiSentence.generateTextForSentence(this.wc, sb, thisSen, isFullStyle());
-			appendToSb(sb, "");
+			appendNewLineToSb(sb);
 		}
 
 		getWebActionResponse().setPlainTextPayload(this.wc, sb.toString());
@@ -347,7 +349,7 @@ public class CeStoreRestApiSource extends CeStoreRestApi {
 		appendToSb(pSb, "-- Source type: " + pSrc.formattedType());
 		appendToSb(pSb, "-- Creation date: " + pSrc.getCreationDate());
 		appendToSb(pSb, "-- Detail: " + pSrc.getDetail());
-		appendToSb(pSb, "");
+		appendNewLineToSb(pSb);
 
 		if (pSrc.getUserInstanceName() != null) {
 			appendToSb(pSb, "-- User instance name: " + pSrc.getUserInstanceName());
@@ -375,7 +377,7 @@ public class CeStoreRestApiSource extends CeStoreRestApi {
 	}
 
 	private void reportNotFoundError(String pSrcId) {
-		reportNotFoundError(TYPE_SOURCE, pSrcId);
+		reportNotFoundError(JSONTYPE_SOURCE, pSrcId);
 	}
 
 	private void setSourceDetailsAsStructuredResult(CeSource pSrc) {

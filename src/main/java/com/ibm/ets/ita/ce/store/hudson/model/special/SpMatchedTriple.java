@@ -1,22 +1,18 @@
 package com.ibm.ets.ita.ce.store.hudson.model.special;
 
-/*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
- * All Rights Reserved
- *******************************************************************************/
+import static com.ibm.ets.ita.ce.store.names.JsonNames.SPEC_MATCHTRIP;
 
 import java.util.ArrayList;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonArray;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
 import com.ibm.ets.ita.ce.store.hudson.handler.QuestionInterpreterHandler;
 import com.ibm.ets.ita.ce.store.hudson.model.conversation.MatchedItem;
 
 public class SpMatchedTriple extends SpThing {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
-	private static final String TYPE_NAME = "matched-triple";
 	private static final String JSON_PRED = "predicate";
 	private static final String JSON_SUBS = "subject instances";
 	private static final String JSON_OBJS = "object instances";
@@ -33,6 +29,7 @@ public class SpMatchedTriple extends SpThing {
 		super(pPhraseText, pStartPos, pEndPos);
 		
 		this.predicate = pPredicate;
+		
 		this.subjects = pSubjects;
 		this.objects = pObjects;
 	}
@@ -78,23 +75,27 @@ public class SpMatchedTriple extends SpThing {
 	}
 
 	public boolean isFullTriple() {
-		return !this.subjects.isEmpty() && !this.objects.isEmpty();
+		return hasSubjects() && hasObjects();
 	}
 
 	public boolean isPartialTriple() {
-		return this.subjects.isEmpty() || this.objects.isEmpty();
+		return !isFullTriple();
 	}
 
 	public boolean isPartialSubjectTriple() {
-		return !this.subjects.isEmpty() && this.objects.isEmpty();
+		return hasSubjects() && !hasObjects();
 	}
 
 	public boolean isPartialObjectTriple() {
-		return this.subjects.isEmpty() && !this.objects.isEmpty();
+		return !hasSubjects() && hasObjects();
 	}
 
 	public ArrayList<MatchedItem> getSubjects() {
 		return this.subjects;
+	}
+
+	public boolean hasSubjects() {
+		return ((this.subjects != null) && !this.subjects.isEmpty());
 	}
 
 	public MatchedItem getPredicate() {
@@ -105,13 +106,17 @@ public class SpMatchedTriple extends SpThing {
 		return this.objects;
 	}
 
+	public boolean hasObjects() {
+		return ((this.objects != null) && !this.objects.isEmpty());
+	}
+
 	public CeStoreJsonObject toJson(ActionContext pAc) {
 		CeStoreJsonObject jResult = new CeStoreJsonObject();
 		CeStoreJsonObject jPred = QuestionInterpreterHandler.jsonForMatchedItemProperty(pAc, getPredicate());
 		CeStoreJsonArray jSubs = QuestionInterpreterHandler.jsonForMatchedItemInstances(pAc, getSubjects());
 		CeStoreJsonArray jObjs = QuestionInterpreterHandler.jsonForMatchedItemInstances(pAc, getObjects());
 
-		addStandardFields(jResult, TYPE_NAME);
+		addStandardFields(jResult, SPEC_MATCHTRIP);
 
 		jResult.put(JSON_PRED, jPred);
 

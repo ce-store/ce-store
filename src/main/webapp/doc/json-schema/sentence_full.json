@@ -1,0 +1,85 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "Sentence - full details",
+    "definitions": {
+        "sentence": {
+            "title": "Full sentence details",
+            "description": "Return the full details about a sentence",
+            "type": "object",
+            "required": [ "_type", "_style", "_id", "_created", "source" ],
+            "additionalProperties": false,
+            "properties": {
+                "_type": {
+                    "description": "The type (always sentence)",
+                    "type": "string",
+                    "enum": [ "sentence" ]
+                },
+                "_style": {
+                    "description": "The style (always full)",
+                    "type": "string",
+                    "enum": [ "full" ]
+                },
+                "_id": {
+                    "description": "The unique identifier (name) for this sentence",
+                    "type": "string"
+                },
+                "_created": {
+                    "description": "The (unix timestamp) date value on which this sentence was created",
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "sen_type": {
+                    "description": "The type of sentence",
+                    "type": "string",
+                    "enum": [ "Fact", "Fact (qualified)", "Model", "Query", "Rule", "Annotation", "Command" ]
+                },
+                "validity": {
+                    "description": "Indicate if the sentence is valid or invalid.",
+                    "type": "string",
+                    "enum": [ "Valid", "Invalid" ]
+                },
+                "ce_text": {
+                    "description": "The text for this sentence.",
+                    "type": "string"
+                },
+                "ce_structured_text": {
+                    "description": "The set of tokens which constitute this sentence.",
+                    "type": "array",
+                    "items": {
+                        "type": "object"
+                    },
+                    "uniqueItems": true
+                },
+                "source": {
+                    "description": "The source that defines this sentence",
+					"$ref": "source_summary.json#/definitions/source"
+                },
+                "pri_or_sec": {
+                    "description": "Indicate if the sentence is a primary or secondary sentence for the concept or instance that was used to retrieve this sentence.",
+                    "type": "string",
+                    "enum": [ "primary", "secondary" ]
+                },
+                "rationale": {
+                    "description": "The premises that led to the creation of this sentence as their conclusion.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "rationale_summary.json#/definitions/rationale"
+                    },
+                    "uniqueItems": true
+                },
+                "qualified_sentences": {
+                    "description": "Reserved (tbc).",
+                    "type": "array",
+                    "items": {
+                        "$ref": "sentence_full.json#/definitions/sentence"
+                    },
+                    "uniqueItems": true
+                },
+                "inner_sentence_id": {
+                    "description": "Reserved (tbc).",
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

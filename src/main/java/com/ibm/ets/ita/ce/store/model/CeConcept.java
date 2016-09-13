@@ -1,10 +1,15 @@
 package com.ibm.ets.ita.ce.store.model;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_A;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_AN;
+import static com.ibm.ets.ita.ce.store.names.CeNames.PROP_PASTTENSE;
+import static com.ibm.ets.ita.ce.store.names.CeNames.PROP_PLURAL;
+import static com.ibm.ets.ita.ce.store.names.CeNames.CON_THING;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.encodeForCe;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportWarning;
@@ -13,17 +18,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.TreeMap;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
 
 public class CeConcept extends CeModelEntity {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
-
-	public static final String CON_TIMESTAMP = "timestamp";
-	public static final String CON_USER = "user";
-
-	private static final String CLASS_NAME = "CeConcept";
-	private static final String QUALIFIER_A = "a";
-	private static final String QUALIFIER_AN = "an";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private boolean qualifiedWithAn = false;
 	private boolean isThing = false;
@@ -62,7 +60,7 @@ public class CeConcept extends CeModelEntity {
 		CeConcept newConcept = new CeConcept();
 
 		newConcept.name = pAc.getModelBuilder().getCachedStringValueLevel1(pConceptName);	
-		newConcept.isThing = (newConcept.name.equals(HelperConcept.NAME_THING));
+		newConcept.isThing = (newConcept.name.equals(CON_THING));
 
 		if (HelperConcept.hasReservedName(newConcept)) {
 			reportError("Attempting to use reserved concept name '" + pConceptName + "'", pAc);
@@ -116,9 +114,9 @@ public class CeConcept extends CeModelEntity {
 		String result = null;
 
 		if (this.qualifiedWithAn) {
-			result = QUALIFIER_AN;
+			result = TOKEN_AN;
 		} else {
-			result = QUALIFIER_A;
+			result = TOKEN_A;
 		}
 
 		return result;
@@ -762,7 +760,7 @@ public class CeConcept extends CeModelEntity {
 		if (pParent != null) {
 			if (!pParent.equals(this)) {
 				if (hasParent(pParent)) {
-					if (!HelperConcept.isCoreConcept(pParent)) {
+					if (!HelperConcept.isThing(pParent)) {
 						if (!hasDirectParent(pParent)) {
 							//Re-statements of direct parents are allowed, but giving a concept a parent that it already has higher in the existing
 							//hierarchy is questionable (unless it is a core concept in which case it will be a default)
@@ -1145,16 +1143,8 @@ public class CeConcept extends CeModelEntity {
 		return this.isThing;
 	}
 
-	public boolean isTimestamp() {
-		return this.name.equals(CON_TIMESTAMP);
-	}
-
-	public boolean isUser() {
-		return this.name.equals(CON_USER);
-	}
-
 	public CeInstance retrieveMetadataInstance(ActionContext pAc) {
-		return pAc.getModelBuilder().getInstanceNamed(pAc, this.getConceptName());
+		return pAc.getModelBuilder().getInstanceNamed(pAc, getConceptName());
 	}
 
 	public String pluralFormName(ActionContext pAc) {
@@ -1180,7 +1170,7 @@ public class CeConcept extends CeModelEntity {
 		CeInstance mmInst = pAc.getModelBuilder().getInstanceNamed(pAc, getConceptName());
 
 		if (mmInst != null) {
-			result = mmInst.getSingleValueFromPropertyNamed(PROP_PAST);
+			result = mmInst.getSingleValueFromPropertyNamed(PROP_PASTTENSE);
 
 			if ((result == null) || result.isEmpty()) {
 				result = defaultPastTense();
@@ -1211,7 +1201,7 @@ public class CeConcept extends CeModelEntity {
 
 	@Override
 	public String toString() {
-		return CLASS_NAME + "(" + this.name + ")";
+		return "CeConcept (" + this.name + ")";
 	}
 
 }

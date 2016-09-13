@@ -1,0 +1,71 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"title": "Conceptual model - full details",
+	"definitions": {
+		"model": {
+			"title": "Full conceptual model details",
+			"description": "Return the full details about a conceptual model",
+			"type": "object",
+			"required": [ "_type", "_style", "_id", "_created", "sentence_count", "sources" ],
+            "additionalProperties": false,
+			"properties": {
+				"_type": {
+					"description": "The type (always conceptual model)",
+					"type": "string",
+					"enum": [ "conceptual model" ]
+				},
+				"_style": {
+					"description": "The style (always full)",
+					"type": "string",
+					"enum": [ "full" ]
+				},
+				"_id": {
+					"description": "The unique identifier (model name) for a conceptual model",
+					"type": "string"
+				},
+				"_created": {
+					"description": "The (unix timestamp) date value on which this conceptual model was created",
+					"type": "integer",
+					"minimum": 0
+				},
+				"sentence_count": {
+					"description": "The total number of sentences defined in this conceptual model",
+					"type": "integer",
+					"minimum": 0
+				},
+				"sources": {
+					"description": "A list of sources that define this conceptual model.",
+					"type": "array",
+					"items": {
+						"$ref": "source_summary.json#/definitions/source"
+					},
+					"uniqueItems": true
+				},
+				"concepts": {
+					"description": "A list of the concepts defined in this conceptual model.",
+					"type": "array",
+					"items": {
+						"$ref": "concept_summary.json#/definitions/concept"
+					},
+					"uniqueItems": true
+				},
+                "properties": {
+                    "description": "A list of the properties defined in this conceptual model.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "property_summary.json#/definitions/property"
+                    },
+                    "uniqueItems": true
+                },
+				"sentences": {
+					"description": "A list of the sentences that comprise this conceptual model.",
+					"type": "array",
+					"items": {
+						"$ref": "sentence_summary.json#/definitions/sentence"
+					},
+					"uniqueItems": true
+				}
+			}
+		}
+	}
+}

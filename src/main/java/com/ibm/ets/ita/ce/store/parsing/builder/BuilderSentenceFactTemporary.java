@@ -1,26 +1,27 @@
 package com.ibm.ets.ita.ce.store.parsing.builder;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
 import java.util.ArrayList;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
 import com.ibm.ets.ita.ce.store.model.CeSentence;
 import com.ibm.ets.ita.ce.store.model.CeSource;
 
 public class BuilderSentenceFactTemporary extends BuilderSentenceFactNormal {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
-	private String originalText = "";
-	private ArrayList<String> removedTokens = new ArrayList<String>();
+	private String originalText = null;
+	private ArrayList<String> removedTokens = null;
 
 	public BuilderSentenceFactTemporary(String pOrigSenText) {
 		//Simply call the super constructor
 		super(pOrigSenText);
 
+		this.removedTokens = new ArrayList<String>();
 		this.originalText = pOrigSenText;
 		this.sentenceText = trimmedSentenceText(pOrigSenText);
 	}
@@ -28,7 +29,7 @@ public class BuilderSentenceFactTemporary extends BuilderSentenceFactNormal {
 	private static String trimmedSentenceText(String pOrigSenText) {
 		String result = pOrigSenText;
 
-		result.replace("it is true that", "");
+		result.replace("it is true that", "");	//TODO: Abstract these
 		result.replace("it is false that", "");
 
 		return result.trim();

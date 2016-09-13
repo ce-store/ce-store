@@ -1,10 +1,38 @@
 package com.ibm.ets.ita.ce.store.parsing.tokenizer;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_IS;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_AND;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_THE;
+import static com.ibm.ets.ita.ce.store.names.CeNames.CON_TRUSTLEVEL;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_BY;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_CLOSEPAR;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_IN;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_LEVEL;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_QUALIFIED;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_ASSERTED;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_ASSUMED;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_DECLARED;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_HYPOTHESISED;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_INFERRED;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_STATEMENT;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_THAT;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_OPENPAR;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_ALWAYS;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_CURRENTLY;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_HISTORICALLY;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_INFUTURE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_TIMESTAMPED;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_TRUST;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_FALSE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_IMPOSSIBLE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_POSSIBLE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_TRUE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_WITH;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.extractTimestampFrom;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.formattedIso8601DateString;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.stripDelimitingQuotesFrom;
@@ -24,54 +52,16 @@ import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentence;
 import com.ibm.ets.ita.ce.store.parsing.processor.ProcessorCe;
 
 public class TokenizerFactSentenceQualified extends TokenizerSentence {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private static final String CLASS_NAME = TokenizerFactSentenceQualified.class.getName();
 	private static final String PACKAGE_NAME = TokenizerFactSentenceQualified.class.getPackage().getName();
 	private static final Logger logger = Logger.getLogger(PACKAGE_NAME);
 
-
-	//Start and end tokens
-	private static final String TOKEN_START_1 = "the";
-	private static final String TOKEN_START_2 = "statement";
-	private static final String TOKEN_START_3 = "that";
-	private static final String TOKEN_START_4 = "(";
-	private static final String TOKEN_END = ")";
-
-	//General tokens
-	private static final String TOKEN_TIMESTAMPED = "time-stamped";
-	private static final String TOKEN_BY = "by";
-	private static final String TOKEN_IN = "in";
-	private static final String TOKEN_QUALIFIED = "qualified";
-	private static final String TOKEN_WITH = "with";
-	private static final String TOKEN_TRUST = "trust";
-	private static final String TOKEN_LEVEL = "level";
-
-	//Timeframe tokens
-	private static final String TOKEN_TF_CURRENTLY = "currently";
-	private static final String TOKEN_TF_HISTORICALLY = "historically";
-	private static final String TOKEN_TF_INFUTURE = "in-future";
-	private static final String TOKEN_TF_ALWAYS = "always";
-
-	//Truth value tokens
-	private static final String TOKEN_TV_TRUE = "true";
-	private static final String TOKEN_TV_FALSE = "false";
-	private static final String TOKEN_TV_POSSIBLE = "possible";
-	private static final String TOKEN_TV_IMPOSSIBLE = "impossible";
-
-	//Statement type tokens
-	private static final String TOKEN_ST_HYPOTHESISED = "hypothesised";
-	private static final String TOKEN_ST_ASSUMED = "assumed";
-	private static final String TOKEN_ST_ASSERTED = "asserted";
-	private static final String TOKEN_ST_DECLARED = "declared";
-	private static final String TOKEN_ST_INFERRED = "inferred";
-
 	//Default values
-	private static final String DEFAULT_TF = TOKEN_TF_ALWAYS;
-	private static final String DEFAULT_TV = TOKEN_TV_TRUE;
-	private static final String DEFAULT_ST = TOKEN_ST_ASSERTED;
-
-	private static final String CON_TRUSTLEVEL = "trust level";
+	private static final String DEFAULT_TF = TOKEN_ALWAYS;
+	private static final String DEFAULT_TV = TOKEN_TRUE;
+	private static final String DEFAULT_ST = TOKEN_ASSERTED;
 
 	//Modes
 	private static final int MODE_NORMAL = 0;
@@ -115,15 +105,15 @@ public class TokenizerFactSentenceQualified extends TokenizerSentence {
 	}
 
 	private static boolean isTimeframeToken(String pToken) {
-		return pToken.equals(TOKEN_TF_CURRENTLY) || pToken.equals(TOKEN_TF_HISTORICALLY) || pToken.equals(TOKEN_TF_INFUTURE) || pToken.equals(TOKEN_TF_ALWAYS);
+		return pToken.equals(TOKEN_CURRENTLY) || pToken.equals(TOKEN_HISTORICALLY) || pToken.equals(TOKEN_INFUTURE) || pToken.equals(TOKEN_ALWAYS);
 	}
 
 	private static boolean isTruthValueToken(String pToken) {
-		return pToken.equals(TOKEN_TV_TRUE) || pToken.equals(TOKEN_TV_FALSE) || pToken.equals(TOKEN_TV_POSSIBLE) || pToken.equals(TOKEN_TV_IMPOSSIBLE);
+		return pToken.equals(TOKEN_TRUE) || pToken.equals(TOKEN_FALSE) || pToken.equals(TOKEN_POSSIBLE) || pToken.equals(TOKEN_IMPOSSIBLE);
 	}
 
 	private static boolean isStatementTypeToken(String pToken) {
-		return pToken.equals(TOKEN_ST_HYPOTHESISED) || pToken.equals(TOKEN_ST_ASSUMED) || pToken.equals(TOKEN_ST_ASSERTED) || pToken.equals(TOKEN_ST_DECLARED) || pToken.equals(TOKEN_ST_INFERRED);
+		return pToken.equals(TOKEN_HYPOTHESISED) || pToken.equals(TOKEN_ASSUMED) || pToken.equals(TOKEN_ASSERTED) || pToken.equals(TOKEN_DECLARED) || pToken.equals(TOKEN_INFERRED);
 	}
 
 	@Override
@@ -149,7 +139,7 @@ public class TokenizerFactSentenceQualified extends TokenizerSentence {
 		if (this.innerSentence != null) {
 			qs.setInnerSentence(this.innerSentence.getConvertedSentence());
 		} else {
-			reportError("Unexpected null inner sentence during qualified information processing, for: " + this.getTargetSentence().getSentenceText(), this.ac);
+			reportError("Unexpected null inner sentence during qualified information processing, for: " + getTargetSentence().getSentenceText(), this.ac);
 		}
 
 		qs.setGeneralQualification(this.qualCon, this.qualName);
@@ -179,18 +169,18 @@ public class TokenizerFactSentenceQualified extends TokenizerSentence {
 		if (originalTokens.size() >= 4) {
 			String firstToken = originalTokens.get(0);
 
-			if (firstToken.equals(TOKEN_START_1)) {
+			if (firstToken.equals(TOKEN_THE)) {
 				String secondToken = getTargetSentence().getRawTokens().get(1);
-				if (secondToken.equals(TOKEN_START_2)) {
+				if (secondToken.equals(TOKEN_STATEMENT)) {
 					String thirdToken = getTargetSentence().getRawTokens().get(2);
-					if (thirdToken.equals(TOKEN_START_3)) {
+					if (thirdToken.equals(TOKEN_THAT)) {
 						String fourthToken = getTargetSentence().getRawTokens().get(3);
-						if (fourthToken.equals(TOKEN_START_4)) {
+						if (fourthToken.equals(TOKEN_OPENPAR)) {
 							boolean endOfInnerTokens = false;
 
 							for (int i = 4; i < originalTokens.size(); i++) {
 								String thisToken = originalTokens.get(i);
-								if (thisToken.equals(TOKEN_END)) {
+								if (thisToken.equals(TOKEN_CLOSEPAR)) {
 									endOfInnerTokens = true;
 								} else {
 									if (endOfInnerTokens) {

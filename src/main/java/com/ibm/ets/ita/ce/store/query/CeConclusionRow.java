@@ -1,22 +1,20 @@
 package com.ibm.ets.ita.ce.store.query;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_NEW;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_VARIABLE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_CONSTANT;
 import java.util.ArrayList;
 import java.util.TreeMap;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
 
 public class CeConclusionRow {
-
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
-
-	private static final String TOKEN_NEW = "{{NEW}}";
-	public static final String TOKEN_VARIABLE = "$";
-	public static final String TOKEN_CONSTANT = "#";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private CeGeneratorConclusion parent = null;
 	private ArrayList<String> queryRow = null;

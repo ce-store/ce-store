@@ -1,8 +1,7 @@
 -- --------------------------------------------------------------------------
--- (C) Copyright IBM Corporation  2011, 2015
+-- (C) Copyright IBM Corporation  2011, 2016
 -- All Rights Reserved
 -- --------------------------------------------------------------------------
-
 
 the formatted property 'event:date string:value'
   is a temporal property and

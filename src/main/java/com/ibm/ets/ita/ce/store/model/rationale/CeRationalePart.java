@@ -1,15 +1,14 @@
 package com.ibm.ets.ita.ce.store.model.rationale;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
 import java.util.concurrent.atomic.AtomicLong;
 
 public abstract class CeRationalePart {
-
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private static AtomicLong rationaleIdVal = new AtomicLong(0);
 	protected String id = null;

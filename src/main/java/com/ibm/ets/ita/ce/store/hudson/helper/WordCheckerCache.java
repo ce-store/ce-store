@@ -1,17 +1,18 @@
 package com.ibm.ets.ita.ce.store.hudson.helper;
 
-/*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
- * All Rights Reserved
- *******************************************************************************/
+import static com.ibm.ets.ita.ce.store.names.CeNames.CON_CONFCON;
+import static com.ibm.ets.ita.ce.store.names.CeNames.CON_UNINTCON;
+import static com.ibm.ets.ita.ce.store.names.CeNames.PROP_PLURAL;
+import static com.ibm.ets.ita.ce.store.names.CeNames.CON_PROPCON;
+import static com.ibm.ets.ita.ce.store.names.CeNames.PROP_PROPNAME;
+import static com.ibm.ets.ita.ce.store.names.CeNames.PROPS_LING;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.TreeMap;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
 import com.ibm.ets.ita.ce.store.client.web.ServletStateManager;
-import com.ibm.ets.ita.ce.store.hudson.handler.GenericHandler;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
 import com.ibm.ets.ita.ce.store.hudson.model.ConvConfig;
 import com.ibm.ets.ita.ce.store.hudson.model.conversation.ProcessedWord;
 import com.ibm.ets.ita.ce.store.model.CeConcept;
@@ -21,13 +22,6 @@ import com.ibm.ets.ita.ce.store.model.CeProperty;
 public class WordCheckerCache {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 	
-	private static final String CON_PROPCON = "property concept";
-
-	private static final String PROP_PROPNAME = "property name";
-	private static final String PROP_PLURAL = "plural form";
-
-	private static final String[] PROPS_LING = {"is expressed by", "plural form", "past tense"};
-
 	private HashMap<String, CeConcept> matchingConcepts = new HashMap<String, CeConcept>();
 	private HashMap<String, TreeMap<String, CeProperty>> matchingRelations = new HashMap<String, TreeMap<String, CeProperty>>();
 	private HashMap<String, ArrayList<CeInstance>> matchingInstances = new HashMap<String, ArrayList<CeInstance>>();
@@ -52,7 +46,6 @@ public class WordCheckerCache {
 		CeConcept tgtCon = null;
 		
 		if (!this.matchingConcepts.containsKey(cacheKey)) {
-//			reportDebug("Looking live for concept using: " + cacheKey, pAc);
 			tgtCon = pAc.getModelBuilder().getConceptNamed(pAc, cacheKey);
 			this.matchingConcepts.put(cacheKey, tgtCon);
 		} else {
@@ -78,7 +71,6 @@ public class WordCheckerCache {
 		TreeMap<String, CeProperty> tgtProps = null;
 		
 		if (!this.matchingRelations.containsKey(pText)) {
-//			reportDebug("Looking live for property using: " + cacheKey, pAc);
 			tgtProps = new TreeMap<String, CeProperty>();
 
 			for (CeInstance thisInst : pAc.getModelBuilder().getAllInstancesForConceptNamed(pAc, CON_PROPCON)) {
@@ -117,7 +109,6 @@ public class WordCheckerCache {
 		HudsonManager hm = ServletStateManager.getHudsonManager(pAc);
 
 		if (!this.matchingInstances.containsKey(pText)) {
-//			reportDebug("Looking live for instance using: " + cacheKey, pAc);
 			tgtInsts = new ArrayList<CeInstance>();
 			ArrayList<CeInstance> possInsts = hm.getIndexedEntityAccessor(pAc.getModelBuilder()).getInstancesNamedOrIdentifiedAs(pAc, pText);
 
@@ -142,7 +133,6 @@ public class WordCheckerCache {
 		HudsonManager hm = ServletStateManager.getHudsonManager(pAc);
 
 		if (!this.matchingInstances.containsKey(pText)) {
-//			reportDebug("Looking live for instance using: " + pText, pAc);
 			tgtInsts = new ArrayList<CeInstance>();
 			ArrayList<CeInstance> possInsts = hm.getIndexedEntityAccessor(pAc.getModelBuilder()).getInstancesNamedOrIdentifiedAs(pAc, pText);
 
@@ -174,7 +164,7 @@ public class WordCheckerCache {
 		boolean result = true;
 
 		for (CeConcept thisCon : pTgtInst.getDirectConcepts()) {
-			if (!thisCon.hasParentNamed(GenericHandler.CON_CONFCON)) {
+			if (!thisCon.hasParentNamed(CON_CONFCON)) {
 				result = false;
 				break;
 			}
@@ -184,7 +174,7 @@ public class WordCheckerCache {
 	}
 
 	private static boolean isUninterestingInstance(ActionContext pAc, CeInstance pInst) {
-		return pInst.isConceptNamed(pAc, GenericHandler.CON_UNINTCON);
+		return pInst.isConceptNamed(pAc, CON_UNINTCON);
 	}
 
 	public synchronized ArrayList<String> getCommonWords(ConvConfig pCc, ActionContext pAc) {
@@ -220,8 +210,6 @@ public class WordCheckerCache {
 
 	public synchronized ArrayList<CeInstance> getLingThingInstances(ActionContext pAc) {
 		if (this.lingThingInsts == null) {
-//			reportDebug("Creating live lingThing list", pAc);
-
 			this.lingThingInsts = new ArrayList<CeInstance>();
 
 			for (CeInstance thisInst : pAc.getModelBuilder().listAllInstances()) {

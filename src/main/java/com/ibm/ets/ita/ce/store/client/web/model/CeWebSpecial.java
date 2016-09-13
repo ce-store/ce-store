@@ -1,14 +1,33 @@
 package com.ibm.ets.ita.ce.store.client.web.model;
 
+/*******************************************************************************
+ * (C) Copyright IBM Corporation  2011, 2016
+ * All Rights Reserved
+ *******************************************************************************/
+
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_UID_PREFIX;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_UID_BATCHSTART;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_UID_BATCHEND;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_UID_BATCHSIZE;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_INSTANCE_NAME;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_RESULTS;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_PROP_NAME;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_ENV_PROPS;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_GEN_PROPS;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_VALUE;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_RANGE;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_FREQUENCY;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_COUNT;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_CRESENS;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_EXECTIME;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_CMDCOUNT;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_VALCOUNT;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_INVCOUNT;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_NEWINSTS;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-
-/*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
- * All Rights Reserved
- *******************************************************************************/
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,46 +35,20 @@ import java.util.Date;
 import java.util.Properties;
 import java.util.TreeMap;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
-import com.ibm.ets.ita.ce.store.ApiHandler;
-import com.ibm.ets.ita.ce.store.StoreConfig;
+import com.ibm.ets.ita.ce.store.client.rest.ApiHandler;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonArray;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
+import com.ibm.ets.ita.ce.store.core.StoreConfig;
 import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
 import com.ibm.ets.ita.ce.store.model.CeProperty;
 import com.ibm.ets.ita.ce.store.model.CePropertyInstance;
 import com.ibm.ets.ita.ce.store.model.CeSentence;
 import com.ibm.ets.ita.ce.store.model.container.ContainerSentenceLoadResult;
-import com.ibm.ets.ita.ce.store.uid.UidManager;
 
 public class CeWebSpecial extends CeWebObject {
-    public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
-
-    // JSON Response Keys
-    private static final String KEY_INSTANCE_NAME = "instance_name";
-    private static final String KEY_RESULTS = "results";
-    private static final String KEY_PROP_NAME = "property_name";
-
-    private static final String KEY_ENV_PROPS = "environment_properties";
-    private static final String KEY_GEN_PROPS = "general_properties";
-
-    private static final String KEY_VALUE = "value";
-    private static final String KEY_RANGE = "range";
-    private static final String KEY_FREQUENCY = "frequency";
-    private static final String KEY_COUNT = "count";
-    private static final String KEY_UID_PREFIX = "prefix";
-    private static final String KEY_UID_BATCHSTART = "batch_start";
-    private static final String KEY_UID_BATCHEND = "batch_end";
-    private static final String KEY_UID_BATCHSIZE = "batch_size";
-
-    private static final String KEY_CRESENS = "created_sentences";
-    private static final String KEY_EXECTIME = "execution_time";
-    private static final String KEY_CMDCOUNT = "command_count";
-    private static final String KEY_VALCOUNT = "valid_sentences";
-    private static final String KEY_INVCOUNT = "invalid_sentences";
-
-    private static final String KEY_NEWINSTS = "new_instances";
+    public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
     private enum Temporal {
         TIMESTAMP, QUARTER, DATE
@@ -82,15 +75,15 @@ public class CeWebSpecial extends CeWebObject {
     }
 
     // Reference list response:
-    // KEY_RESULTS[]
-    // KEY_INSTANCE_NAME
-    // KEY_PROP_NAME
-    // KEY_INSTANCE_NAME
+    // JSON_RESULTS[]
+    // JSON_INSTANCE_NAME
+    // JSON_PROP_NAME
+    // JSON_INSTANCE_NAME
     public static CeStoreJsonObject generateReferenceListFrom(String pInstName, ArrayList<ArrayList<String>> pRefList) {
         CeStoreJsonObject jObj = new CeStoreJsonObject();
 
-        jObj.put(KEY_RESULTS, processRefListRows(pRefList));
-        jObj.put(KEY_INSTANCE_NAME, pInstName);
+        jObj.put(JSON_RESULTS, processRefListRows(pRefList));
+        jObj.put(JSON_INSTANCE_NAME, pInstName);
 
         return jObj;
     }
@@ -104,8 +97,8 @@ public class CeWebSpecial extends CeWebObject {
             String instName = thisRow.get(0);
             String propName = thisRow.get(1);
 
-            putStringValueIn(jRow, KEY_INSTANCE_NAME, instName);
-            putStringValueIn(jRow, KEY_PROP_NAME, propName);
+            putStringValueIn(jRow, JSON_INSTANCE_NAME, instName);
+            putStringValueIn(jRow, JSON_PROP_NAME, propName);
 
             jRows.add(jRow);
         }
@@ -114,17 +107,17 @@ public class CeWebSpecial extends CeWebObject {
     }
 
     // UID batch response:
-    // KEY_UID_PREFIX
-    // KEY_UID_BATCHSTART
-    // KEY_UID_BATCHEND
-    // KEY_UID_BATCHSIZE
+    // JSON_UID_PREFIX
+    // JSON_UID_BATCHSTART
+    // JSON_UID_BATCHEND
+    // JSON_UID_BATCHSIZE
     public static CeStoreJsonObject generateUidBatchFrom(Properties pUidProps, long pBatchSize) {
         CeStoreJsonObject jObj = new CeStoreJsonObject();
 
-        putStringValueIn(jObj, KEY_UID_PREFIX, pUidProps.getProperty(UidManager.KEY_UID_PREFIX, ""));
-        putStringValueIn(jObj, KEY_UID_BATCHSTART, pUidProps.getProperty(UidManager.KEY_UID_BATCHSTART, ""));
-        putStringValueIn(jObj, KEY_UID_BATCHEND, pUidProps.getProperty(UidManager.KEY_UID_BATCHEND, ""));
-        putLongValueIn(jObj, KEY_UID_BATCHSIZE, pBatchSize);
+        putStringValueIn(jObj, JSON_UID_PREFIX, pUidProps.getProperty(JSON_UID_PREFIX, ""));
+        putStringValueIn(jObj, JSON_UID_BATCHSTART, pUidProps.getProperty(JSON_UID_BATCHSTART, ""));
+        putStringValueIn(jObj, JSON_UID_BATCHEND, pUidProps.getProperty(JSON_UID_BATCHEND, ""));
+        putLongValueIn(jObj, JSON_UID_BATCHSIZE, pBatchSize);
 
         return jObj;
     }
@@ -134,13 +127,13 @@ public class CeWebSpecial extends CeWebObject {
         CeWebInstance instWeb = new CeWebInstance(this.ac);
         long execTime = System.currentTimeMillis() - this.ac.getStartTime();
 
-        putIntValueIn(jObj, KEY_INVCOUNT, pSenStats.getInvalidSentenceCount());
-        putIntValueIn(jObj, KEY_CMDCOUNT, pSenStats.getCommandCount());
-        putIntValueIn(jObj, KEY_VALCOUNT, pSenStats.getValidSentenceCount());
-        putLongValueIn(jObj, KEY_EXECTIME, execTime);
+        putIntValueIn(jObj, JSON_INVCOUNT, pSenStats.getInvalidSentenceCount());
+        putIntValueIn(jObj, JSON_CMDCOUNT, pSenStats.getCommandCount());
+        putIntValueIn(jObj, JSON_VALCOUNT, pSenStats.getValidSentenceCount());
+        putLongValueIn(jObj, JSON_EXECTIME, execTime);
 
         if ((pSenStats.getNewInstances() != null) && (!pSenStats.getNewInstances().isEmpty())) {
-            putArrayValueIn(jObj, KEY_NEWINSTS, instWeb.generateSummaryListJsonFor(pSenStats.getNewInstances(), pOnlyProps, pSuppPropTypes));
+            putArrayValueIn(jObj, JSON_NEWINSTS, instWeb.generateSummaryListJsonFor(pSenStats.getNewInstances(), pOnlyProps, pSuppPropTypes));
         }
 
         if (pSenStats.getCreatedSentences() != null) {
@@ -151,34 +144,34 @@ public class CeWebSpecial extends CeWebObject {
                 jSenArr.add(senWeb.generateSummaryNormalJson(thisSen, null));
             }
 
-            putArrayValueIn(jObj, KEY_CRESENS, jSenArr);
+            putArrayValueIn(jObj, JSON_CRESENS, jSenArr);
         }
 
         return jObj;
     }
 
     // Generic count response structure:
-    // KEY_COUNT
+    // JSON_COUNT
     public static CeStoreJsonObject generateCountSingleFrom(int pCount) {
         CeStoreJsonObject jObj = new CeStoreJsonObject();
 
-        putIntValueIn(jObj, KEY_COUNT, pCount);
+        putIntValueIn(jObj, JSON_COUNT, pCount);
 
         return jObj;
     }
 
     // Generic single value response structure:
-    // KEY_VALUE
+    // JSON_VALUE
     public static CeStoreJsonObject generateSingleValueFrom(Object pVal) {
         CeStoreJsonObject jObj = new CeStoreJsonObject();
 
-        putObjectValueIn(jObj, KEY_VALUE, pVal);
+        putObjectValueIn(jObj, JSON_VALUE, pVal);
 
         return jObj;
     }
 
     // Generic multiple concept instance list response structure:
-    // KEY_COUNT
+    // JSON_COUNT
     public static CeStoreJsonObject generateMultipleConceptInstanceListFrom(ActionContext pAc, ApiHandler pApiHandler,
             TreeMap<String, ArrayList<CeInstance>> pList, String[] pOnlyProps, int pNumSteps, boolean pRelInsts, boolean pRefInsts, String[] pLimRels, boolean pSuppPropTypes) {
         CeStoreJsonObject jObj = new CeStoreJsonObject();
@@ -240,7 +233,7 @@ public class CeWebSpecial extends CeWebObject {
     }
 
     // Generate JSON array frequency response:
-    // KEY_FREQUENCY
+    // JSON_FREQUENCY
     public static CeStoreJsonArray generateFrequencyArrayFrom(ActionContext pAc, CeConcept pCon,
             ArrayList<CeInstance> instList, String temporalProperty, String buckets) {
         CeStoreJsonArray jArr = new CeStoreJsonArray();
@@ -413,8 +406,8 @@ public class CeWebSpecial extends CeWebObject {
                     range = startLabel + " - " + endLabel;
                 }
 
-                pObj.put(KEY_RANGE, range);
-                pObj.put(KEY_FREQUENCY, 0);
+                pObj.put(JSON_RANGE, range);
+                pObj.put(JSON_FREQUENCY, 0);
 
                 jArr.add(pObj);
             }
@@ -430,8 +423,8 @@ public class CeWebSpecial extends CeWebObject {
 
                     CeStoreJsonObject pObj = (CeStoreJsonObject) jArr.get(bucket);
 
-                    int frequency = (pObj.getInt(KEY_FREQUENCY)) + 1;
-                    pObj.put(KEY_FREQUENCY, frequency);
+                    int frequency = (pObj.getInt(JSON_FREQUENCY)) + 1;
+                    pObj.put(JSON_FREQUENCY, frequency);
                 }
             }
         }
@@ -440,16 +433,16 @@ public class CeWebSpecial extends CeWebObject {
     }
 
     // Store Config response:
-    // KEY_ENV_PROPS[]
+    // JSON_ENV_PROPS[]
     // {KEY}
-    // KEY_GEN_PROPS[]
+    // JSON_GEN_PROPS[]
     // {KEY}
     public static CeStoreJsonObject generateStoreConfigListFrom(ActionContext pAc) {
         StoreConfig config = pAc.getCeConfig();
         CeStoreJsonObject jObj = new CeStoreJsonObject();
 
-        putObjectValueIn(jObj, KEY_ENV_PROPS, createJsonObjectsFor(config.getAllEnvironmentProperties()));
-        putObjectValueIn(jObj, KEY_GEN_PROPS, createJsonObjectsFor(config.getAllGeneralProperties()));
+        putObjectValueIn(jObj, JSON_ENV_PROPS, createJsonObjectsFor(config.getAllEnvironmentProperties()));
+        putObjectValueIn(jObj, JSON_GEN_PROPS, createJsonObjectsFor(config.getAllGeneralProperties()));
 
         return jObj;
     }

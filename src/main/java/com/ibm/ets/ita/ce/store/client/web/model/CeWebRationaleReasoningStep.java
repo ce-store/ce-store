@@ -1,17 +1,32 @@
 package com.ibm.ets.ita.ce.store.client.web.model;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
+
+import static com.ibm.ets.ita.ce.store.names.CeNames.RANGE_VALUE;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_RAT_ID;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_RAT_RULENAME;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_RAT_SENID;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_RAT_CON;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_RAT_NEGCON;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_RAT_PROP;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_RAT_NEGPROP;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_RAT_INST;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_RAT_RANGE;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_RAT_VAL;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_RAT_RATCE;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_RAT_PREMS;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_RAT_CONCS;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_RAT_VALSENIDS;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonArray;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
-import com.ibm.ets.ita.ce.store.model.CeProperty;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
 import com.ibm.ets.ita.ce.store.model.CePropertyValue;
 import com.ibm.ets.ita.ce.store.model.CeSentence;
 import com.ibm.ets.ita.ce.store.model.rationale.CeRationaleConclusion;
@@ -20,24 +35,8 @@ import com.ibm.ets.ita.ce.store.model.rationale.CeRationalePremise;
 import com.ibm.ets.ita.ce.store.model.rationale.CeRationaleReasoningStep;
 
 public class CeWebRationaleReasoningStep extends CeWebObject {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
-	//JSON Response Keys
-	private static final String KEY_RAT_ID = "rat_id";
-	private static final String KEY_RAT_RULENAME = "rule_name";
-	private static final String KEY_RAT_SENID = "source_senid";
-	private static final String KEY_RAT_CON = "concept";
-	private static final String KEY_RAT_NEGCON = "negated_concept";
-	private static final String KEY_RAT_PROP = "property";
-	private static final String KEY_RAT_NEGPROP = "negated_property";
-	private static final String KEY_RAT_INST = "instance";
-	private static final String KEY_RAT_RANGE = "range";
-	private static final String KEY_RAT_VAL = "value";
-	private static final String KEY_RAT_RATCE = "rationale_ce";
-	private static final String KEY_RAT_PREMS = "premises";
-	private static final String KEY_RAT_CONCS = "conclusions";
-	private static final String KEY_RAT_VALSENIDS = "value_senids";
-	
 	public CeWebRationaleReasoningStep(ActionContext pAc) {
 		super(pAc);
 	}
@@ -57,12 +56,12 @@ public class CeWebRationaleReasoningStep extends CeWebObject {
 	public CeStoreJsonObject generateFor(CeRationaleReasoningStep pRs) {
 		CeStoreJsonObject jObj = new CeStoreJsonObject();
 				
-		putStringValueIn(jObj, KEY_RAT_ID, pRs.getId());
-		putStringValueIn(jObj, KEY_RAT_RULENAME, pRs.getRuleName());
-		putStringValueIn(jObj, KEY_RAT_SENID, pRs.getSourceSentence().formattedId());
-		putStringValueIn(jObj, KEY_RAT_RATCE, pRs.getRationaleCe());			
-		putArrayValueIn(jObj, KEY_RAT_PREMS, processPremises(pRs));
-		putArrayValueIn(jObj, KEY_RAT_CONCS, processConclusions(pRs));
+		putStringValueIn(jObj, JSON_RAT_ID, pRs.getId());
+		putStringValueIn(jObj, JSON_RAT_RULENAME, pRs.getRuleName());
+		putStringValueIn(jObj, JSON_RAT_SENID, pRs.getSourceSentence().formattedId());
+		putStringValueIn(jObj, JSON_RAT_RATCE, pRs.getRationaleCe());			
+		putArrayValueIn(jObj, JSON_RAT_PREMS, processPremises(pRs));
+		putArrayValueIn(jObj, JSON_RAT_CONCS, processConclusions(pRs));
 
 		return jObj;
 	}
@@ -82,7 +81,7 @@ public class CeWebRationaleReasoningStep extends CeWebObject {
 				}
 			}
 
-			putArrayValueIn(jPrem, KEY_RAT_VALSENIDS, jArrSen);
+			putArrayValueIn(jPrem, JSON_RAT_VALSENIDS, jArrSen);
 					
 			jArr.add(jPrem);
 		}
@@ -105,10 +104,10 @@ public class CeWebRationaleReasoningStep extends CeWebObject {
 		CeStoreJsonObject jObj = new CeStoreJsonObject();
 
 		putStringValueIn(jObj, calculateConceptKey(pPart), calculateConceptName(pPart));
-		putStringValueIn(jObj, KEY_RAT_INST, pPart.getInstanceName());
+		putStringValueIn(jObj, JSON_RAT_INST, pPart.getInstanceName());
 		putStringValueIn(jObj, calculatePropertyKey(pPart), pPart.getPropertyName());
-		putStringValueIn(jObj, KEY_RAT_RANGE, pPart.getRangeName());
-		putStringValueIn(jObj, KEY_RAT_VAL, pPart.getValue());
+		putStringValueIn(jObj, JSON_RAT_RANGE, pPart.getRangeName());
+		putStringValueIn(jObj, JSON_RAT_VAL, pPart.getValue());
 
 		return jObj;
 	}
@@ -117,9 +116,9 @@ public class CeWebRationaleReasoningStep extends CeWebObject {
 		String result = "";
 
 		if (pPart.isConceptNegated()) {
-			result = KEY_RAT_NEGCON;
+			result = JSON_RAT_NEGCON;
 		} else {
-			result = KEY_RAT_CON;
+			result = JSON_RAT_CON;
 		}
 		
 		return result;
@@ -129,7 +128,7 @@ public class CeWebRationaleReasoningStep extends CeWebObject {
 		String result = pPart.getConceptName();
 		
 		if (result.isEmpty()) {
-			result = CeProperty.RANGE_VALUE;
+			result = RANGE_VALUE;
 		}
 
 		return result;		
@@ -139,9 +138,9 @@ public class CeWebRationaleReasoningStep extends CeWebObject {
 		String result = "";
 
 		if (pPart.isPropertyNegated()) {
-			result = KEY_RAT_NEGPROP;
+			result = JSON_RAT_NEGPROP;
 		} else {
-			result = KEY_RAT_PROP;
+			result = JSON_RAT_PROP;
 		}
 
 		return result;

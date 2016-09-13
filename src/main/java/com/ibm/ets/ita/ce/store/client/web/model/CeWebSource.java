@@ -1,34 +1,38 @@
 package com.ibm.ets.ita.ce.store.client.web.model;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
+
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSONTYPE_SOURCE;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_TYPE;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_STYLE;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_ID;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_CREATED;
+import static com.ibm.ets.ita.ce.store.names.RestNames.STYLE_FULL;
+import static com.ibm.ets.ita.ce.store.names.RestNames.STYLE_SUMMARY;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_PARENT_ID;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_CHILD_IDS;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SEN_COUNT;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_MOD_COUNT;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SOURCE_TYPE;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SOURCE_DETAIL;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_USER_INSTNAME;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_AGENT_NAME;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SENS;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonArray;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
 import com.ibm.ets.ita.ce.store.model.CeSentence;
 import com.ibm.ets.ita.ce.store.model.CeSource;
 
 public class CeWebSource extends CeWebObject {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
-
-	//JSON Response Keys
-	private static final String KEY_PARENT_ID = "parent_id";
-	private static final String KEY_CHILD_IDS = "child_ids";
-	private static final String KEY_SEN_COUNT = "sentence_count";
-	private static final String KEY_MOD_COUNT = "model_count";
-	private static final String KEY_SOURCE_TYPE = "source_type";
-	private static final String KEY_SOURCE_DETAIL = "detail";
-	private static final String KEY_USER_INSTNAME = "user_instname";
-	private static final String KEY_AGENT_NAME = "agent_instname";
-	private static final String KEY_SENS = "sentences";
-	
-	private static final String TYPE_SRC = "source";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	public CeWebSource(ActionContext pAc) {
 		super(pAc);
@@ -85,21 +89,21 @@ public class CeWebSource extends CeWebObject {
 	public static CeStoreJsonObject generateSummaryDetailsJsonFor(CeSource pSrc) {
 		CeStoreJsonObject jObj = new CeStoreJsonObject();
 
-		putStringValueIn(jObj, KEY_TYPE, TYPE_SRC);
-		putStringValueIn(jObj, KEY_STYLE, STYLE_SUMMARY);
-		putStringValueIn(jObj, KEY_ID, pSrc.getId());
-		putLongValueIn(jObj, KEY_CREATED, pSrc.getCreationDate());
+		putStringValueIn(jObj, JSON_TYPE, JSONTYPE_SOURCE);
+		putStringValueIn(jObj, JSON_STYLE, STYLE_SUMMARY);
+		putStringValueIn(jObj, JSON_ID, pSrc.getId());
+		putLongValueIn(jObj, JSON_CREATED, pSrc.getCreationDate());
 
 		processAnnotations(pSrc, jObj);
 
-		putStringValueIn(jObj, KEY_SOURCE_TYPE, pSrc.formattedType());
-		putStringValueIn(jObj, KEY_SOURCE_DETAIL, pSrc.getDetail());
-		putStringValueIn(jObj, KEY_USER_INSTNAME, pSrc.getUserInstanceName());
-		putStringValueIn(jObj, KEY_AGENT_NAME, pSrc.getAgentInstanceName());
+		putStringValueIn(jObj, JSON_SOURCE_TYPE, pSrc.formattedType());
+		putStringValueIn(jObj, JSON_SOURCE_DETAIL, pSrc.getDetail());
+		putStringValueIn(jObj, JSON_USER_INSTNAME, pSrc.getUserInstanceName());
+		putStringValueIn(jObj, JSON_AGENT_NAME, pSrc.getAgentInstanceName());
 
 		CeSource parSrc = pSrc.getParentSource();
 		if (parSrc != null) {
-			putStringValueIn(jObj, KEY_PARENT_ID, parSrc.getId());
+			putStringValueIn(jObj, JSON_PARENT_ID, parSrc.getId());
 		}
 
 		if (pSrc.hasChildSources()) {
@@ -109,11 +113,11 @@ public class CeWebSource extends CeWebObject {
 				childIds.add(childSrc.getId());
 			}
 
-			putAllStringValuesIn(jObj, KEY_CHILD_IDS, childIds);
+			putAllStringValuesIn(jObj, JSON_CHILD_IDS, childIds);
 		}
 
-		putIntValueIn(jObj, KEY_SEN_COUNT, pSrc.countPrimarySentences());
-		putIntValueIn(jObj, KEY_MOD_COUNT, pSrc.getDefinedModels().length);
+		putIntValueIn(jObj, JSON_SEN_COUNT, pSrc.countPrimarySentences());
+		putIntValueIn(jObj, JSON_MOD_COUNT, pSrc.getDefinedModels().length);
 		//Sentences are not returned in summary mode
 		
 		return jObj;
@@ -133,21 +137,21 @@ public class CeWebSource extends CeWebObject {
 		CeStoreJsonObject jObj = new CeStoreJsonObject();
 		CeWebSentence webSen = new CeWebSentence(this.ac);
 
-		putStringValueIn(jObj, KEY_TYPE, TYPE_SRC);
-		putStringValueIn(jObj, KEY_STYLE, STYLE_FULL);
-		putStringValueIn(jObj, KEY_ID, pSrc.getId());
-	    putLongValueIn(jObj, KEY_CREATED, pSrc.getCreationDate());
+		putStringValueIn(jObj, JSON_TYPE, JSONTYPE_SOURCE);
+		putStringValueIn(jObj, JSON_STYLE, STYLE_FULL);
+		putStringValueIn(jObj, JSON_ID, pSrc.getId());
+	    putLongValueIn(jObj, JSON_CREATED, pSrc.getCreationDate());
 
 		processAnnotations(pSrc, jObj);
 
-		putStringValueIn(jObj, KEY_SOURCE_TYPE, pSrc.formattedType());
-		putStringValueIn(jObj, KEY_SOURCE_DETAIL, pSrc.getDetail());
-		putStringValueIn(jObj, KEY_USER_INSTNAME, pSrc.getUserInstanceName());
-		putStringValueIn(jObj, KEY_AGENT_NAME, pSrc.getAgentInstanceName());
+		putStringValueIn(jObj, JSON_SOURCE_TYPE, pSrc.formattedType());
+		putStringValueIn(jObj, JSON_SOURCE_DETAIL, pSrc.getDetail());
+		putStringValueIn(jObj, JSON_USER_INSTNAME, pSrc.getUserInstanceName());
+		putStringValueIn(jObj, JSON_AGENT_NAME, pSrc.getAgentInstanceName());
 		
 		CeSource parSrc = pSrc.getParentSource();
 		if (parSrc != null) {
-			putStringValueIn(jObj, KEY_PARENT_ID, parSrc.getId());
+			putStringValueIn(jObj, JSON_PARENT_ID, parSrc.getId());
 		}
 
 		if (pSrc.hasChildSources()) {
@@ -157,12 +161,12 @@ public class CeWebSource extends CeWebObject {
 				childIds.add(childSrc.getId());
 			}
 
-			putAllStringValuesIn(jObj, KEY_CHILD_IDS, childIds);
+			putAllStringValuesIn(jObj, JSON_CHILD_IDS, childIds);
 		}
 
-		putIntValueIn(jObj, KEY_SEN_COUNT, pSrc.countPrimarySentences());
-		putIntValueIn(jObj, KEY_MOD_COUNT, pSrc.getDefinedModels().length);
-		putArrayValueIn(jObj, KEY_SENS, webSen.generateSummaryListFrom(new ArrayList<CeSentence>(pSrc.listAllSentences())));
+		putIntValueIn(jObj, JSON_SEN_COUNT, pSrc.countPrimarySentences());
+		putIntValueIn(jObj, JSON_MOD_COUNT, pSrc.getDefinedModels().length);
+		putArrayValueIn(jObj, JSON_SENS, webSen.generateSummaryListFrom(new ArrayList<CeSentence>(pSrc.listAllSentences())));
 
 		return jObj;
 	}

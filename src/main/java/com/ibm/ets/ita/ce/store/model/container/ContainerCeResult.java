@@ -1,11 +1,13 @@
 package com.ibm.ets.ita.ce.store.model.container;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
-import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.NL;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.CESEN_SEPARATOR;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.HDR_CE;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.NL;
 import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.appendToSb;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.timestampNow;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
@@ -14,16 +16,13 @@ import java.util.ArrayList;
 
 import java.util.regex.Pattern;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
-import com.ibm.ets.ita.ce.store.ModelBuilder;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
+import com.ibm.ets.ita.ce.store.core.ModelBuilder;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
 import com.ibm.ets.ita.ce.store.model.CeQuery;
 
 public class ContainerCeResult extends ContainerQueryResult {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
-
-	public static final String HDR_CE = "CE";
-	public static final String CESEN_SEPARATOR = "{|}";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private CeQuery targetQuery = null;
 	private ArrayList<ArrayList<CeInstance>> instanceRows = new ArrayList<ArrayList<CeInstance>>();
@@ -76,7 +75,7 @@ public class ContainerCeResult extends ContainerQueryResult {
 				String instName = thisRow.get(i);
 				String hdrName = getHeaders().get(i);
 
-				if (!hdrName.equals(ContainerCeResult.HDR_CE)) {
+				if (!hdrName.equals(HDR_CE)) {
 					CeInstance thisInst = mb.getInstanceNamed(pAc, instName);
 
 					if (thisInst != null) {

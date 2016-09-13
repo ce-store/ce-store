@@ -1,9 +1,33 @@
 package com.ibm.ets.ita.ce.store.conversation.processor;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
+
+import static com.ibm.ets.ita.ce.store.messages.ConversationMessages.MSG_BADACT;
+import static com.ibm.ets.ita.ce.store.messages.ConversationMessages.MSG_CARDTYPE_NOTSUPP;
+import static com.ibm.ets.ita.ce.store.messages.ConversationMessages.MSG_DECLINED;
+import static com.ibm.ets.ita.ce.store.messages.ConversationMessages.MSG_LOCCARD;
+import static com.ibm.ets.ita.ce.store.messages.ConversationMessages.MSG_LOGIN;
+import static com.ibm.ets.ita.ce.store.messages.ConversationMessages.MSG_NEGATION;
+import static com.ibm.ets.ita.ce.store.messages.ConversationMessages.MSG_NOCMD;
+import static com.ibm.ets.ita.ce.store.messages.ConversationMessages.MSG_NOEXPAND;
+import static com.ibm.ets.ita.ce.store.messages.ConversationMessages.MSG_NOFURTHER;
+import static com.ibm.ets.ita.ce.store.messages.ConversationMessages.MSG_NOTAUTH;
+import static com.ibm.ets.ita.ce.store.messages.ConversationMessages.MSG_NOTHINGDONE;
+import static com.ibm.ets.ita.ce.store.messages.ConversationMessages.MSG_NOTHINGELSE;
+import static com.ibm.ets.ita.ce.store.messages.ConversationMessages.MSG_NOTUNDERSTOOD;
+import static com.ibm.ets.ita.ce.store.messages.ConversationMessages.MSG_REPEATED;
+import static com.ibm.ets.ita.ce.store.messages.ConversationMessages.MSG_SAVED;
+import static com.ibm.ets.ita.ce.store.messages.ConversationMessages.MSG_THANKYOU;
+import static com.ibm.ets.ita.ce.store.names.CeNames.CON_CONFCARD;
+import static com.ibm.ets.ita.ce.store.names.CeNames.CON_GISTCARD;
+import static com.ibm.ets.ita.ce.store.names.CeNames.CON_GISTCONFCARD;
+import static com.ibm.ets.ita.ce.store.names.CeNames.CON_NLCARD;
+import static com.ibm.ets.ita.ce.store.names.CeNames.CON_TELLCARD;
+import static com.ibm.ets.ita.ce.store.names.CeNames.PROP_ISINREPLYTO;
+import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.substituteNormalParameters;
 
 import java.util.ArrayList;
 import java.util.TreeMap;
@@ -11,27 +35,22 @@ import java.util.TreeMap;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
 
 public class ResultOfAnalysis {
-
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
-
-	private static final String CON_NLCARD = "NL card";
-	private static final String CON_CONFCARD = "confirm card";
-	private static final String CON_GISTCONFCARD = "gist-confirm card";
-	private static final String CON_GISTCARD = "gist card";
-	private static final String CON_TELLCARD = "tell card";
-	private static final String PROP_IRT = "is in reply to";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private String ceText = null;
 	private String gistText = null;
-	private long scoreVal = 0;
-	private String scoreExplanation = "";
-	private String scoreType = "";
 	private String responseCardType = null;
 	private String infoMessage = null;
 	private boolean isQuestionResult = false;
 	private ArrayList<ResultOfAnalysis> childResults = new ArrayList<ResultOfAnalysis>();
 	private TreeMap<String, CeInstance> matchedInstances = new TreeMap<String, CeInstance>();
 	private ArrayList<String> referencedIds = new ArrayList<String>();
+
+	private static ResultOfAnalysis createWithInfoMessage(String pMsg, TreeMap<String, String> pParms) {
+		String msgText = substituteNormalParameters(pMsg, pParms);
+
+		return createWithInfoMessage(msgText);
+	}
 
 	private static ResultOfAnalysis createWithInfoMessage(String pMsg) {
 		ResultOfAnalysis result = new ResultOfAnalysis();
@@ -68,12 +87,23 @@ public class ResultOfAnalysis {
 
 		return result;
 	}
-	
+
 	public static ResultOfAnalysis createQuestionResponseWithGistAndCe(String pGistText, String pCeText) {
 		ResultOfAnalysis result = new ResultOfAnalysis();
 
 		result.gistText = pGistText;
 		result.ceText = pCeText;
+		result.isQuestionResult = true;
+		result.responseCardType = CON_GISTCARD;
+
+		return result;
+	}
+
+	public static ResultOfAnalysis createQuestionResponseWithGistOnly(String pGistText) {
+		ResultOfAnalysis result = new ResultOfAnalysis();
+
+		result.gistText = pGistText;
+		result.ceText = null;
 		result.isQuestionResult = true;
 		result.responseCardType = CON_GISTCARD;
 
@@ -87,7 +117,7 @@ public class ResultOfAnalysis {
 	public TreeMap<String, CeInstance> getMatchedInstances() {
 		return this.matchedInstances;
 	}
-	
+
 	public void addMatchedInstance(CeInstance pInst) {
 		this.matchedInstances.put(pInst.getInstanceName(), pInst);
 	}
@@ -95,98 +125,95 @@ public class ResultOfAnalysis {
 	public ArrayList<String> getReferencedIds() {
 		return this.referencedIds;
 	}
-	
+
 	public void addReferencedId(String pId) {
 		this.referencedIds.add(pId);
 	}
 
 	public static ResultOfAnalysis msgThankyou() {
-		return ResultOfAnalysis.createWithInfoMessage("Thank you for your message");
+		return ResultOfAnalysis.createWithInfoMessage(MSG_THANKYOU);
 	}
 
-	public static ResultOfAnalysis msgThankyouForCe(CeInstance pScoreInst) {
-		ResultOfAnalysis result =  ResultOfAnalysis.createWithInfoMessage("I have saved that to the knowledge base");
-		
-		if (pScoreInst != null) {
-			long scoreVal = new Long(pScoreInst.getSingleValueFromPropertyNamed("score value")).longValue();
-			String scoreExp = pScoreInst.getSingleValueFromPropertyNamed("score explanation");
+	public static ResultOfAnalysis msgThankyouForCe() {
+		ResultOfAnalysis result = ResultOfAnalysis.createWithInfoMessage(MSG_SAVED);
 
-			result.addScoreDetails(scoreVal, scoreExp, "actual");
-		}
-		
 		return result;
 	}
 
-	public static ResultOfAnalysis msgTempHvt() {
-		return ResultOfAnalysis.createWithInfoMessage("The vehicle with plate ABC 123 is linked to a High Value Target");
-	}
-
-	public static ResultOfAnalysis msgLexicallyProcessed() {
-		return ResultOfAnalysis.createWithInfoMessage("Your sentence has been lexically processed");
-	}
-
 	public static ResultOfAnalysis msgDeclined() {
-		return ResultOfAnalysis.createWithInfoMessage("I'm sorry but I can't help you.  You don't have the right authorisation.");
+		return ResultOfAnalysis.createWithInfoMessage(MSG_DECLINED);
 	}
 
 	public static ResultOfAnalysis msgUserNotAuthorised(String pUserName) {
 		ResultOfAnalysis result = null;
 
 		if (pUserName == null) {
-			result = ResultOfAnalysis.createWithInfoMessage("You must log in before you can interact with the system");
+			result = ResultOfAnalysis.createWithInfoMessage(MSG_LOGIN);
 		} else {
-			result = ResultOfAnalysis.createWithInfoMessage("I'm sorry but the user named '" + pUserName + "' is not authorised to interact with the system.  Please log in as an authorised user.");
+			TreeMap<String, String> parms = new TreeMap<String, String>();
+			parms.put("%01", pUserName);
+
+			result = ResultOfAnalysis.createWithInfoMessage(MSG_NOTAUTH, parms);
 		}
 
 		return result;
 	}
 
 	public static ResultOfAnalysis msgActNotAuthorised(String pUserName, String pActName) {
-		return ResultOfAnalysis.createWithInfoMessage("I cannot respond to that request.\nThe '" + pActName + "' speech act is not authorised for user '" + pUserName + "'");
+		TreeMap<String, String> parms = new TreeMap<String, String>();
+		parms.put("%01", pActName);
+		parms.put("%02", pUserName);
+
+		return ResultOfAnalysis.createWithInfoMessage(MSG_BADACT, parms);
 	}
 
 	public static ResultOfAnalysis msgNotUnderstood() {
-		return ResultOfAnalysis.createWithInfoMessage("I wasn't able to understand any of that, sorry.");
+		return ResultOfAnalysis.createWithInfoMessage(MSG_NOTUNDERSTOOD);
 	}
 
 	public static ResultOfAnalysis msgEmptyText() {
-		return ResultOfAnalysis.createWithInfoMessage("I didn't do anything because I don't think you said anything");
+		return ResultOfAnalysis.createWithInfoMessage(MSG_NOTHINGDONE);
 	}
 
 	public static ResultOfAnalysis msgBeenSaidAlready() {
-		return ResultOfAnalysis.createWithInfoMessage("You've said that already!");
+		return ResultOfAnalysis.createWithInfoMessage(MSG_REPEATED);
 	}
 
 	public static ResultOfAnalysis msgCantHandleNegations() {
-		return ResultOfAnalysis.createWithInfoMessage("I'm not able to handle negative statements such as 'no', 'not' and 'doesn't'");
+		return ResultOfAnalysis.createWithInfoMessage(MSG_NEGATION);
 	}
 
 	public static ResultOfAnalysis msgNothingElseToSay() {
-		return ResultOfAnalysis.createWithInfoMessage("Sorry, I don't have anything else to tell you");
+		return ResultOfAnalysis.createWithInfoMessage(MSG_NOTHINGELSE);
 	}
 
 	public static ResultOfAnalysis msgNoFurtherExplanation() {
-		return ResultOfAnalysis.createWithInfoMessage("Sorry, I don't have any further explanation for that");
+		return ResultOfAnalysis.createWithInfoMessage(MSG_NOFURTHER);
 	}
 
 	public static ResultOfAnalysis msgExpandNotSpecified() {
-		return ResultOfAnalysis.createWithInfoMessage("You didn't tell me what to expand on");
+		return ResultOfAnalysis.createWithInfoMessage(MSG_NOEXPAND);
 	}
 
 	public static ResultOfAnalysis msgCommandHandlingNotYetImplemented() {
-		return ResultOfAnalysis.createWithInfoMessage("Command handling is not yet implemented");
+		return ResultOfAnalysis.createWithInfoMessage(MSG_NOCMD);
 	}
 
 	public static ResultOfAnalysis msgUnsupportedCardType(CeInstance pConvInst) {
-		String msgText = "Processing for this card type is not yet implemented: " + pConvInst.getInstanceName() + " (" + pConvInst.getFirstLeafConceptName() + ")";
+		TreeMap<String, String> parms = new TreeMap<String, String>();
+		parms.put("%01", pConvInst.getInstanceName());
+		parms.put("%02", pConvInst.getFirstLeafConceptName());
 
-		return ResultOfAnalysis.createWithInfoMessage(msgText);
+		return ResultOfAnalysis.createWithInfoMessage(MSG_CARDTYPE_NOTSUPP, parms);
 	}
 
 	public static ResultOfAnalysis msgOriginalCardNotFound(CeInstance pConvInst) {
-		String msgText = "Error: Unable to locate card '" + pConvInst.getSingleValueFromPropertyNamed(PROP_IRT) + "' (" + PROP_IRT + ") when processing confirm card '" + pConvInst.getInstanceName() + "'";
+		TreeMap<String, String> parms = new TreeMap<String, String>();
+		parms.put("%01", pConvInst.getSingleValueFromPropertyNamed(PROP_ISINREPLYTO));
+		parms.put("%02", PROP_ISINREPLYTO);
+		parms.put("%03", pConvInst.getInstanceName());
 
-		return ResultOfAnalysis.createWithInfoMessage(msgText);
+		return ResultOfAnalysis.createWithInfoMessage(MSG_LOCCARD, parms);
 	}
 
 	public String getCeText() {
@@ -202,7 +229,7 @@ public class ResultOfAnalysis {
 			if (this.hasCeText()) {
 				this.ceText += pRoa.getCeText();
 			} else {
-				//No existing CE text
+				// No existing CE text
 				this.ceText = pRoa.getCeText();
 			}
 		}
@@ -221,36 +248,10 @@ public class ResultOfAnalysis {
 			if (this.hasGistText()) {
 				this.gistText += pRoa.getGistText();
 			} else {
-				//No existing GIST text
+				// No existing GIST text
 				this.gistText = pRoa.getGistText();
 			}
 		}
-	}
-
-	public long getScoreVal() {
-		return this.scoreVal;
-	}
-
-	private void addScoreValFrom(ResultOfAnalysis pRoa) {
-		this.scoreVal += pRoa.getScoreVal();
-	}
-
-	public String getScoreExplanation() {
-		return this.scoreExplanation;
-	}
-
-	public boolean hasScoreExplanation() {
-		return (this.scoreExplanation != null) && (!this.scoreExplanation.isEmpty());
-	}
-
-	private void appendScoreExplanationFrom(ResultOfAnalysis pRoa) {
-		if (pRoa.hasScoreExplanation()) {
-			this.scoreExplanation += pRoa.getScoreExplanation();
-		}
-	}
-
-	public String getScoreType() {
-		return this.scoreType;
 	}
 
 	private void appendMatchedInstancesFrom(ResultOfAnalysis pRoa) {
@@ -263,12 +264,6 @@ public class ResultOfAnalysis {
 		for (String thisId : pRoa.getReferencedIds()) {
 			addReferencedId(thisId);
 		}
-	}
-
-	public void addScoreDetails(long pScoreVal, String pScoreExp, String pScoreType) {
-		this.scoreVal = pScoreVal;
-		this.scoreExplanation = pScoreExp;
-		this.scoreType = pScoreType;
 	}
 
 	public String getResponseCardType() {
@@ -290,14 +285,14 @@ public class ResultOfAnalysis {
 	public boolean isInfoMessage() {
 		return this.infoMessage != null;
 	}
-	
+
 	public boolean hasResponseCardType() {
 		return (this.responseCardType != null) && (!this.responseCardType.isEmpty());
 	}
-	
+
 	public boolean isConfirmCard() {
 		boolean result = false;
-		
+
 		if (this.responseCardType != null) {
 			result = this.responseCardType.equals(CON_CONFCARD);
 		}
@@ -307,7 +302,7 @@ public class ResultOfAnalysis {
 
 	public boolean isTellCard() {
 		boolean result = false;
-		
+
 		if (this.responseCardType != null) {
 			result = this.responseCardType.equals(CON_TELLCARD);
 		}
@@ -325,17 +320,14 @@ public class ResultOfAnalysis {
 		transferResponseCardTypeFrom(pChildRoa);
 		appendCeTextFrom(pChildRoa);
 		appendGistTextFrom(pChildRoa);
-		addScoreValFrom(pChildRoa);
-		appendScoreExplanationFrom(pChildRoa);
 		appendMatchedInstancesFrom(pChildRoa);
-		this.scoreType = pChildRoa.getScoreType();
 		this.isQuestionResult = pChildRoa.isQuestionResult();
 		appendReferencedIdsFrom(pChildRoa);
 	}
-	
+
 	private void transferResponseCardTypeFrom(ResultOfAnalysis pChildRoa) {
 		if (pChildRoa.hasResponseCardType()) {
-			//TODO: Add test and warning for mismatch here
+			// TODO: Add test and warning for mismatch here
 			this.responseCardType = pChildRoa.getResponseCardType();
 		}
 	}
@@ -345,14 +337,14 @@ public class ResultOfAnalysis {
 
 		if (!isInfoMessage()) {
 			if (hasGistText()) {
-				//For GIST results the primary content is the GIST text
-				 result = getGistText();
+				// For GIST results the primary content is the GIST text
+				result = getGistText();
 			} else {
-				//For non-GIST results the primary content is the CE text
+				// For non-GIST results the primary content is the CE text
 				result = getCeText();
 			}
 		} else {
-			//For info messages the primary content is the message text
+			// For info messages the primary content is the message text
 			result = getInfoMessage();
 		}
 
@@ -360,11 +352,12 @@ public class ResultOfAnalysis {
 	}
 
 	public String calculateSecondaryContent() {
-		//Only GIST results have secondary content (the CE text that derived the GIST)
+		// Only GIST results have secondary content (the CE text that derived
+		// the GIST)
 		String result = null;
 
 		if (hasGistText()) {
-			 result = getCeText();
+			result = getCeText();
 		}
 
 		return result;
@@ -380,15 +373,9 @@ public class ResultOfAnalysis {
 				result += sepChar + "ceText=" + this.ceText;
 				sepChar = "\n";
 			}
-	
+
 			if (hasGistText()) {
 				result += sepChar + "gistText=" + this.gistText;
-				sepChar = "\n";
-			}
-	
-			if (this.scoreVal != 0) {
-				result += sepChar + "score=" + new Long(this.scoreVal).toString();
-				result += " (" + this.scoreExplanation + ")";
 				sepChar = "\n";
 			}
 		} else {

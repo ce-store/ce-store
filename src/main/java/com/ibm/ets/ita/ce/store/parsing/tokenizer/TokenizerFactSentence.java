@@ -1,17 +1,29 @@
 package com.ibm.ets.ita.ce.store.parsing.tokenizer;
+
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_AND;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_BECAUSE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_THAT;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.SCELABEL_QUOTE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.SCELABEL_BECAUSE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.SCELABEL_CONCEPT;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.SCELABEL_CONNECTOR;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.SCELABEL_INSTVAL;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.SCELABEL_NORMAL;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.SCELABEL_PROP;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.PROPDEF_PREFIX;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.PROPDEF_SUFFIX;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportWarning;
 
 import java.util.ArrayList;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
-import com.ibm.ets.ita.ce.store.ModelBuilder;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
+import com.ibm.ets.ita.ce.store.core.ModelBuilder;
 import com.ibm.ets.ita.ce.store.model.CeProperty;
-import com.ibm.ets.ita.ce.store.model.CeSentence;
 import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentenceFactNormal;
 import com.ibm.ets.ita.ce.store.parsing.model.TokenizerClause;
 import com.ibm.ets.ita.ce.store.parsing.model.TokenizerNormalClause;
@@ -19,20 +31,7 @@ import com.ibm.ets.ita.ce.store.parsing.model.TokenizerRationaleClause;
 import com.ibm.ets.ita.ce.store.parsing.model.TokenizerStartClause;
 
 public class TokenizerFactSentence {
-
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
-
-	private static final String SEPARATOR_THAT = "that";
-	private static final String SEPARATOR_AND = "and";
-	private static final String SEPARATOR_BECAUSE = "because";
-
-	private static final String SCELABEL_NORMAL = "";
-	private static final String SCELABEL_CONCEPT = "{Concept}:";
-	private static final String SCELABEL_PROP = "{Property}:";
-	private static final String SCELABEL_INSTVAL = "{Instance}:";
-	private static final String SCELABEL_DELIMITER = "{Connector}:";
-	private static final String SCELABEL_BECAUSE = "{Because}:";
-	public static final String SCELABEL_QUOTE = "{Quote}:";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private ActionContext ac = null;
 	private ModelBuilder mb = null;
@@ -130,7 +129,7 @@ public class TokenizerFactSentence {
 			String thisToken = getNextToken();
 
 			//Split the raw tokens into clauses at any delimiter tokens
-			if ((thisToken.equals(SEPARATOR_AND)) || (thisToken.equals(SEPARATOR_THAT))) {
+			if ((thisToken.equals(TOKEN_AND)) || (thisToken.equals(TOKEN_THAT))) {
 				//This is a delimiter token, so create a new clause
 				if (!currentClauseTokens.isEmpty()) {
 					lastClause = createClauseUsing(currentClauseTokens, lastDelimiter, lastClause, rationaleMode);
@@ -138,7 +137,7 @@ public class TokenizerFactSentence {
 				}
 
 				lastDelimiter = thisToken;
-			} else if (thisToken.equals(SEPARATOR_BECAUSE)) {
+			} else if (thisToken.equals(TOKEN_BECAUSE)) {
 				//This is the rationale start token ("because"), so the remainder of the sentence is now rationale
 				//Create the clause with rationaleMode=false because this is the token that indicates
 				//rationale follows, so this clause which precedes it should be created as a normal clause
@@ -256,11 +255,11 @@ public class TokenizerFactSentence {
 	}
 
 	public void addDelimiterCeToken(String pToken) {
-		this.sen.addFinalToken(SCELABEL_DELIMITER, "", cachedValueFor(pToken));
+		this.sen.addFinalToken(SCELABEL_CONNECTOR, "", cachedValueFor(pToken));
 	}
 
 	public void addBecauseCeToken() {
-		this.sen.addFinalToken(SCELABEL_BECAUSE, "", SEPARATOR_BECAUSE);
+		this.sen.addFinalToken(SCELABEL_BECAUSE, "", TOKEN_BECAUSE);
 	}
 
 	public void addConceptCeToken(String pToken) {
@@ -305,11 +304,11 @@ public class TokenizerFactSentence {
 
 	public void addPropetyCeTokens(CeProperty pProp) {
 		StringBuilder sb = new StringBuilder();
-		sb.append(CeSentence.PROPDEF_PREFIX);
+		sb.append(PROPDEF_PREFIX);
 		sb.append(pProp.calculateDomainConceptName());
 		sb.append(",");
 		sb.append(pProp.getRangeConceptName());
-		sb.append(CeSentence.PROPDEF_SUFFIX);
+		sb.append(PROPDEF_SUFFIX);
 		
 		this.sen.addFinalToken(SCELABEL_PROP, cachedValueFor(sb.toString()), cachedValueFor(pProp.getPropertyName()));
 	}

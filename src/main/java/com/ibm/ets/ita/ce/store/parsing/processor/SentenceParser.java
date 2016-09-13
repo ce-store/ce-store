@@ -1,10 +1,29 @@
 package com.ibm.ets.ita.ce.store.parsing.processor;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.MiscNames.SENMODE_VALIDATE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.CHAR_BOM;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.CHAR_BS;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.CHAR_CLBR;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.CHAR_CLPAR;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.CHAR_COMMA;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.CHAR_CR;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.CHAR_DOT;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.CHAR_DQ;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.CHAR_DQ1;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.CHAR_DQ2;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.CHAR_NL;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.CHAR_OPBR;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.CHAR_OPPAR;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.CHAR_SPACE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.CHAR_SQ;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.CHAR_SQ1;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.CHAR_SQ2;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.CHAR_TAB;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportException;
 
 import java.io.BufferedReader;
@@ -12,37 +31,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
-import com.ibm.ets.ita.ce.store.StoreActions;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
 
 public abstract class SentenceParser {
-
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private static final String CLASS_NAME = SentenceParser.class.getName();
 	private static final String PACKAGE_NAME = SentenceParser.class.getPackage().getName();
 	private static final Logger logger = Logger.getLogger(PACKAGE_NAME);
-
-	protected static final char CHAR_CR = '\r';
-	protected static final char CHAR_NL = '\n';
-	protected static final char CHAR_SPACE = ' ';
-	protected static final char CHAR_COMMA = ',';
-	protected static final char CHAR_OPBR = '(';
-	protected static final char CHAR_CLBR = ')';
-	protected static final char CHAR_OPPAR = '[';
-	protected static final char CHAR_CLPAR = ']';
-	protected static final char CHAR_TAB = '	';
-	protected static final char CHAR_DOT = '.';
-	protected static final char CHAR_SQ = '\'';
-	protected static final char CHAR_DQ = '\"';
-	protected static final char CHAR_BS = '\\';
-	protected static final char CHAR_BOM = (char)65279;	//This is the Byte Order Marker Character inserted when editing in notepad
-
-	//DSB 30/07/2014 - Added handling for special quote characters
-	protected static final char CHAR_SQ1 = '‘';
-	protected static final char CHAR_SQ2 = '’';
-	protected static final char CHAR_DQ1 = '“';
-	protected static final char CHAR_DQ2 = '”';
 
 	private static final int SBSIZE_TOKEN = 100;
 	private static final int SBSIZE_SENTENCE = 1000;	
@@ -88,7 +84,7 @@ public abstract class SentenceParser {
 	}
 
 	protected boolean isValidatingOnly() {
-		return this.mode == StoreActions.MODE_VALIDATE;
+		return this.mode == SENMODE_VALIDATE;
 	}
 
 	protected void doParsing(BufferedReader pReader, int pMode) {

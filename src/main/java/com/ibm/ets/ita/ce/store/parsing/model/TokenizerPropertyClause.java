@@ -1,10 +1,14 @@
 package com.ibm.ets.ita.ce.store.parsing.model;
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.handleSpecialMarkersAndDecode;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_THE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_NO;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_VALUE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_AS;
 
 import java.util.ArrayList;
 
@@ -15,11 +19,10 @@ import com.ibm.ets.ita.ce.store.model.CeSpecialProperty;
 import com.ibm.ets.ita.ce.store.parsing.tokenizer.TokenizerFactSentence;
 
 public abstract class TokenizerPropertyClause extends TokenizerNormalClause {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private static String TOKEN_BRACKET_OPEN = "(";
 	private static String TOKEN_BRACKET_CLOSE = ")";
-	protected static final String TOKEN_CONCAT = "<>";
 
 	protected static final String STYLE_OBJ = "OBJ";
 	protected static final String STYLE_DAT = "DAT";
@@ -102,7 +105,7 @@ public abstract class TokenizerPropertyClause extends TokenizerNormalClause {
 		boolean carryOn = true;
 
 		while (carryOn) {
-			String currToken = this.getCurrentToken();
+			String currToken = getCurrentToken();
 			
 			if (currToken != null) {
 				if (result == null) {
@@ -213,7 +216,7 @@ public abstract class TokenizerPropertyClause extends TokenizerNormalClause {
 		String rawInst = null;
 		
 		if (this.finalTokenPos < this.rawTokens.size()) {
-			rawInst = this.getCurrentToken();
+			rawInst = getCurrentToken();
 
 			if ((!this.negatedRange) || (this.negatedRange && (!rawInst.equals(TOKEN_AS)))) {
 				if (rawInst.equals(TOKEN_BRACKET_OPEN)) {
@@ -263,7 +266,7 @@ public abstract class TokenizerPropertyClause extends TokenizerNormalClause {
 		boolean carryOn = true;
 		
 		while (carryOn) {
-			String thisToken = this.getCurrentToken();
+			String thisToken = getCurrentToken();
 			
 			if (!thisToken.equals(TOKEN_BRACKET_CLOSE)) {
 				sb.append(thisToken);

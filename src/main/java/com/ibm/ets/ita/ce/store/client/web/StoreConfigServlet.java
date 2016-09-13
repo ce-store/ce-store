@@ -1,10 +1,13 @@
 package com.ibm.ets.ita.ce.store.client.web;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.MiscNames.DEFAULT_ROOT;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.JNDI_CONTEXT_LIBERTY;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.JNDI_CONTEXT_TOMCAT;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportException;
 
 import java.util.logging.Logger;
@@ -13,19 +16,15 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
-import com.ibm.ets.ita.ce.store.StoreConfig;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
+import com.ibm.ets.ita.ce.store.core.StoreConfig;
 
 class StoreConfigServlet extends StoreConfig {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 	
 	private static final String CLASS_NAME = StoreConfigServlet.class.getName();
 	private static final String PACKAGE_NAME = StoreConfigServlet.class.getPackage().getName();
 	private static final Logger logger = Logger.getLogger(PACKAGE_NAME);
-	private static final String DEFAULT_ROOT = "/opt/ibm/cestore/var/icnlpe/";
-
-	private static final String JNDI_CONTEXT_TOMCAT = "java:/comp/env";
-	private static final String JNDI_CONTEXT_LIBERTY = "cestore";
 
 	@Override
 	protected void initialise() {
@@ -97,7 +96,6 @@ class StoreConfigServlet extends StoreConfig {
 		setLogQueries(contextLookup(pContext, ECKEY_LOGQUERIES, new Boolean(isLoggingQueries())).booleanValue());
 		setAutogenerateFolders(contextLookup(pContext, ECKEY_GENFOLDERS, new Boolean(isAutogeneratingFolders())).booleanValue());
 		setMaxSentences(contextLookup(pContext, ECKEY_MAXSENS, new Integer(getMaxSentences())).intValue());
-		setLogJsonToFiles(contextLookup(pContext, ECKEY_LOGJSON, new Boolean(logJsonToFiles())).booleanValue());
 		setCatchAgentErrors(contextLookup(pContext, ECKEY_CATCHERRS, new Boolean(isCatchingAgentErrors())).booleanValue());
 		setUidClassName(contextLookup(pContext, ECKEY_UIDCLASSNAME, getUidClassName()));
 		setUidFilename(contextLookup(pContext, ECKEY_UIDFILENAME, getUidFilename()));

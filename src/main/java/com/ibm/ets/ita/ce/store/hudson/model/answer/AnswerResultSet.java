@@ -88,4 +88,5 @@ public class AnswerResultSet {
 		
 		return result;
 	}
+
 }

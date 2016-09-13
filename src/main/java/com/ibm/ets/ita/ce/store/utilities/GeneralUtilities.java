@@ -1,12 +1,12 @@
 package com.ibm.ets.ita.ce.store.utilities;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
-import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.BR;
-import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.NL;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.BR;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.NL;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.isReportTiming;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportException;
@@ -22,14 +22,13 @@ import java.util.Date;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
-import com.ibm.ets.ita.ce.store.ModelBuilder;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
+import com.ibm.ets.ita.ce.store.core.ModelBuilder;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
 import com.ibm.ets.ita.ce.store.model.CePropertyInstance;
 
 public abstract class GeneralUtilities {
-
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private static final String CLASS_NAME = GeneralUtilities.class.getName();
 	private static final String PACKAGE_NAME = GeneralUtilities.class.getPackage().getName();

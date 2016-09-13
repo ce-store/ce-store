@@ -1,6 +1,7 @@
 package com.ibm.ets.ita.ce.store.parsing.model;
+
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
@@ -11,7 +12,7 @@ import java.util.ArrayList;
 import com.ibm.ets.ita.ce.store.parsing.tokenizer.TokenizerFactSentence;
 
 public class TokenizerRationaleClause extends TokenizerClause {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private static final String TOKEN_RQ_START = "[";
 	private static final String TOKEN_RQ_END = "]";
@@ -176,4 +177,5 @@ public class TokenizerRationaleClause extends TokenizerClause {
 	public String toString() {
 		return "(TokenizerRationaleClause) delimiter=" + this.delimiter + ", rawTokens=" + this.rawTokens;
 	}
+
 }

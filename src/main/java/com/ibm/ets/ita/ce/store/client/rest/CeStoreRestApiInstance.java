@@ -1,39 +1,40 @@
 package com.ibm.ets.ita.ce.store.client.rest;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSONTYPE_INST;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_PROPNAME;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_PROPVAL;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_STEPS;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_RELINSTS;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_REFINSTS;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_ONLYPROPS;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_SPTS;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_LIMRELS;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_REFERENCE;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_PRIMARY;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_SECONDARY;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_SENTENCE;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_RATIONALE;
 import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.appendToSb;
 
 import java.util.ArrayList;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.ibm.ets.ita.ce.store.StoreActions;
 import com.ibm.ets.ita.ce.store.client.web.WebActionContext;
 import com.ibm.ets.ita.ce.store.client.web.model.CeWebInstance;
 import com.ibm.ets.ita.ce.store.client.web.model.CeWebSpecial;
+import com.ibm.ets.ita.ce.store.core.StoreActions;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
 import com.ibm.ets.ita.ce.store.model.CeSentence;
 import com.ibm.ets.ita.ce.store.model.rationale.CeRationaleReasoningStep;
 
 public class CeStoreRestApiInstance extends CeStoreRestApi {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
-
-	private static final String REST_REFERENCE = "references";
-
-	private static final String PARM_PROPNAME = "propName";
-	private static final String PARM_PROPVAL = "propVal";
-	public static final String PARM_STEPS = "steps";
-	public static final String PARM_RELINSTS = "relatedInstances";
-	public static final String PARM_REFINSTS = "referringInstances";
-	public static final String PARM_LIMRELS = "limitRelationships";
-	public static final String PARM_ONLYPROPS = "onlyProperties";
-	public static final String PARM_SPTS = "suppressPropertyTypes";
-
-	private static final String TYPE_INST = "instance";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	public CeStoreRestApiInstance(WebActionContext pWc, ArrayList<String> pRestParts, HttpServletRequest pRequest) {
 		super(pWc, pRestParts, pRequest);
@@ -512,12 +513,12 @@ public class CeStoreRestApiInstance extends CeStoreRestApi {
 	}
 
 	private void reportNotFoundError(String pInstName) {
-		reportNotFoundError(TYPE_INST, pInstName);
+		reportNotFoundError(JSONTYPE_INST, pInstName);
 	}
 
 	private void setInstanceDetailsAsStructuredResult(CeInstance pInstance) {
 		CeWebInstance instWeb = new CeWebInstance(this.wc);
-		int numSteps = getNumericUrlParameterValueNamed(CeStoreRestApiInstance.PARM_STEPS, -1);
+		int numSteps = getNumericUrlParameterValueNamed(PARM_STEPS, -1);
 		boolean relInsts = getBooleanParameterNamed(PARM_RELINSTS, true);
 		boolean refInsts = getBooleanParameterNamed(PARM_REFINSTS, true);
 		boolean suppPropTypes = getBooleanParameterNamed(PARM_SPTS, false);

@@ -1,30 +1,36 @@
 package com.ibm.ets.ita.ce.store.client.web.model;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSONTYPE_STORE;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_TYPE;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_STYLE;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_ID;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_CREATED;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SERVER_TIME;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_STORE_VERSION;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SEN_COUNT;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_MOD_COUNT;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_CON_COUNT;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_INST_COUNT;
+import static com.ibm.ets.ita.ce.store.names.RestNames.STYLE_FULL;
+import static com.ibm.ets.ita.ce.store.names.RestNames.STYLE_SUMMARY;
+import static com.ibm.ets.ita.ce.store.names.RestNames.STYLE_MINIMAL;
+import static com.ibm.ets.ita.ce.store.names.RestNames.STYLE_NORMALISED;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.VERSION;
+
 import java.util.TreeMap;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
-import com.ibm.ets.ita.ce.store.ModelBuilder;
-import com.ibm.ets.ita.ce.store.StoreConfig;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonArray;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
+import com.ibm.ets.ita.ce.store.core.ModelBuilder;
 
 public class CeWebStore extends CeWebObject {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
-
-	//JSON Response Keys
-	private static final String KEY_SERVER_TIME = "server_time";
-	private static final String KEY_STORE_VERSION = "store_version";
-	private static final String KEY_SEN_COUNT = "sentence_count";
-	private static final String KEY_MOD_COUNT = "model_count";
-	private static final String KEY_CON_COUNT = "concept_count";
-	private static final String KEY_INST_COUNT = "instance_count";
-
-	private static final String TYPE_STORE = "store";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	public CeWebStore(ActionContext pAc) {
 		super(pAc);
@@ -107,17 +113,17 @@ public class CeWebStore extends CeWebObject {
 	private static CeStoreJsonObject generateDetailsJsonFor(String pStoreName, ModelBuilder pMb, String style) {
 		CeStoreJsonObject jObj = new CeStoreJsonObject();
 
-		putStringValueIn(jObj, KEY_TYPE, TYPE_STORE);
-		putStringValueIn(jObj, KEY_STYLE, style);
-		putStringValueIn(jObj, KEY_ID, pStoreName);
-		putLongValueIn(jObj, KEY_CREATED, pMb.getCreationTime());
+		putStringValueIn(jObj, JSON_TYPE, JSONTYPE_STORE);
+		putStringValueIn(jObj, JSON_STYLE, style);
+		putStringValueIn(jObj, JSON_ID, pStoreName);
+		putLongValueIn(jObj, JSON_CREATED, pMb.getCreationTime());
 
-		putIntValueIn(jObj, KEY_SEN_COUNT, pMb.countAllValidSentences());
-		putIntValueIn(jObj, KEY_MOD_COUNT, pMb.getAllConceptualModels().size());
-		putIntValueIn(jObj, KEY_CON_COUNT, pMb.listAllConcepts().size());
-		putIntValueIn(jObj, KEY_INST_COUNT, pMb.listAllInstances().size());
-		putLongValueIn(jObj, KEY_SERVER_TIME, System.currentTimeMillis());
-		putStringValueIn(jObj, KEY_STORE_VERSION, StoreConfig.VERSION);
+		putIntValueIn(jObj, JSON_SEN_COUNT, pMb.countAllValidSentences());
+		putIntValueIn(jObj, JSON_MOD_COUNT, pMb.getAllConceptualModels().size());
+		putIntValueIn(jObj, JSON_CON_COUNT, pMb.listAllConcepts().size());
+		putIntValueIn(jObj, JSON_INST_COUNT, pMb.listAllInstances().size());
+		putLongValueIn(jObj, JSON_SERVER_TIME, System.currentTimeMillis());
+		putStringValueIn(jObj, JSON_STORE_VERSION, VERSION);
 
 		return jObj;
 	}

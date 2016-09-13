@@ -1,17 +1,20 @@
 package com.ibm.ets.ita.ce.store.conversation.processor;
+
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.CeNames.CON_INTERESTING;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.ES;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportWarning;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.TreeMap;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
-import com.ibm.ets.ita.ce.store.StoreActions;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
+import com.ibm.ets.ita.ce.store.core.StoreActions;
 import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
 import com.ibm.ets.ita.ce.store.model.CeProperty;
@@ -21,13 +24,10 @@ import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentenceFactNormal;
 import com.ibm.ets.ita.ce.store.parsing.processor.ProcessorCe;
 
 public class InterestingThingsProcessor {
-
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
-
-	private static final String CON_INTERESTING = "interesting thing";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	ActionContext ac = null;
-	
+
 	private InterestingThingsProcessor(ActionContext pAc) {
 		this.ac = pAc;
 	}
@@ -57,7 +57,7 @@ public class InterestingThingsProcessor {
 
 			result = calculateInterestingContentFor(mentionedInstances, mainInstances);
 		} else {
-			result = "";
+			result = ES;
 		}
 
 		return result;
@@ -117,7 +117,7 @@ public class InterestingThingsProcessor {
 		return calculateInterestingContentFor(pResult.getMatchedInstances().values(), null);
 	}
 
-	public String calculateInterestingContentFor(Collection<CeInstance> pInstances, Collection<CeInstance> pSuppressedInstances) {
+	private String calculateInterestingContentFor(Collection<CeInstance> pInstances, Collection<CeInstance> pSuppressedInstances) {
 		String result = null;
 
 		for (CeInstance thisInst : pInstances) {
@@ -164,7 +164,7 @@ public class InterestingThingsProcessor {
 				String intConNames = extractInterestingConceptNamesFrom(pAc, pInst);
 				
 				if (intConNames != null) {
-					String qualifier = null;
+					String qualifier = null;	//TODO: Abstract this
 					if ((intConNames.startsWith("a") || intConNames.startsWith("e") || intConNames.startsWith("i") || intConNames.startsWith("o") || intConNames.startsWith("u"))) {
 						qualifier = "an";
 					} else {

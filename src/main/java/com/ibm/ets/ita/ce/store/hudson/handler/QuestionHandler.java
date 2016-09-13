@@ -1,16 +1,17 @@
 package com.ibm.ets.ita.ce.store.hudson.handler;
 
-/*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
- * All Rights Reserved
- *******************************************************************************/
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_ANSWERS;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_A_RESTEXT;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_ALERTS;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_AL_ERRORS;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_AL_WARNINGS;
 
 import java.util.ArrayList;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
-import com.ibm.ets.ita.ce.store.ActionResponse;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonArray;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
+import com.ibm.ets.ita.ce.store.core.ActionResponse;
 import com.ibm.ets.ita.ce.store.hudson.model.Question;
 import com.ibm.ets.ita.ce.store.hudson.model.conversation.ConvPhrase;
 import com.ibm.ets.ita.ce.store.hudson.model.conversation.ConvWord;
@@ -19,22 +20,14 @@ import com.ibm.ets.ita.ce.store.hudson.model.conversation.ProcessedWord;
 public abstract class QuestionHandler extends GenericHandler {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
-	protected static final String JSON_DEBUG = "debug";
-	protected static final String JSON_ET = "execution time";
-	protected static final String JSON_ALERTS = "alerts";
-	protected static final String JSON_ERRORS = "errors";
-	protected static final String JSON_WARNINGS = "warnings";
-	protected static final String JSON_DEBUGS = "debugs";
-
 	protected Question question = null;
 	protected ConvPhrase phrase = null;
 	protected ArrayList<ProcessedWord> allWords = null;
-	protected String unitName = null;
 
-	public abstract CeStoreJsonObject handleQuestion();
+	protected abstract CeStoreJsonObject handleQuestion();
 
-	public QuestionHandler(ActionContext pAc, boolean pDebug, Question pQuestion, long pStartTime) {
-		super(pAc, pDebug, pStartTime);
+	public QuestionHandler(ActionContext pAc, Question pQuestion, long pStartTime) {
+		super(pAc, pStartTime);
 
 		this.question = pQuestion;
 		this.allWords = new ArrayList<ProcessedWord>();
@@ -45,19 +38,9 @@ public abstract class QuestionHandler extends GenericHandler {
 	}
 
 	protected void interpretQuestion() {
-		//This is the original CE processing
-		this.phrase = originalCePhraseProcessing();
-		originalCeWordClassifying(this.phrase);
-	}
+		this.phrase = ConvPhrase.createNewPhrase(this.ac, getQuestionText());
 
-	private ConvPhrase originalCePhraseProcessing() {
-		ConvPhrase cp = ConvPhrase.createNewPhrase(this.ac, getQuestionText());
-
-		return cp;
-	}
-
-	private void originalCeWordClassifying(ConvPhrase pCp) {
-		prepareAndClassifyWords(pCp);
+		prepareAndClassifyWords(this.phrase);
 	}
 
 	private void prepareAndClassifyWords(ConvPhrase pCp) {
@@ -69,56 +52,56 @@ public abstract class QuestionHandler extends GenericHandler {
 			this.allWords.add(newPw);
 		}
 
-//		markQuestionWords();
-
 		//Then classify the processed words
 		for (ProcessedWord thisWord : this.allWords) {
 			thisWord.classify(this.ac, getConvConfig());
 		}
 	}
 
-//	private void markQuestionWords() {
-//		ArrayList<String> qsws = null;
-//
-//		if (getConvConfig() != null) {
-//			qsws = getConvConfig().getQuestionStartMarkers();
-//
-//			for (ProcessedWord thisPw : this.allWords) {
-//				for (String thisQsw : qsws) {
-//					if (thisPw.getLcWordText().equals(thisQsw)) {
-//						thisPw.markAsQuestionWord();
-//					}
-//				}
-//			}
-//		}
-//	}
+	public CeStoreJsonObject processQuestion() {
+		CeStoreJsonObject jResult = handleQuestion();
 
-	protected void createJsonDebugs(CeStoreJsonObject pResult) {
-		ActionResponse ar = this.ac.getActionResponse();
+		createJsonAlerts(jResult);
 
-		if (!ar.getDebug().isEmpty()) {
-			CeStoreJsonArray jDebugs = new CeStoreJsonArray();
-			jDebugs.addAll(ar.getDebug());
-
-			pResult.put(JSON_DEBUGS, jDebugs);
-		}
+		return jResult;
 	}
 
-	protected void createJsonAlerts(CeStoreJsonObject pResult) {
+	public String processQuestionAndReturnAnswerText() {
+		String result = null;
+		CeStoreJsonObject jResponse = processQuestion();
+		CeStoreJsonArray jAnswers = jResponse.getJsonArray(JSON_ANSWERS);
+
+		if (!jAnswers.isEmpty()) {
+			CeStoreJsonObject jFirstAns = (CeStoreJsonObject)jAnswers.get(0);
+
+			if (jFirstAns != null) {
+				result = jFirstAns.getString(JSON_A_RESTEXT);
+			}
+		}
+
+		return result;
+	}
+
+	private void createJsonAlerts(CeStoreJsonObject pResult) {
 		ActionResponse ar = this.ac.getActionResponse();
-		
+		CeStoreJsonArray jErrs = new CeStoreJsonArray();
+		CeStoreJsonArray jWarns = new CeStoreJsonArray();
+
 		if (ar.hasErrors()) {
-			CeStoreJsonArray jErrs = new CeStoreJsonArray();
 			jErrs.addAll(ar.getErrors());
-			
-			pResult.put(JSON_ERRORS, jErrs);
 		}
 
 		if (ar.hasWarnings()) {
-			CeStoreJsonArray jWarns = new CeStoreJsonArray();
-			jWarns.addAll(ar.getWarnings());
-			
-			pResult.put(JSON_WARNINGS, jWarns);
+			jWarns.addAll(ar.getWarnings());			
+		}
+
+		if (!jErrs.isEmpty() && !jWarns.isEmpty()) {
+			CeStoreJsonObject jAlerts = new CeStoreJsonObject();
+
+			jAlerts.put(JSON_AL_ERRORS, jErrs);
+			jAlerts.put(JSON_AL_WARNINGS, jWarns);
+
+			pResult.put(JSON_ALERTS, jAlerts);
 		}
 	}
 

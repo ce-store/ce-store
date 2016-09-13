@@ -1,11 +1,11 @@
 -- --------------------------------------------------------------------------
--- (C) Copyright IBM Corporation  2011, 2015
+-- (C) Copyright IBM Corporation  2011, 2016
 -- All Rights Reserved
 -- --------------------------------------------------------------------------
 
 -- Triggers
 there is a conversation card triggered event named 'trig_conv' that
-  has 'com.ibm.ets.ita.ce.store.conversation.handler.ConversationTriggerHandler' as class to notify and
+  has 'com.ibm.ets.ita.ce.store.conversation.agents.ConversationTriggerHandler' as class to notify and
 --  has '100' as milliseconds delay and
   has 'card' as concept name and
   has 'content' as property name and

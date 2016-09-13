@@ -1,5 +1,5 @@
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 gEp.dlg.ceqb.actions = new DialogCeqbActions();
@@ -634,4 +634,5 @@ function DialogCeqbActions() {
 		var cbf = function(pResponseObject, pUserParms) { gEp.dlg.ceqb.response.updateFilterPropertiesList(pResponseObject, pUserParms); };
 		gEp.handler.concepts.listDatatypeProperties(pConcept.concept_name, cbf, userParms);
 	}
+
 }

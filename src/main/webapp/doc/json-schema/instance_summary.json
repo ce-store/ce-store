@@ -1,0 +1,84 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"title": "Instance - summary details",
+	"definitions": {
+		"instance": {
+			"title": "Summary instance details",
+			"description": "Return the summary details about an instance",
+			"type": "object",
+			"required": [ "_type", "_style", "_id", "_created", "_shadow", "_label", "direct_concept_names", "primary_sentence_count", "secondary_sentence_count" ],
+            "additionalProperties": false,
+			"properties": {
+				"_type": {
+					"description": "The type (always instance)",
+					"type": "string",
+					"enum": [ "instance" ]
+				},
+				"_style": {
+					"description": "The style (always summary)",
+					"type": "string",
+					"enum": [ "summary" ]
+				},
+				"_id": {
+					"description": "The unique identifier (instance name) for this instance",
+					"type": "string"
+				},
+				"_created": {
+					"description": "The (unix timestamp) date value on which this instance was created",
+					"type": "integer",
+					"minimum": 0
+				},
+                "_shadow": {
+                    "description": "Indicates cases when the instance is only referred to and not explicitly defined.",
+                    "type": "boolean"
+                },
+                "_label": {
+                    "description": "The text that should be used when rendering this instance.",
+					"type": "string"
+                },
+				"annotations": {
+					"description": "The annotations that apply to this instance.",
+					"$ref": "common_schema.json#/definitions/annotation"
+				},
+				"icon": {
+                    "description": "The filename of the image that should be used to graphically render this instance.",
+					"type": "string"
+				},
+				"direct_concept_names": {
+					"description": "A list of concept names that this instance is directly asserted as being. Inferred concept names are not listed here.",
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"uniqueItems": true
+				},
+                "inherited_concept_names": {
+                    "description": "A list of concept names that this instance is indirectly asserted as being. Direct concept names are not listed here.",
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"uniqueItems": true
+                },
+                "property_values": {
+                    "description": "Property names and their values for this instance.",
+					"$ref": "common_schema.json#/definitions/property_values"
+                },
+                "property_types": {
+                    "description": "Property names and their types for this instance",
+					"$ref": "common_schema.json#/definitions/property_types"
+                },
+				"primary_sentence_count": {
+					"description": "The number of primary sentences that define this instance",
+					"type": "integer",
+					"minimum": 0
+				},
+				"secondary_sentence_count": {
+					"description": "The number of secondary sentences that refer to this instance",
+					"type": "integer",
+					"minimum": 0
+				}
+			}
+		}
+	}
+}

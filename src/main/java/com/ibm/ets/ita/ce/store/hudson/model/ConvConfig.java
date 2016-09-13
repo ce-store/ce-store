@@ -7,7 +7,7 @@ package com.ibm.ets.ita.ce.store.hudson.model;
 
 import java.util.ArrayList;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
 import com.ibm.ets.ita.ce.store.hudson.model.conversation.GeneralItem;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
 

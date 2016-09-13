@@ -1,9 +1,18 @@
 package com.ibm.ets.ita.ce.store.parsing.model;
+
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_THE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_THERE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_NO;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_A;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_AN;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_VALUE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_IS;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_NAMED;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.handleSpecialMarkersAndDecode;
 
 import java.util.ArrayList;
@@ -12,14 +21,10 @@ import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.parsing.tokenizer.TokenizerFactSentence;
 
 public class TokenizerStartClause extends TokenizerNormalClause {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
-	protected static final String TOKEN_NAMED = "named";
-	
-	private static final String PREAMBLE_THE = "the";
 	private static final String PREAMBLE_A = "there is a";
 	private static final String PREAMBLE_AN = "there is an";
-	private static final String PREAMBLE_NO = "no";
 
 	private static int TYPE_THE = 1;
 	private static int TYPE_THEREISA = 2;
@@ -235,11 +240,11 @@ public class TokenizerStartClause extends TokenizerNormalClause {
 
 	private void extractInstance() {
 		if (!reachedEndOfTokens()) {
-			String thisWord = this.getCurrentToken();
+			String thisWord = getCurrentToken();
 
 			if ((this.preambleType == TYPE_THEREISA) || (this.preambleType == TYPE_THEREISAN)) {
 				if (thisWord.equals(TOKEN_NAMED)) {
-					thisWord = this.getCurrentToken();
+					thisWord = getCurrentToken();
 				} else {
 					reportError("Expected word 'named' between domain concept and instance name was missing");
 				}
@@ -319,15 +324,15 @@ public class TokenizerStartClause extends TokenizerNormalClause {
 	
 	protected String formattedPreamble() {
 		if (this.preambleType == TYPE_THE) {
-			return PREAMBLE_THE;
+			return TOKEN_THE;
 		} else if (this.preambleType == TYPE_THEREISA) {
 			return PREAMBLE_A;
 		} else if (this.preambleType == TYPE_THEREISAN) {
 			return PREAMBLE_AN;
 		} else if (this.preambleType == TYPE_NO) {
-			return PREAMBLE_NO;
+			return TOKEN_NO;
 		} else {
-			return "???";
+			return "???";	//TODO: Abstract this
 		}
 	}
 

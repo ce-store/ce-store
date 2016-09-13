@@ -1,7 +1,7 @@
 package com.ibm.ets.ita.ce.store.parsing.saver;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
@@ -9,14 +9,14 @@ import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
 
 import java.util.ArrayList;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
 import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.model.CeProperty;
 import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentence;
 import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentenceModel;
 
 public class SentenceSaverModel extends SentenceSaver {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	public SentenceSaverModel(ActionContext pAc, BuilderSentence pSentence) {
 		super (pAc, pSentence);

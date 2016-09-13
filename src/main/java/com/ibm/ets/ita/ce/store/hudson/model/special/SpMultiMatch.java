@@ -1,13 +1,10 @@
 package com.ibm.ets.ita.ce.store.hudson.model.special;
 
-/*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
- * All Rights Reserved
- *******************************************************************************/
+import static com.ibm.ets.ita.ce.store.names.JsonNames.SPEC_MULTIMATCH;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonArray;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
 import com.ibm.ets.ita.ce.store.hudson.handler.QuestionInterpreterHandler;
 import com.ibm.ets.ita.ce.store.hudson.model.conversation.MatchedItem;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
@@ -15,7 +12,6 @@ import com.ibm.ets.ita.ce.store.model.CeInstance;
 public class SpMultiMatch extends SpThing {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
-	private static final String TYPE_NAME = "multi-match";
 	private static final String JSON_MI = "multi-match instance";
 	private static final String JSON_INSTS = "instances";
 
@@ -59,7 +55,7 @@ public class SpMultiMatch extends SpThing {
 		jArr.add(jInst1);
 		jArr.add(jInst2);
 		
-		addStandardFields(jResult, TYPE_NAME);
+		addStandardFields(jResult, SPEC_MULTIMATCH);
 
 		jResult.put(JSON_INSTS, jArr);
 		jResult.put(JSON_MI, jMi);

@@ -1,26 +1,17 @@
 package com.ibm.ets.ita.ce.store.hudson.model.conversation;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.CeNames.CON_CONVPHRASE;
 import java.util.ArrayList;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
 
 public class ConvPhrase extends ConvItem {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
-
-	private static final String CON_NAME = "conv phrase";
-
-//	private static final String CON_ASSERTION = "conv assertion";
-//	private static final String CON_QUESTION = "conv question";
-
-//	private static final int TYPE_ASSERTION = 1;
-//	private static final int TYPE_QUESTION = 2;
-
-//	private int phraseType = TYPE_ASSERTION;
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private ArrayList<ConvWord> allWords = null;
 	private ArrayList<ConvSentence> childSentences = new ArrayList<ConvSentence>();
@@ -36,21 +27,19 @@ public class ConvPhrase extends ConvItem {
 		return result;
 	}
 
-	private ConvPhrase(ActionContext pAc, String pPhraseText) {
-		super(pAc, CON_NAME, pPhraseText);
+	public boolean isAssertion() {
+		//TODO: Resurrect this
+		return false;
 	}
 
-//	public String getConceptName() {
-//		String result = "";
-//
-//		if (isQuestion()) {
-//			result = CON_QUESTION;
-//		} else {
-//			result = CON_ASSERTION;
-//		}
-//
-//		return result;
-//	}
+	public boolean isQuestion() {
+		//TODO: Resurrect this
+		return true;
+	}
+
+	private ConvPhrase(ActionContext pAc, String pPhraseText) {
+		super(pAc, CON_CONVPHRASE, pPhraseText);
+	}
 
 	public String getPhraseText() {
 		return this.itemText;
@@ -110,14 +99,6 @@ public class ConvPhrase extends ConvItem {
 		this.qemList[0] = "?";
 	}
 
-//	public boolean isAssertion() {
-//		return this.phraseType == TYPE_ASSERTION;
-//	}
-
-//	public boolean isQuestion() {
-//		return (this.phraseType == TYPE_QUESTION) || this.firstWordIsQuestion();
-//	}
-
 	public ProcessedWord getFirstProcessedWord() {
 		ProcessedWord result = null;
 		
@@ -127,17 +108,6 @@ public class ConvPhrase extends ConvItem {
 
 		return result;
 	}
-
-//	public boolean firstWordIsQuestion() {
-//		boolean result = false;
-//		ProcessedWord fpw = getFirstProcessedWord();
-//
-//		if (fpw != null) {
-//			result = fpw.isQuestionWord();
-//		}
-//
-//		return result;
-//	}
 
 	@Override
 	protected void parse(ActionContext pAc) {
@@ -149,35 +119,9 @@ public class ConvPhrase extends ConvItem {
 
 		//TODO: Make the splitting of phrases configurable via the agent.
 		//For now it is disabled to prevent issues with phrases like "Capt. Scarlett likes apples"
-//		for (String thisDelim : this.delimiterList) {
-//			splitPhrases = splitUsing(thisDelim, splitPhrases);
-//		}
-
 		for (String thisSen : splitPhrases) {
 			ConvSentence.createNewSentence(pAc, thisSen, this);
 		}
-
-//		classifyPhrase();
 	}
-
-//	private void classifyPhrase() {
-//		String lcPt = getPhraseText().toLowerCase();
-//
-//		this.phraseType = TYPE_ASSERTION;
-//
-//		for (String qem : this.qemList) {
-//			if (lcPt.endsWith(qem)) {
-//				this.phraseType = TYPE_QUESTION;
-//				break;
-//			}
-//		}
-//
-//		for (String qsm : this.qsmList) {
-//			if (lcPt.startsWith(qsm)) {
-//				this.phraseType = TYPE_QUESTION;
-//				break;
-//			}
-//		}
-//	}
 
 }

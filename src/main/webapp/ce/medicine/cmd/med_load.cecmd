@@ -1,9 +1,10 @@
 -- --------------------------------------------------------------------------
--- (C) Copyright IBM Corporation  2011, 2015
+-- (C) Copyright IBM Corporation  2011, 2016
 -- All Rights Reserved
 -- --------------------------------------------------------------------------
 
 perform reset store with starting uid '1'.
+--perform set 'model directory url' to 'http://test.xyz'.
 
 -- Load the general model (core concepts)
 perform load sentences from url '/ce-store/ce/general/agents/agent_model.ce'.

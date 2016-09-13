@@ -1,10 +1,11 @@
 package com.ibm.ets.ita.ce.store.query;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.CeNames.RANGE_VALUE;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.reportExecutionTiming;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.isReportMicroDebug;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportMicroDebug;
@@ -15,7 +16,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.TreeMap;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
 import com.ibm.ets.ita.ce.store.model.CeClause;
 import com.ibm.ets.ita.ce.store.model.CeConcatenatedValue;
 import com.ibm.ets.ita.ce.store.model.CeConcept;
@@ -26,7 +27,7 @@ import com.ibm.ets.ita.ce.store.model.CeQuery;
 import com.ibm.ets.ita.ce.store.model.container.ContainerCeResult;
 
 public class QueryExecutionManagerMem extends QueryExecutionManager {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private static final String CLASS_NAME = QueryExecutionManagerMem.class.getName();
 
@@ -365,7 +366,7 @@ public class QueryExecutionManagerMem extends QueryExecutionManager {
 	}
 	
 	private boolean processThisClause(CeClause pClause, ArrayList<CeInstance> pInsts, String pVarId) {
-		int startingMclCount = this.getMcls().size();
+		int startingMclCount = getMcls().size();
 		boolean wasFilterProp = false;
 		boolean hadProp = false;
 		boolean result = false;
@@ -407,7 +408,7 @@ public class QueryExecutionManagerMem extends QueryExecutionManager {
 				result = false;
 			} else {
 				//If the number of mcls has not increased then there were no instances returned for this clause
-				result = (this.getMcls().size() == startingMclCount);
+				result = (getMcls().size() == startingMclCount);
 			}
 //		} else {
 //			//Must always be false if no properties were processed
@@ -704,7 +705,7 @@ public class QueryExecutionManagerMem extends QueryExecutionManager {
 	}
 
 	private void processSpecialEquals(String pSrcVarId, String pTgtVarId, String pPropName, CeInstance pInst, CePropertyInstance pObjPi, CeQuery pQuery) {
-		ArrayList<String> matchedInstNames = this.getAllMatchingValuesForVariable(pTgtVarId, pQuery);
+		ArrayList<String> matchedInstNames = getAllMatchingValuesForVariable(pTgtVarId, pQuery);
 		
 		for (String thisInstName : matchedInstNames) {
 			addHeader(pTgtVarId);
@@ -856,9 +857,9 @@ public class QueryExecutionManagerMem extends QueryExecutionManager {
 		if (pClause.getTargetConcept() != null) {
 			conceptName = pClause.getTargetConcept().getConceptName();
 		} else {
-			conceptName = CeProperty.RANGE_VALUE;
+			conceptName = RANGE_VALUE;
 		}
-		
+
 		//Add this information to the CE template
 		CeProperty relProp = pDatPi.getRelatedProperty();
 		boolean isRangeNegated = pDatPi.isNegated(this.ac);

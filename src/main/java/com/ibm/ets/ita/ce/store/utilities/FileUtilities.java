@@ -1,10 +1,19 @@
 package com.ibm.ets.ita.ce.store.utilities;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.MiscNames.NL;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.BS;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.ENCODING;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.URL_SEP;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.URL_EQUALS;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.URL_AMPERSAND;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.FILE_SEP;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_CEFOLDER;
+import static com.ibm.ets.ita.ce.store.names.RestNames.HDR_AUTH;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.isReportMicroDebug;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportDebug;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportMicroDebug;
@@ -34,40 +43,19 @@ import java.net.URLEncoder;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.Locale;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
 
 public abstract class FileUtilities {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private static final String CLASS_NAME = FileUtilities.class.getName();
 	private static final String PACKAGE_NAME = FileUtilities.class.getPackage().getName();
 	private static final Logger logger = Logger.getLogger(PACKAGE_NAME);
-
-	public static final String NL = "\n";
-	public static final String CR = "\r";
-	public static final String TAB = "\t";
-	public static final String NBSP = new Character((char)160).toString();
-	public static final String BR = "<br>";
-	public static final String ENCODING = "UTF-8";
-	public static final Locale LOCALE = Locale.getDefault();
-	public static final String TOKEN_CEFOLDER = "{CeStore_folder}";
-
-	private static final String URL_EQUALS = "=";
-	private static final String URL_AMPERSAND = "&";
-
-	private static final String BS = "\\";
-	private static final String URL_SEP = "/";
-	private static final String FILE_SEP = "/";
-
-	private static final String HTTPHDR_AUTH = "Authorization";
-
-	public static final String SUFFIX_CE = ".ce";
 
 	public static void appendToSb(StringBuilder pSb, String pText) {
 		appendToSbNoNl(pSb, pText);
@@ -76,6 +64,10 @@ public abstract class FileUtilities {
 
 	public static void appendToSbNoNl(StringBuilder pSb, String pText) {
 		pSb.append(pText);
+	}
+
+	public static void appendNewLineToSb(StringBuilder pSb) {
+		pSb.append(NL);
 	}
 
 	public static String listTextFor(Object[] pList) {
@@ -458,7 +450,7 @@ public abstract class FileUtilities {
 			
 			//Specify the credentials (provided in the original HTTP request that started this action) if they have been provided
 			if (pAc.hasCredentials()) {
-				conn.setRequestProperty(HTTPHDR_AUTH, pAc.getCredentials());
+				conn.setRequestProperty(HDR_AUTH, pAc.getCredentials());
 			}
 		} catch (IOException e) {
 			reportException(e, pEncUrl, pAc, logger, CLASS_NAME, METHOD_NAME);

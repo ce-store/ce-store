@@ -1,16 +1,15 @@
 package com.ibm.ets.ita.ce.store.hudson.model;
 
-import java.util.ArrayList;
-
-import com.ibm.ets.ita.ce.store.ActionContext;
-import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonArray;
-import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
-
 /*******************************************************************************
  * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
+import java.util.ArrayList;
+
+import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonArray;
+import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
 
 public class InstancePhrase extends InterpretationPhrase {

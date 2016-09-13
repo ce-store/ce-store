@@ -1,16 +1,15 @@
 package com.ibm.ets.ita.ce.store.hudson.model.conversation;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
-import com.ibm.ets.ita.ce.store.ActionContext;
+import static com.ibm.ets.ita.ce.store.names.CeNames.CON_CONVWORD;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
 
 public class ConvWord extends ConvItem {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
-
-	private static final String CON_NAME = "conv word";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private int wordIndex = -1;		//Relative to parent clause
 	private ConvClause parentClause = null;
@@ -25,7 +24,7 @@ public class ConvWord extends ConvItem {
 	}
 
 	private ConvWord(ActionContext pAc, String pWordText, int pIndex, ConvClause pParent) {
-		super(pAc, CON_NAME, pWordText);
+		super(pAc, CON_CONVWORD, pWordText);
 
 		this.wordIndex = pIndex;
 		this.parentClause = pParent;
@@ -33,7 +32,7 @@ public class ConvWord extends ConvItem {
 	}
 
 	public static String getConceptName() {
-		return CON_NAME;
+		return CON_CONVWORD;
 	}
 
 	public String getWordText() {

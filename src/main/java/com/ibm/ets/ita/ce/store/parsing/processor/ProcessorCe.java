@@ -1,16 +1,27 @@
 package com.ibm.ets.ita.ce.store.parsing.processor;
 
-/*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
- * All Rights Reserved
- *******************************************************************************/
-
-import static com.ibm.ets.ita.ce.store.StaticCeRepository.ceMetamodelConceptualModel;
-import static com.ibm.ets.ita.ce.store.StaticCeRepository.ceMetamodelConceptualModelDefinesConcept;
-import static com.ibm.ets.ita.ce.store.StaticCeRepository.ceMetamodelEntityConceptAnnotation;
-import static com.ibm.ets.ita.ce.store.StaticCeRepository.ceMetamodelEntityConceptChild;
-import static com.ibm.ets.ita.ce.store.StaticCeRepository.ceMetamodelEntityConceptMain;
-import static com.ibm.ets.ita.ce.store.StaticCeRepository.ceMetamodelProperty;
+import static com.ibm.ets.ita.ce.store.names.CeNames.CON_CTE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_AND;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.SCELABEL_RQSTART;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.SCELABEL_RQNAME;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.SCELABEL_CONNECTOR;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_OPENSQBR;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_CLOSESQBR;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.SENMODE_NORMAL;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.SENMODE_VALIDATE;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.SRCID_POPMODEL;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.STEPNAME_POPMODEL;
+import static com.ibm.ets.ita.ce.store.core.StaticCeRepository.ceMetamodelConceptualModel;
+import static com.ibm.ets.ita.ce.store.core.StaticCeRepository.ceMetamodelConceptualModelDefinesConcept;
+import static com.ibm.ets.ita.ce.store.core.StaticCeRepository.ceMetamodelEntityConceptAnnotation;
+import static com.ibm.ets.ita.ce.store.core.StaticCeRepository.ceMetamodelEntityConceptChild;
+import static com.ibm.ets.ita.ce.store.core.StaticCeRepository.ceMetamodelEntityConceptMain;
+import static com.ibm.ets.ita.ce.store.core.StaticCeRepository.ceMetamodelProperty;
+import static com.ibm.ets.ita.ce.store.names.CeNames.CON_ATTCON;
+import static com.ibm.ets.ita.ce.store.names.CeNames.CON_DTPROP;
+import static com.ibm.ets.ita.ce.store.names.CeNames.CON_OBPROP;
+import static com.ibm.ets.ita.ce.store.names.CeNames.CON_RELCON;
+import static com.ibm.ets.ita.ce.store.names.CeNames.PROP_PROPNAME;
 import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.appendToFileWithNewlines;
 import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.bufferedReaderFromString;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.formattedDuration;
@@ -30,10 +41,9 @@ import java.util.TreeMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
-import com.ibm.ets.ita.ce.store.NotifyActionContext;
-import com.ibm.ets.ita.ce.store.StoreActions;
 import com.ibm.ets.ita.ce.store.agents.CeNotifyHandler;
+import com.ibm.ets.ita.ce.store.agents.NotifyActionContext;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
 import com.ibm.ets.ita.ce.store.model.CeAnnotation;
 import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.model.CeConceptualModel;
@@ -58,21 +68,11 @@ import com.ibm.ets.ita.ce.store.parsing.saver.SentenceSaver;
 import com.ibm.ets.ita.ce.store.parsing.tokenizer.TokenizerSentence;
 
 public class ProcessorCe {
-
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private static final String CLASS_NAME = ProcessorCe.class.getName();
 	private static final String PACKAGE_NAME = ProcessorCe.class.getPackage().getName();
 	private static final Logger logger = Logger.getLogger(PACKAGE_NAME);
-
-	private static final String SRCID_POPMODEL = "src_pm";
-	private static final String STEPNAME_POPMODEL = "populateMetamodel";
-	private static final String MMTYPE_ATTCONCEPT = "attribute concept";
-	private static final String MMTYPE_RELCONCEPT = "relation concept";
-	private static final String MMTYPE_DATAPROP = "datatype property";
-	private static final String MMTYPE_OBJPROP = "object property";
-	
-	private static final String CON_CTE= "CE triggered event";
 
 	private String auditFilename = null;
 	protected ActionContext ac = null;
@@ -231,8 +231,8 @@ public class ProcessorCe {
 			ArrayList<String> ratTokens = new ArrayList<String>();
 
 			if (!firstTime) {
-				ratTokens.add(TokenizerSentence.SCELABEL_CONNECTOR);
-				ratTokens.add(TokenizerSentence.TOKEN_AND);
+				ratTokens.add(SCELABEL_CONNECTOR);
+				ratTokens.add(TOKEN_AND);
 			}
 
 			ProcessorCe procCe = new ProcessorCe(pAc, true, pSenStats);
@@ -256,11 +256,11 @@ public class ProcessorCe {
 		}
 
 		ArrayList<String> closingTokens = new ArrayList<String>();
-		closingTokens.add(TokenizerSentence.SCELABEL_RQSTART);
-		closingTokens.add(CeQuery.RULENAME_START);
-		closingTokens.add(TokenizerSentence.SCELABEL_RQNAME);
+		closingTokens.add(SCELABEL_RQSTART);
+		closingTokens.add(TOKEN_OPENSQBR);
+		closingTokens.add(SCELABEL_RQNAME);
 		closingTokens.add(ratRs.getRuleName());
-		closingTokens.add(CeQuery.RULENAME_END);
+		closingTokens.add(TOKEN_CLOSESQBR);
 		closingTokens.add(".");
 
 		actualSen.addStructuredRationaleTokens(closingTokens);
@@ -393,7 +393,7 @@ public class ProcessorCe {
 			reportException(e, this.ac, logger, CLASS_NAME, METHOD_NAME);
 		}
 
-		if (pMode != StoreActions.MODE_VALIDATE) {
+		if (pMode != SENMODE_VALIDATE) {
 			doPostSourceLoadActions(newSrc);
 		}
 		
@@ -412,7 +412,7 @@ public class ProcessorCe {
 			reportException(e, this.ac, logger, CLASS_NAME, METHOD_NAME);
 		}
 
-		if (pMode != StoreActions.MODE_VALIDATE) {
+		if (pMode != SENMODE_VALIDATE) {
 			//Since this is a reused source will this now duplicate if model changes are present?
 			doPostSourceLoadActions(pTgtSrc);
 		}
@@ -428,7 +428,7 @@ public class ProcessorCe {
 	}
 
 	public CeSource processNormalSentencesFromSb(StringBuilder pSb, int pSourceType, String pTxnName, String pExtraInfo, long pStartTime) {
-		CeSource newSrc = processSentencesForSource(pSb, pSourceType, pTxnName, pExtraInfo, pStartTime, StoreActions.MODE_NORMAL, null);
+		CeSource newSrc = processSentencesForSource(pSb, pSourceType, pTxnName, pExtraInfo, pStartTime, SENMODE_NORMAL, null);
 		doPostSourceLoadActions(newSrc);
 
 		return newSrc;
@@ -440,7 +440,7 @@ public class ProcessorCe {
 	}
 
 	public CeSource processNormalSentencesFromReader(BufferedReader pReader, int pSourceType, String pTxnName, String pExtraInfo, long pStartTime) {
-		CeSource newSrc = processSentencesForSource(pReader, pSourceType, pTxnName, pExtraInfo, pStartTime, StoreActions.MODE_NORMAL, null);
+		CeSource newSrc = processSentencesForSource(pReader, pSourceType, pTxnName, pExtraInfo, pStartTime, SENMODE_NORMAL, null);
 		doPostSourceLoadActions(newSrc);
 
 		return newSrc;
@@ -455,7 +455,7 @@ public class ProcessorCe {
 		final String METHOD_NAME = "processRationaleSentence";
 
 		BufferedReader br = bufferedReaderFromString(pRationaleText);
-		this.sp.doParsing(br, StoreActions.MODE_NORMAL);
+		this.sp.doParsing(br, SENMODE_NORMAL);
 
 		try {
 			br.close();
@@ -486,7 +486,7 @@ public class ProcessorCe {
 
 		CeQuery result = null;
 		BufferedReader br = bufferedReaderFromString(pCeQueryText);
-		this.sp.doParsing(br, StoreActions.MODE_NORMAL);
+		this.sp.doParsing(br, SENMODE_NORMAL);
 		
 		try {
 			br.close();
@@ -537,7 +537,7 @@ public class ProcessorCe {
 			txnName = pTxnName + " ";
 		}
 
-		if (pMode == StoreActions.MODE_NORMAL) {
+		if (pMode == SENMODE_NORMAL) {
 			if (pSource != null) {
 				thisSrc = pSource;
 				this.ac.setCurrentSource(pSource);
@@ -553,7 +553,7 @@ public class ProcessorCe {
 			} else {
 				reportError("Failed to create CeSource.  All sentences from " + pSourceType + " '" + pTxnName + "' have been ignored.", this.ac);
 			}
-		} else if (pMode == StoreActions.MODE_VALIDATE) {
+		} else if (pMode == SENMODE_VALIDATE) {
 			this.sp.doParsing(pReader, pMode);
 			recordSentenceAddingResults(pStartTime, 0, txnName + "sentence processing complete");
 		} else {
@@ -573,7 +573,7 @@ public class ProcessorCe {
 			txnName = pTxnName + " ";
 		}
 
-		if (pMode == StoreActions.MODE_NORMAL) {
+		if (pMode == SENMODE_NORMAL) {
 			if (pSource != null) {
 				thisSrc = pSource;
 				this.ac.getModelBuilder().saveSource(thisSrc);
@@ -587,7 +587,7 @@ public class ProcessorCe {
 			} else {
 				reportError("Failed to create CeSource.  All sentences from " + pSourceType + " '" + pTxnName + "' have been ignored.", this.ac);
 			}
-		} else if (pMode == StoreActions.MODE_VALIDATE) {
+		} else if (pMode == SENMODE_VALIDATE) {
 			this.sp.doParsing(pSb, pMode);
 			recordSentenceAddingResults(pStartTime, 0, txnName + "sentence processing complete");
 		} else {
@@ -748,8 +748,6 @@ public class ProcessorCe {
 	private void detectAllMatchedRules(CeSource pSource) {
 		HashSet<CeRule> rulesToRun = new HashSet<CeRule>();
 
-		pSource.debugAffectedConceptsAndProperties(this.ac);
-
 		for (CeRule newRule : pSource.getAffectedRules()) {
 			if (newRule.hasAnyUnboundedCreationConclusionClauses()) {
 				reportWarning("New rule '" + newRule.getRuleName() + "' will not be included in auto execution of rules as it creates new instances in the conclusion and would over-generate instances", this.ac);
@@ -836,7 +834,7 @@ public class ProcessorCe {
 
 				//Check for property matches (only if a target concept has been identified
 				if (targetConcept != null) {
-					CePropertyInstance tpPi = pTrigInst.getPropertyInstanceNamed("property name");
+					CePropertyInstance tpPi = pTrigInst.getPropertyInstanceNamed(PROP_PROPNAME);
 
 					if (tpPi != null) {
 						//Check against each property
@@ -993,7 +991,7 @@ public class ProcessorCe {
 		CeConcept defaultParent = HelperConcept.thingConcept(this.ac);
 
 		for (CeConcept thisConcept : this.ac.getModelBuilder().listAllConcepts()) {
-			if ((!HelperConcept.isCoreConcept(thisConcept)) && (!thisConcept.hasAnyParents())) {
+			if ((!HelperConcept.isThing(thisConcept)) && (!thisConcept.hasAnyParents())) {
 				thisConcept.createParent(this.ac, defaultParent);
 				//TODO: Should a new CE sentence be generated to communicate this assumption?
 			}
@@ -1040,7 +1038,7 @@ public class ProcessorCe {
 			nAc.setLastSource(mmSrc);
 			ProcessorCe procCe = new ProcessorCe(nAc, false, this.senStats);
 
-			procCe.processNormalSentencesFromSbWithExistingSource(pSb, CeSource.SRCTYPE_ID_INTERNAL, STEPNAME_POPMODEL, "", sTime, StoreActions.MODE_NORMAL, mmSrc);
+			procCe.processNormalSentencesFromSbWithExistingSource(pSb, CeSource.SRCTYPE_ID_INTERNAL, STEPNAME_POPMODEL, "", sTime, SENMODE_NORMAL, mmSrc);
 			this.ac.setCurrentSource(otherSource);
 		}
 		
@@ -1107,8 +1105,8 @@ public class ProcessorCe {
 	private static void metamodelProcessPropertyCe(CeProperty pProp, StringBuilder pSb) {
 		if (!pProp.metaModelHasBeenGenerated()) {
 			String propName = pProp.identityKey();
-			String anAttOrRelConcept = pProp.isFunctionalNoun() ? "an " + MMTYPE_ATTCONCEPT : "a " + MMTYPE_RELCONCEPT;
-			String aDataOrObjProp = pProp.isDatatypeProperty() ? "a " + MMTYPE_DATAPROP : "an " + MMTYPE_OBJPROP;
+			String anAttOrRelConcept = pProp.isFunctionalNoun() ? "an " + CON_ATTCON : "a " + CON_RELCON;
+			String aDataOrObjProp = pProp.isDatatypeProperty() ? "a " + CON_DTPROP : "an " + CON_OBPROP;
 			String domainName = pProp.getDomainConcept().getConceptName();
 			String rangeName = pProp.getRangeConceptName();
 			String propertyName = pProp.getPropertyName();

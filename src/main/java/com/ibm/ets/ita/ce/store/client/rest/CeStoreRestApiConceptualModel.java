@@ -1,10 +1,16 @@
 package com.ibm.ets.ita.ce.store.client.rest;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSONTYPE_CONMOD;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_CONCEPT;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_SOURCE;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_SENTENCE;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_PROPERTY;
+import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.appendNewLineToSb;
 import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.appendToSb;
 
 import java.util.ArrayList;
@@ -12,9 +18,9 @@ import java.util.Collection;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.ibm.ets.ita.ce.store.ModelBuilder;
 import com.ibm.ets.ita.ce.store.client.web.WebActionContext;
 import com.ibm.ets.ita.ce.store.client.web.model.CeWebConceptualModel;
+import com.ibm.ets.ita.ce.store.core.ModelBuilder;
 import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.model.CeConceptualModel;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
@@ -23,9 +29,7 @@ import com.ibm.ets.ita.ce.store.model.CeSentence;
 import com.ibm.ets.ita.ce.store.model.CeSource;
 
 public class CeStoreRestApiConceptualModel extends CeStoreRestApi {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
-
-	private static final String TYPE_CONMOD = "conceptual model";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	public CeStoreRestApiConceptualModel(WebActionContext pWc, ArrayList<String> pRestParts, HttpServletRequest pRequest) {
 		super(pWc, pRestParts, pRequest);
@@ -143,11 +147,11 @@ public class CeStoreRestApiConceptualModel extends CeStoreRestApi {
 		StringBuilder sb = new StringBuilder();
 
 		appendToSb(sb, "-- All sentences for all conceptual models");
-		appendToSb(sb, "");
+		appendNewLineToSb(sb);
 
 		for (CeConceptualModel thisCm : getModelBuilder().getAllConceptualModels().values()) {
 			generateTextForConceptualModel(this.wc, sb, thisCm, isFullStyle());
-			appendToSb(sb, "");
+			appendNewLineToSb(sb);
 		}
 
 		getWebActionResponse().setPlainTextPayload(this.wc, sb.toString());		
@@ -219,11 +223,11 @@ public class CeStoreRestApiConceptualModel extends CeStoreRestApi {
 		StringBuilder sb = new StringBuilder();
 
 		appendToSb(sb, "-- All sentences for all sources for conceptual model " + pCm.getModelName());
-		appendToSb(sb, "");
+		appendNewLineToSb(sb);
 
 		for (CeSource thisSrc : pCm.listSources()) {
 			CeStoreRestApiSource.generateTextForSource(this.wc, sb, thisSrc, isFullStyle());
-			appendToSb(sb, "");
+			appendNewLineToSb(sb);
 		}
 
 		getWebActionResponse().setPlainTextPayload(this.wc, sb.toString());		
@@ -247,12 +251,12 @@ public class CeStoreRestApiConceptualModel extends CeStoreRestApi {
 		StringBuilder sb = new StringBuilder();
 
 		appendToSb(sb, "-- All sentences for conceptual model " + pCm.getModelName());
-		appendToSb(sb, "");
+		appendNewLineToSb(sb);
 
 		for (CeSource thisSrc : pCm.getSources()) {
 			for (CeSentence thisSen : thisSrc.listPrimarySentences()) {
 				CeStoreRestApiSentence.generateTextForSentence(this.wc, sb, thisSen, isFullStyle());
-				appendToSb(sb, "");
+				appendNewLineToSb(sb);
 			}
 		}
 
@@ -277,11 +281,11 @@ public class CeStoreRestApiConceptualModel extends CeStoreRestApi {
 		StringBuilder sb = new StringBuilder();
 
 		appendToSb(sb, "-- All sentences for all concepts for conceptual model " + pCm.getModelName());
-		appendToSb(sb, "");
+		appendNewLineToSb(sb);
 
 		for (CeConcept thisCon : pCm.getDefinedConcepts()) {
 			CeStoreRestApiConcept.generateTextForConcept(this.wc, sb, thisCon, isFullStyle());
-			appendToSb(sb, "");
+			appendNewLineToSb(sb);
 		}
 
 		getWebActionResponse().setPlainTextPayload(this.wc, sb.toString());		
@@ -305,11 +309,11 @@ public class CeStoreRestApiConceptualModel extends CeStoreRestApi {
 		StringBuilder sb = new StringBuilder();
 
 		appendToSb(sb, "-- All sentences for all properties for conceptual model " + pCm.getModelName());
-		appendToSb(sb, "");
+		appendNewLineToSb(sb);
 
 		for (CeProperty thisProp : pCm.getDefinedProperties()) {
 			CeStoreRestApiProperty.generateTextForProperty(this.wc, sb, thisProp, isFullStyle());
-			appendToSb(sb, "");
+			appendNewLineToSb(sb);
 		}
 
 		getWebActionResponse().setPlainTextPayload(this.wc, sb.toString());		
@@ -317,13 +321,13 @@ public class CeStoreRestApiConceptualModel extends CeStoreRestApi {
 
 	private void generateTextForConceptualModel(WebActionContext pWc, StringBuilder pSb, CeConceptualModel pCm, boolean pFullStyle) {
 		appendToSb(pSb, "-- Conceptual model: " + pCm.getModelName() + " (all sentences)");
-		appendToSb(pSb, "");
+		appendNewLineToSb(pSb);
 
 		//TODO: Link sentences directly to conceptual model.  For now get them via the source(s)
 		for (CeSource thisSrc : pCm.getSources()) {
 			for (CeSentence thisSen : thisSrc.listPrimarySentences()) {
 				CeStoreRestApiSentence.generateTextForSentence(pWc, pSb, thisSen, pFullStyle);
-				appendToSb(pSb, "");
+				appendNewLineToSb(pSb);
 			}
 		}
 
@@ -340,7 +344,7 @@ public class CeStoreRestApiConceptualModel extends CeStoreRestApi {
 	}
 
 	private void reportNotFoundError(String pModelName) {
-		reportNotFoundError(TYPE_CONMOD, pModelName);
+		reportNotFoundError(JSONTYPE_CONMOD, pModelName);
 	}
 
 	private void setConceptualModelListAsStructuredResult(Collection<CeConceptualModel> pCmList) {

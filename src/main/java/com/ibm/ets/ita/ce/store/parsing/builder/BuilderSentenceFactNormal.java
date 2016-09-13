@@ -1,15 +1,17 @@
 package com.ibm.ets.ita.ce.store.parsing.builder;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.CeNames.RANGE_VALUE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_DOT;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.decodeForCe;
 
 import java.util.ArrayList;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
 import com.ibm.ets.ita.ce.store.model.CeConcatenatedValue;
 import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.model.CeProperty;
@@ -20,18 +22,18 @@ import com.ibm.ets.ita.ce.store.model.CeSequence;
 import com.ibm.ets.ita.ce.store.model.CeSpecialProperty;
 
 public class BuilderSentenceFactNormal extends BuilderSentence {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	//TODO: Complete sequence implementation
-	private String instanceName = "";
+	private String instanceName = null;
 	private ArrayList<CeConcept> secondaryConceptsNormal = null;
 	private ArrayList<CeConcept> secondaryConceptsNegated = null;
 	private ArrayList<CePropertyInstance> datatypeProperties = null;
 	private ArrayList<CePropertyInstance> objectProperties = null;
 	private ArrayList<CeConcatenatedValue> concatValues = null;
 	private ArrayList<CeSequence> sequences = null;
-	private String rationaleText = "";
-	private String rationaleRuleName = "";
+	private String rationaleText = null;
+	private String rationaleRuleName = null;
 	private ArrayList<String> rationaleTokens = null;
 	private boolean isClause = false;
 	private boolean rationaleProcessing = false;
@@ -147,7 +149,7 @@ public class BuilderSentenceFactNormal extends BuilderSentence {
 			this.datatypeProperties.add(propInst);
 		} else {
 			if (hasTargetConcept()) {
-				String fullPropName = CeProperty.calculateFullPropertyNameFor(getTargetConcept().getConceptName(), pName, CeProperty.RANGE_VALUE);			
+				String fullPropName = CeProperty.calculateFullPropertyNameFor(getTargetConcept().getConceptName(), pName, RANGE_VALUE);			
 				CeProperty targetProperty = getTargetConcept().retrievePropertyFullyNamed(fullPropName);
 
 				if (targetProperty != null) {
@@ -193,7 +195,7 @@ public class BuilderSentenceFactNormal extends BuilderSentence {
 			if (CeProperty.isSpecialPropertyName(pName, getTargetConcept().getConceptName())) {
 				targetProperty = CeSpecialProperty.getSpecialOperatorPropertyNamed(pAc, pName);
 			} else {
-				if (pRange.equals(CeProperty.RANGE_VALUE)) {
+				if (pRange.equals(RANGE_VALUE)) {
 					targetProperty = getTargetConcept().retrievePropertyFullyNamed(fullPropName);
 				} else {
 					targetProperty = getTargetConcept().calculatePropertyNamedWithInheritance(pAc, pName, pRange);

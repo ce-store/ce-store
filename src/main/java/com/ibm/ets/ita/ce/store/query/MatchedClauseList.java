@@ -1,7 +1,7 @@
 package com.ibm.ets.ita.ce.store.query;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
@@ -12,13 +12,12 @@ import java.util.HashSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
 import com.ibm.ets.ita.ce.store.model.CeSpecialProperty;
 
 public class MatchedClauseList {
-
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private String srcVarId = "";
 	private String tgtVarId = "";
@@ -451,7 +450,7 @@ public class MatchedClauseList {
 		String result = "";
 		
 		for (MatchedClauseList thisLm : this.linkedMcls) {
-			if (thisLm.getTgtVarId().equals(this.getSrcVarId())) {
+			if (thisLm.getTgtVarId().equals(getSrcVarId())) {
 				result = thisLm.getSrcVarId();
 			}
 		}
@@ -463,7 +462,7 @@ public class MatchedClauseList {
 		String result = "";
 		
 		for (MatchedClauseList thisLm : this.linkedMcls) {
-			if (thisLm.getTgtVarId().equals(this.getTgtVarId())) {
+			if (thisLm.getTgtVarId().equals(getTgtVarId())) {
 				result = thisLm.getSrcVarId();
 			}
 		}

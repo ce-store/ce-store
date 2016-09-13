@@ -1,5 +1,27 @@
 package com.ibm.ets.ita.ce.store.hudson.handler;
 
+import static com.ibm.ets.ita.ce.store.names.CeNames.CONLIST_HUDSON;
+import static com.ibm.ets.ita.ce.store.names.CeNames.CON_CONFCON;
+import static com.ibm.ets.ita.ce.store.names.CeNames.CON_CONNWORD;
+import static com.ibm.ets.ita.ce.store.names.CeNames.CON_LINKEDPROP;
+import static com.ibm.ets.ita.ce.store.names.CeNames.CON_MULTIMATCH;
+import static com.ibm.ets.ita.ce.store.names.CeNames.CON_NUMWORD;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_CONF;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_CONS;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_ENDPOS;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_ENTS;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_EXP;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_INSTS;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_INTS;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_PHRASE;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_PROPS;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_QUESTION;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_Q_TEXT;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_Q_WORDS;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_RES;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SPECS;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_STARTPOS;
+
 /*******************************************************************************
  * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
@@ -10,10 +32,10 @@ import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportDebug;
 import java.util.ArrayList;
 import java.util.TreeMap;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonArray;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
 import com.ibm.ets.ita.ce.store.client.web.model.CeWebInstance;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
 import com.ibm.ets.ita.ce.store.hudson.model.Question;
 import com.ibm.ets.ita.ce.store.hudson.model.conversation.MatchedItem;
 import com.ibm.ets.ita.ce.store.hudson.model.conversation.ProcessedWord;
@@ -31,36 +53,6 @@ import com.ibm.ets.ita.ce.store.model.CePropertyInstance;
 public class QuestionInterpreterHandler extends QuestionHandler {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
-	private static final String JSON_QUES = "question";
-	private static final String JSON_TEXT = "text";
-	private static final String JSON_WORDS = "words";
-
-	private static final String JSON_INTS = "interpretations";
-	private static final String JSON_CONF = "confidence";
-	private static final String JSON_EXP = "explanation";
-	private static final String JSON_RES = "result";
-
-	public static final String JSON_CONS = "concepts";
-	public static final String JSON_PROPS = "properties";
-	public static final String JSON_INSTS = "instances";
-	private static final String JSON_SPECS = "specials";
-
-	private static final String JSON_ENTS = "entities";
-	private static final String JSON_PHRASE = "phrase";
-	private static final String JSON_STARTPOS = "start position";
-	private static final String JSON_ENDPOS = "end position";
-
-	private static final String CON_NUMWORD = "number word";
-	private static final String CON_LINKEDPROP = "linked property";
-	
-	private static final String CON_QPHRASE = "question phrase";
-	private static final String CON_QWORD = "question word";
-	private static final String CON_COMWORD = "common word";
-	private static final String CON_CONNWORD = "connector word";
-	private static final String CON_MULTIMATCH = "multimatch thing";
-
-	private static final String[] CONLIST_OTHERS = { CON_QPHRASE, CON_QWORD, CON_COMWORD, CON_MODIFIER, CON_CONNWORD };
-
 	private static final int TYPE_ALL = 0;
 	private static final int TYPE_BEFORE = 1;
 	private static final int TYPE_AFTER = 2;
@@ -72,8 +64,8 @@ public class QuestionInterpreterHandler extends QuestionHandler {
 	private ArrayList<SpMatchedTriple> matchedTriples = new ArrayList<SpMatchedTriple>();
 	private ArrayList<SpMultiMatch> multiMatches = new ArrayList<SpMultiMatch>();
 
-	public QuestionInterpreterHandler(ActionContext pAc, boolean pDebug, String pQt, long pStartTime) {
-		super(pAc, pDebug, Question.create(pQt), pStartTime);		
+	public QuestionInterpreterHandler(ActionContext pAc, String pQt, long pStartTime) {
+		super(pAc, Question.create(pQt), pStartTime);		
 	}
 
 	public static CeStoreJsonArray jsonFor(ActionContext pAc, ArrayList<CeInstance> pInstList) {
@@ -204,7 +196,7 @@ public class QuestionInterpreterHandler extends QuestionHandler {
 	}
 
 	@Override
-	public CeStoreJsonObject handleQuestion() {
+	protected CeStoreJsonObject handleQuestion() {
 		CeStoreJsonObject result = null;
 
 		interpretQuestion();
@@ -628,7 +620,7 @@ public class QuestionInterpreterHandler extends QuestionHandler {
 		} else {
 			for (CeInstance thisInst : pWord.listGroundedInstances()) {
 				if (!thisInst.isOnlyConceptNamed(this.ac, CON_CONFCON)) {
-					if (!thisInst.isConceptNamed(this.ac, CONLIST_OTHERS)) {
+					if (!thisInst.isConceptNamed(this.ac, CONLIST_HUDSON)) {
 						result = true;
 					}
 				}
@@ -685,7 +677,7 @@ public class QuestionInterpreterHandler extends QuestionHandler {
 		boolean result = false;
 
 		for (CeInstance thisInst : pWord.listGroundedInstances()) {
-			if (thisInst.isConceptNamed(this.ac, "connector word")) {
+			if (thisInst.isConceptNamed(this.ac, CON_CONNWORD)) {
 				result = true;
 			}
 		}
@@ -716,8 +708,8 @@ public class QuestionInterpreterHandler extends QuestionHandler {
 		CeStoreJsonArray jSpecs = createJsonForSpecials();
 
 		//question
-		qObj.put(JSON_TEXT, getQuestionText());
-		qObj.put(JSON_WORDS, createJsonForWords());
+		qObj.put(JSON_Q_TEXT, getQuestionText());
+		qObj.put(JSON_Q_WORDS, createJsonForWords());
 
 		//interpretation
 		iObj.put(JSON_CONF, getInterpretationConfidence());
@@ -748,7 +740,7 @@ public class QuestionInterpreterHandler extends QuestionHandler {
 
 		iObj.put(JSON_RES, rObj);
 
-		result.put(JSON_QUES, qObj);
+		result.put(JSON_QUESTION, qObj);
 		result.put(JSON_INTS, iArr);
 
 		return result;
@@ -771,37 +763,6 @@ public class QuestionInterpreterHandler extends QuestionHandler {
 
 		return result;
 	}
-
-//	private CeStoreJsonArray createJsonForConcepts() {
-//		CeStoreJsonArray result = new CeStoreJsonArray();
-//		int ctr = 0;
-//
-//		for (ProcessedWord thisWord : this.allWords) {
-//			if (thisWord.isGroundedOnConcept()) {
-//				TreeMap<String, ArrayList<CeConcept>> conMap = thisWord.listGroundedConceptsAndKeys();
-//
-//				for (String thisKey : conMap.keySet()) {
-//					ArrayList<CeConcept> conList = conMap.get(thisKey);
-//					CeStoreJsonObject jCon = new CeStoreJsonObject();
-//					CeStoreJsonArray eArr = new CeStoreJsonArray();
-//
-//					jCon.put("phrase", thisKey);
-//					jCon.put("start position", ctr);
-////					jCon.put("end position", ctr);
-//					jCon.put("entities", eArr);
-//
-//					for (CeConcept thisCon : conList) {
-//						eArr.add(jsonFor(this.ac, thisCon));
-//					}
-//
-//					result.add(jCon);
-//				}
-//			}
-//			++ctr;
-//		}
-//
-//		return result;
-//	}
 
 	private CeStoreJsonArray createJsonForConcepts() {
 		CeStoreJsonArray result = new CeStoreJsonArray();
@@ -841,10 +802,10 @@ public class QuestionInterpreterHandler extends QuestionHandler {
 					CeStoreJsonArray eArr = new CeStoreJsonArray();
 					MatchedItem firstItem = propList.get(0);
 
-					jProp.put("phrase", firstItem.getPhraseText());
-					jProp.put("start position", firstItem.getStartPos());
-					jProp.put("end position", firstItem.getEndPos());
-					jProp.put("entities", eArr);
+					jProp.put(JSON_PHRASE, firstItem.getPhraseText());
+					jProp.put(JSON_STARTPOS, firstItem.getStartPos());
+					jProp.put(JSON_ENDPOS, firstItem.getEndPos());
+					jProp.put(JSON_ENTS, eArr);
 
 					for (MatchedItem thisMi : propList) {
 						eArr.add(jsonFor(this.ac, thisMi.getProperty()));
@@ -872,10 +833,10 @@ public class QuestionInterpreterHandler extends QuestionHandler {
 					CeStoreJsonArray eArr = new CeStoreJsonArray();
 					MatchedItem firstItem = instList.get(0);
 
-					jInst.put("phrase", firstItem.getPhraseText());
-					jInst.put("start position", firstItem.getStartPos());
-					jInst.put("end position", firstItem.getEndPos());
-					jInst.put("entities", eArr);
+					jInst.put(JSON_PHRASE, firstItem.getPhraseText());
+					jInst.put(JSON_STARTPOS, firstItem.getStartPos());
+					jInst.put(JSON_ENDPOS, firstItem.getEndPos());
+					jInst.put(JSON_ENTS, eArr);
 
 					for (MatchedItem thisMi : instList) {
 						if (!isAlreadyMatchedToConceptOrProperty(thisWord, thisMi)) {

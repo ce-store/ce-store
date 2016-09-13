@@ -1,10 +1,21 @@
 package com.ibm.ets.ita.ce.store.parsing.tokenizer;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_AND;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_OPENSQBR;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_CLOSESQBR;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_OPENPAR;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_CLOSEPAR;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_IF;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_THEN;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.SCELABEL_NORMAL;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.SCELABEL_RQNAME;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.SCELABEL_RQSTART;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.SCELABEL_CONNECTOR;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.isReportDebug;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportDebug;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
@@ -22,14 +33,7 @@ import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentenceFactNormal;
 import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentenceRuleOrQuery;
 
 public class TokenizerRuleSentence extends TokenizerSentence {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
-
-	private static final String TOKEN_OPENSQBR = "[";
-	private static final String TOKEN_CLOSESQBR = "]";
-	private static final String TOKEN_OPENPAR = "(";
-	private static final String TOKEN_CLOSEPAR = ")";
-	private static final String TOKEN_IF = "if";
-	private static final String TOKEN_THEN = "then";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private boolean insideSqBr = false;
 	private boolean insidePar = false;

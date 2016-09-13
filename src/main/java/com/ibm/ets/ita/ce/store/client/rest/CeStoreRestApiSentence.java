@@ -1,16 +1,45 @@
 package com.ibm.ets.ita.ce.store.client.rest;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSONTYPE_SEN;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.PREFIX_SEN;
+import static com.ibm.ets.ita.ce.store.names.RestNames.ACTION_EXEC_Q;
+import static com.ibm.ets.ita.ce.store.names.RestNames.ACTION_EXEC_R;
+import static com.ibm.ets.ita.ce.store.names.RestNames.ACTION_PARSE;
+import static com.ibm.ets.ita.ce.store.names.RestNames.ACTION_SAVE;
+import static com.ibm.ets.ita.ce.store.names.RestNames.ACTION_VALIDATE;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_TYPE;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_VALIDITY;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_ENDTS;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_ACTION;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_RUNRULES;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_SUPPCE;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_RETCE;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_RETINSTS;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_STARTTS;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_RATIONALE;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_SEN_ALL_TYPES;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_SEN_ALL_VALIDITIES;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_SEN_ANNOTATION;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_SEN_COMMAND;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_SEN_FACT;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_SEN_MODEL;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_SEN_NORMAL;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_SEN_PATTERN;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_SEN_QUALIFIED;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_SEN_QUERY;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_SEN_RULE;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_SEN_VALID;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_SEN_INVALID;
+import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.appendNewLineToSb;
 import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.appendToSb;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -18,10 +47,10 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.ibm.ets.ita.ce.store.StoreActions;
 import com.ibm.ets.ita.ce.store.client.web.WebActionContext;
 import com.ibm.ets.ita.ce.store.client.web.model.CeWebContainerResult;
 import com.ibm.ets.ita.ce.store.client.web.model.CeWebSentence;
+import com.ibm.ets.ita.ce.store.core.StoreActions;
 import com.ibm.ets.ita.ce.store.model.CeSentence;
 import com.ibm.ets.ita.ce.store.model.CeSource;
 import com.ibm.ets.ita.ce.store.model.container.ContainerCeResult;
@@ -30,70 +59,46 @@ import com.ibm.ets.ita.ce.store.model.container.ContainerSentenceLoadResult;
 import com.ibm.ets.ita.ce.store.model.rationale.CeRationaleReasoningStep;
 
 public class CeStoreRestApiSentence extends CeStoreRestApi {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
-	private static final String TYPE_SEN = "sentence";
+	private static HashSet<String> listUnknownTypeQualifiers(Set<String> pTypeQualifiers) {
+		HashSet<String> result = new HashSet<String>();
 
-	private static final String PARM_ACTION = "action";
-	private static final String PARM_RUNRULES = "runRules";
-	private static final String PARM_SUPPCE = "suppressCe";
+		for (String thisType : pTypeQualifiers) {
+			boolean matched = false;
 
-	private static final String ACTION_SAVE = "save";
-	private static final String ACTION_VALIDATE = "validate";
-	private static final String ACTION_PARSE = "parse";
-	private static final String ACTION_EXEC_Q = "execute_as_query";
-	private static final String ACTION_EXEC_R = "execute_as_rule";
+			for (String knownType : REST_SEN_ALL_TYPES) {
+				if (thisType.equals(knownType)) {
+					matched = true;
+				}
+			}
+			
+			if (!matched) {
+				result.add(thisType);
+			}
+		}
 
-	//URL sentence parameter names
-	private static final String TYPE_NAME = "type";
-	private static final String VALIDITY_NAME = "validity";
-	
-	//URL sentence type values
-	private static final String REST_SEN_MODEL = "model";
-	private static final String REST_SEN_FACT = "fact";
-	private static final String REST_SEN_NORMAL = "fact-normal";
-	private static final String REST_SEN_QUALIFIED = "fact-qualified";
-	private static final String REST_SEN_RULE = "rule";
-	private static final String REST_SEN_QUERY = "query";
-	private static final String REST_SEN_PATTERN = "pattern";
-	private static final String REST_SEN_ANNOTATION = "annotation";
-	private static final String REST_SEN_COMMAND = "command";
-
-	private static final Set<String> REST_SEN_ALL_TYPES;
-	static {
-		List<String> list = Arrays.asList(new String[]{REST_SEN_MODEL, REST_SEN_FACT, REST_SEN_NORMAL,
-		 REST_SEN_QUALIFIED, REST_SEN_RULE, REST_SEN_QUERY, REST_SEN_PATTERN, REST_SEN_ANNOTATION, REST_SEN_COMMAND});
-		Set<String> set = new HashSet<String>();
-		set.addAll(list);
-		REST_SEN_ALL_TYPES = Collections.unmodifiableSet(set);
+		return result;
 	}
 
-	private static Set<String> removeUnknownTypeQualifiers(Set<String> typeQualifiers) {
-		Set<String> unknownTypeQualifiers = new HashSet<String>(typeQualifiers.size());
-		unknownTypeQualifiers.addAll(typeQualifiers);
-		unknownTypeQualifiers.removeAll(REST_SEN_ALL_TYPES);
-		typeQualifiers.retainAll(REST_SEN_ALL_TYPES);
-		return unknownTypeQualifiers;
-	}
-	
-	//URL sentence validity values
-	private static final String REST_SEN_VALID = "valid";
-	private static final String REST_SEN_INVALID = "invalid";
+	private static HashSet<String> listUnknownValidityQualifiers(Set<String> pTypeQualifiers) {
+		HashSet<String> result = new HashSet<String>();
 
-	private static final Set<String> REST_SEN_ALL_VALIDITIES;
-	static {
-		List<String> list = Arrays.asList(new String[]{REST_SEN_VALID, REST_SEN_INVALID});
-		Set<String> set = new HashSet<String>();
-		set.addAll(list);
-		REST_SEN_ALL_VALIDITIES = Collections.unmodifiableSet(set);
-	}
+		for (String thisType : pTypeQualifiers) {
+			boolean matched = false;
 
-	private static Set<String> removeUnknownValidityQualifiers(Set<String> validityQualifiers) {
-		Set<String> unknownValidityQualifiers = new HashSet<String>(validityQualifiers.size());
-		unknownValidityQualifiers.addAll(validityQualifiers);
-		unknownValidityQualifiers.removeAll(REST_SEN_ALL_VALIDITIES);
-		validityQualifiers.retainAll(REST_SEN_ALL_VALIDITIES);
-		return unknownValidityQualifiers;
+			for (String knownType : REST_SEN_ALL_VALIDITIES) {
+				if (thisType.equals(knownType)) {
+					matched = true;
+				}
+			}
+			
+			if (!matched) {
+				result.add(thisType);
+			}
+		}
+
+		return result;
 	}
 	
 	//Constructor
@@ -112,15 +117,17 @@ public class CeStoreRestApiSentence extends CeStoreRestApi {
 		boolean statsInResponse = false;
 
 		if (this.restParts.size() == 1) {
-			Set<String> sentenceTypes = this.getUrlParameterValuesNamed(TYPE_NAME);
-			Set<String> sentenceValidities = this.getUrlParameterValuesNamed(VALIDITY_NAME);
+			Set<String> sentenceTypes = getUrlParameterValuesNamed(PARM_TYPE);
+			Set<String> sentenceValidities = getUrlParameterValuesNamed(PARM_VALIDITY);
+
 			if (sentenceTypes.isEmpty() && sentenceValidities.isEmpty()) {
 				statsInResponse = processOneElementRequest();
-			} else {				
+			} else {
 				processOneElementRequestWithQualifiers(sentenceTypes, sentenceValidities);
 			}
 		} else {
 			String senId = extractSentenceId();
+
 			if (senId != null) {
 				//This is a sentence details request of some kind
 				CeSentence tgtSen = getModelBuilder().getSentence(senId);
@@ -198,34 +205,34 @@ public class CeStoreRestApiSentence extends CeStoreRestApi {
 
 	private String extractSentenceId() {
 		String possibleSenId = this.restParts.get(1);
-		return possibleSenId.startsWith(CeSentence.PREFIX_SEN) ? possibleSenId : null;
+		return possibleSenId.startsWith(PREFIX_SEN) ? possibleSenId : null;
 	}
 
 	private void processOneElementRequestWithQualifiers(Set<String> typeQualifiers, Set<String> validityQualifiers) {
 		if (isGet()) {
 			//URL = /sentences?type=t&validity=v...
 
-			Set<String> unknownTypeQualifiers = removeUnknownTypeQualifiers(typeQualifiers);
-			Set<String> unknownValidityQualifiers = removeUnknownValidityQualifiers(validityQualifiers);
+			HashSet<String> unknownTypeQualifiers = listUnknownTypeQualifiers(typeQualifiers);
+			HashSet<String> unknownValidityQualifiers = listUnknownValidityQualifiers(validityQualifiers);
+
 			if (unknownTypeQualifiers.size() > 0 || unknownValidityQualifiers.size() > 0) {
 				reportUnexpectedQualifierError(unknownTypeQualifiers, unknownValidityQualifiers);				
 			}
-			
+
 			ArrayList<String> qualifiers = new ArrayList<String>();
 			qualifiers.addAll(typeQualifiers);
 			qualifiers.addAll(validityQualifiers);
 
 			ArrayList<CeSentence> result = getSentencesWithQualifiers(qualifiers);
 			handleListSpecificSentences(result, qualifiers);
-
 		} else {
 			reportUnsupportedMethodError();
 		}
 	}
-	
+
 	private ArrayList<CeSentence> getSentencesWithQualifiers(List<String> pQualifiers) {
 		ArrayList<CeSentence> result = null; // will eventually always set to some non-null value
-		
+
 		if (pQualifiers.isEmpty()) {
 			result = new ArrayList<CeSentence>(0);
 		} else {
@@ -328,11 +335,11 @@ public class CeStoreRestApiSentence extends CeStoreRestApi {
 		StringBuilder sb = new StringBuilder();
 
 		appendToSb(sb, "-- All sentences");
-		appendToSb(sb, "");
+		appendNewLineToSb(sb);
 
 		for (CeSentence thisSen : getModelBuilder().listAllSentences()) {
 			appendToSb(sb, thisSen.getCeText(this.wc));
-			appendToSb(sb, "");
+			appendNewLineToSb(sb);
 		}
 
 		getWebActionResponse().setPlainTextPayload(this.wc, sb.toString());
@@ -376,13 +383,13 @@ public class CeStoreRestApiSentence extends CeStoreRestApi {
 
 	private ContainerResult actionAddSentences() {
 		ContainerResult result = null;
-		String actionParm = this.getUrlParameterValueNamed(PARM_ACTION);
+		String actionParm = getUrlParameterValueNamed(PARM_ACTION);
 		String ceText = getCeTextFromRequest();
-		String startTs = this.getUrlParameterValueNamed(PARM_STARTTS);
-		String endTs = this.getUrlParameterValueNamed(PARM_ENDTS);
-		String returnCe = this.getUrlParameterValueNamed(PARM_RETCE);
+		String startTs = getUrlParameterValueNamed(PARM_STARTTS);
+		String endTs = getUrlParameterValueNamed(PARM_ENDTS);
+		boolean returnCe = getBooleanUrlParameterValueNamed(PARM_RETCE, false);
 
-		if (returnCe.equals("true")) {
+		if (returnCe) {
 			this.wc.markAsKeepingSentences();
 		}
 
@@ -393,7 +400,7 @@ public class CeStoreRestApiSentence extends CeStoreRestApi {
 			//Save sentences
 			StoreActions sa = StoreActions.createUsingDefaultConfig(this.wc);
 
-			boolean runRules = this.getBooleanUrlParameterValueNamed(PARM_RUNRULES, this.wc.getCeConfig().getAutoRunRules());
+			boolean runRules = getBooleanUrlParameterValueNamed(PARM_RUNRULES, this.wc.getCeConfig().getAutoRunRules());
 			this.wc.markAsAutoExecuteRules(runRules);
 
 			result = sa.saveCeText(ceText, newSrc);
@@ -425,7 +432,7 @@ public class CeStoreRestApiSentence extends CeStoreRestApi {
 			result = ContainerSentenceLoadResult.createWithZeroValues("actionAddSentences(2)");
 		}
 
-		if (returnCe.equals("true")) {
+		if (returnCe) {
 			result.setCreatedSentences(this.wc.getSessionCreations().getAllValidSessionSentences());
 		}
 
@@ -450,11 +457,11 @@ public class CeStoreRestApiSentence extends CeStoreRestApi {
 		StringBuilder sb = new StringBuilder();
 
 		appendToSb(sb, "-- All sentences matching filters: " + calculateFilterTextFrom(pQualifiers));
-		appendToSb(sb, "");
+		appendNewLineToSb(sb);
 
 		for (CeSentence thisSen : pSenList) {
 			appendToSb(sb, thisSen.getCeText(this.wc));
-			appendToSb(sb, "");
+			appendNewLineToSb(sb);
 		}
 
 		getWebActionResponse().setPlainTextPayload(this.wc, sb.toString());
@@ -558,12 +565,12 @@ public class CeStoreRestApiSentence extends CeStoreRestApi {
 	private void reportUnexpectedQualifierError(Set<String> invalidSentenceTypes, Set<String> invalidSentenceValidities) {
 		String typeMessage = "";
 		for (String qualifier : invalidSentenceTypes) {
-			typeMessage += ", " + TYPE_NAME + "=" + qualifier;
+			typeMessage += ", " + PARM_TYPE + "=" + qualifier;
 		}
 		
 		String validityMessage = "";
 		for (String qualifier : invalidSentenceValidities) {
-			validityMessage += ", " + VALIDITY_NAME + "=" + qualifier;
+			validityMessage += ", " + PARM_VALIDITY + "=" + qualifier;
 		}
 
 		String message = "Unexpected sentence qualifier(s)" + typeMessage + validityMessage;		
@@ -571,7 +578,7 @@ public class CeStoreRestApiSentence extends CeStoreRestApi {
 	}
 
 	private void reportNotFoundError(String pSenId) {
-		reportNotFoundError(TYPE_SEN, pSenId);
+		reportNotFoundError(JSONTYPE_SEN, pSenId);
 	}
 
 	private void setSentenceDetailsAsStructuredResult(CeSentence pSen) {

@@ -5,10 +5,10 @@ package com.ibm.ets.ita.ce.store.hudson.model;
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.MiscNames.CESRC_NAME;
+
 public class Source {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
-
-	public static final String CESRC_NAME = "my knowledgebase";
 
 	private String name = null;
 	private String url = null;

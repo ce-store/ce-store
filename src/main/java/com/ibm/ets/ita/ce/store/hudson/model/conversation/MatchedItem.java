@@ -1,28 +1,28 @@
 package com.ibm.ets.ita.ce.store.hudson.model.conversation;
 
+/*******************************************************************************
+ * (C) Copyright IBM Corporation  2011, 2016
+ * All Rights Reserved
+ *******************************************************************************/
+
 import java.util.ArrayList;
 
 import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
 import com.ibm.ets.ita.ce.store.model.CeProperty;
 
-/*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
- * All Rights Reserved
- *******************************************************************************/
-
 public class MatchedItem {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
-	public static final String CONTEXT_MATCHCON = "matched-concept";
-	public static final String CONTEXT_MATCHPROP = "matched-property";
-	public static final String CONTEXT_MATCHINST = "matched-instance";
-	public static final String CONTEXT_REFCON_EXACT = "referred-concept-exact";
-	public static final String CONTEXT_REFCON_PLURAL = "referred-concept-plural";
-	public static final String CONTEXT_REFCON_PAST = "referred-concept-past";
-	public static final String CONTEXT_REFPROP_EXACT = "referred-property-exact";
-	public static final String CONTEXT_REFINST_EXACT = "referred-instance-exact";
-	public static final String CONTEXT_REFINST_PLURAL = "referred-instance-plural";
+	private static final String CONTEXT_MATCHCON = "matched-concept";
+	private static final String CONTEXT_MATCHPROP = "matched-property";
+	private static final String CONTEXT_MATCHINST = "matched-instance";
+	private static final String CONTEXT_REFCON_EXACT = "referred-concept-exact";
+	private static final String CONTEXT_REFCON_PLURAL = "referred-concept-plural";
+	private static final String CONTEXT_REFCON_PAST = "referred-concept-past";
+	private static final String CONTEXT_REFPROP_EXACT = "referred-property-exact";
+	private static final String CONTEXT_REFINST_EXACT = "referred-instance-exact";
+	private static final String CONTEXT_REFINST_PLURAL = "referred-instance-plural";
 
 	private ProcessedWord firstWord = null;
 	private ArrayList<ProcessedWord> otherWords = null;

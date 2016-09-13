@@ -1,0 +1,14 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "Rule - full details",
+    "definitions": {
+        "rule": {
+            "title": "Full rule details",
+            "description": "Return the full details of a rule (tbc).",
+            "type": "object",
+            "additionalProperties": true,
+            "properties": {
+            }
+        }
+    }
+}

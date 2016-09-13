@@ -1,31 +1,28 @@
 package com.ibm.ets.ita.ce.store.client.rest;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_SIZE;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_BATCH;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_RESET;
 import java.util.ArrayList;
 import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.ibm.ets.ita.ce.store.StoreActions;
 import com.ibm.ets.ita.ce.store.client.web.WebActionContext;
 import com.ibm.ets.ita.ce.store.client.web.model.CeWebSpecial;
+import com.ibm.ets.ita.ce.store.core.StoreActions;
 
 public class CeStoreRestApiSpecialUid extends CeStoreRestApi {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
-
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	public CeStoreRestApiSpecialUid(WebActionContext pWc, ArrayList<String> pRestParts, HttpServletRequest pRequest) {
 		super(pWc, pRestParts, pRequest);
 	}
-
-	private static final String REST_RESET = "reset";
-	private static final String REST_BATCH = "batch";
-
-	private static final String PARM_SIZE = "size";
 
 	public boolean processRequest() {
 		boolean statsInResponse = false;

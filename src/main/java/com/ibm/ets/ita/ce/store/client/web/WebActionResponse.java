@@ -1,12 +1,13 @@
 package com.ibm.ets.ita.ce.store.client.web;
 
+//ALL DONE
+
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
-import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.writeToFile;
-import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.formattedTimeForFilenames;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_STRUCTURED;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportException;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportWarning;
 
@@ -16,21 +17,18 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.logging.Logger;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
-import com.ibm.ets.ita.ce.store.ActionResponse;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonProcessor;
 import com.ibm.ets.ita.ce.store.client.web.model.CeWebObject;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
+import com.ibm.ets.ita.ce.store.core.ActionResponse;
 
 public class WebActionResponse extends ActionResponse {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private static final String CLASS_NAME = WebActionResponse.class.getName();
 	private static final String PACKAGE_NAME = WebActionResponse.class.getPackage().getName();
 	private static final Logger logger = Logger.getLogger(PACKAGE_NAME);
-
-	private static final String FN_JSON_SUFFIX = ".json";
-	private static final String FN_JSON_PREFIX = "JSON";
 
 	private CeStoreJsonObject jsonPayload = null;
 	private StringBuilder sbPayload = null;
@@ -87,7 +85,7 @@ public class WebActionResponse extends ActionResponse {
 
 	@Override
 	public void saveStructuredResult(ActionContext pAc) {
-		addToPayload(pAc, KEY_QUERY_STRUCTURED, this.structuredResult);
+		addToPayload(pAc, JSON_STRUCTURED, this.structuredResult);
 	}
 
 	public void setPayloadTo(CeStoreJsonObject pJsonObj) {
@@ -108,7 +106,7 @@ public class WebActionResponse extends ActionResponse {
 
 	@Override
 	public void plainTextResponse(PrintWriter pOut) {
-		//This is the special response type which is plain text
+		// This is the special response type which is plain text
 		pOut.append(this.sbPayload.toString());
 	}
 
@@ -120,7 +118,7 @@ public class WebActionResponse extends ActionResponse {
 			populateStandardFields(pAc);
 		}
 
-		//Since this is a web action response the conversion is to json
+		// Since this is a web action response the conversion is to json
 		try {
 			StringBuilder jsonSb = null;
 
@@ -140,20 +138,14 @@ public class WebActionResponse extends ActionResponse {
 
 			if (jsonSb != null) {
 				pOut.append(jsonSb);
-
-				//Log to file if needed
-				if (pAc.getCeConfig().logJsonToFiles()) {
-					String jsonFilename = pAc.getCeConfig().getTempPath() + FN_JSON_PREFIX + "_" + this.getTxnName() + "_" + formattedTimeForFilenames() + FN_JSON_SUFFIX;
-					writeToFile(pAc, jsonSb, jsonFilename);
-				}
 			}
 		} catch (IOException e) {
 			reportException(e, pAc, logger, CLASS_NAME, METHOD_NAME);
-		}		
+		}
 	}
 
 	@Override
-	protected void addMessagesToPayload(ActionContext pAc, String pKey, ArrayList<String> pMessages) {		
+	protected void addMessagesToPayload(ActionContext pAc, String pKey, ArrayList<String> pMessages) {
 		addToPayload(pAc, pKey, CeWebObject.generateStandardMessagesFrom(pMessages));
 	}
 
@@ -163,7 +155,8 @@ public class WebActionResponse extends ActionResponse {
 	}
 
 	@Override
-	protected void addAlertsToPayload(ActionContext pAc, String pKey, LinkedHashMap<String, ArrayList<String>> pAlerts) {
+	protected void addAlertsToPayload(ActionContext pAc, String pKey,
+			LinkedHashMap<String, ArrayList<String>> pAlerts) {
 		addToPayload(pAc, pKey, CeWebObject.generateStandardAlertsFrom(pAlerts));
 	}
 

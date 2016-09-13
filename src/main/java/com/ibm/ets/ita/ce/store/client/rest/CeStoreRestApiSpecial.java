@@ -5,6 +5,33 @@ package com.ibm.ets.ita.ce.store.client.rest;
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_STEPS;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_LIMRELS;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_RELINSTS;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_REFINSTS;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_SINCE;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_RETINSTS;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_CONNAMES;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_SPTS;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_ONLYPROPS;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_IGMETMOD;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_SEARCHTERMS;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_RESTRICTCONNAMES;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_RESTRICTPROPNAMES;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_CASESEN;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_RATIONALE;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_STATISTICS;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_HUDSON;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_PATTERN;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_SHADINST;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_SHADCON;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_CONFIG;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_UID;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_SEARCH;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_UNREFINST;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_DIVCONINST;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_MULTINSTS;
+
 import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.urlDecode;
 
 import java.util.ArrayList;
@@ -15,11 +42,11 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.ibm.ets.ita.ce.store.StoreActions;
 import com.ibm.ets.ita.ce.store.client.web.WebActionContext;
 import com.ibm.ets.ita.ce.store.client.web.model.CeWebContainerResult;
 import com.ibm.ets.ita.ce.store.client.web.model.CeWebQueryOrRule;
 import com.ibm.ets.ita.ce.store.client.web.model.CeWebSpecial;
+import com.ibm.ets.ita.ce.store.core.StoreActions;
 import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
 import com.ibm.ets.ita.ce.store.model.CeQuery;
@@ -28,25 +55,6 @@ import com.ibm.ets.ita.ce.store.model.container.ContainerSearchResult;
 
 public class CeStoreRestApiSpecial extends CeStoreRestApi {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
-
-	private static final String REST_STATISTICS = "statistics";
-	private static final String REST_PATTERN = "patterns";
-	private static final String REST_CONFIG = "config";
-	private static final String REST_UID = "uid";
-	private static final String REST_SEARCH = "keyword-search";
-	private static final String REST_SHADCON = "shadow-concepts";
-	private static final String REST_SHADINST = "shadow-instances";
-	private static final String REST_UNREFINST = "unreferenced-instances";
-	private static final String REST_DIVCONINST = "diverse-concept-instances";
-	private static final String REST_MULTINSTS = "instances-for-multiple-concepts";
-	private static final String REST_HUDSON = "hudson";
-
-	private static final String PARM_SEARCHTERMS = "keywords";
-	private static final String PARM_CASESEN = "caseSensitive";
-	private static final String PARM_RESTRICTCONNAMES = "restrictToConcepts";
-	private static final String PARM_RESTRICTPROPNAMES = "restrictToProperties";
-	private static final String PARM_CONNAMES = "conceptNames";
-	private static final String PARM_IGMETMOD = "ignoreMetaModel";
 
 	private CeStoreRestApiSpecial(WebActionContext pWc, ArrayList<String> pRestParts, HttpServletRequest pRequest) {
 		super(pWc, pRestParts, pRequest);
@@ -309,12 +317,12 @@ public class CeStoreRestApiSpecial extends CeStoreRestApi {
 		String rawSearchTerms = getUrlParameterValueNoDecodeNamed(PARM_SEARCHTERMS);
 		String[] conNames = getListParameterNamed(PARM_RESTRICTCONNAMES);
 		String[] propNames = getListParameterNamed(PARM_RESTRICTPROPNAMES);
-		int numSteps = getNumericUrlParameterValueNamed(CeStoreRestApiInstance.PARM_STEPS, -1);
-		boolean relInsts = getBooleanParameterNamed(CeStoreRestApiInstance.PARM_RELINSTS, true);
-		boolean refInsts = getBooleanParameterNamed(CeStoreRestApiInstance.PARM_REFINSTS, true);
-		boolean suppPropTypes = getBooleanParameterNamed(CeStoreRestApiInstance.PARM_SPTS, false);
-		String[] limRels = getListParameterNamed(CeStoreRestApiInstance.PARM_LIMRELS);
-		String[] onlyProps = getListParameterNamed(CeStoreRestApiInstance.PARM_ONLYPROPS);
+		int numSteps = getNumericUrlParameterValueNamed(PARM_STEPS, -1);
+		boolean relInsts = getBooleanParameterNamed(PARM_RELINSTS, true);
+		boolean refInsts = getBooleanParameterNamed(PARM_REFINSTS, true);
+		boolean suppPropTypes = getBooleanParameterNamed(PARM_SPTS, false);
+		String[] limRels = getListParameterNamed(PARM_LIMRELS);
+		String[] onlyProps = getListParameterNamed(PARM_ONLYPROPS);
 
 		onlyProps = mergedPropertyRestrictionsFor(onlyProps, limRels);
 
@@ -451,11 +459,11 @@ public class CeStoreRestApiSpecial extends CeStoreRestApi {
 
 	private void handleListInstancesForMultipleConcepts() {
 		String conNames = getUrlParameterValueNamed(PARM_CONNAMES);
-		String since = getUrlParameterValueNamed(CeStoreRestApiConcept.PARM_SINCE);
-		int numSteps = getNumericUrlParameterValueNamed(CeStoreRestApiInstance.PARM_STEPS, -1);
-		boolean relInsts = getBooleanParameterNamed(CeStoreRestApiInstance.PARM_RELINSTS, true);
-		boolean refInsts = getBooleanParameterNamed(CeStoreRestApiInstance.PARM_REFINSTS, true);
-		String[] limRels = getListParameterNamed(CeStoreRestApiInstance.PARM_LIMRELS);
+		String since = getUrlParameterValueNamed(PARM_SINCE);
+		int numSteps = getNumericUrlParameterValueNamed(PARM_STEPS, -1);
+		boolean relInsts = getBooleanParameterNamed(PARM_RELINSTS, true);
+		boolean refInsts = getBooleanParameterNamed(PARM_REFINSTS, true);
+		String[] limRels = getListParameterNamed(PARM_LIMRELS);
 
 		if (isJsonRequest()) {
 			jsonListInstancesForMultipleConcepts(conNames, since, numSteps, relInsts, refInsts, limRels);
@@ -520,8 +528,8 @@ public class CeStoreRestApiSpecial extends CeStoreRestApi {
 	}
 
 	private void setMultipleConceptInstanceListAsStructuredResult(TreeMap<String, ArrayList<CeInstance>> pList, int pNumSteps, boolean pRelInsts, boolean pRefInsts, String[] pLimRels) {
-		boolean suppPropTypes = getBooleanParameterNamed(CeStoreRestApiInstance.PARM_SPTS, false);
-		String[] onlyProps = getListParameterNamed(CeStoreRestApiInstance.PARM_ONLYPROPS);
+		boolean suppPropTypes = getBooleanParameterNamed(PARM_SPTS, false);
+		String[] onlyProps = getListParameterNamed(PARM_ONLYPROPS);
 
 		getWebActionResponse().setStructuredResult(CeWebSpecial.generateMultipleConceptInstanceListFrom(this.wc, this, pList, onlyProps, pNumSteps, pRelInsts, pRefInsts, pLimRels, suppPropTypes));
 	}

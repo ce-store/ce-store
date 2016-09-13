@@ -1,20 +1,24 @@
 package com.ibm.ets.ita.ce.store.parsing.model;
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_THE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_THERE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_NO;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_A;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_AN;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_IS;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_HAS;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_AS;
 import java.util.ArrayList;
 
 import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.parsing.tokenizer.TokenizerFactSentence;
 
 public abstract class TokenizerNormalClause extends TokenizerClause {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
-
-	protected static final String TOKEN_IS = "is";
-	protected static final String TOKEN_HAS = "has";
-	protected static final String TOKEN_AS = "as";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	protected CeConcept domainCon = null;
 	protected boolean isPatternClause = false;

@@ -1,7 +1,7 @@
 package com.ibm.ets.ita.ce.store.query;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 public class ResultSetWrapper {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private HashSet<HashMap<String, String>> rs = null;
 	private HashSet<HashMap<String, String>> newRows = null;

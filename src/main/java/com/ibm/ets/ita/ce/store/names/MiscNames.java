@@ -1,0 +1,107 @@
+package com.ibm.ets.ita.ce.store.names;
+
+/*******************************************************************************
+ * (C) Copyright IBM Corporation  2011, 2016
+ * All Rights Reserved
+ *******************************************************************************/
+
+public class MiscNames {
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+
+	//Main
+	public static final String VERSION = "1.3.0002";
+	public static final String CESTORENAME_DEFAULT = "DEFAULT";
+	public static final String CM_GLOBAL = "global";
+	
+	//URL related
+	public static final String URL_DEFAULTLOAD = "./ce/autoload.cecmd";
+	public static final String URL_MODELDIR = "http://ce-models.eu-gb.mybluemix.net";
+	public static final String URL_HUDSON = "./hudson/ce/cmd/load_hudson.cecmd";
+	public static final String URL_CONV_INITIALISE = "/ce-store/ce/conversation/cmd/load_conv.cecmd";
+
+	//File related
+	public static final String DEFAULT_ROOT = "/opt/ibm/cestore/var/icnlpe/";
+	public static final String SUB_FOLDER_LOGGING = "logging/";
+	public static final String SUB_FOLDER_TEMP = "temp/";
+	public static final String SUB_FOLDER_GENERATED = "generated/";
+	public static final String SUB_FOLDER_PERSIST = "persist/";
+	public static final String FILENAME_QUESTIONS = "logged_questions.txt";
+	public static final String CELOG_FILENAME = "all_ce_sentences.ce";
+	public static final String FILENAME_QUERYLOG_CE = "queries_ce.log";
+	public static final String SUFFIX_CE = ".ce";
+
+	//UID related
+	public static final String DEFAULT_UIDCLASSNAME = "com.ibm.ets.ita.ce.store.uid.UidManagerDefault";
+	public static final String DEFAULT_UIDPREFIX = "";
+	public static final String DEFAULT_UIDPADFORMAT = "%01d";
+	public static final long DEFAULT_UIDSTART = 0;
+	public static final long DEFAULT_UIDEND = 999999;
+	public static final boolean UID_USEPADDING = false;
+	
+	//Default values
+	public static final long NO_TS = -1;
+	public static final String DEFAULT_MAXITS = "10";
+	public static final String DEFAULT_DATEFMT = "yyyy-MM-dd";
+	public static final String DEFAULT_NOVAL = "-1";
+	public static final int DEFAULT_MAXSUGGS = 10;
+	public static final String CEVALUE_TRUE = "true";
+	public static final String CEVALUE_FALSE = "false";
+	public static final String CEVALUE_EMPTY = "";
+	public static final int CEVALUE_UNLIMITED = -1;
+
+	//Characters
+	public static final String ES = "";
+	public static final String NL = "\n";
+	public static final String BR = "<br>";
+	public static final String BS = "\\";
+	public static final String ENCODING = "UTF-8";
+	public static final String URL_SEP = "/";
+	public static final String URL_EQUALS = "=";
+	public static final String URL_AMPERSAND = "&";
+	public static final String FILE_SEP = "/";
+
+	//Misc
+	public static final String SRCID_CONCMETAMODEL = "src_cm";
+	public static final String STEPNAME_CONCMETAMODEL = "conceptualiseMetamodel";
+	public static final String SRCID_POPMODEL = "src_pm";
+	public static final String STEPNAME_POPMODEL = "populateMetamodel";
+	public static final int SENMODE_NORMAL = 1;
+	public static final int SENMODE_VALIDATE = 2;
+	public static final String TRIGTYPE_CON = "CONCEPT";
+	public static final String HDR_CE = "CE";
+	public static final String HDR_COUNT = "count";
+	public static String PREFIX_ANNO = "anno_";
+	public static String PREFIX_SEN = "sen_";
+	public static String PREFIX_SRC = "src_";
+	public static final String FORMAT_SRC = "%03d";
+
+	public static final String MODELNAME_CORE = "core";
+	public static final String CESRC_NAME = "my knowledgebase";
+
+	//Conversation
+	public static final String TYPE_CON = "CONCEPT";
+	public static final String TYPE_PROP = "PROPERTY";
+	public static final String FORM_CONVFACT = "conv_facts";
+	public static final String UID_PREFIX = "msg_";
+	public static final long DEFAULT_DELAY = 0;
+	public static final String CMD_CONFIRM = "confirm";
+	public static final String CMD_OK = "ok";
+	public static final String CMD_YES = "yes";
+	public static final String CMD_EXPAND = "expand";
+	public static final String CMD_EXPLAIN = "explain";
+	public static final String ACT_TELL = "tell";
+	public static final String ACT_CONFIRM = "confirm";
+	public static final String ACT_EXPAND = "expand";
+	public static final String FORM_CONVINIT = "Conversation initialisation";
+	public static final String UNKNOWN_USER = "(unknown)";
+
+	//TO BE REMOVED
+	public static final String JNDI_CONTEXT_TOMCAT = "java:/comp/env";
+	public static final String JNDI_CONTEXT_LIBERTY = "cestore";
+	public static final String CESEN_SEPARATOR = "{|}";
+	public static final String LABEL_PREFIX = "{";
+	public static final String LABEL_SUFFIX = "}:";
+	public static final String PROPDEF_PREFIX = "[";
+	public static final String PROPDEF_SUFFIX = "]:";
+
+}

@@ -1,22 +1,24 @@
 package com.ibm.ets.ita.ce.store.model;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
-import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.NL;
-import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.encodeForCe;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.NO_TS;
+import static com.ibm.ets.ita.ce.store.names.CeNames.PROP_ICOFN;
+import static com.ibm.ets.ita.ce.store.names.CeNames.PROP_ICOPN;
+import static com.ibm.ets.ita.ce.store.names.CeNames.PROP_LABPN;
+
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportWarning;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
-import com.ibm.ets.ita.ce.store.ModelBuilder;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
 
 public class CeInstance extends CeModelEntity {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private CeSentence[] secondarySentences = new CeSentence[0];
 	private CeConcept[] directConcepts = new CeConcept[0];
@@ -49,10 +51,6 @@ public class CeInstance extends CeModelEntity {
 
 	public String getInstanceName() {
 		return this.name;
-	}
-
-	public String ceEncodedInstanceName() {
-		return encodeForCe(this.name);
 	}
 
 	public HashSet<CeConcept> listAllConcepts() {
@@ -292,20 +290,6 @@ public class CeInstance extends CeModelEntity {
 		return result;
 	}
 
-	public boolean hasPropertyInstanceForPropertyNamed(String pPropName) {
-		boolean result = false;
-
-		break_position:
-		for (CePropertyInstance thisPi : this.propertyInstances) {
-			if (thisPi.getPropertyName().equals(pPropName)) {
-				result = true;
-				break break_position;
-			}
-		}
-
-		return result;
-	}
-
 	public boolean hasPropertyInstanceForPropertyNamed(String[] pPropNames) {
 		boolean result = false;
 
@@ -335,32 +319,16 @@ public class CeInstance extends CeModelEntity {
 	}
 
 	public CePropertyInstance getReferringPropertyInstanceNamed(String pName) {
-    CePropertyInstance result = null;
+		CePropertyInstance result = null;
 
-    for (CePropertyInstance thisPi : this.referringPropertyInstances) {
-      if (thisPi.getPropertyName().equals(pName)) {
-        result = thisPi;
-        break;
-      }
-    }
+		for (CePropertyInstance thisPi : this.referringPropertyInstances) {
+			if (thisPi.getPropertyName().equals(pName)) {
+				result = thisPi;
+				break;
+			}
+	    }
 
-    return result;
-  }
-
-  public CePropertyInstance[] getReferringPropertyInstancesNamed(String pName) {
-    ArrayList<CePropertyInstance> result = new ArrayList<CePropertyInstance>();
-
-    for (CePropertyInstance thisPi : this.referringPropertyInstances) {
-      if (thisPi.getPropertyName().equals(pName)) {
-        result.add(thisPi);
-      }
-    }
-
-    return result.toArray(new CePropertyInstance[]{});
-  }
-
-	public CePropertyInstance getReferringPropertyInstanceForProperty(CeProperty pProp) {
-		return getReferringPropertyInstanceNamed(pProp.getPropertyName());
+	    return result;
 	}
 
 	public void addReferringPropertyInstance(CePropertyInstance pPi) {
@@ -382,20 +350,6 @@ public class CeInstance extends CeModelEntity {
 		break_position:
 		for (CePropertyInstance thisPi : this.referringPropertyInstances) {
 			if (thisPi == pPi) {
-				result = true;
-				break break_position;
-			}
-		}
-
-		return result;
-	}
-
-	public boolean hasReferringPropertyInstanceForPropertyNamed(String pPropName) {
-		boolean result = false;
-
-		break_position:
-		for (CePropertyInstance thisPi : this.referringPropertyInstances) {
-			if (thisPi.getPropertyName().equals(pPropName)) {
 				result = true;
 				break break_position;
 			}
@@ -496,7 +450,6 @@ public class CeInstance extends CeModelEntity {
 		return result;
 	}
 
-	//DSB 21/09/2015 - Added
 	//Return true only if there is just one direct concept and that concept (or a parent)
 	//matches the specified concept name.
 	public boolean isOnlyConceptNamed(ActionContext pAc, String pConName) {
@@ -612,91 +565,6 @@ public class CeInstance extends CeModelEntity {
 		return result;
 	}
 
-	public void renameInstanceTo(ActionContext pAc, String pNewName) {
-		String origInstName = getInstanceName();
-		//First set the instance name property
-		this.name = pAc.getModelBuilder().getCachedStringValueLevel1(pNewName);
-
-		//Finally iterate through all instances that could have related properties with this reference
-		ArrayList<CeProperty> refProps = new ArrayList<CeProperty>();
-		for (CeConcept thisConcept : getDirectConcepts()) {
-			for (CeProperty thisProp : pAc.getModelBuilder().listAllPropertiesReferringTo(thisConcept)) {
-				refProps.add(thisProp);
-			}
-		}
-
-		for (CeProperty refProp : refProps) {
-			CeConcept domCon = refProp.getDomainConcept();
-			for (CeInstance possInst : pAc.getModelBuilder().listAllInstancesForConcept(domCon)) {
-				CePropertyInstance possPi = possInst.getPropertyInstanceForProperty(refProp);
-				for (CePropertyValue thisPv : possPi.getPropertyValues()) {
-					String thisVal = thisPv.getValue();
-					if (thisVal.equals(origInstName)) {
-						thisPv.setValue(pAc, pNewName);
-					}
-				}
-			}
-		}
-	}
-
-	public String generateCe(ActionContext pAc) {
-		String result = "";
-		String connector = " that" + NL;
-		ArrayList<String> doneProps = new ArrayList<String>();
-
-		String encInstName = encodeForCe(getInstanceName());
-
-		//First process the direct concepts
-		for (CeConcept thisConcept : getDirectConcepts()) {
-			String encConceptName = encodeForCe(thisConcept.getConceptName());
-			if (result.isEmpty()) {
-				//The first concept
-				result += "there is " + thisConcept.conceptQualifier() + " " + encConceptName + " named '" + encInstName + "'";
-			} else {
-				result += connector + "  is " + thisConcept.conceptQualifier() + " " + encConceptName;
-				connector = " and" + NL;
-			}
-		}
-
-		//Now process the properties
-		for (CeProperty thisProp : retrieveAllProperties(pAc)) {
-			//Ensure that each property is processed only once
-			//This is done by property name being the UID, and will ensure that any inherited instances
-			//of the same property don't have their values written more than once.
-			if (!doneProps.contains(thisProp.getPropertyName())) {
-				String encPropName = encodeForCe(thisProp.getPropertyName());
-				String encRangeName = encodeForCe(thisProp.getRangeConceptName());
-				String rangeText = "";
-
-				if (thisProp.isObjectProperty()) {
-					rangeText = "the " + encRangeName;
-				}
-
-				CePropertyInstance thisPi = getPropertyInstanceForProperty(thisProp);
-
-				if (thisPi != null) {
-					doneProps.add(thisProp.getPropertyName());
-					for (String thisVal : thisPi.getValueList()) {
-						String encVal = encodeForCe(thisVal);
-						if (thisProp.isVerbSingular()) {
-							result += connector + "  " + encPropName + " " + rangeText + " '" + encVal + "'";
-						} else {
-							result += connector + "  has " + rangeText + "'" + encVal + "' as " + encPropName;
-						}
-						connector = " and" + NL;
-					}
-				}
-			}
-		}
-
-		//Now process any annotations
-		//TODO: Annotations not yet implemented for instances
-
-		result += "." + NL + NL;
-
-		return result;
-	}
-
 	public ArrayList<CeConcept> getAllLeafConcepts() {
 		ArrayList<CeConcept> result = new ArrayList<CeConcept>();
 		CeConcept[] dirCons = getDirectConcepts();
@@ -738,23 +606,6 @@ public class CeInstance extends CeModelEntity {
 		return "";
 	}
 
-	public String getFirstLeafConceptNameExcluding(String pExcConName) {
-		ArrayList<CeConcept> leafCons = getAllLeafConcepts();
-		String result = "";
-
-		if (!leafCons.isEmpty()) {
-			break_position:
-			for (CeConcept thisCon : leafCons) {
-				if (!thisCon.getConceptName().equals(pExcConName)) {
-					result = thisCon.getConceptName();
-					break break_position;
-				}
-			}
-		}
-
-		return result;
-	}
-
 	public CeConcept getFirstLeafConceptExcludingConcept(CeConcept pExCon) {
 		ArrayList<CeConcept> leafCons = getAllLeafConcepts();
 		CeConcept result = null;
@@ -780,15 +631,15 @@ public class CeInstance extends CeModelEntity {
 	// renderable concept/thing properties 
 
 	private String getLabelPropertyName(ActionContext pAc){
-		return getRenderablePropertyValue(pAc, HelperConcept.PROP_LAPN);
+		return getRenderablePropertyValue(pAc, PROP_LABPN);
 	}
 
 	private String getIconPropertyName(ActionContext pAc){
-		return getRenderablePropertyValue(pAc, HelperConcept.PROP_IPN);
+		return getRenderablePropertyValue(pAc, PROP_ICOPN);
 	}
 
 	private String getIconFileName(ActionContext pAc){
-		return getRenderablePropertyValue(pAc, HelperConcept.PROP_IFN);
+		return getRenderablePropertyValue(pAc, PROP_ICOFN);
 	}
 
 	private String getRenderablePropertyValue(ActionContext pAc, String propertyName){
@@ -855,12 +706,12 @@ public class CeInstance extends CeModelEntity {
 	public boolean isInTimestampRange(long pStartTs, long pEndTs) {
 		boolean result = true;
 
-		if (pStartTs != ModelBuilder.NO_TS) {
+		if (pStartTs != NO_TS) {
 			result = getCreationDate() >= pStartTs;
 		}
 
 		if (result) {
-			if (pEndTs != ModelBuilder.NO_TS) {
+			if (pEndTs != NO_TS) {
 				result = getCreationDate() <= pEndTs;
 			}
 		}
@@ -954,7 +805,7 @@ public class CeInstance extends CeModelEntity {
 		//Maybe by tracking references of the instance directly?
 		HashSet<CePropertyInstance> result = new HashSet<CePropertyInstance>();
 
-		if (!this.getInstanceName().isEmpty()) {
+		if (!getInstanceName().isEmpty()) {
 			for (CeInstance thisInst : pAc.getModelBuilder().listAllInstances()) {
 				CePropertyInstance thisPi = thisInst.getPropertyInstanceNamed(pPropName);
 
@@ -963,138 +814,6 @@ public class CeInstance extends CeModelEntity {
 						if (thisPi.getValueInstanceList(pAc).contains(this)) {
 							result.add(thisPi);
 						}
-					}
-				}
-			}
-		}
-
-		return result;
-	}
-
-	public HashSet<CeSource> listAllDefiningSources() {
-		HashSet<CeSource> result = new HashSet<CeSource>();
-
-		for (CeSentence thisSen : getPrimarySentences()) {
-			result.add(thisSen.getSource());
-		}
-
-		return result;
-	}
-	
-	public String getFirstInstanceIdentifier(ActionContext pAc) {
-		String result = null;
-		ArrayList<String> ids = getInstanceIdentifiers(pAc);
-
-		if (!ids.isEmpty()) {
-			result = ids.get(0);
-		}
-
-		if (result == null) {
-			result = getInstanceName();
-		}
-
-		return result;
-	}
-
-	public ArrayList<String> getInstanceIdentifiers(ActionContext pAc) {
-		ArrayList<String> result = new ArrayList<String>();
-		
-		//Only add the instance name if no other identifiers found
-		if (!isSeparatelyIdentified(pAc)) {
-			result.add(getInstanceName());
-		}
-
-		for (CePropertyInstance thisPi : getPropertyInstances()) {
-			CeProperty relProp = thisPi.getRelatedProperty();
-			CeInstance mmInst = relProp.getMetaModelInstance(pAc);
-			
-			//TODO: Anonymise this property name
-			if (mmInst.isConceptNamed(pAc, "identification property concept")) {
-				for (String thisVal : thisPi.getValueList()) {
-					result.add(thisVal);
-				}
-			}
-		}
-
-		//If there are no identifiers found then add the instance name
-		if (result.isEmpty()) {
-			result.add(getInstanceName());
-		}
-		
-		return result;
-	}
-	
-	private boolean isSeparatelyIdentified(ActionContext pAc) {
-		boolean result = false;
-
-		for (CeConcept dirCon : getDirectConcepts()) {
-			ArrayList<CeInstance> mmList = dirCon.retrieveMetaModelInstances(pAc, null);
-			
-			for (CeInstance mmInst : mmList) {
-				//TODO: Anonymise this concept name
-				if (mmInst.isConceptNamed(pAc, "separately identified concept")) {
-					result = true;
-					break;
-				}
-			}
-		}
-		
-		return result;
-	}
-	
-	public String formattedInstanceIdentifier(ActionContext pAc) {
-		String firstId = getFirstInstanceIdentifier(pAc);
-		String instName = getInstanceName();
-		String result = null;
-
-		if (!firstId.equals(instName)) {
-			result = firstId + " (" + instName + ")";
-		} else {
-			result = instName;
-		}
-
-		return result;
-	}
-
-	public boolean hasSameValuesAs(ActionContext pAc, CeInstance pOtherInst, ArrayList<String> pPropNames) {
-		boolean result = true;
-
-		for (CePropertyInstance thisPi : this.propertyInstances) {
-			CeProperty relProp = thisPi.getRelatedProperty();
-			boolean carryOn = true;
-
-			if ((pPropNames != null) && (!pPropNames.isEmpty())) {
-				if (!pPropNames.contains(relProp.getPropertyName())) {
-					carryOn = false;
-				}
-			}
-			
-			if (carryOn) {
-				if (relProp.isDatatypeProperty()) {
-					ArrayList<String> localVals = new ArrayList<String>(thisPi.getValueList());
-					ArrayList<String> otherVals = pOtherInst.getValueListFromPropertyNamed(thisPi.getPropertyName());
-					
-					if (localVals.size() == otherVals.size()) {
-						if (localVals.containsAll(otherVals) && localVals.containsAll(otherVals)) {
-							//A match
-						} else {
-							result = false;
-							break;
-						}
-					} else {
-						result = false;
-						break;					
-					}
-				} else {
-					ArrayList<CeInstance> localInsts = new ArrayList<CeInstance>(thisPi.getValueInstanceList(pAc));
-					ArrayList<CeInstance> otherInsts = pOtherInst.getInstanceListFromPropertyNamed(pAc, thisPi.getPropertyName());
-					
-					//TODO: Consider a more thorough test where the values of different
-					//properties are just tested rather than an exact match on the whole
-					//CeInstance?
-					if (!localInsts.containsAll(otherInsts) || !localInsts.containsAll(otherInsts)) {
-						result = false;
-						break;
 					}
 				}
 			}

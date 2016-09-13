@@ -1,10 +1,13 @@
 package com.ibm.ets.ita.ce.store.query;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.MiscNames.HDR_COUNT;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_COUNT;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_SUM;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.reportExecutionTiming;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.isReportMicroDebug;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportDebug;
@@ -19,19 +22,16 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
 import com.ibm.ets.ita.ce.store.model.CeClause;
 import com.ibm.ets.ita.ce.store.model.CePropertyInstance;
 import com.ibm.ets.ita.ce.store.model.CeQuery;
 import com.ibm.ets.ita.ce.store.model.container.ContainerCeResult;
-import com.ibm.ets.ita.ce.store.model.container.ContainerQueryResult;
 
 public class QueryResultProcessorMem {
-
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private static final String CLASS_NAME = QueryResultProcessorMem.class.getName();
-//	private static final boolean OLD_MODE = false;
 
 	private static final String SPECIALVAL_START = "(";
 
@@ -148,14 +148,6 @@ public class QueryResultProcessorMem {
 		truncateMcls();
 	}
 
-	private void debugMcls(String pPrefix) {
-//		if (isReportDebug()) {
-//			for (MatchedClauseList thisMcl : this.mcls.values()) {
-//				reportDebug("[" + pPrefix + "] MCL: " + thisMcl.toString() + " (size=" + thisMcl.getMatchedPairs().size() + ")", this.ac);
-//			}
-//		}
-	}
-	
 	private void linkMcls() {
 		for (String key1 : this.mcls.keySet()) {
 			MatchedClauseList mcl1 = this.mcls.get(key1);
@@ -175,8 +167,6 @@ public class QueryResultProcessorMem {
 	private void truncateMcls() {
 		final String METHOD_NAME = "truncateMcls";
 
-		debugMcls("Pre truncation");
-
 		long sTime = System.currentTimeMillis();
 
 		boolean removalsMade = true;
@@ -185,8 +175,6 @@ public class QueryResultProcessorMem {
 		}
 
 		reportExecutionTiming(this.ac, sTime, "[4] truncateMcls", CLASS_NAME, METHOD_NAME);
-
-		debugMcls("Post truncation");
 	}
 	
 	private boolean doTruncation() {
@@ -303,23 +291,6 @@ public class QueryResultProcessorMem {
 		removeEqualsAndNotEquals(pResult);
 	}
 
-//	private ArrayList<TreeMap<String, String>> processAllMclsFromSingleGraph(MatchedClauseList pSeedMcl) {
-//		return processAllMclsWith(pSeedMcl, calculateGraphHeaders());
-//	}
-
-//	private ArrayList<TreeMap<String, String>> processAllMclsFromMultipleGraphs() {
-//		ArrayList<ArrayList<TreeMap<String, String>>> resultList = new ArrayList<ArrayList<TreeMap<String, String>>>();
-//		ArrayList<TreeSet<String>> graphHeaderList = calculateGraphHeaderList(false);
-//		
-//		for (TreeSet<String> graphHeaders : graphHeaderList) {
-//			String firstGraphHeader = graphHeaders.iterator().next();
-//			MatchedClauseList seedMcl = firstMclFor(firstGraphHeader);
-//			resultList.add(processAllMclsWith(seedMcl, graphHeaders));
-//		}
-//		
-//		return calculateResultPermutations(resultList);
-//	}
-	
 	private static ArrayList<TreeMap<String, String>> calculateResultPermutations(ArrayList<ArrayList<TreeMap<String, String>>> pResList) {
 		ArrayList<TreeMap<String, String>> combinedRes = new ArrayList<TreeMap<String, String>>();
 
@@ -392,33 +363,6 @@ public class QueryResultProcessorMem {
 		return result;
 	}
 	
-//	private ArrayList<TreeMap<String, String>> processAllMclsWith(MatchedClauseList pSeedMcl, TreeSet<String> pGraphHeaders) {
-//		ArrayList<TreeMap<String, String>> result = new ArrayList<TreeMap<String, String>>();
-//		
-//		setNumberOfVariables(pGraphHeaders.size());
-//		
-//		debugMcls();
-//		
-//		if (pSeedMcl != null) {
-//			for (ArrayList<String> thisPair : pSeedMcl.getMatchedPairs().values()) {
-//				TreeMap<String, String> thisRow = new TreeMap<String, String>();
-//				ArrayList<TreeMap<String, String>> newRows = new ArrayList<TreeMap<String, String>>();
-//				newRows.add(thisRow);
-//				rowGenerationFor(thisPair, pSeedMcl, thisRow, new ArrayList<MatchedClauseList>(), newRows);
-//				
-//				for (TreeMap<String, String> newRow : newRows) {
-//					if (isCompleteRow(newRow)) {
-//						result.add(newRow);
-//					}
-//				}
-//			}
-//		}
-//		
-//		debugResult(result);
-//		
-//		return result;
-//	}
-
 	private ArrayList<TreeMap<String, String>> newProcessAllMclsWith(MatchedClauseList pSeedMcl, TreeSet<String> pGraphHeaders) {
 		setNumberOfVariables(pGraphHeaders.size());		
 		buildMclLists(pSeedMcl, null);
@@ -434,9 +378,7 @@ public class QueryResultProcessorMem {
 			TreeMap<String, String> treeMap = new TreeMap<String, String>(thisMap);
 			result.add(treeMap);
 		}
-		
-//		debugResult(result);
-		
+
 		return result;
 	}
 
@@ -499,7 +441,6 @@ public class QueryResultProcessorMem {
 	}
 
 	private void computeRowsForFirstMcl(MatchedClauseList pMcl, ArrayList<MatchedClauseList> pDoneMcls, ResultSetWrapper pRsw) {
-//System.out.println("computeRowsForFirstMcl()");
 		String tgtVarId = pMcl.getTgtVarId();
 		String srcVarId = pMcl.getSrcVarId();
 		Set<String> srcKeys = pMcl.getSrcToTgtList().keySet();
@@ -718,7 +659,7 @@ public class QueryResultProcessorMem {
 
 		countResLine.add(Integer.toString(rowSize));
 
-		pResult.addHeader(QueryExecutionManager.HDR_COUNT, QueryExecutionManager.HDR_COUNT);
+		pResult.addHeader(HDR_COUNT, HDR_COUNT);
 		pResult.addResultRow(countResLine);		
 	}
 
@@ -755,7 +696,7 @@ public class QueryResultProcessorMem {
 		
 		for (String thisHdr : pResult.getHeaders()) {
 			if (CeQuery.isCountHeader(thisHdr)) {
-				String rawHdr = thisHdr.replace(ContainerQueryResult.COUNT_INDICATOR, "");
+				String rawHdr = thisHdr.replace(TOKEN_COUNT, "");
 
 				if (!doneCountVariable) {
 					TreeMap<String, TreeMap<String, String>> tempMap = new TreeMap<String, TreeMap<String,String>>();
@@ -810,7 +751,7 @@ public class QueryResultProcessorMem {
 
 		for (String thisHdr : pResult.getHeaders()) {
 			if (CeQuery.isSumHeader(thisHdr)) {
-				String rawHdr = thisHdr.replace(ContainerQueryResult.SUM_INDICATOR, "");
+				String rawHdr = thisHdr.replace(TOKEN_SUM, "");
 
 				if (!doneSumVariable) {
 					TreeMap<String, TreeMap<String, String>> tempMap = new TreeMap<String, TreeMap<String,String>>();

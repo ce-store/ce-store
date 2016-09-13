@@ -1,16 +1,20 @@
 package com.ibm.ets.ita.ce.store.parsing.model;
+
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
 import java.util.ArrayList;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_THE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_NO;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_VALUE;
 
 import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.parsing.tokenizer.TokenizerFactSentence;
 
 public class TokenizerVsPropertyClause extends TokenizerPropertyClause {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private boolean ignoreRangeName = false;
 	

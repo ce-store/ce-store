@@ -1,27 +1,28 @@
 package com.ibm.ets.ita.ce.store.model;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.MiscNames.ES;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.NO_TS;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.PREFIX_ANNO;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.ANNO_TOKEN_MODEL;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_COLON;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.timestampNow;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
-import com.ibm.ets.ita.ce.store.ModelBuilder;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
 
 public class CeAnnotation {
-
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
-
-	private static final String LABEL_MODEL = "Model:";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private static AtomicLong annotationIdVal = new AtomicLong(0);
 
 	private String id = null;
-	private long creationDate = ModelBuilder.NO_TS;
+	private long creationDate = NO_TS;
 	private boolean metaModelGenerated = false;
 	private String label = null;
 	private String text = null;
@@ -34,7 +35,7 @@ public class CeAnnotation {
 	public static CeAnnotation createAnnotationFrom(ActionContext pAc, String pAnnoLabel, String pAnnoText, CeSentence pAnnoSen) {
 		CeAnnotation newAnno = new CeAnnotation();
 		
-		newAnno.id = "anno_" + nextAnnotationId();
+		newAnno.id = PREFIX_ANNO + nextAnnotationId();
 		newAnno.label = pAc.getModelBuilder().getCachedStringValueLevel3(pAnnoLabel);
 		newAnno.text = pAc.getModelBuilder().getCachedStringValueLevel3(pAnnoText);
 
@@ -66,7 +67,7 @@ public class CeAnnotation {
 	}
 	
 	public String trimmedLabel() {
-		return this.label.replace(":", "");
+		return this.label.replace(TOKEN_COLON, ES);
 	}
 	
 	public String getText() {
@@ -86,7 +87,7 @@ public class CeAnnotation {
 	}
 
 	public boolean isModelAnnotation() {
-		return this.label.equals(LABEL_MODEL);
+		return this.label.equals(ANNO_TOKEN_MODEL);
 	}
 	
 	@Override

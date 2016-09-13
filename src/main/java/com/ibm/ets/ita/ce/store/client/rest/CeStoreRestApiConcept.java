@@ -1,10 +1,31 @@
 package com.ibm.ets.ita.ce.store.client.rest;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSONTYPE_CON;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.VAL_UNDEFINED;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_BUCKETS;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_PROPERTY;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_RANGE;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_SINCE;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_CHILDREN;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_COUNT;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_DATATYPE;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_DIRECT;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_EXACT;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_FREQUENCY;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_INSTANCE;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_OBJECT;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_PARENTS;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_PRIMARY;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_PROPERTY;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_RATIONALE;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_SECONDARY;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_SENTENCE;
+import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.appendNewLineToSb;
 import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.appendToSb;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportException;
 
@@ -14,13 +35,13 @@ import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
-import com.ibm.ets.ita.ce.store.ModelBuilder;
 import com.ibm.ets.ita.ce.store.client.web.WebActionContext;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonArray;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
 import com.ibm.ets.ita.ce.store.client.web.model.CeWebConcept;
 import com.ibm.ets.ita.ce.store.client.web.model.CeWebSpecial;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
+import com.ibm.ets.ita.ce.store.core.ModelBuilder;
 import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
 import com.ibm.ets.ita.ce.store.model.CeProperty;
@@ -28,18 +49,11 @@ import com.ibm.ets.ita.ce.store.model.CeSentence;
 import com.ibm.ets.ita.ce.store.model.rationale.CeRationaleReasoningStep;
 
 public class CeStoreRestApiConcept extends CeStoreRestApi {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private static final String CLASS_NAME = CeStoreRestApiConcept.class.getName();
 	private static final String PACKAGE_NAME = CeStoreRestApiConcept.class.getPackage().getName();
 	private static final Logger logger = Logger.getLogger(PACKAGE_NAME);
-
-	private static final String PARM_RANGE = "range";
-	public static final String PARM_SINCE = "since";
-	public static final String PARM_PROPERTY = "property";
-	public static final String PARM_BUCKETS = "buckets";
-
-	private static final String TYPE_CON = "concept";
 
 	public CeStoreRestApiConcept(WebActionContext pWc, ArrayList<String> pRestParts, HttpServletRequest pRequest) {
 		super(pWc, pRestParts, pRequest);
@@ -401,11 +415,11 @@ public class CeStoreRestApiConcept extends CeStoreRestApi {
 	private void textListAllConcepts() {
 		StringBuilder sb = new StringBuilder();
 
-		appendCeMainHeader(sb, "All concept details");
+		appendCeMainHeader(sb, "All concept details");	//TODO: Abstract this
 
 		for (CeConcept thisCon : getModelBuilder().listAllConcepts()) {
 			generateTextForConcept(this.wc, sb, thisCon, isFullStyle());
-			appendToSb(sb, "");
+			appendNewLineToSb(sb);
 		}
 
 		getWebActionResponse().setPlainTextPayload(this.wc, sb.toString());
@@ -453,10 +467,10 @@ public class CeStoreRestApiConcept extends CeStoreRestApi {
 	}
 
 	private String actionDeleteConcept(CeConcept pCon) {
-		String result = "";
+		String result = null;
 		ModelBuilder.deleteConcept(this.wc, pCon);
 
-		result = "Concept '" + pCon.getConceptName() + "' has been deleted";
+		result = "Concept '" + pCon.getConceptName() + "' has been deleted";	//TODO: Abstract this
 
 		return result;
 	}
@@ -479,11 +493,11 @@ public class CeStoreRestApiConcept extends CeStoreRestApi {
 	private void textListAllChildConcepts(CeConcept pCon) {
 		StringBuilder sb = new StringBuilder();
 
-		appendCeMainHeader(sb, "Concept details for all children of " + pCon.getConceptName());
+		appendCeMainHeader(sb, "Concept details for all children of " + pCon.getConceptName());	//TODO: Abstract this
 
 		for (CeConcept thisCon : pCon.retrieveAllChildren(false)) {
 			generateTextForConcept(this.wc, sb, thisCon, isFullStyle());
-			appendToSb(sb, "");
+			appendNewLineToSb(sb);
 		}
 
 		getWebActionResponse().setPlainTextPayload(this.wc, sb.toString());
@@ -507,11 +521,11 @@ public class CeStoreRestApiConcept extends CeStoreRestApi {
 	private void textListDirectChildConceptsForConcept(CeConcept pCon) {
 		StringBuilder sb = new StringBuilder();
 
-		appendCeMainHeader(sb, "Concept details for direct children of " + pCon.getConceptName());
+		appendCeMainHeader(sb, "Concept details for direct children of " + pCon.getConceptName());	//TODO: Abstract this
 
 		for (CeConcept thisCon : pCon.getDirectChildren()) {
 			generateTextForConcept(this.wc, sb, thisCon, isFullStyle());
-			appendToSb(sb, "");
+			appendNewLineToSb(sb);
 		}
 
 		getWebActionResponse().setPlainTextPayload(this.wc, sb.toString());
@@ -535,11 +549,11 @@ public class CeStoreRestApiConcept extends CeStoreRestApi {
 	private void textListAllParentConceptsForConcept(CeConcept pCon) {
 		StringBuilder sb = new StringBuilder();
 
-		appendCeMainHeader(sb, "Concept details for all parents of " + pCon.getConceptName());
+		appendCeMainHeader(sb, "Concept details for all parents of " + pCon.getConceptName());	//TODO: Abstract this
 
 		for (CeConcept thisCon : pCon.retrieveAllParents(false)) {
 			generateTextForConcept(this.wc, sb, thisCon, isFullStyle());
-			appendToSb(sb, "");
+			appendNewLineToSb(sb);
 		}
 
 		getWebActionResponse().setPlainTextPayload(this.wc, sb.toString());
@@ -567,7 +581,7 @@ public class CeStoreRestApiConcept extends CeStoreRestApi {
 
 		for (CeConcept thisCon : pCon.getDirectParents()) {
 			generateTextForConcept(this.wc, sb, thisCon, isFullStyle());
-			appendToSb(sb, "");
+			appendNewLineToSb(sb);
 		}
 
 		getWebActionResponse().setPlainTextPayload(this.wc, sb.toString());
@@ -598,7 +612,7 @@ public class CeStoreRestApiConcept extends CeStoreRestApi {
 
 		for (CeProperty thisProp : pCon.calculateAllProperties().values()) {
 			CeStoreRestApiProperty.generateTextForProperty(this.wc, sb, thisProp, isFullStyle());
-			appendToSb(sb, "");
+			appendNewLineToSb(sb);
 		}
 
 		getWebActionResponse().setPlainTextPayload(this.wc, sb.toString());
@@ -637,7 +651,7 @@ public class CeStoreRestApiConcept extends CeStoreRestApi {
 		for (CeProperty thisProp : pCon.calculateAllProperties().values()) {
 			if (thisProp.isDatatypeProperty()) {
 				CeStoreRestApiProperty.generateTextForProperty(this.wc, sb, thisProp, isFullStyle());
-				appendToSb(sb, "");
+				appendNewLineToSb(sb);
 			}
 		}
 
@@ -677,7 +691,7 @@ public class CeStoreRestApiConcept extends CeStoreRestApi {
 		for (CeProperty thisProp : pCon.calculateAllProperties().values()) {
 			if (thisProp.isObjectProperty()) {
 				CeStoreRestApiProperty.generateTextForProperty(this.wc, sb, thisProp, isFullStyle());
-				appendToSb(sb, "");
+				appendNewLineToSb(sb);
 			}
 		}
 
@@ -733,7 +747,7 @@ public class CeStoreRestApiConcept extends CeStoreRestApi {
 					
 					if (tgtRangeCon.equalsOrHasParent(propRangeCon)) {
 						CeStoreRestApiProperty.generateTextForProperty(this.wc, sb, thisProp, isFullStyle());
-						appendToSb(sb, "");
+						appendNewLineToSb(sb);
 					}
 				}
 			}
@@ -770,14 +784,14 @@ public class CeStoreRestApiConcept extends CeStoreRestApi {
 
 			for (CeInstance thisInst : getModelBuilder().retrieveInstancesForConceptCreatedSince(pCon, sinceTs)) {
 				CeStoreRestApiInstance.generateTextForInstance(this.wc, sb, thisInst, isFullStyle());
-				appendToSb(sb, "");
+				appendNewLineToSb(sb);
 			}
 		} else {
 			appendCeMainHeader(sb, "All instances for concept " + pCon.getConceptName());
 
 			for (CeInstance thisInst : getModelBuilder().retrieveAllInstancesForConcept(pCon)) {
 				CeStoreRestApiInstance.generateTextForInstance(this.wc, sb, thisInst, isFullStyle());
-				appendToSb(sb, "");
+				appendNewLineToSb(sb);
 			}
 		}
 
@@ -888,7 +902,7 @@ public class CeStoreRestApiConcept extends CeStoreRestApi {
 
 		for (CeInstance thisInst : getModelBuilder().retrieveAllExactInstancesForConcept(pCon)) {
 			CeStoreRestApiInstance.generateTextForInstance(this.wc, sb, thisInst, isFullStyle());
-			appendToSb(sb, "");
+			appendNewLineToSb(sb);
 		}
 
 		getWebActionResponse().setPlainTextPayload(this.wc, sb.toString());
@@ -941,7 +955,7 @@ public class CeStoreRestApiConcept extends CeStoreRestApi {
 
 		for (CeSentence thisSen : pCon.listAllSentences()) {
 			CeStoreRestApiSentence.generateTextForSentence(this.wc, sb, thisSen, isFullStyle());
-			appendToSb(sb, "");
+			appendNewLineToSb(sb);
 		}
 
 		getWebActionResponse().setPlainTextPayload(this.wc, sb.toString());
@@ -968,7 +982,7 @@ public class CeStoreRestApiConcept extends CeStoreRestApi {
 
 		for (CeSentence thisSen : pCon.getPrimarySentences()) {
 			CeStoreRestApiSentence.generateTextForSentence(this.wc, sb, thisSen, isFullStyle());
-			appendToSb(sb, "");
+			appendNewLineToSb(sb);
 		}
 
 		getWebActionResponse().setPlainTextPayload(this.wc, sb.toString());
@@ -995,7 +1009,7 @@ public class CeStoreRestApiConcept extends CeStoreRestApi {
 
 		for (CeSentence thisSen : pCon.listSecondarySentences()) {
 			CeStoreRestApiSentence.generateTextForSentence(this.wc, sb, thisSen, isFullStyle());
-			appendToSb(sb, "");
+			appendNewLineToSb(sb);
 		}
 
 		getWebActionResponse().setPlainTextPayload(this.wc, sb.toString());
@@ -1050,7 +1064,7 @@ public class CeStoreRestApiConcept extends CeStoreRestApi {
 	}
 
 	private void reportNotFoundError(String pConName) {
-		reportNotFoundError(TYPE_CON, pConName);
+		reportNotFoundError(JSONTYPE_CON, pConName);
 	}
 
 	private void setConceptDetailsAsStructuredResult(CeConcept pConcept) {

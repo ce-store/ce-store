@@ -27,7 +27,6 @@ function Hudson(pJsDebug) {
 	var DOM_JT = 'json';
 	var DOM_PQ = 'parsedQuestion';
 	var DOM_EP = 'endpoint';
-	var DOM_DB = 'debug';
 	var DOM_AN = 'answers_normal';
 	var DOM_AC = 'answers_chatty';
 	var DOM_UN = 'username';
@@ -193,10 +192,6 @@ function Hudson(pJsDebug) {
 		xhr.send("model="+model);
 	};
 
-	this.isDebug = function() {
-		return this.getCheckboxValueFrom(DOM_DB);
-	};
-
 	this.isLoggingResults = function() {
 		return this.getCheckboxValueFrom(DOM_LR);
 	};
@@ -336,7 +331,7 @@ function Hudson(pJsDebug) {
 		var qText = getTextFrom(DOM_QT);
 		var cbf = function(pResponse) {gHudson.updateParsedQuestion(pResponse);};
 
-		sendHelpRequest(qText, cbf, this.isDebug());
+		sendHelpRequest(qText, cbf);
 	};
 
 	this.getUserName = function() {
@@ -358,16 +353,16 @@ function Hudson(pJsDebug) {
 	};
 
 	this.executeSpecificQuestion = function(pQuestionText, pCbf) {
-		sendExecuteRequest(pQuestionText, pCbf, this.isDebug());
+		sendExecuteRequest(pQuestionText, pCbf);
 	};
 
 	this.interpretSpecificQuestion = function(pQuestionText, pCbf) {
-		sendInterpretRequest(pQuestionText, pCbf, this.isDebug());
+		sendInterpretRequest(pQuestionText, pCbf);
 	};
 
 	this.answerSpecificQuestion = function(pQuestionText, pCbf) {
 		pCbf();  // Temporary as not yet supported
-//		sendAnswerRequest(pQuestionText, pCbf, this.isDebug());
+//		sendAnswerRequest(pQuestionText, pCbf);
 	};
 
 	this.interpretQuestion = function() {
@@ -389,7 +384,7 @@ function Hudson(pJsDebug) {
 	};
 
 	this.answerSpecificInterpretation = function(pQuestionText, pCbf) {
-		sendAnswerInterpretationRequest(pQuestionText, pCbf, this.isDebug());
+		sendAnswerInterpretationRequest(pQuestionText, pCbf);
 	};
 
 	this.updateInterpretation = function(pResponse) {
@@ -612,14 +607,7 @@ function Hudson(pJsDebug) {
 				answerText = htmlFormat(pResponse.answer);
 			} else {
 				var question = pResponse.question;
-				var debug = pResponse.debug;
 				var alerts = pResponse.alerts;
-
-				if (debug != null) {
-					if (debug.execution_time_ms != null) {
-						answerText += 'Execution time (ms): <font color="red">' + debug.execution_time_ms + '</font>';
-					}
-				}
 
 				if (pResponse.answers != null) {
 					for (var idx in pResponse.answers) {
@@ -636,8 +624,6 @@ function Hudson(pJsDebug) {
 
 						var answered = false;
 						var confText = '<i>confidence for this answer=<font color="green">' + answer.confidence + '</font></i>';
-
-//						var intText = ', <i>interpretation=<b>' + answer.question_interpretation + '</b></i>'; 
 
 						if (this.chattyAnswers) {
 							if ((answer.chatty_text != null) && (answer.chatty_text != '')) {
@@ -677,10 +663,6 @@ function Hudson(pJsDebug) {
 					}
 				}
 
-//				if (question != null) {
-//					answerText = '[<i>interpretation confidence=<font color="green">' + question.confidence + '</font></i>, <i>ability to answer confidence=<font color="green">' + question.ability_to_answer_confidence + '</font></i>]<br/><br/>' + answerText;
-//				}
-
 				if (alerts != null) {
 					if (alerts.errors != null) {
 						answerText += '<br/><br/><hr/><u>Errors:</u><ul>';
@@ -704,19 +686,6 @@ function Hudson(pJsDebug) {
 						answerText += '</ul>';
 					}
 				}
-
-				if (debug != null) {
-					if (debug.debugs != null) {
-						answerText += '<br/><br/><hr/><u>Debugs:</u><ul>';
-						for (var i = 0; i < debug.debugs.length; i++) {
-							var thisDebug = debug.debugs[i];
-
-							answerText += '<li>' + htmlFormat(thisDebug) + '</li>';
-						}
-
-						answerText += '</ul>';
-					}
-				}
 			}
 
 			setTextIn(DOM_AT, answerText);
@@ -730,14 +699,6 @@ function Hudson(pJsDebug) {
 		var pqText = '';
 
 		if (pResponse != null) {
-			var debug = pResponse.debug;
-
-			if (debug != null) {
-				if (debug["execution time"] != null) {
-					pqText += 'Execution time (ms): <font color="red">' + debug["execution time"] + '</font>';
-				}
-			}
-
 			for (var idx in pResponse.suggestions) {
 				var thisSugg = pResponse.suggestions[idx];
 				var qt = thisSugg["question text"];
@@ -789,34 +750,34 @@ function Hudson(pJsDebug) {
 		setTextIn(DOM_EP, newEp);
 	};
 
-	function sendHelpRequest(pQuestionText, pCbf, pDebug) {
+	function sendHelpRequest(pQuestionText, pCbf) {
 		var url = getTextFrom(DOM_EP) + URL_QH;
-		sendAjaxPost(url, pQuestionText, pCbf, pDebug);
+		sendAjaxPost(url, pQuestionText, pCbf);
 	}
 
-	function sendExecuteRequest(pQuestionJson, pCbf, pDebug) {
+	function sendExecuteRequest(pQuestionJson, pCbf) {
 		var url = getTextFrom(DOM_EP) + URL_QE;
-		sendAjaxPost(url, pQuestionJson, pCbf, pDebug);
+		sendAjaxPost(url, pQuestionJson, pCbf);
 	}
 
-	function sendInterpretRequest(pQuestionJson, pCbf, pDebug) {
+	function sendInterpretRequest(pQuestionJson, pCbf) {
 		var url = getTextFrom(DOM_EP) + URL_QI;
-		sendAjaxPost(url, pQuestionJson, pCbf, pDebug);
+		sendAjaxPost(url, pQuestionJson, pCbf);
 	}
 
-	function sendAnswerInterpretationRequest(pQuestionJson, pCbf, pDebug) {
+	function sendAnswerInterpretationRequest(pQuestionJson, pCbf) {
 		var url = getTextFrom(DOM_EP) + URL_QB;
-		sendAjaxPost(url, pQuestionJson, pCbf, pDebug);
+		sendAjaxPost(url, pQuestionJson, pCbf);
 	}
 
-	function sendResetRequest(pCbf, pDebug) {
+	function sendResetRequest(pCbf) {
 		var url = getTextFrom(DOM_EP) + URL_QMR;
-		sendAjaxGet(url, pCbf, pDebug, false);
+		sendAjaxGet(url, pCbf);
 	}
 
-	function sendStatusRequest(pCbf, pDebug) {
+	function sendStatusRequest(pCbf) {
 		var url = getTextFrom(DOM_EP) + URL_QMS;
-		sendAjaxGet(url, pCbf, pDebug, false);
+		sendAjaxGet(url, pCbf);
 	}
 
 	function getTextFrom(pDomId) {
@@ -863,24 +824,16 @@ function Hudson(pJsDebug) {
 		}
 	}
 
-	function sendAjaxGet(pUrl, pCbf, pDebug) {
-		sendAjaxRequest('GET', pUrl, null, pCbf, pDebug);
+	function sendAjaxGet(pUrl, pCbf) {
+		sendAjaxRequest('GET', pUrl, null, pCbf);
 	}
 
-	function sendAjaxPost(pUrl, pParms, pCbf, pDebug) {
-		sendAjaxRequest('POST', pUrl, pParms, pCbf, pDebug);
+	function sendAjaxPost(pUrl, pParms, pCbf) {
+		sendAjaxRequest('POST', pUrl, pParms, pCbf);
 	}
 
-	function sendAjaxRequest(pType, pUrl, pPostParms, pCbf, pDebug) {
+	function sendAjaxRequest(pType, pUrl, pPostParms, pCbf) {
 		var xhr = new XMLHttpRequest();
-
-		if (pDebug) {
-			pUrl += '?';
-
-			if (pDebug) {
-				pUrl += 'debug=true';
-			}
-		}
 
 		var userName = gHudson.getUserName();
 

@@ -6,6 +6,8 @@ package com.ibm.ets.ita.ce.store.hudson.model.answer;
  *******************************************************************************/
 
 public class Answer implements Comparable<Answer> {
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+
 	private int answerConfidence = -1;
 
 	@Override
@@ -17,8 +19,6 @@ public class Answer implements Comparable<Answer> {
 	return this.answerConfidence;
 }
 
-//	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
-//
 //	private static final String CEPROP_URL = "url";
 //	
 //	private String key = null;

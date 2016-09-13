@@ -1,18 +1,18 @@
 package com.ibm.ets.ita.ce.store.model;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
-import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.NL;
+import static com.ibm.ets.ita.ce.store.names.CeNames.RANGE_VALUE;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.NL;
 
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class CeClause {
-
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private static final int MODE_PREMISE = 1;
 	private static final int MODE_CONCLUSION = 2;
@@ -122,7 +122,7 @@ public class CeClause {
 
 	public boolean isUnboundedCreationClause() {
 		//A conclusion clause that contains the token {{NEW}}
-		return isCreationClause() && this.getTargetVariable().contains("{{NEW}}");
+		return isCreationClause() && getTargetVariable().contains("{{NEW}}");	//TODO: Abstract this
 	}
 
 	public boolean isPremiseClause() {
@@ -290,13 +290,13 @@ public class CeClause {
 		result += this.rawTokens.toString() + NL;
 		result += formattedTargetConcept() + " " + formattedTargetVariable();
 		
-		for (CeConcept secCon : this.getSecondaryConceptsNormal()) {
+		for (CeConcept secCon : getSecondaryConceptsNormal()) {
 			result += sepWord;
 			result += " is a " + secCon.getConceptName() + " ";
 			sepWord = "and";
 		}
 		
-		for (CeConcept secCon : this.getSecondaryConceptsNegated()) {
+		for (CeConcept secCon : getSecondaryConceptsNegated()) {
 			result += sepWord;
 			result += " is not a " + secCon.getConceptName() + " ";
 			sepWord = "and";
@@ -397,7 +397,7 @@ public class CeClause {
 		}
 		
 		if (getTargetConcept() == null) {
-			result += CeProperty.RANGE_VALUE;
+			result += RANGE_VALUE;
 		} else {
 			result += getTargetConcept().getConceptName();
 		}
@@ -447,4 +447,5 @@ public class CeClause {
 
 		return result;
 	}
+
 }

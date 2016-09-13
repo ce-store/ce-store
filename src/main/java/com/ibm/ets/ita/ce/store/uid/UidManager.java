@@ -1,22 +1,20 @@
 package com.ibm.ets.ita.ce.store.uid;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_UID_PREFIX;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_UID_BATCHSTART;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_UID_BATCHEND;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicLong;
 
 public abstract class UidManager {
-
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
-
-	public static final String KEY_UID_PREFIX = "UID prefix";
-	public static final String KEY_UID_BATCHSTART = "UID batch start";
-	public static final String KEY_UID_BATCHEND = "UID batch end";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private static final long DEFAULT_UIDSTART = 0;
 
@@ -89,9 +87,9 @@ public abstract class UidManager {
 		this.currentUid = new AtomicLong(this.currentUid.get() + pBatchSize);
 
 		result = new Properties();
-		result.put(KEY_UID_PREFIX, this.uidPrefix);
-		result.put(KEY_UID_BATCHSTART, Long.toString(startUid));
-		result.put(KEY_UID_BATCHEND, Long.toString(this.currentUid.getAndIncrement()));
+		result.put(JSON_UID_PREFIX, this.uidPrefix);
+		result.put(JSON_UID_BATCHSTART, Long.toString(startUid));
+		result.put(JSON_UID_BATCHEND, Long.toString(this.currentUid.getAndIncrement()));
 
 		return result;
 	}

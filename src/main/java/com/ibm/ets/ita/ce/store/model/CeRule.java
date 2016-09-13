@@ -1,20 +1,20 @@
 package com.ibm.ets.ita.ce.store.model;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
-import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.NL;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.NL;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportWarning;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
 
 public class CeRule extends CeQuery {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private CeSentence[] inferredSentences = new CeSentence[0];
 	private ArrayList<CeClause> directConclusionClauses = new ArrayList<CeClause>();
@@ -207,7 +207,7 @@ public class CeRule extends CeQuery {
 			String thisClauseText = thisClause.calculateRawText();
 
 			if (clauseTexts.contains(thisClauseText)) {
-				reportWarning("Duplicate conculsion clause detected in rule '" + this.getQueryName() + "' (" + thisClauseText + ")", pAc);
+				reportWarning("Duplicate conculsion clause detected in rule '" + getQueryName() + "' (" + thisClauseText + ")", pAc);
 			} else {
 				clauseTexts.add(thisClauseText);
 			}

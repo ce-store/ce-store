@@ -1,5 +1,5 @@
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
@@ -229,4 +229,5 @@ function RendererConcepts() {
 
 		return listText;
 	}
+	
 }

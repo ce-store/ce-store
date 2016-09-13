@@ -1,35 +1,36 @@
 package com.ibm.ets.ita.ce.store.hudson.handler;
 
+import static com.ibm.ets.ita.ce.store.names.CeNames.SRC_HUDSON;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.URL_HUDSON;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_ET;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SM;
+
 /*******************************************************************************
  * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.MiscNames.CESTORENAME_DEFAULT;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportDebug;
 
 import java.util.ArrayList;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
-import com.ibm.ets.ita.ce.store.ModelBuilder;
-import com.ibm.ets.ita.ce.store.StoreActions;
 import com.ibm.ets.ita.ce.store.client.web.ServletStateManager;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
+import com.ibm.ets.ita.ce.store.core.ModelBuilder;
+import com.ibm.ets.ita.ce.store.core.StoreActions;
 import com.ibm.ets.ita.ce.store.hudson.helper.HudsonManager;
 import com.ibm.ets.ita.ce.store.hudson.model.ConvConfig;
 import com.ibm.ets.ita.ce.store.model.CeRule;
 import com.ibm.ets.ita.ce.store.model.container.ContainerSentenceLoadResult;
 import com.ibm.ets.ita.ce.store.utilities.GeneralUtilities;
 
-public class QuestionManagementHandler extends QuestionHandler {
+public class QuestionManagementHandler extends GenericHandler {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
-	private static final String CE_HUDSON_URL = "./hudson/ce/cmd/load_hudson.cecmd";
-	private static final String CE_HUDSON_SRC = "HUDSON";
-
-	private static final String JSON_SM = "system message";
-
-	public QuestionManagementHandler(ActionContext pAc, boolean pDebug, long pStartTime) {
-		super(pAc, pDebug, null, pStartTime);
+	public QuestionManagementHandler(ActionContext pAc, long pStartTime) {
+		super(pAc, pStartTime);
 	}
 
 	public CeStoreJsonObject handleReset() {
@@ -137,15 +138,8 @@ public class QuestionManagementHandler extends QuestionHandler {
 		return resultText;
 	}
 
-	@Override
-	public CeStoreJsonObject handleQuestion() {
-		//Nothing is needed here - no question is ever asked
-
-		return null;
-	}
-
 	protected static void setupCeStore(ActionContext pAc, ServletStateManager pSsm, HudsonManager pHm) {
-		String storeName = ModelBuilder.CESTORENAME_DEFAULT;
+		String storeName = CESTORENAME_DEFAULT;
 		ModelBuilder mb = pSsm.getModelBuilder(storeName);
 		boolean storeWasLoaded = false;
 
@@ -194,8 +188,8 @@ public class QuestionManagementHandler extends QuestionHandler {
 			reportDebug("Successfully set up CE Store named " + pStoreName, pAc);
 
 			StoreActions sa = StoreActions.createUsingDefaultConfig(pAc);
-			String tgtUrl = CE_HUDSON_URL;
-			String tgtSrc = CE_HUDSON_SRC;
+			String tgtUrl = URL_HUDSON;
+			String tgtSrc = SRC_HUDSON;
 
 			sa.loadSentencesFromUrl(tgtUrl, tgtSrc);
 

@@ -1,29 +1,33 @@
 package com.ibm.ets.ita.ce.store.client.rest;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
+
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSONTYPE_QUERY;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_SUPPCE;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_SUPPRES;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_ENDTS;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_RETINSTS;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_STARTTS;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_EXECUTE;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.ibm.ets.ita.ce.store.ModelBuilder;
-import com.ibm.ets.ita.ce.store.StoreActions;
 import com.ibm.ets.ita.ce.store.client.web.WebActionContext;
 import com.ibm.ets.ita.ce.store.client.web.model.CeWebContainerResult;
 import com.ibm.ets.ita.ce.store.client.web.model.CeWebQueryOrRule;
+import com.ibm.ets.ita.ce.store.core.ModelBuilder;
+import com.ibm.ets.ita.ce.store.core.StoreActions;
 import com.ibm.ets.ita.ce.store.model.CeQuery;
 import com.ibm.ets.ita.ce.store.model.container.ContainerCeResult;
 
 public class CeStoreRestApiQuery extends CeStoreRestApi {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
-
-	private static final String TYPE_QUERY = "query";
-	private static final String PARM_SUPPCE = "suppressCe";
-	private static final String PARM_SUPPRES = "suppressResult";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	public CeStoreRestApiQuery(WebActionContext pWc, ArrayList<String> pRestParts, HttpServletRequest pRequest) {
 		super(pWc, pRestParts, pRequest);
@@ -206,7 +210,7 @@ public class CeStoreRestApiQuery extends CeStoreRestApi {
 	}
 
 	private void reportNotFoundError(String pQueryName) {
-		reportNotFoundError(TYPE_QUERY, pQueryName);
+		reportNotFoundError(JSONTYPE_QUERY, pQueryName);
 	}
 
 	private void setQueryListAsStructuredResult(Collection<CeQuery> pQueryList) {

@@ -1,10 +1,11 @@
 package com.ibm.ets.ita.ce.store.model;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.MiscNames.NO_TS;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.timestampNow;
 
 import java.util.ArrayList;
@@ -14,21 +15,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
-import com.ibm.ets.ita.ce.store.ModelBuilder;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
 
 public abstract class CeModelEntity implements Comparable<CeModelEntity> {
-
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
-
-	protected static final String PROP_PLURAL = "plural form";
-	protected static final String PROP_PAST = "past tense";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private static AtomicLong seqNumCtr = new AtomicLong(0);
 
 	protected String name = null;		//No getters and setters on this class... should be implemented (with more specific names) by extending classes
 	private long seqNum = CeModelEntity.seqNumCtr.getAndIncrement();
-	private long creationDate = ModelBuilder.NO_TS;
+	private long creationDate = NO_TS;
 	private boolean metaModelGenerated = false;
 	private CeAnnotation[] annotations = new CeAnnotation[0];
 	private CeSentence[] primarySentences = new CeSentence[0];
@@ -285,4 +281,5 @@ public abstract class CeModelEntity implements Comparable<CeModelEntity> {
 	public String toString() {
 	  return (this.name==null) ? super.toString() : this.name;
 	}
+
 }

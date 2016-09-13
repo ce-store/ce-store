@@ -1,9 +1,12 @@
 package com.ibm.ets.ita.ce.store.model.container;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
+
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_COUNT;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_SUM;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -11,10 +14,8 @@ import java.util.Collection;
 import com.ibm.ets.ita.ce.store.model.CeQuery;
 
 public abstract class ContainerQueryResult extends ContainerResult {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
-	public static final String COUNT_INDICATOR = "#";
-	public static final String SUM_INDICATOR = "@";
 	private static final String TYPE_COUNT = "C";
 	private static final String TYPE_SUM = "S";
 
@@ -72,10 +73,10 @@ public abstract class ContainerQueryResult extends ContainerResult {
 	public void addHeader(String pHeader, String pType) {
 		if (!this.headers.contains(pHeader)) {
 			//DSB 01/05/2015 #1096
-			if (pHeader.startsWith(COUNT_INDICATOR)) {
+			if (pHeader.startsWith(TOKEN_COUNT)) {
 				this.headers.add(pHeader);
 				this.types.add(TYPE_COUNT);
-			} else if (pHeader.startsWith(SUM_INDICATOR)) {
+			} else if (pHeader.startsWith(TOKEN_SUM)) {
 					this.headers.add(pHeader);
 					this.types.add(TYPE_SUM);
 			} else {

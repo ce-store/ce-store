@@ -1,10 +1,12 @@
 package com.ibm.ets.ita.ce.store.model;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.CeNames.RANGE_VALUE;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.NO_TS;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.isReportDebug;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportDebug;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
@@ -15,12 +17,10 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.TreeMap;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
-import com.ibm.ets.ita.ce.store.ModelBuilder;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
 
 public class CePropertyInstance implements Comparable<CePropertyInstance> {
-
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private String id = null;
 	private CeInstance relatedInstance = null;
@@ -38,7 +38,7 @@ public class CePropertyInstance implements Comparable<CePropertyInstance> {
 	public static CePropertyInstance createDatatypeProperty(ActionContext pAc, CeProperty pProperty, String pValue, CeInstance pRelInst, CeSentence pSen, boolean pHadQuotes, boolean pIsNegated) {
 		CePropertyInstance newPi = new CePropertyInstance(pProperty, pRelInst);
 
-		newPi.setInitialValue(pAc, pValue, CeProperty.RANGE_VALUE, pHadQuotes, pIsNegated, pSen);
+		newPi.setInitialValue(pAc, pValue, RANGE_VALUE, pHadQuotes, pIsNegated, pSen);
 
 		return newPi;
 	}
@@ -285,7 +285,7 @@ public class CePropertyInstance implements Comparable<CePropertyInstance> {
 	}
 	
 	public long getSingleOrFirstCreationDate() {
-		long result = ModelBuilder.NO_TS;
+		long result = NO_TS;
 		
 		CePropertyValue tgtPropVal = getFirstPropertyValue();
 		
@@ -439,7 +439,7 @@ public class CePropertyInstance implements Comparable<CePropertyInstance> {
 	}
 
 	public long getSingleCreationDate() {
-		long result = ModelBuilder.NO_TS;
+		long result = NO_TS;
 		CePropertyValue tgtVal = getFirstPropertyValue();
 		
 		if (tgtVal != null) {
@@ -509,5 +509,5 @@ public class CePropertyInstance implements Comparable<CePropertyInstance> {
 		
 		return result;
 	}
-	
+
 }

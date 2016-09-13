@@ -1,20 +1,23 @@
 package com.ibm.ets.ita.ce.store.model;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.CeNames.RANGE_VALUE;
+import static com.ibm.ets.ita.ce.store.names.CeNames.PROP_PASTTENSE;
+import static com.ibm.ets.ita.ce.store.names.CeNames.PROP_PLURAL;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.encodeForCe;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
-import com.ibm.ets.ita.ce.store.ModelBuilder;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
+import com.ibm.ets.ita.ce.store.core.ModelBuilder;
 
 public class CeProperty extends CeModelEntity {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	// TODO: Need to link property to sentence
 	private String idKey = null;
@@ -45,8 +48,6 @@ public class CeProperty extends CeModelEntity {
 
 	private static final String PROP_NAME_SEPARATOR = ":";
 
-	public static final String RANGE_VALUE = "value";
-	
 	protected CeProperty() {
 		//This is private to ensure that new instances can only be created via the various static methods
 	}
@@ -518,7 +519,7 @@ public class CeProperty extends CeModelEntity {
 		CeInstance mmInst = pAc.getModelBuilder().getInstanceNamed(pAc, tgtProp.formattedFullPropertyName());
 
 		if (mmInst != null) {
-			result = mmInst.getSingleValueFromPropertyNamed(PROP_PAST);
+			result = mmInst.getSingleValueFromPropertyNamed(PROP_PASTTENSE);
 
 			if ((result == null) || result.isEmpty()) {
 				result = tgtProp.getPropertyName();

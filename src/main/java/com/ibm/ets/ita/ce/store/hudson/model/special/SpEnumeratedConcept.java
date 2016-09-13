@@ -1,10 +1,12 @@
 package com.ibm.ets.ita.ce.store.hudson.model.special;
 
+import static com.ibm.ets.ita.ce.store.names.JsonNames.SPEC_ENUMCON;
+
 import java.util.ArrayList;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonArray;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
 import com.ibm.ets.ita.ce.store.hudson.handler.QuestionInterpreterHandler;
 import com.ibm.ets.ita.ce.store.hudson.model.conversation.MatchedItem;
 import com.ibm.ets.ita.ce.store.hudson.model.conversation.ProcessedWord;
@@ -19,7 +21,6 @@ import com.ibm.ets.ita.ce.store.model.CeInstance;
 public class SpEnumeratedConcept extends SpThing {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
-	private static final String TYPE_NAME = "enumerated-concept";
 	private static final String JSON_NUM = "number";
 	private static final String JSON_CONS = "concepts";
 
@@ -60,7 +61,7 @@ public class SpEnumeratedConcept extends SpThing {
 			jConList.add(QuestionInterpreterHandler.jsonFor(pAc, mmInst, thisConItem));
 		}
 
-		addStandardFields(jResult, TYPE_NAME);
+		addStandardFields(jResult, SPEC_ENUMCON);
 
 		jResult.put(JSON_NUM, getNumberWordText());
 		jResult.put(JSON_CONS, jConList);

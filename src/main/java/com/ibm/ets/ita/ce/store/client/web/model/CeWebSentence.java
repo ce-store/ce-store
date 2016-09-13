@@ -1,54 +1,57 @@
 package com.ibm.ets.ita.ce.store.client.web.model;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSONTYPE_SEN;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_TYPE;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_STYLE;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_ID;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_CREATED;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SEN_TEXT;
+import static com.ibm.ets.ita.ce.store.names.RestNames.STYLE_FULL;
+import static com.ibm.ets.ita.ce.store.names.RestNames.STYLE_SUMMARY;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SEN_TYPE;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SEN_PRIORSEC;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SEN_VAL;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SEN_SRC;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SEN_SRC_ID;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SEN_STRUCTUREDTEXT;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SEN_QUALSENS;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SEN_RATSTEPS;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SENQUAL;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SENINNER;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SENINNER_ID;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SENQUAL_AN;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SENQUAL_AC;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SENQUAL_QN;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SENQUAL_QC;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SENQUAL_CN;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SENQUAL_CC;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SENQUAL_ST;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SENQUAL_TF;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SENQUAL_TS;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SENQUAL_TV;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_IDX;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_FRAGTYPE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.ANNO_TOKEN_MODEL;
+
 import java.util.Collection;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonArray;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
 import com.ibm.ets.ita.ce.store.model.CeSentence;
 import com.ibm.ets.ita.ce.store.model.CeSentenceQualified;
 
 public class CeWebSentence extends CeWebObject {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	public CeWebSentence(ActionContext pAc) {
 		super(pAc);
 	}
-
-	//JSON Response Keys
-	private static final String KEY_SEN_TYPE = "sen_type";
-	private static final String KEY_SEN_PRIORSEC = "pri_or_sec";
-	private static final String KEY_SEN_VAL = "validity";
-	private static final String KEY_SEN_SRC = "source";
-	private static final String KEY_SEN_SRC_ID = "source_id";
-	private static final String KEY_SEN_STRUCTUREDTEXT = "ce_structured_text";
-
-	private static final String TYPE_SEN = "sentence";
-	
-	private static final String KEY_SEN_QUALSENS = "qualified_sentences";
-	private static final String KEY_SEN_RATSTEPS = "rationale";
-	private static final String KEY_SENQUAL = "qualifications";
-	private static final String KEY_SENINNER = "inner_sentence";
-	private static final String KEY_SENINNER_ID = "inner_sentence_id";
-
-	private static final String KEY_SENQUAL_AN = "author_name";
-	private static final String KEY_SENQUAL_AC = "author_concept";
-	private static final String KEY_SENQUAL_QN = "qualified_name";
-	private static final String KEY_SENQUAL_QC = "qualified_concept";
-	private static final String KEY_SENQUAL_CN = "context_name";
-	private static final String KEY_SENQUAL_CC = "context_concept";
-	private static final String KEY_SENQUAL_ST = "statement_type";
-	private static final String KEY_SENQUAL_TF = "timeframe";
-	private static final String KEY_SENQUAL_TS = "timestamp";
-	private static final String KEY_SENQUAL_TV = "truth_value";
-
-	private static final String KEY_IDX = "index";
-	private static final String KEY_FRAGTYPE = "type";
 
 	public CeStoreJsonArray generateSummaryListFrom(Collection<CeSentence> pSenList) {
 		CeStoreJsonArray jArr = new CeStoreJsonArray();
@@ -171,28 +174,28 @@ public class CeWebSentence extends CeWebObject {
 	CeStoreJsonObject generateSummaryNormalJson(CeSentence pSen, String pPriOrSecInd) {
 		CeStoreJsonObject jObj = new CeStoreJsonObject();
 
-		putStringValueIn(jObj, KEY_TYPE, TYPE_SEN);
-		putStringValueIn(jObj, KEY_STYLE, STYLE_SUMMARY);
-		putStringValueIn(jObj, KEY_ID, pSen.formattedId());
-		putLongValueIn(jObj, KEY_CREATED, pSen.getCreationDate());
-		putStringValueIn(jObj, KEY_SEN_TYPE, pSen.formattedSentenceType());
-		putStringValueIn(jObj, KEY_SEN_VAL, pSen.formattedValidity());
-		putStringValueIn(jObj, KEY_SEN_TEXT, pSen.getCeText(this.ac));
-		putArrayValueIn(jObj, KEY_SEN_STRUCTUREDTEXT, generateStructuredCeTextListFor(pSen));
-		putStringValueIn(jObj, KEY_SEN_SRC_ID, pSen.getSource().getId());
+		putStringValueIn(jObj, JSON_TYPE, JSONTYPE_SEN);
+		putStringValueIn(jObj, JSON_STYLE, STYLE_SUMMARY);
+		putStringValueIn(jObj, JSON_ID, pSen.formattedId());
+		putLongValueIn(jObj, JSON_CREATED, pSen.getCreationDate());
+		putStringValueIn(jObj, JSON_SEN_TYPE, pSen.formattedSentenceType());
+		putStringValueIn(jObj, JSON_SEN_VAL, pSen.formattedValidity());
+		putStringValueIn(jObj, JSON_SEN_TEXT, pSen.getCeText(this.ac));
+		putArrayValueIn(jObj, JSON_SEN_STRUCTUREDTEXT, generateStructuredCeTextListFor(pSen));
+		putStringValueIn(jObj, JSON_SEN_SRC_ID, pSen.getSource().getId());
 
 		if (pPriOrSecInd != null) {
-			putStringValueIn(jObj, KEY_SEN_PRIORSEC, pPriOrSecInd);
+			putStringValueIn(jObj, JSON_SEN_PRIORSEC, pPriOrSecInd);
 		}
 		
 		CeStoreJsonArray jaQs = generateQualifiedSentencesJsonFor(pSen);
 		if (!jaQs.isEmpty()) {
-			putArrayValueIn(jObj, KEY_SEN_QUALSENS, jaQs);
+			putArrayValueIn(jObj, JSON_SEN_QUALSENS, jaQs);
 		}
 		
 		CeStoreJsonArray jaR = generateRationaleJsonFor(pSen);
 		if (!jaR.isEmpty()) {
-			putArrayValueIn(jObj, KEY_SEN_RATSTEPS, jaR);			
+			putArrayValueIn(jObj, JSON_SEN_RATSTEPS, jaR);			
 		}
 	
 		if (pSen.isQualified()) {
@@ -200,7 +203,7 @@ public class CeWebSentence extends CeWebObject {
 			CeSentence iSen = qSen.getInnerSentence();
 			
 			if (iSen != null) {
-				putStringValueIn(jObj, KEY_SENINNER_ID, iSen.formattedId());
+				putStringValueIn(jObj, JSON_SENINNER_ID, iSen.formattedId());
 			}
 		}
 		
@@ -210,28 +213,28 @@ public class CeWebSentence extends CeWebObject {
 	private CeStoreJsonObject generateFullNormalJson(CeSentence pSen, String pPriOrSecInd) {
 		CeStoreJsonObject jObj = new CeStoreJsonObject();
 
-		putStringValueIn(jObj, KEY_TYPE, TYPE_SEN);
-		putStringValueIn(jObj, KEY_STYLE, STYLE_FULL);
-		putStringValueIn(jObj, KEY_ID, pSen.formattedId());
-		putLongValueIn(jObj, KEY_CREATED, pSen.getCreationDate());
-		putStringValueIn(jObj, KEY_SEN_TYPE, pSen.formattedSentenceType());
-		putStringValueIn(jObj, KEY_SEN_VAL, pSen.formattedValidity());
-		putStringValueIn(jObj, KEY_SEN_TEXT, pSen.getCeText(this.ac));
-		putArrayValueIn(jObj, KEY_SEN_STRUCTUREDTEXT, generateStructuredCeTextListFor(pSen));
-		putObjectValueIn(jObj, KEY_SEN_SRC, CeWebSource.generateSummaryDetailsJsonFor(pSen.getSource()));
+		putStringValueIn(jObj, JSON_TYPE, JSONTYPE_SEN);
+		putStringValueIn(jObj, JSON_STYLE, STYLE_FULL);
+		putStringValueIn(jObj, JSON_ID, pSen.formattedId());
+		putLongValueIn(jObj, JSON_CREATED, pSen.getCreationDate());
+		putStringValueIn(jObj, JSON_SEN_TYPE, pSen.formattedSentenceType());
+		putStringValueIn(jObj, JSON_SEN_VAL, pSen.formattedValidity());
+		putStringValueIn(jObj, JSON_SEN_TEXT, pSen.getCeText(this.ac));
+		putArrayValueIn(jObj, JSON_SEN_STRUCTUREDTEXT, generateStructuredCeTextListFor(pSen));
+		putObjectValueIn(jObj, JSON_SEN_SRC, CeWebSource.generateSummaryDetailsJsonFor(pSen.getSource()));
 
 		if (pPriOrSecInd != null) {
-			putStringValueIn(jObj, KEY_SEN_PRIORSEC, pPriOrSecInd);
+			putStringValueIn(jObj, JSON_SEN_PRIORSEC, pPriOrSecInd);
 		}
 
 		CeStoreJsonArray jaQs = generateQualifiedSentencesJsonFor(pSen);
 		if (!jaQs.isEmpty()) {
-			putArrayValueIn(jObj, KEY_SEN_QUALSENS, jaQs);
+			putArrayValueIn(jObj, JSON_SEN_QUALSENS, jaQs);
 		}
 
 		CeStoreJsonArray jaR = generateRationaleJsonFor(pSen);
 		if (!jaR.isEmpty()) {
-			putArrayValueIn(jObj, KEY_SEN_RATSTEPS, jaR);
+			putArrayValueIn(jObj, JSON_SEN_RATSTEPS, jaR);
 		}
 
 		if (pSen.isQualified()) {
@@ -239,7 +242,7 @@ public class CeWebSentence extends CeWebObject {
 			CeSentence iSen = qSen.getInnerSentence();
 
 			if (iSen != null) {
-				putObjectValueIn(jObj, KEY_SENINNER, generateSummaryJson(iSen, ""));
+				putObjectValueIn(jObj, JSON_SENINNER, generateSummaryJson(iSen, ""));
 			}
 		}
 
@@ -379,8 +382,8 @@ public class CeWebSentence extends CeWebObject {
 								if (propType.equals("pattern_start")) {
 									//Output a separator before the next fragment
 									CeStoreJsonObject thisObj = new CeStoreJsonObject();
-									thisObj.put(KEY_FRAGTYPE, "separator_patternname");
-									thisObj.put(KEY_IDX, i++);
+									thisObj.put(JSON_FRAGTYPE, "separator_patternname");
+									thisObj.put(JSON_IDX, i++);
 									result.add(thisObj);
 									propType = "normal";
 									if (!concatNormal.isEmpty()) {
@@ -394,20 +397,20 @@ public class CeWebSentence extends CeWebObject {
 
 //									if (propType.equals("connector")) {
 //										textKey = "text";
-//										thisObj.put(KEY_FRAGTYPE, "separator");
+//										thisObj.put(JSON_FRAGTYPE, "separator");
 //									} else {
-//										thisObj.put(KEY_FRAGTYPE, propType);
+//										thisObj.put(JSON_FRAGTYPE, propType);
 //									}
 //									
 //									//Now output the required value
-//									thisObj.put(KEY_IDX, i++);
+//									thisObj.put(JSON_IDX, i++);
 //									thisObj.put(textKey, thisFrag);	
 //									result.add(thisObj);
 
 									if (!propType.equals("connector")) {
 										//Now output the required value
-										thisObj.put(KEY_FRAGTYPE, propType);
-										thisObj.put(KEY_IDX, i++);
+										thisObj.put(JSON_FRAGTYPE, propType);
+										thisObj.put(JSON_IDX, i++);
 										thisObj.put(textKey, thisFrag);	
 										result.add(thisObj);
 									}
@@ -440,18 +443,18 @@ public class CeWebSentence extends CeWebObject {
 	private static void generateQualifiedJsonInto(CeStoreJsonObject pJo, CeSentenceQualified pQualSen) {
 		CeStoreJsonObject jObj = new CeStoreJsonObject();
 
-		putStringValueIn(jObj, KEY_SENQUAL_TS, pQualSen.getQualifiedTimestamp());
-		putStringValueIn(jObj, KEY_SENQUAL_AN, pQualSen.getQualifiedAuthorName());
-		putStringValueIn(jObj, KEY_SENQUAL_AC, pQualSen.getQualifiedAuthorConceptName());
-		putStringValueIn(jObj, KEY_SENQUAL_QN, pQualSen.getGeneralQualificationName());
-		putStringValueIn(jObj, KEY_SENQUAL_QC, pQualSen.getGeneralQualificationConceptName());
-		putStringValueIn(jObj, KEY_SENQUAL_CN, pQualSen.getQualifiedContextName());
-		putStringValueIn(jObj, KEY_SENQUAL_CC, pQualSen.getQualifiedContextConceptName());
-		putStringValueIn(jObj, KEY_SENQUAL_ST, pQualSen.formattedQualifiedStatementType());
-		putStringValueIn(jObj, KEY_SENQUAL_TF, pQualSen.formattedQualifiedTimeframe());
-		putStringValueIn(jObj, KEY_SENQUAL_TV, pQualSen.formattedQualifiedTruthValue());
+		putStringValueIn(jObj, JSON_SENQUAL_TS, pQualSen.getQualifiedTimestamp());
+		putStringValueIn(jObj, JSON_SENQUAL_AN, pQualSen.getQualifiedAuthorName());
+		putStringValueIn(jObj, JSON_SENQUAL_AC, pQualSen.getQualifiedAuthorConceptName());
+		putStringValueIn(jObj, JSON_SENQUAL_QN, pQualSen.getGeneralQualificationName());
+		putStringValueIn(jObj, JSON_SENQUAL_QC, pQualSen.getGeneralQualificationConceptName());
+		putStringValueIn(jObj, JSON_SENQUAL_CN, pQualSen.getQualifiedContextName());
+		putStringValueIn(jObj, JSON_SENQUAL_CC, pQualSen.getQualifiedContextConceptName());
+		putStringValueIn(jObj, JSON_SENQUAL_ST, pQualSen.formattedQualifiedStatementType());
+		putStringValueIn(jObj, JSON_SENQUAL_TF, pQualSen.formattedQualifiedTimeframe());
+		putStringValueIn(jObj, JSON_SENQUAL_TV, pQualSen.formattedQualifiedTruthValue());
 		
-		putObjectValueIn(pJo, KEY_SENQUAL, jObj);
+		putObjectValueIn(pJo, JSON_SENQUAL, jObj);
 	}
 
 	private CeStoreJsonArray generateRationaleJsonFor(CeSentence pSen) {
@@ -480,8 +483,8 @@ public class CeWebSentence extends CeWebObject {
 
 		CeStoreJsonObject thisObj = new CeStoreJsonObject();
 
-		thisObj.put(KEY_FRAGTYPE, "property");
-		thisObj.put(KEY_IDX, myIndex++);
+		thisObj.put(JSON_FRAGTYPE, "property");
+		thisObj.put(JSON_IDX, myIndex++);
 		thisObj.put("property_name", pPropName);
 		thisObj.put("property_domain", pPropDomain);
 		thisObj.put("property_range", pPropRange);
@@ -500,12 +503,12 @@ public class CeWebSentence extends CeWebObject {
 
 		CeStoreJsonObject thisObj = new CeStoreJsonObject();
 		
-		thisObj.put(KEY_FRAGTYPE, "annotation");
-		thisObj.put(KEY_IDX, myIndex++);
-		thisObj.put("annotation_name", pAnnoName);
+		thisObj.put(JSON_FRAGTYPE, "annotation");
+		thisObj.put(JSON_IDX, myIndex++);
+		thisObj.put("annotation_name", pAnnoName);	//TODO: Abstract these
 		thisObj.put("annotation_value", pAnnoVal);
 		
-		if (pAnnoName.equals("Model:")) {
+		if (pAnnoName.equals(ANNO_TOKEN_MODEL)) {
 			thisObj.put("annotation_value_type", "conceptual model");
 		}
 		
@@ -529,23 +532,23 @@ public class CeWebSentence extends CeWebObject {
 			tgtVal += pThisText;
 
 			CeStoreJsonObject thisObj = new CeStoreJsonObject();
-			thisObj.put(KEY_FRAGTYPE, "normal");
-			thisObj.put(KEY_IDX, myIndex++);
+			thisObj.put(JSON_FRAGTYPE, "normal");
+			thisObj.put(JSON_IDX, myIndex++);
 			thisObj.put("text", tgtVal);	
 			pResult.add(thisObj);
 
 			//Also output a separator
 			thisObj = new CeStoreJsonObject();
-			thisObj.put(KEY_FRAGTYPE, "separator");
-			thisObj.put(KEY_IDX, myIndex++);
+			thisObj.put(JSON_FRAGTYPE, "separator");
+			thisObj.put(JSON_IDX, myIndex++);
 			pResult.add(thisObj);
 		} else {
 			//This is a different type so output separately
 			if (!pOutputText.isEmpty()) {
 				//First add the previously concatenated values
 				CeStoreJsonObject thisObj = new CeStoreJsonObject();
-				thisObj.put(KEY_FRAGTYPE, "normal");
-				thisObj.put(KEY_IDX, myIndex++);
+				thisObj.put(JSON_FRAGTYPE, "normal");
+				thisObj.put(JSON_IDX, myIndex++);
 				thisObj.put("text", pOutputText);	
 				pResult.add(thisObj);
 			}

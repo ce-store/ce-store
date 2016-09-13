@@ -1,10 +1,48 @@
 package com.ibm.ets.ita.ce.store.client.rest;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.JsonNames.SENSOURCE_PRIMARY;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.SENSOURCE_SECONDARY;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.CESTORENAME_DEFAULT;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_COMMA;
+import static com.ibm.ets.ita.ce.store.names.RestNames.CONTENT_TYPE_MULTIPART_FORM;
+import static com.ibm.ets.ita.ce.store.names.RestNames.HDR_ACCEPT;
+import static com.ibm.ets.ita.ce.store.names.RestNames.METHOD_DELETE;
+import static com.ibm.ets.ita.ce.store.names.RestNames.METHOD_GET;
+import static com.ibm.ets.ita.ce.store.names.RestNames.METHOD_POST;
+import static com.ibm.ets.ita.ce.store.names.RestNames.METHOD_PUT;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_CETEXT;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_LIMRELS;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_ONLYPROPS;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_REFINSTS;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_RELINSTS;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_SHOWSTATS;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_SPTS;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_STEPS;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_STYLE;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REQTYPE_ANY;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REQTYPE_JSON;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REQTYPE_TEXT;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REQTYPE_WEAKTEXT;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_CONCEPT;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_CONMODEL;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_HEADLINE;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_INSTANCE;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_PROPERTY;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_QUERY;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_RULE;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_SENTENCE;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_SOURCE;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_SPECIAL;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_STORE;
+import static com.ibm.ets.ita.ce.store.names.RestNames.STYLE_FULL;
+import static com.ibm.ets.ita.ce.store.names.RestNames.STYLE_MINIMAL;
+import static com.ibm.ets.ita.ce.store.names.RestNames.STYLE_NORMALISED;
+import static com.ibm.ets.ita.ce.store.names.RestNames.STYLE_SUMMARY;
 import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.appendToSb;
 import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.convertToString;
 import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.urlDecode;
@@ -30,8 +68,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
-import com.ibm.ets.ita.ce.store.ApiHandler;
-import com.ibm.ets.ita.ce.store.ModelBuilder;
 import com.ibm.ets.ita.ce.store.client.web.ServletStateManager;
 import com.ibm.ets.ita.ce.store.client.web.WebActionContext;
 import com.ibm.ets.ita.ce.store.client.web.WebActionResponse;
@@ -45,6 +81,7 @@ import com.ibm.ets.ita.ce.store.client.web.model.CeWebRationaleReasoningStep;
 import com.ibm.ets.ita.ce.store.client.web.model.CeWebSentence;
 import com.ibm.ets.ita.ce.store.client.web.model.CeWebSource;
 import com.ibm.ets.ita.ce.store.client.web.model.CeWebSpecial;
+import com.ibm.ets.ita.ce.store.core.ModelBuilder;
 import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
 import com.ibm.ets.ita.ce.store.model.CeProperty;
@@ -53,68 +90,13 @@ import com.ibm.ets.ita.ce.store.model.CeSource;
 import com.ibm.ets.ita.ce.store.model.container.ContainerCeResult;
 import com.ibm.ets.ita.ce.store.model.container.ContainerSentenceLoadResult;
 import com.ibm.ets.ita.ce.store.model.rationale.CeRationaleReasoningStep;
-import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentence;
 
 public abstract class CeStoreRestApi extends ApiHandler {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private static final String CLASS_NAME = CeStoreRestApi.class.getName();
 	private static final String PACKAGE_NAME = CeStoreRestApi.class.getPackage().getName();
 	private static final Logger logger = Logger.getLogger(PACKAGE_NAME);
-
-	private static final String CONTENT_TYPE_MULTIPART_FORM = "multipart/form-data";
-
-	private static final String REQTYPE_ANY = "*/*";
-	private static final String REQTYPE_JSON = "application/json";
-	private static final String REQTYPE_TEXT = "text/plain";
-	private static final String REQTYPE_WEAKTEXT = "text";
-
-	private static final String METHOD_GET = "GET";
-	private static final String METHOD_PUT = "PUT";
-	private static final String METHOD_POST = "POST";
-	private static final String METHOD_DELETE = "DELETE";
-
-	private static final String STYLE_FULL = "full";
-	private static final String STYLE_SUMMARY = "summary";
-	private static final String STYLE_MINIMAL = "minimal";
-	private static final String STYLE_NORMALISED = "normalised";
-
-	private static final String REST_STORE = "stores";
-	protected static final String REST_SOURCE = "sources";
-	protected static final String REST_CONCEPT = "concepts";
-	protected static final String REST_INSTANCE = "instances";
-	protected static final String REST_SENTENCE = "sentences";
-	private static final String REST_QUERY = "queries";
-	private static final String REST_RULE = "rules";
-	protected static final String REST_PRIMARY = "primary";
-	protected static final String REST_SECONDARY = "secondary";
-	protected static final String REST_CHILDREN = "children";
-	protected static final String REST_PARENTS = "parents";
-	protected static final String REST_DIRECT = "direct";
-	protected static final String REST_FREQUENCY = "frequency";
-	protected static final String REST_COUNT = "count";
-	protected static final String REST_EXACT = "exact";
-	protected static final String REST_PROPERTY = "properties";
-	protected static final String REST_DATATYPE = "datatype";
-	protected static final String REST_OBJECT = "object";
-	protected static final String REST_RATIONALE = "rationale";
-	protected static final String REST_EXECUTE = "execute";
-
-	private static final String REST_SPECIAL = "special";
-	private static final String REST_CONMODEL = "models";
-	private static final String REST_HEADLINE = "headline";
-
-	protected static final String PARM_STARTTS = "startTimestamp";
-	protected static final String PARM_ENDTS = "endTimestamp";
-	protected static final String PARM_RETCE = "returnCe";
-	protected static final String PARM_RETINSTS = "returnInstances";
-	private static final String PARM_CETEXT = "ceText";
-	private static final String PARM_SHOWSTATS = "showStats";
-	private static final String PARM_STYLE = "style";
-	
-	private static final String HDR_ACCEPT = "Accept";
-
-	protected static final String VAL_UNDEFINED = "undefined";
 
 	protected WebActionContext wc = null;
 	private ModelBuilder mb = null;
@@ -139,10 +121,10 @@ public abstract class CeStoreRestApi extends ApiHandler {
 	public static String getCeStoreNameFrom(ArrayList<String> pRestParts) {
 		String result = null;
 
-		//The CE store name is found in the second element only if the first element is the "store" indicator, otherwise
-		//the default store name is used.
+		//The CE store name is found in the second element only if the first element
+		//is the "store" indicator, otherwise the default store name is used.
 		if ((pRestParts == null) || (pRestParts.size() <= 1)) {
-			result = ModelBuilder.CESTORENAME_DEFAULT;
+			result = CESTORENAME_DEFAULT;
 		} else {
 			if (pRestParts.get(0).equals(REST_STORE)) {
 				result = pRestParts.get(1);
@@ -186,7 +168,7 @@ public abstract class CeStoreRestApi extends ApiHandler {
 				statsInResponse = restHandler.processRequest();
 			} else {
 				if (pWc.getModelBuilder()==null) {
-					ModelBuilder tgtMb = getNamedModelBuilder(pWc, ModelBuilder.CESTORENAME_DEFAULT);
+					ModelBuilder tgtMb = getNamedModelBuilder(pWc, CESTORENAME_DEFAULT);
 					pWc.setModelBuilderAndCeStoreName(tgtMb);
 				}
 				
@@ -239,7 +221,7 @@ public abstract class CeStoreRestApi extends ApiHandler {
 		String urlRoot = pRequest.getContextPath();
 		String fullUrl = pRequest.getRequestURI();
 		String restUrl = fullUrl.replace(urlRoot, "");
-		String[] rawpRestParts = restUrl.split("/");
+		String[] rawpRestParts = restUrl.split("/");	//TODO: Abstract this
 
 		//Remove any empty parts (typically the first if the url starts with \)
 		for (String thisRawPart : rawpRestParts) {
@@ -262,7 +244,7 @@ public abstract class CeStoreRestApi extends ApiHandler {
 	protected static synchronized ModelBuilder getNamedModelBuilder(WebActionContext pWc, String pMbName) {
 		ModelBuilder result = ServletStateManager.getServletStateManager().getModelBuilder(pMbName);
 		
-		if (result == null && pMbName.toUpperCase().trim().equals(ModelBuilder.CESTORENAME_DEFAULT)) {
+		if (result == null && pMbName.toUpperCase().trim().equals(CESTORENAME_DEFAULT)) {
 			result = ServletStateManager.getServletStateManager().createModelBuilder(pWc, pMbName);
 		}
 		
@@ -348,7 +330,7 @@ public abstract class CeStoreRestApi extends ApiHandler {
 		String[] listVals = null;
 
 		if (rawVal != null) {
-			listVals = rawVal.split(",");
+			listVals = rawVal.split(TOKEN_COMMA);
 		}
 
 		return listVals;
@@ -463,7 +445,7 @@ public abstract class CeStoreRestApi extends ApiHandler {
 		String result = null;
 
 		//First try the named parameter
-		result = this.getUrlParameterValueNamed(PARM_CETEXT);
+		result = getUrlParameterValueNamed(PARM_CETEXT);
 
 		if ((result == null) || (result.isEmpty())) {
 			//If that is not specified try the post body
@@ -524,7 +506,7 @@ public abstract class CeStoreRestApi extends ApiHandler {
 		String result = "";
 
 		for (String thisPart : pRestParts) {
-			result += "/" + thisPart;
+			result += "/" + thisPart;		//TODO: Abstract this
 		}
 
 		return result;
@@ -576,17 +558,17 @@ public abstract class CeStoreRestApi extends ApiHandler {
 
 		//Add each set of sentences with a different primary/secondary flag
 		if (isDefaultStyle() || isSummaryStyle()) {
-			senWeb.generateSummaryListUsing(pSentencesPair.get(0), BuilderSentence.SENSOURCE_PRIMARY, jArr);
-			senWeb.generateSummaryListUsing(pSentencesPair.get(1), BuilderSentence.SENSOURCE_SECONDARY, jArr);
+			senWeb.generateSummaryListUsing(pSentencesPair.get(0), SENSOURCE_PRIMARY, jArr);
+			senWeb.generateSummaryListUsing(pSentencesPair.get(1), SENSOURCE_SECONDARY, jArr);
 		} else if (isMinimalStyle()) {
-			senWeb.generateMinimalListUsing(pSentencesPair.get(0), BuilderSentence.SENSOURCE_PRIMARY, jArr);
-			senWeb.generateMinimalListUsing(pSentencesPair.get(1), BuilderSentence.SENSOURCE_SECONDARY, jArr);
+			senWeb.generateMinimalListUsing(pSentencesPair.get(0), SENSOURCE_PRIMARY, jArr);
+			senWeb.generateMinimalListUsing(pSentencesPair.get(1), SENSOURCE_SECONDARY, jArr);
 		} else if (isNormalisedStyle()) {
-			senWeb.generateNormalisedListUsing(pSentencesPair.get(0), BuilderSentence.SENSOURCE_PRIMARY, jArr);
-			senWeb.generateNormalisedListUsing(pSentencesPair.get(1), BuilderSentence.SENSOURCE_SECONDARY, jArr);
+			senWeb.generateNormalisedListUsing(pSentencesPair.get(0), SENSOURCE_PRIMARY, jArr);
+			senWeb.generateNormalisedListUsing(pSentencesPair.get(1), SENSOURCE_SECONDARY, jArr);
 		} else {
-			senWeb.generateFullListUsing(pSentencesPair.get(0), BuilderSentence.SENSOURCE_PRIMARY, jArr);
-			senWeb.generateFullListUsing(pSentencesPair.get(1), BuilderSentence.SENSOURCE_SECONDARY, jArr);
+			senWeb.generateFullListUsing(pSentencesPair.get(0), SENSOURCE_PRIMARY, jArr);
+			senWeb.generateFullListUsing(pSentencesPair.get(1), SENSOURCE_SECONDARY, jArr);
 		}
 
 		getWebActionResponse().setStructuredResult(jArr);
@@ -622,8 +604,8 @@ public abstract class CeStoreRestApi extends ApiHandler {
 
 	protected void setInstanceListAsStructuredResult(Collection<CeInstance> pInstList) {
 		CeWebInstance instWeb = new CeWebInstance(this.wc);
-		boolean suppPropTypes = getBooleanParameterNamed(CeStoreRestApiInstance.PARM_SPTS, false);
-		String[] onlyProps = getListParameterNamed(CeStoreRestApiInstance.PARM_ONLYPROPS);
+		boolean suppPropTypes = getBooleanParameterNamed(PARM_SPTS, false);
+		String[] onlyProps = getListParameterNamed(PARM_ONLYPROPS);
 
 		if (isDefaultStyle() || isSummaryStyle()) {
 			getWebActionResponse().setStructuredResult(instWeb.generateSummaryListJsonFor(pInstList, onlyProps, suppPropTypes));
@@ -642,20 +624,20 @@ public abstract class CeStoreRestApi extends ApiHandler {
 	}
 
 	protected void setSentenceLoadResults(ContainerSentenceLoadResult pSenStats) {
-		boolean suppPropTypes = getBooleanParameterNamed(CeStoreRestApiInstance.PARM_SPTS, false);
-		String[] onlyProps = getListParameterNamed(CeStoreRestApiInstance.PARM_ONLYPROPS);
+		boolean suppPropTypes = getBooleanParameterNamed(PARM_SPTS, false);
+		String[] onlyProps = getListParameterNamed(PARM_ONLYPROPS);
 
 		CeWebSpecial webSpec = new CeWebSpecial(this.wc);
 		getWebActionResponse().setStructuredResult(webSpec.generateSentenceLoadResultsFrom(pSenStats, onlyProps, suppPropTypes));
 	}
 
 	protected void setCeResultAsStructuredResult(ContainerCeResult pCeResult, boolean pSuppressResult, boolean pReturnInstances) {
-		int numSteps = getNumericUrlParameterValueNamed(CeStoreRestApiInstance.PARM_STEPS, -1);
-		boolean relInsts = getBooleanParameterNamed(CeStoreRestApiInstance.PARM_RELINSTS, true);
-		boolean refInsts = getBooleanParameterNamed(CeStoreRestApiInstance.PARM_REFINSTS, true);
-		boolean suppPropTypes = getBooleanParameterNamed(CeStoreRestApiInstance.PARM_SPTS, false);
-		String[] limRels = getListParameterNamed(CeStoreRestApiInstance.PARM_LIMRELS);
-		String[] onlyProps = getListParameterNamed(CeStoreRestApiInstance.PARM_ONLYPROPS);
+		int numSteps = getNumericUrlParameterValueNamed(PARM_STEPS, -1);
+		boolean relInsts = getBooleanParameterNamed(PARM_RELINSTS, true);
+		boolean refInsts = getBooleanParameterNamed(PARM_REFINSTS, true);
+		boolean suppPropTypes = getBooleanParameterNamed(PARM_SPTS, false);
+		String[] limRels = getListParameterNamed(PARM_LIMRELS);
+		String[] onlyProps = getListParameterNamed(PARM_ONLYPROPS);
 
 		onlyProps = mergedPropertyRestrictionsFor(onlyProps, limRels);
 

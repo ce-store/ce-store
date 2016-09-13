@@ -1,25 +1,37 @@
 package com.ibm.ets.ita.ce.store.hudson.handler;
 
-/*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
- * All Rights Reserved
- *******************************************************************************/
-
+import static com.ibm.ets.ita.ce.store.names.CeNames.CONLIST_HUDSON;
+import static com.ibm.ets.ita.ce.store.names.CeNames.CON_CONFCON;
+import static com.ibm.ets.ita.ce.store.names.CeNames.PROP_CORRTO;
+import static com.ibm.ets.ita.ce.store.names.CeNames.MOD_COUNT;
+import static com.ibm.ets.ita.ce.store.names.CeNames.MOD_EXPAND;
+import static com.ibm.ets.ita.ce.store.names.CeNames.MOD_LINKSFROM;
+import static com.ibm.ets.ita.ce.store.names.CeNames.MOD_LINKSTO;
+import static com.ibm.ets.ita.ce.store.names.CeNames.MOD_LIST;
+import static com.ibm.ets.ita.ce.store.names.CeNames.MOD_LOCATE;
+import static com.ibm.ets.ita.ce.store.names.CeNames.MOD_SHOW;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_ANSWERS;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_A_CONF;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_A_RESTEXT;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_INTS;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_QUESTION;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_Q_TEXT;
+import static com.ibm.ets.ita.ce.store.names.CeNames.CON_SPATIAL;
+import static com.ibm.ets.ita.ce.store.names.CeNames.PROP_DESC;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportDebug;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonArray;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonParser;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
 import com.ibm.ets.ita.ce.store.hudson.model.ConceptPhrase;
 import com.ibm.ets.ita.ce.store.hudson.model.InstancePhrase;
 import com.ibm.ets.ita.ce.store.hudson.model.Interpretation;
 import com.ibm.ets.ita.ce.store.hudson.model.PropertyPhrase;
-import com.ibm.ets.ita.ce.store.hudson.model.Question;
 import com.ibm.ets.ita.ce.store.hudson.model.SpecialPhrase;
 import com.ibm.ets.ita.ce.store.hudson.model.special.SpMatchedTriple;
 import com.ibm.ets.ita.ce.store.hudson.model.special.SpMultiMatch;
@@ -29,50 +41,34 @@ import com.ibm.ets.ita.ce.store.model.CeInstance;
 import com.ibm.ets.ita.ce.store.model.CeProperty;
 import com.ibm.ets.ita.ce.store.model.CePropertyInstance;
 
-public class QuestionAnswererHandler extends QuestionHandler {
+public class QuestionAnswererHandler extends GenericHandler {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
-	private static final String MOD_EXPAND = "general:expand";
-	private static final String MOD_LINKSFROM = "general:linksFrom";
-	private static final String MOD_LINKSTO = "general:linksTo";
-	private static final String MOD_LOCATE = "general:locate";
-	private static final String MOD_COUNT = "general:count";
-	private static final String MOD_LIST = "general:list";
-	private static final String MOD_SHOW = "general:show";
-
-	private static final String CON_QPHRASE = "question phrase";
-	private static final String CON_QWORD = "question word";
-	private static final String CON_COMWORD = "common word";
-	private static final String CON_CONNWORD = "connector word";
-
-	private static final String[] CONLIST_OTHERS = { CON_QPHRASE, CON_QWORD, CON_COMWORD, CON_MODIFIER, CON_CONNWORD };
-
-	//TODO: All of these need to be handled by the interpreter function
-//	private static final String MOD_RESET = "general:reset";
-//	private static final String MOD_CLEARCACHE = "general:clearcache";
-//	private static final String MOD_STATS = "general:stats";
-//	private static final String MOD_CESAVE = "ce:save";
-
-	private String interpretationJson = null;
-	private String answerText = "";
-
+	private CeStoreJsonObject interpretationJson = null;
 	private Interpretation interpretation = null;
+	private HashSet<CeInstance> domainInstances = null;
+	private HashSet<CeInstance> otherInstances = null;
+	private String answerText = null;
 
-	HashSet<CeInstance> domainInstances = null;
-	HashSet<CeInstance> otherInstances = null;
+	public QuestionAnswererHandler(ActionContext pAc, String pIntJson, long pStartTime) {
+		super(pAc, pStartTime);
 
-	public QuestionAnswererHandler(ActionContext pAc, boolean pDebug, String pQt, long pStartTime) {
-		super(pAc, pDebug, Question.create(pQt), pStartTime);
+		this.answerText = "";
+
+		CeStoreJsonParser sjp = new CeStoreJsonParser(pAc, pIntJson);
+		sjp.parse();
+
+		if (sjp.hasRootJsonObject()) {
+			this.interpretationJson = sjp.getRootJsonObject();
+		} else {
+			reportError("No JSON Object with interpretations found", this.ac);
+		}
 	}
 
-	@Override
-	public CeStoreJsonObject handleQuestion() {
+	public CeStoreJsonObject processInterpretation() {
 		CeStoreJsonObject result = null;
 
-		//TODO: Move this code away from using this.question as it is not relevant
-		this.interpretationJson = this.question.getQuestionText();
-
-		processInterpretation();
+		doInterpretationProcessing();
 		answerQuestion();
 
 		result = createResult();
@@ -80,43 +76,25 @@ public class QuestionAnswererHandler extends QuestionHandler {
 		return result;
 	}
 
-	public Interpretation getInterpretation() {
-		return this.interpretation;
-	}
-
-	public ArrayList<ConceptPhrase> getConceptPhrases() {
+	private ArrayList<ConceptPhrase> listConceptPhrases() {
 		return this.interpretation.getConceptPhrases();
 	}
 	
-	public ArrayList<InstancePhrase> getInstancePhrases() {
+	private ArrayList<InstancePhrase> listInstancePhrases() {
 		return this.interpretation.getBestInstancePhrases();
 	}
 	
-	public ArrayList<PropertyPhrase> getPropertyPhrases() {
+	private ArrayList<PropertyPhrase> listPropertyPhrases() {
 		return this.interpretation.getPropertyPhrases();
 	}
 	
-	public ArrayList<SpecialPhrase> getSpecialPhrases() {
+	private ArrayList<SpecialPhrase> listSpecialPhrases() {
 		return this.interpretation.getSpecialPhrases();
 	}
 	
-	private void processInterpretation() {
-		CeStoreJsonObject jObj = null;
-
-		CeStoreJsonParser sjp = new CeStoreJsonParser(this.ac, this.interpretationJson);
-		sjp.parse();
-
-		if (sjp.hasRootJsonObject()) {
-			jObj = sjp.getRootJsonObject();
-		} else {
-			reportError("No JSON Object with interpretations found", this.ac);
-		}
-
-		if (jObj != null) {
-			CeStoreJsonObject jQues = (CeStoreJsonObject)jObj.get(this.ac, "question");
-			CeStoreJsonArray jInts = (CeStoreJsonArray)jObj.get(this.ac, "interpretations");
-
-			this.question = new Question(jQues);
+	private void doInterpretationProcessing() {
+		if (this.interpretationJson != null) {
+			CeStoreJsonArray jInts = (CeStoreJsonArray)this.interpretationJson.get(this.ac, JSON_INTS);
 
 			if (!jInts.isEmpty()) {
 				CeStoreJsonObject jFirstInt = (CeStoreJsonObject)jInts.get(0);
@@ -125,7 +103,7 @@ public class QuestionAnswererHandler extends QuestionHandler {
 					this.interpretation = new Interpretation(this.ac, jFirstInt);
 				}
 
-				//TODO: Need to handle additional interpretations
+				//TODO: Need to handle additional interpretations when implemented
 			}
 
 			filterInstances();
@@ -133,8 +111,7 @@ public class QuestionAnswererHandler extends QuestionHandler {
 	}
 
 	private void answerQuestion() {
-//		debugInstances();
-
+		//TODO: This needs to be improved.  For now it just attempts various special matches first
 		if (hasMultiMatches()) {
 			tryMultiMatchAnswer();
 		} else if (hasMatchedTriples()) {
@@ -147,10 +124,10 @@ public class QuestionAnswererHandler extends QuestionHandler {
 	private boolean hasMatchedTriples() {
 		boolean result = false;
 
-		if (!getSpecialPhrases().isEmpty()) {
-			for (SpecialPhrase thisSpecPhrase : getSpecialPhrases()) {
-				SpThing thisSp = thisSpecPhrase.getSpecial();
+		for (SpecialPhrase thisSpecPhrase : listSpecialPhrases()) {
+			SpThing thisSp = thisSpecPhrase.getSpecial();
 
+			if (thisSp != null) {
 				if (thisSp.isMatchedTriple()) {
 					result = true;
 					break;
@@ -164,10 +141,10 @@ public class QuestionAnswererHandler extends QuestionHandler {
 	private boolean hasMultiMatches() {
 		boolean result = false;
 
-		if (!getSpecialPhrases().isEmpty()) {
-			for (SpecialPhrase thisSpecPhrase : getSpecialPhrases()) {
-				SpThing thisSp = thisSpecPhrase.getSpecial();
+		for (SpecialPhrase thisSpecPhrase : listSpecialPhrases()) {
+			SpThing thisSp = thisSpecPhrase.getSpecial();
 
+			if (thisSp != null) {
 				if (thisSp.isMultiMatch()) {
 					result = true;
 					break;
@@ -179,21 +156,25 @@ public class QuestionAnswererHandler extends QuestionHandler {
 	}
 
 	private void tryMatchedTripleAnswer() {
-		for (SpecialPhrase thisSpecPhrase : getSpecialPhrases()) {
+		for (SpecialPhrase thisSpecPhrase : listSpecialPhrases()) {
 			SpThing thisSp = thisSpecPhrase.getSpecial();
 
-			if (thisSp.isMatchedTriple()) {
-				matchedTripleAnswerFor((SpMatchedTriple)thisSp);
+			if (thisSp != null) {
+				if (thisSp.isMatchedTriple()) {
+					matchedTripleAnswerFor((SpMatchedTriple)thisSp);
+				}
 			}
 		}
 	}
 	
 	private void tryMultiMatchAnswer() {
-		for (SpecialPhrase thisSpecPhrase : getSpecialPhrases()) {
+		for (SpecialPhrase thisSpecPhrase : listSpecialPhrases()) {
 			SpThing thisSp = thisSpecPhrase.getSpecial();
 
-			if (thisSp.isMultiMatch()) {
-				multiMatchAnswerFor((SpMultiMatch)thisSp);
+			if (thisSp != null) {
+				if (thisSp.isMultiMatch()) {
+					multiMatchAnswerFor((SpMultiMatch)thisSp);
+				}
 			}
 		}
 	}
@@ -213,7 +194,7 @@ public class QuestionAnswererHandler extends QuestionHandler {
 		CeInstance matchedInst = pMm.getMatchedInstance();
 
 		if (matchedInst != null) {
-			String desc = matchedInst.getSingleValueFromPropertyNamed("description");
+			String desc = matchedInst.getSingleValueFromPropertyNamed(PROP_DESC);
 
 			if ((desc!= null) && (!desc.isEmpty())) {
 				appendToAnswer(desc);
@@ -226,8 +207,8 @@ public class QuestionAnswererHandler extends QuestionHandler {
 	}
 
 	private void tryNormalAnswer() {
-		if (getConceptPhrases().isEmpty()) {
-			if (getPropertyPhrases().isEmpty()) {
+		if (listConceptPhrases().isEmpty()) {
+			if (listPropertyPhrases().isEmpty()) {
 				if (this.domainInstances.isEmpty()) {
 					//no concepts, no properties, no domain instances
 					handleEverythingEmpty();
@@ -245,7 +226,7 @@ public class QuestionAnswererHandler extends QuestionHandler {
 				}
 			}
 		} else {
-			if (getPropertyPhrases().isEmpty()) {
+			if (listPropertyPhrases().isEmpty()) {
 				if (this.domainInstances.isEmpty()) {
 					//some concepts, no properties, no domain instances
 					handleJustConcepts();
@@ -298,7 +279,7 @@ public class QuestionAnswererHandler extends QuestionHandler {
 		
 		instName = pInst.getInstanceName();
 		
-		for (PropertyPhrase thisPp : getPropertyPhrases()) {
+		for (PropertyPhrase thisPp : listPropertyPhrases()) {
 			for (CeProperty thisProp : thisPp.getProperties()) {
 				for (CePropertyInstance thisPi : pInst.getPropertyInstances()) {
 					CeProperty innerProp = thisPi.getRelatedProperty();
@@ -340,9 +321,9 @@ public class QuestionAnswererHandler extends QuestionHandler {
 
 	private void handleJustConcepts() {
 		if (isList()) {
-			answerListFor(getConceptPhrases());
+			answerListFor(listConceptPhrases());
 		} else {
-			for (ConceptPhrase thisCp : getConceptPhrases()) {
+			for (ConceptPhrase thisCp : listConceptPhrases()) {
 				for (CeConcept thisCon : thisCp.getConcepts()) {
 					answerConceptQuestionFor(thisCon);
 				}
@@ -370,7 +351,7 @@ public class QuestionAnswererHandler extends QuestionHandler {
 		ArrayList<CeInstance> result = new ArrayList<CeInstance>();
 
 		for (CeInstance thisInst : this.domainInstances) {
-			for (ConceptPhrase thisCp : getConceptPhrases()) {
+			for (ConceptPhrase thisCp : listConceptPhrases()) {
 				for (CeConcept thisCon : thisCp.getConcepts()) {
 					if (thisInst.isConcept(thisCon)) {
 						result.add(thisInst);
@@ -555,7 +536,7 @@ public class QuestionAnswererHandler extends QuestionHandler {
 
 	private String answerSummaryFor(CeInstance pInst) {
 		String result = null;
-		String descText = pInst.getSingleValueFromPropertyNamed("description");
+		String descText = pInst.getSingleValueFromPropertyNamed(PROP_DESC);
 		
 		if ((descText != null) && (!descText.isEmpty())) {
 			result = descText;
@@ -637,30 +618,16 @@ public class QuestionAnswererHandler extends QuestionHandler {
 		return result;
 	}
 
-//	private void debugInstances() {
-//System.out.println("Domain instances");
-//
-//		for (CeInstance thisInst : this.domainInstances) {
-//System.out.println("  " + thisInst.getInstanceName());
-//		}
-//
-//System.out.println("Other instances");
-//
-//		for (CeInstance thisInst : this.otherInstances) {
-//System.out.println("  " + thisInst.getInstanceName());
-//		}
-//	}
-
 	private void filterInstances() {
 		this.domainInstances = new HashSet<CeInstance>();
 		this.otherInstances = new HashSet<CeInstance>();
 
-		for (InstancePhrase thisIp : getInstancePhrases()) {
+		for (InstancePhrase thisIp : listInstancePhrases()) {
 			for (CeInstance thisInst : thisIp.getInstances()) {
 				boolean alreadyProcessed = false;
 
 				if (!thisInst.isOnlyConceptNamed(this.ac, CON_CONFCON)) {
-					if (thisInst.isConceptNamed(this.ac, CONLIST_OTHERS)) {
+					if (thisInst.isConceptNamed(this.ac, CONLIST_HUDSON)) {
 						this.otherInstances.add(thisInst);
 						alreadyProcessed = true;
 					}
@@ -688,16 +655,24 @@ public class QuestionAnswererHandler extends QuestionHandler {
 		CeStoreJsonArray jAnswers = new CeStoreJsonArray();
 		CeStoreJsonObject jFirstAnswer = new CeStoreJsonObject();
 		CeStoreJsonObject jQuestion = new CeStoreJsonObject();
-		
-		jQuestion.put("text", this.question.getQuestionText());
 
-		jFirstAnswer.put("result text", this.answerText);
-		jFirstAnswer.put("confidence", 100);
+		CeStoreJsonObject jQues = (CeStoreJsonObject)this.interpretationJson.get(this.ac, JSON_QUESTION);
+
+		if (jQues != null) {
+			String qText = jQues.getString(JSON_Q_TEXT);
+
+			if ((qText != null) && (!qText.isEmpty())) {
+				jQuestion.put(JSON_Q_TEXT, qText);
+			}
+		}
+
+		jFirstAnswer.put(JSON_A_RESTEXT, this.answerText);
+		jFirstAnswer.put(JSON_A_CONF, 100);	//TODO: This should not be hardcoded
 
 		jAnswers.add(jFirstAnswer);
 
-		jResult.put("question", jQuestion);
-		jResult.put("answers", jAnswers);
+		jResult.put(JSON_QUESTION, jQuestion);
+		jResult.put(JSON_ANSWERS, jAnswers);
 
 		return jResult;
 	}

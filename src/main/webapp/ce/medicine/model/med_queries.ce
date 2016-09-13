@@ -1,5 +1,5 @@
 -- --------------------------------------------------------------------------
--- (C) Copyright IBM Corporation  2011, 2015
+-- (C) Copyright IBM Corporation  2011, 2016
 -- All Rights Reserved
 -- --------------------------------------------------------------------------
 
@@ -135,4 +135,3 @@ for which R and T is it true that
   ( the medical report R has the value T as text and mentions the person 'Fred' and mentions the person P2 ) and
   ( the value P2 != 'Fred' )
 .
-

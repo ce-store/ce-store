@@ -1,10 +1,35 @@
 package com.ibm.ets.ita.ce.store.parsing.tokenizer;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_A;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_AN;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_VALUE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_IS;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_HAS;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_AS;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_AND;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_THAT;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_THE;
+import static com.ibm.ets.ita.ce.store.names.CeNames.CON_SEQUENCE;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.PROPDEF_PREFIX;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.PROPDEF_SUFFIX;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_1;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_AT;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_CONCEPTUALISE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_CONCEPTUALIZE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_DEFINE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_EXACTLY;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_MOST;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_ONE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_TILDE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.SCELABEL_CONCEPT;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.SCELABEL_CONNECTOR;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.SCELABEL_NORMAL;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.SCELABEL_PROP;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
 
 import java.util.ArrayList;
@@ -15,7 +40,7 @@ import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentence;
 import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentenceModel;
 
 public class TokenizerModelSentence extends TokenizerSentence {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private static final int TEST_SKIP = 0;
 	private static final int TEST_SKIP_TORANGE = 1;
@@ -39,18 +64,6 @@ public class TokenizerModelSentence extends TokenizerSentence {
 	private static final int TEST_SEEKPHRASE3 = -30;
 	private static final int TEST_IDENTIFIERHACK = -40;
 	private static final int TEST_END = -100;
-
-	public static final String TOKEN_CONCEPTUALISE1 = "conceptualise";
-	public static final String TOKEN_CONCEPTUALISE2 = "conceptualize";
-	public static final String TOKEN_CONCEPTUALISE3 = "define";
-	public static final String TOKEN_TILDE = "~";
-	public static final String TOKEN_EXACTLY = "exactly";
-	public static final String TOKEN_AT = "at";
-	public static final String TOKEN_MOST = "most";
-	public static final String TOKEN_ONE = "one";
-	public static final String TOKEN_1 = "1";
-
-	private static final String CONCEPT_SEQUENCE = "sequence";
 
 	private static final String MARKER_BLANK_PROPVAR = "(none)";
 
@@ -408,12 +421,12 @@ public class TokenizerModelSentence extends TokenizerSentence {
 				storePropertyVariableName(MARKER_BLANK_PROPVAR);
 				result = TEST_IDENTIFIERHACK;
 			}
-			this.getTargetSentence().addFinalToken(SCELABEL_CONCEPT, "", this.ac.getModelBuilder().getCachedStringValueLevel1(pRawToken));
+			getTargetSentence().addFinalToken(SCELABEL_CONCEPT, "", this.ac.getModelBuilder().getCachedStringValueLevel1(pRawToken));
 		} else {
 			if (this.lastConNameSequence) {
 				if (pRawToken.equals("(")) {
-					this.getTargetSentence().addFinalToken(SCELABEL_CONCEPT, "", CONCEPT_SEQUENCE);
-					this.propertyRangeName = CONCEPT_SEQUENCE;
+					getTargetSentence().addFinalToken(SCELABEL_CONCEPT, "", CON_SEQUENCE);
+					this.propertyRangeName = CON_SEQUENCE;
 					this.inSequence = true;
 				}
 			}
@@ -422,7 +435,7 @@ public class TokenizerModelSentence extends TokenizerSentence {
 			if (this.inSequence) {
 				//In a sequence, so ignore everything until out of it
 				//TODO: Implement sequence processing properly
-				this.getTargetSentence().addFinalToken(SCELABEL_CONCEPT, "", this.ac.getModelBuilder().getCachedStringValueLevel1(pRawToken));
+				getTargetSentence().addFinalToken(SCELABEL_CONCEPT, "", this.ac.getModelBuilder().getCachedStringValueLevel1(pRawToken));
 			} else {
 				//Normal processing
 				if (isInFnMode()) {
@@ -431,7 +444,7 @@ public class TokenizerModelSentence extends TokenizerSentence {
 					result = processVsRange(pRawToken, pMarker, pPos);
 				}
 
-				if (pRawToken.equals(CONCEPT_SEQUENCE)) {
+				if (pRawToken.equals(CON_SEQUENCE)) {
 					this.lastConNameSequence = true;
 				}
 			}
@@ -506,8 +519,8 @@ public class TokenizerModelSentence extends TokenizerSentence {
 			this.singleCardinality = true;
 			result = TEST_SEEKRANGE;
 		} else if ((pRawToken.equals(TOKEN_AND)) || (pMarker == TEST_END)) {
-			if ((pPos != -1) && (this.getTargetSentence().getRawTokens().size() > (pPos + 1))) {
-				String nextWord = this.getTargetSentence().getRawTokens().get(pPos + 1);
+			if ((pPos != -1) && (getTargetSentence().getRawTokens().size() > (pPos + 1))) {
+				String nextWord = getTargetSentence().getRawTokens().get(pPos + 1);
 
 				//Added by Dave Braines - if the next word is not a tilde or has then this delimiter is actually part of a concept name
 				if (nextWord.equals(TOKEN_TILDE) || nextWord.equals(TOKEN_HAS)) {
@@ -549,7 +562,7 @@ public class TokenizerModelSentence extends TokenizerSentence {
 			doPropertyProcessing();
 			result = TEST_SKIP;
 		} else {
-			reportError("Unexpected failure in identifier name processing (" + pRawToken + ")... the word 'identifier' was not found after the sequence, for:" + this.getTargetSentence().getSentenceText(), this.ac);
+			reportError("Unexpected failure in identifier name processing (" + pRawToken + ")... the word 'identifier' was not found after the sequence, for:" + getTargetSentence().getSentenceText(), this.ac);
 		}
 
 		return result;
@@ -560,14 +573,14 @@ public class TokenizerModelSentence extends TokenizerSentence {
 		int result = pMarker;
 
 		if (pMarker == TEST_SEEKPHRASE1_A) {
-			if (pRawToken.equals(TOKEN_CONCEPTUALISE1) || pRawToken.equals(TOKEN_CONCEPTUALISE2) || pRawToken.equals(TOKEN_CONCEPTUALISE3)) {
+			if (pRawToken.equals(TOKEN_CONCEPTUALISE) || pRawToken.equals(TOKEN_CONCEPTUALIZE) || pRawToken.equals(TOKEN_DEFINE)) {
 				this.phraseToken = pRawToken;
-				if (pRawToken.equals(TOKEN_CONCEPTUALISE1)) {
-					getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_CONCEPTUALISE1);
-				} else if (pRawToken.equals(TOKEN_CONCEPTUALISE2)) {
-					getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_CONCEPTUALISE2);
+				if (pRawToken.equals(TOKEN_CONCEPTUALISE)) {
+					getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_CONCEPTUALISE);
+				} else if (pRawToken.equals(TOKEN_CONCEPTUALIZE)) {
+					getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_CONCEPTUALIZE);
 				} else {
-					getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_CONCEPTUALISE3);
+					getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_DEFINE);
 				}
 				result = TEST_SEEKPHRASE1_B;		// Continue the test (looking for a|an)
 			} else {
@@ -938,6 +951,7 @@ public class TokenizerModelSentence extends TokenizerSentence {
 	}
 
 	private String calcPropLabel() {
+		StringBuilder sb = new StringBuilder();
 		String domConName = "";
 
 		if (getTargetSentence() != null) {
@@ -948,7 +962,13 @@ public class TokenizerModelSentence extends TokenizerSentence {
 			}
 		}
 
-		return SCELABEL_PROPDEF(domConName, this.propertyRangeName);
+		sb.append(PROPDEF_PREFIX);
+		sb.append(domConName);
+		sb.append(",");
+		sb.append(this.propertyRangeName);
+		sb.append(PROPDEF_SUFFIX);
+
+		return sb.toString();
 	}
 
 	private void storePropertyLabelNamed(String pPropLabel) {

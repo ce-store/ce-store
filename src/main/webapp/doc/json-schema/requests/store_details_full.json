@@ -1,7 +1,0 @@
-{
-	"$schema": "http://json-schema.org/draft-04/schema#",
-	"title": "Store details (full)",
-	"description": "Used to return the summary details for a specific CE Store",
-	"type": "object",
-	"$ref": "./doc/json-schema/objects/store_summary.json#definitions/store"
-}

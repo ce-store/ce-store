@@ -1,14 +1,11 @@
 package com.ibm.ets.ita.ce.store.hudson.model.special;
 
-/*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
- * All Rights Reserved
- *******************************************************************************/
+import static com.ibm.ets.ita.ce.store.names.JsonNames.SPEC_LINKEDINST;
 
 import java.util.ArrayList;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
 import com.ibm.ets.ita.ce.store.hudson.handler.QuestionInterpreterHandler;
 import com.ibm.ets.ita.ce.store.hudson.model.conversation.MatchedItem;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
@@ -17,7 +14,6 @@ import com.ibm.ets.ita.ce.store.model.CeProperty;
 public class SpLinkedInstance extends SpThing {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
-	private static final String TYPE_NAME = "linked instance";
 	private static final String JSON_MINST = "matched instance";
 	private static final String JSON_LINST = "linked instances";
 	private static final String JSON_PROP = "property";
@@ -57,7 +53,7 @@ public class SpLinkedInstance extends SpThing {
 	public CeStoreJsonObject toJson(ActionContext pAc) {
 		CeStoreJsonObject jResult = new CeStoreJsonObject();
 
-		addStandardFields(jResult, TYPE_NAME);
+		addStandardFields(jResult, SPEC_LINKEDINST);
 
 		jResult.put(JSON_MINST, QuestionInterpreterHandler.jsonFor(pAc, getMatchedInstance().getInstance()));
 		jResult.put(JSON_LINST, QuestionInterpreterHandler.jsonFor(pAc, getLinkedInstances()));

@@ -1,9 +1,32 @@
 package com.ibm.ets.ita.ce.store.client.web.model;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
+
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_TYPE;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_STYLE;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_ID;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_LABEL;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SHADOW;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_CREATED;
+import static com.ibm.ets.ita.ce.store.names.RestNames.STYLE_FULL;
+import static com.ibm.ets.ita.ce.store.names.RestNames.STYLE_SUMMARY;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_PROPVALS;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_PROPTYPES;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_PROPRAT;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_PRISEN_COUNT;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SECSEN_COUNT;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_INSTANCE_NAME;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_DIR_CONCEPT_NAMES;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_INH_CONCEPT_NAMES;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_CONCEPT_NAMES;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_NORM_CONCEPTS;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_ICON;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSONTYPE_INST;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.PROPTYPE_DATATYPE;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.PROPTYPE_OBJECT;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,35 +34,17 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.TreeMap;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonArray;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
-import com.ibm.ets.ita.ce.store.handler.QueryHandler;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
+import com.ibm.ets.ita.ce.store.core.QueryHandler;
 import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
 import com.ibm.ets.ita.ce.store.model.CePropertyInstance;
 import com.ibm.ets.ita.ce.store.model.rationale.CeRationaleReasoningStep;
 
 public class CeWebInstance extends CeWebObject {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
-
-	// JSON Response Keys
-	private static final String KEY_PROPVALS = "property_values";
-	private static final String KEY_PROPTYPES = "property_types";
-	private static final String KEY_PROPRAT = "property_rationale";
-
-	private static final String KEY_PRISEN_COUNT = "primary_sentence_count";
-	private static final String KEY_SECSEN_COUNT = "secondary_sentence_count";
-	private static final String KEY_INSTANCE_NAME = "instance_name";
-	private static final String KEY_DIR_CONCEPT_NAMES = "direct_concept_names";
-	private static final String KEY_INH_CONCEPT_NAMES = "inherited_concept_names";
-	private static final String KEY_CONCEPT_NAMES = "concept_names";
-	private static final String KEY_NORM_CONCEPTS = "_concept";
-	private static final String KEY_ICON = "icon";
-
-	private static final String TYPE_INST = "instance";
-	private static final String PROPTYPE_DATATYPE = "D";
-	private static final String PROPTYPE_OBJECT = "O";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	public CeWebInstance(ActionContext pAc) {
 		super(pAc);
@@ -217,20 +222,20 @@ public class CeWebInstance extends CeWebObject {
 			onlyPropList = new ArrayList<String>();
 		}
 
-		putStringValueIn(mainObj, KEY_TYPE, TYPE_INST);
-		putStringValueIn(mainObj, KEY_STYLE, STYLE_FULL);
-		putStringValueIn(mainObj, KEY_ID, pInst.getInstanceName());
-		putLongValueIn(mainObj, KEY_CREATED, pInst.getCreationDate());
-		putBooleanValueIn(mainObj, KEY_SHADOW, pInst.isShadowEntity());
-		putStringValueIn(mainObj, KEY_LABEL, pInst.calculateLabel(this.ac));
+		putStringValueIn(mainObj, JSON_TYPE, JSONTYPE_INST);
+		putStringValueIn(mainObj, JSON_STYLE, STYLE_FULL);
+		putStringValueIn(mainObj, JSON_ID, pInst.getInstanceName());
+		putLongValueIn(mainObj, JSON_CREATED, pInst.getCreationDate());
+		putBooleanValueIn(mainObj, JSON_SHADOW, pInst.isShadowEntity());
+		putStringValueIn(mainObj, JSON_LABEL, pInst.calculateLabel(this.ac));
 
 		processAnnotations(pInst, mainObj);
 
-		putStringValueIn(mainObj, KEY_ICON, pInst.calculateIconFilename(this.ac));
+		putStringValueIn(mainObj, JSON_ICON, pInst.calculateIconFilename(this.ac));
 
 		ArrayList<String> dirConNames = pInst.calculateAllDirectConceptNames();
-		putAllStringValuesIn(mainObj, KEY_DIR_CONCEPT_NAMES, dirConNames);
-		putAllStringValuesIn(mainObj, KEY_INH_CONCEPT_NAMES, pInst.calculateAllInheritedConceptNames(dirConNames));
+		putAllStringValuesIn(mainObj, JSON_DIR_CONCEPT_NAMES, dirConNames);
+		putAllStringValuesIn(mainObj, JSON_INH_CONCEPT_NAMES, pInst.calculateAllInheritedConceptNames(dirConNames));
 
 		CeStoreJsonObject propValsObj = new CeStoreJsonObject();
 		CeStoreJsonObject propTypesObj = new CeStoreJsonObject();
@@ -271,18 +276,18 @@ public class CeWebInstance extends CeWebObject {
 			}
 		}
 
-		putObjectValueIn(mainObj, KEY_PROPVALS, propValsObj);
+		putObjectValueIn(mainObj, JSON_PROPVALS, propValsObj);
 
 		if (!pSuppPropTypes) {
-			putObjectValueIn(mainObj, KEY_PROPTYPES, propTypesObj);
+			putObjectValueIn(mainObj, JSON_PROPTYPES, propTypesObj);
 		}
 
 		if (!propRatObj.isEmpty()) {
-			putObjectValueIn(mainObj, KEY_PROPRAT, propRatObj);
+			putObjectValueIn(mainObj, JSON_PROPRAT, propRatObj);
 		}
 
-		putIntValueIn(mainObj, KEY_PRISEN_COUNT, pInst.countPrimarySentences());
-		putIntValueIn(mainObj, KEY_SECSEN_COUNT, pInst.countSecondarySentences());
+		putIntValueIn(mainObj, JSON_PRISEN_COUNT, pInst.countPrimarySentences());
+		putIntValueIn(mainObj, JSON_SECSEN_COUNT, pInst.countSecondarySentences());
 
 		return mainObj;
 	}
@@ -369,21 +374,21 @@ public class CeWebInstance extends CeWebObject {
 			onlyPropList = new ArrayList<String>();
 		}
 
-		putStringValueIn(mainObj, KEY_TYPE, TYPE_INST);
-		putStringValueIn(mainObj, KEY_STYLE, STYLE_SUMMARY);
-		putStringValueIn(mainObj, KEY_ID, pInst.getInstanceName());
-		putLongValueIn(mainObj, KEY_CREATED, pInst.getCreationDate());
-		putBooleanValueIn(mainObj, KEY_SHADOW, pInst.isShadowEntity());
-		putStringValueIn(mainObj, KEY_LABEL, pInst.calculateLabel(this.ac));
+		putStringValueIn(mainObj, JSON_TYPE, JSONTYPE_INST);
+		putStringValueIn(mainObj, JSON_STYLE, STYLE_SUMMARY);
+		putStringValueIn(mainObj, JSON_ID, pInst.getInstanceName());
+		putLongValueIn(mainObj, JSON_CREATED, pInst.getCreationDate());
+		putBooleanValueIn(mainObj, JSON_SHADOW, pInst.isShadowEntity());
+		putStringValueIn(mainObj, JSON_LABEL, pInst.calculateLabel(this.ac));
 
 		processAnnotations(pInst, mainObj);
 
-		putStringValueIn(mainObj, KEY_ICON, pInst.calculateIconFilename(this.ac));
+		putStringValueIn(mainObj, JSON_ICON, pInst.calculateIconFilename(this.ac));
 
 		ArrayList<String> dirConNames = pInst.calculateAllDirectConceptNames();
 
-		putAllStringValuesIn(mainObj, KEY_DIR_CONCEPT_NAMES, dirConNames);
-		putAllStringValuesIn(mainObj, KEY_INH_CONCEPT_NAMES, pInst.calculateAllInheritedConceptNames(dirConNames));
+		putAllStringValuesIn(mainObj, JSON_DIR_CONCEPT_NAMES, dirConNames);
+		putAllStringValuesIn(mainObj, JSON_INH_CONCEPT_NAMES, pInst.calculateAllInheritedConceptNames(dirConNames));
 
 		CeStoreJsonObject propValsObj = new CeStoreJsonObject();
 		CeStoreJsonObject propTypesObj = new CeStoreJsonObject();
@@ -405,14 +410,14 @@ public class CeWebInstance extends CeWebObject {
 			}
 		}
 
-		putObjectValueIn(mainObj, KEY_PROPVALS, propValsObj);
+		putObjectValueIn(mainObj, JSON_PROPVALS, propValsObj);
 
 		if (!pSuppPropTypes) {
-			putObjectValueIn(mainObj, KEY_PROPTYPES, propTypesObj);
+			putObjectValueIn(mainObj, JSON_PROPTYPES, propTypesObj);
 		}
 
-		putIntValueIn(mainObj, KEY_PRISEN_COUNT, pInst.countPrimarySentences());
-		putIntValueIn(mainObj, KEY_SECSEN_COUNT, pInst.countSecondarySentences());
+		putIntValueIn(mainObj, JSON_PRISEN_COUNT, pInst.countPrimarySentences());
+		putIntValueIn(mainObj, JSON_SECSEN_COUNT, pInst.countSecondarySentences());
 
 		return mainObj;
 	}
@@ -427,7 +432,7 @@ public class CeWebInstance extends CeWebObject {
 			onlyPropList = new ArrayList<String>();
 		}
 
-		putStringValueIn(mainObj, KEY_ID, pInst.getInstanceName());
+		putStringValueIn(mainObj, JSON_ID, pInst.getInstanceName());
 
 		ArrayList<String> conNames = new ArrayList<String>();
 
@@ -437,7 +442,7 @@ public class CeWebInstance extends CeWebObject {
 			}
 		}
 
-		putAllStringValuesIn(mainObj, KEY_CONCEPT_NAMES, conNames);
+		putAllStringValuesIn(mainObj, JSON_CONCEPT_NAMES, conNames);
 
 		CeStoreJsonObject propValsObj = new CeStoreJsonObject();
 
@@ -452,7 +457,7 @@ public class CeWebInstance extends CeWebObject {
 			}
 		}
 
-		putObjectValueIn(mainObj, KEY_PROPVALS, propValsObj);
+		putObjectValueIn(mainObj, JSON_PROPVALS, propValsObj);
 
 		return mainObj;
 	}
@@ -467,7 +472,7 @@ public class CeWebInstance extends CeWebObject {
 			onlyPropList = new ArrayList<String>();
 		}
 
-		putStringValueIn(mainObj, KEY_ID, pInst.getInstanceName());
+		putStringValueIn(mainObj, JSON_ID, pInst.getInstanceName());
 
 		ArrayList<String> conNames = new ArrayList<String>();
 
@@ -477,7 +482,7 @@ public class CeWebInstance extends CeWebObject {
 			}
 		}
 
-		putAllStringValuesIn(mainObj, KEY_NORM_CONCEPTS, conNames);
+		putAllStringValuesIn(mainObj, JSON_NORM_CONCEPTS, conNames);
 
 		for (CePropertyInstance thisPi : pInst.getPropertyInstances()) {
 			if (isValidProperty(thisPi, onlyPropList)) {
@@ -548,13 +553,13 @@ public class CeWebInstance extends CeWebObject {
 	}
 
 	// Diverse concept instance details response:
-	// KEY_INSTANCE_NAME
-	// KEY_CONCEPT_NAMES[]
+	// JSON_INSTANCE_NAME
+	// JSON_CONCEPT_NAMES[]
 	public static CeStoreJsonObject generateDiverseConceptDetailsJson(CeInstance pInst, ArrayList<CeConcept> pConList) {
 		CeStoreJsonObject jObj = new CeStoreJsonObject();
 
-		putStringValueIn(jObj, KEY_INSTANCE_NAME, pInst.getInstanceName());
-		putAllStringValuesIn(jObj, KEY_CONCEPT_NAMES, calculateConceptNamesFrom(pConList));
+		putStringValueIn(jObj, JSON_INSTANCE_NAME, pInst.getInstanceName());
+		putAllStringValuesIn(jObj, JSON_CONCEPT_NAMES, calculateConceptNamesFrom(pConList));
 
 		return jObj;
 	}

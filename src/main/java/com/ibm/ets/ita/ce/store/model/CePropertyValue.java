@@ -1,20 +1,19 @@
 package com.ibm.ets.ita.ce.store.model;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.MiscNames.NO_TS;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.timestampNow;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
-import com.ibm.ets.ita.ce.store.ModelBuilder;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
 
 public class CePropertyValue {
-
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private static AtomicLong propvalIdVal = new AtomicLong(0);
 
@@ -108,12 +107,12 @@ public class CePropertyValue {
 	public boolean isInTimestampRange(long pStartTs, long pEndTs) {
 		boolean result = true;
 
-		if (pStartTs != ModelBuilder.NO_TS) {
+		if (pStartTs != NO_TS) {
 			result = getCreationDate() >= pStartTs;
 		}
 
 		if (result) {
-			if (pEndTs != ModelBuilder.NO_TS) {
+			if (pEndTs != NO_TS) {
 				result = getCreationDate() <= pEndTs;
 			}
 		}

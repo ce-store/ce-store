@@ -6,8 +6,8 @@ package com.ibm.ets.ita.ce.store.hudson.model.answer;
  *******************************************************************************/
 
 public class AnswerReply {
-//	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
-//
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+
 //	private Question originalQuestion = null;
 //	private TreeMap<String, Answer> answers = null;
 //

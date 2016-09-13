@@ -1,5 +1,5 @@
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
@@ -91,10 +91,6 @@ function RendererMessages() {
 		if (pStats.total_txns > 0) {
 			txnText =  ' for <b>' + pStats.total_txns + '</b>, ';
 			txnText += '<b>' + pStats.successful_txns + '</b> transactions';
-		}
-
-		if (pStats.transaction_name != null) {
-			result += ' (' + pStats.transaction_name + ')';
 		}
 
 		result += 'Last transaction';

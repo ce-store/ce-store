@@ -1,44 +1,23 @@
 package com.ibm.ets.ita.ce.store.parsing.tokenizer;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_AN;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_THE;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.isReportDebug;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportDebug;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
-import com.ibm.ets.ita.ce.store.ModelBuilder;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
+import com.ibm.ets.ita.ce.store.core.ModelBuilder;
 import com.ibm.ets.ita.ce.store.model.CeConcept;
-import com.ibm.ets.ita.ce.store.model.CeSentence;
 import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentence;
 import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentenceFactNormal;
 
 public abstract class TokenizerSentence {
-
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
-
-	public static final String SCELABEL_NORMAL = "";
-	public static final String SCELABEL_CONCEPT = "{Concept}:";
-	public static final String SCELABEL_PROP = "{Property}:";
-	public static final String SCELABEL_CONNECTOR = "{Connector}:";
-	public static final String SCELABEL_RQNAME = "{Name}:";
-	public static final String SCELABEL_RQSTART = "{RqStart}:";
-
-	public static final String TOKEN_A = "a";
-	public static final String TOKEN_AN = "an";
-	public static final String TOKEN_THE = "the";
-	public static final String TOKEN_VALUE = "value";
-	public static final String TOKEN_THERE = "there";
-	public static final String TOKEN_IS = "is";
-	public static final String TOKEN_NAMED = "named";	
-	public static final String TOKEN_HAS = "has";
-	public static final String TOKEN_AS = "as";
-	public static final String TOKEN_AND = "and";
-	public static final String TOKEN_THAT = "that";
-	public static final String TOKEN_IS_A = "is a";
-	public static final String TOKEN_IS_AN = "is an";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	protected ActionContext ac = null;
 	protected ModelBuilder mb = null;
@@ -108,25 +87,15 @@ public abstract class TokenizerSentence {
 			if ((!this.conQualifier.isEmpty()) && (!this.conQualifier.equals(TOKEN_THE))) {
 				if (this.conQualifier.equals(TOKEN_AN)) {
 					if (!pConcept.isQualifiedWithAn()) {
-						reportDebug("Inconsistent use of concept qualifier (" + this.conQualifier + ") between conceptualise and " + pContext + " sentence, for concept '" + pConcept.getConceptName() + "' in sentence: " + this.getTargetSentence().getSentenceText(), this.ac);
+						reportDebug("Inconsistent use of concept qualifier (" + this.conQualifier + ") between conceptualise and " + pContext + " sentence, for concept '" + pConcept.getConceptName() + "' in sentence: " + getTargetSentence().getSentenceText(), this.ac);
 					}
 				} else {
 					if (pConcept.isQualifiedWithAn()) {
-						reportDebug("Inconsistent use of (" + this.conQualifier + ") between conceptualise and " + pContext + " sentence, for concept '" + pConcept.getConceptName() + "' in sentence: " + this.getTargetSentence().getSentenceText(), this.ac);
+						reportDebug("Inconsistent use of (" + this.conQualifier + ") between conceptualise and " + pContext + " sentence, for concept '" + pConcept.getConceptName() + "' in sentence: " + getTargetSentence().getSentenceText(), this.ac);
 					}
 				}
 			}
 		}
-	}
-
-	public static String SCELABEL_PROPDEF(String pDomain, String pRange) {
-		StringBuffer b = new StringBuffer();
-		b.append(CeSentence.PROPDEF_PREFIX);
-		b.append(pDomain);
-		b.append(",");
-		b.append(pRange);
-		b.append(CeSentence.PROPDEF_SUFFIX);
-		return b.toString();
 	}
 
 }

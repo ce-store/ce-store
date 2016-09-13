@@ -1,10 +1,12 @@
 package com.ibm.ets.ita.ce.store.client.rest;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSONTYPE_STORE;
+import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.appendNewLineToSb;
 import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.appendToSb;
 
 import java.util.ArrayList;
@@ -12,16 +14,14 @@ import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.ibm.ets.ita.ce.store.ModelBuilder;
 import com.ibm.ets.ita.ce.store.client.web.ServletStateManager;
 import com.ibm.ets.ita.ce.store.client.web.WebActionContext;
 import com.ibm.ets.ita.ce.store.client.web.model.CeWebStore;
+import com.ibm.ets.ita.ce.store.core.ModelBuilder;
 
 public class CeStoreRestApiStore extends CeStoreRestApi {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
-	private static final String TYPE_STORE = "store";
-	
 	private boolean storeWasCreated = false;
 
 	public CeStoreRestApiStore(WebActionContext pWc, ArrayList<String> pRestParts, HttpServletRequest pRequest) {
@@ -114,7 +114,7 @@ public class CeStoreRestApiStore extends CeStoreRestApi {
 		StringBuilder sb = new StringBuilder();
 
 		appendToSb(sb, "-- All stores");
-		appendToSb(sb, "");
+		appendNewLineToSb(sb);
 
 		for (String storeName : getAllModelBuilders().keySet()) {
 			appendToSb(sb, generateTextForStore(storeName));
@@ -188,7 +188,7 @@ public class CeStoreRestApiStore extends CeStoreRestApi {
 	}
 
 	private void reportNotFoundError(String pStoreName) {
-		reportNotFoundError(TYPE_STORE, pStoreName);
+		reportNotFoundError(JSONTYPE_STORE, pStoreName);
 	}
 
 	private void setStoreListAsStructuredResult(TreeMap<String, ModelBuilder> pMbs) {

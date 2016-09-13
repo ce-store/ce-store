@@ -1,11 +1,13 @@
 package com.ibm.ets.ita.ce.store.model;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
-import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.NL;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_COUNT;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_SUM;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.NL;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportWarning;
 
 import java.util.ArrayList;
@@ -13,14 +15,10 @@ import java.util.HashSet;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicLong;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
-import com.ibm.ets.ita.ce.store.model.container.ContainerQueryResult;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
 
 public class CeQuery extends CeModelEntity {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
-
-	public static final String RULENAME_START = "[";
-	public static final String RULENAME_END = "]";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private static AtomicLong patternIdVal = new AtomicLong(0);
 
@@ -361,7 +359,7 @@ public class CeQuery extends CeModelEntity {
 			String thisClauseText = thisClause.calculateRawText();
 
 			if (clauseTexts.contains(thisClauseText)) {
-				reportWarning("Duplicate premise clause detected in query/rule '" + this.getQueryName() + "' (" + thisClauseText + ")", pAc);
+				reportWarning("Duplicate premise clause detected in query/rule '" + getQueryName() + "' (" + thisClauseText + ")", pAc);
 			} else {
 				clauseTexts.add(thisClauseText);
 			}
@@ -371,7 +369,7 @@ public class CeQuery extends CeModelEntity {
 	public boolean isDatabaseBacked(ActionContext pAc) {
 		boolean result = false;
 
-		for (CeConcept thisCon : this.getAllReferencedPremiseConcepts()) {
+		for (CeConcept thisCon : getAllReferencedPremiseConcepts()) {
 			CeInstance mdInst = thisCon.retrieveMetadataInstance(pAc);
 
 			if (mdInst != null) {
@@ -386,7 +384,7 @@ public class CeQuery extends CeModelEntity {
 	public String calculateSql(ActionContext pAc) {
 		String result = "";
 
-		for (CeConcept thisCon : this.getAllReferencedPremiseConcepts()) {
+		for (CeConcept thisCon : getAllReferencedPremiseConcepts()) {
 			CeInstance mdInst = thisCon.retrieveMetadataInstance(pAc);
 
 			if (mdInst != null) {
@@ -403,18 +401,18 @@ public class CeQuery extends CeModelEntity {
 	}
 
 	public static boolean isCountHeader(String pHdr) {
-		return pHdr.startsWith(ContainerQueryResult.COUNT_INDICATOR);
+		return pHdr.startsWith(TOKEN_COUNT);
 	}
 
 	public static boolean isSumHeader(String pHdr) {
-		return pHdr.startsWith(ContainerQueryResult.SUM_INDICATOR);
+		return pHdr.startsWith(TOKEN_SUM);
 	}
 
 	public boolean hasCountHeader() {
 		boolean result = false;
 
 		for (String thisHdr : this.responseVariableIds) {
-			if (thisHdr.startsWith(ContainerQueryResult.COUNT_INDICATOR)) {
+			if (thisHdr.startsWith(TOKEN_COUNT)) {
 				result = true;
 			}
 		}
@@ -426,7 +424,7 @@ public class CeQuery extends CeModelEntity {
 		boolean result = false;
 
 		for (String thisHdr : this.responseVariableIds) {
-			if (thisHdr.startsWith(ContainerQueryResult.SUM_INDICATOR)) {
+			if (thisHdr.startsWith(TOKEN_SUM)) {
 				result = true;
 			}
 		}

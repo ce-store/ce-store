@@ -1,39 +1,23 @@
 package com.ibm.ets.ita.ce.store.client.web.model;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_ANNOTATIONS;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonArray;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
 import com.ibm.ets.ita.ce.store.model.CeAnnotation;
 import com.ibm.ets.ita.ce.store.model.CeModelEntity;
 
 public abstract class CeWebObject {
-
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
-
-	protected static final String KEY_TYPE = "_type";
-	protected static final String KEY_STYLE = "_style";
-	protected static final String KEY_ID = "_id";
-	protected static final String KEY_SHADOW = "_shadow";
-	protected static final String KEY_CREATED = "_created";
-	protected static final String KEY_LABEL = "_label";
-	protected static final String KEY_META_INSTANCE = "meta_instance";
-
-	protected static final String STYLE_FULL = "full";
-	protected static final String STYLE_SUMMARY = "summary";
-	protected static final String STYLE_MINIMAL = "minimal";
-	protected static final String STYLE_NORMALISED = "normalised";
-
-	private static final String KEY_ANNOTATIONS = "annotations";
-	protected static final String KEY_SEN_TEXT = "ce_text";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	protected ActionContext ac = null;
 
@@ -188,7 +172,7 @@ public abstract class CeWebObject {
 		}
 
 		if (!annoObj.isEmpty()) {
-			putObjectValueIn(pJsonObj, KEY_ANNOTATIONS, annoObj);
+			putObjectValueIn(pJsonObj, JSON_ANNOTATIONS, annoObj);
 		}
 	}
 

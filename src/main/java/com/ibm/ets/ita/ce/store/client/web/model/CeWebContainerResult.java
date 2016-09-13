@@ -1,60 +1,56 @@
 package com.ibm.ets.ita.ce.store.client.web.model;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_HEADERS;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_RESULTS;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_ROWS;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_INSTANCES;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_TYPES;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_NUMROWS;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_QUERY_TEXT;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_QUERY_TIME;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_CONCEPT_NAMES;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_INSTANCE_NAME;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_INSTANCE_LABEL;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_PROP_NAME;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_PROP_TYPE;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_PROP_VAL;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SEARCHTERMS;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SEARCHCONS;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SEARCHPROPS;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SEARCHRESULTS;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_COUNT;
 import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.appendToSb;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
 
 import java.util.ArrayList;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
 import com.ibm.ets.ita.ce.store.client.rest.CeStoreRestApiSpecial;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonArray;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
 import com.ibm.ets.ita.ce.store.model.container.ContainerCeResult;
 import com.ibm.ets.ita.ce.store.model.container.ContainerCommonValues;
 import com.ibm.ets.ita.ce.store.model.container.ContainerSearchResult;
 
 public class CeWebContainerResult extends CeWebObject {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
-	//JSON Response Keys
-	private static final String KEY_HEADERS = "headers";
-	private static final String KEY_RESULTS = "results";
-	private static final String KEY_ROWS = "rows";
-	private static final String KEY_INSTANCES = "instances";
-	private static final String KEY_TYPES = "types";
-	private static final String KEY_NUMROWS = "number_of_rows";
-
-	private static final String KEY_QUERY_TEXT = "query";
-	private static final String KEY_QUERY_TIME = "query_time";
-
-	private static final String KEY_CONCEPT_NAMES = "concept_names";
-	private static final String KEY_INSTANCE_NAME = "instance_name";
-	private static final String KEY_INSTANCE_LABEL = "instance_label";
-	private static final String KEY_PROP_NAME = "property_name";
-	private static final String KEY_PROP_VAL = "property_value";
-	private static final String KEY_PROP_TYPE = "property_type";
-	private static final String KEY_SEARCHTERMS = "search_terms";
-	private static final String KEY_SEARCHCONS = "search_concepts";
-	private static final String KEY_SEARCHPROPS = "search_properties";
-	private static final String KEY_SEARCHRESULTS = "search_results";
-	private static final String KEY_COUNT = "count";
-	
 	public CeWebContainerResult(ActionContext pAc) {
 		super(pAc);
 	}
 
 	//CE Query response structure:
-	//	KEY_QUERY_TEXT
-	//	KEY_QUERY_TIME
-	//	KEY_HEADERS[]
-	//	KEY_TYPES[]
-	//	KEY_RESULTS[[]]
+	//	JSON_QUERY_TEXT
+	//	JSON_QUERY_TIME
+	//	JSON_HEADERS[]
+	//	JSON_TYPES[]
+	//	JSON_RESULTS[[]]
 	public static CeStoreJsonObject generateNormalCeQueryResultFrom(ActionContext pAc, ContainerCeResult pCeResult, boolean pSuppressResult, boolean pReturnInstances, String[] pOnlyProps, int pNumSteps, boolean pRelInsts, boolean pRefInsts, String[] pLimRels, boolean pSuppPropTypes) {
 		CeStoreJsonObject jObj = new CeStoreJsonObject();
 
@@ -85,18 +81,18 @@ public class CeWebContainerResult extends CeWebObject {
 				}
 			}
 
-			putStringValueIn(jObj, KEY_QUERY_TEXT, pCeResult.getQuery());
-			putLongValueIn(jObj, KEY_QUERY_TIME, pCeResult.getExecutionTime());
-			putLongValueIn(jObj, KEY_NUMROWS, queryResults.size());
+			putStringValueIn(jObj, JSON_QUERY_TEXT, pCeResult.getQuery());
+			putLongValueIn(jObj, JSON_QUERY_TIME, pCeResult.getExecutionTime());
+			putLongValueIn(jObj, JSON_NUMROWS, queryResults.size());
 
 			if (!pSuppressResult) {
-				putAllStringValuesIn(jObj, KEY_HEADERS, pCeResult.getHeaders());
-				putAllStringValuesIn(jObj, KEY_TYPES, pCeResult.getTypes());
-				putAllArrayStringValuesIn(jObj, KEY_RESULTS, queryResults);	
+				putAllStringValuesIn(jObj, JSON_HEADERS, pCeResult.getHeaders());
+				putAllStringValuesIn(jObj, JSON_TYPES, pCeResult.getTypes());
+				putAllArrayStringValuesIn(jObj, JSON_RESULTS, queryResults);	
 			}
 
 			if (pReturnInstances) {
-				createNormalInstanceResultsFor(pAc, jObj, KEY_INSTANCES, queryResults, pCeResult.getTypes(), pOnlyProps, pNumSteps, pRelInsts, pRefInsts, pLimRels, pSuppPropTypes);
+				createNormalInstanceResultsFor(pAc, jObj, JSON_INSTANCES, queryResults, pCeResult.getTypes(), pOnlyProps, pNumSteps, pRelInsts, pRefInsts, pLimRels, pSuppPropTypes);
 			}
 		} else {
 			reportError("Unexpected null container CE result encountered during details JSON rendering", pAc);
@@ -135,18 +131,18 @@ public class CeWebContainerResult extends CeWebObject {
 				}
 			}
 
-			putStringValueIn(jObj, KEY_QUERY_TEXT, pCeResult.getQuery());
-			putLongValueIn(jObj, KEY_QUERY_TIME, pCeResult.getExecutionTime());
-			putLongValueIn(jObj, KEY_NUMROWS, queryResults.size());
+			putStringValueIn(jObj, JSON_QUERY_TEXT, pCeResult.getQuery());
+			putLongValueIn(jObj, JSON_QUERY_TIME, pCeResult.getExecutionTime());
+			putLongValueIn(jObj, JSON_NUMROWS, queryResults.size());
 
 			if (!pSuppressResult) {
-				putAllStringValuesIn(jObj, KEY_HEADERS, pCeResult.getHeaders());
-				putAllStringValuesIn(jObj, KEY_TYPES, pCeResult.getTypes());
-				putAllArrayStringValuesIn(jObj, KEY_RESULTS, queryResults);	
+				putAllStringValuesIn(jObj, JSON_HEADERS, pCeResult.getHeaders());
+				putAllStringValuesIn(jObj, JSON_TYPES, pCeResult.getTypes());
+				putAllArrayStringValuesIn(jObj, JSON_RESULTS, queryResults);	
 			}
 
 			if (pReturnInstances) {
-				createMinimalInstanceResultsFor(pAc, jObj, KEY_INSTANCES, queryResults, pCeResult.getTypes(), pOnlyProps, pNumSteps, pRelInsts, pRefInsts, pLimRels, pSuppPropTypes);
+				createMinimalInstanceResultsFor(pAc, jObj, JSON_INSTANCES, queryResults, pCeResult.getTypes(), pOnlyProps, pNumSteps, pRelInsts, pRefInsts, pLimRels, pSuppPropTypes);
 			}
 		} else {
 			reportError("Unexpected null container CE result encountered during details JSON rendering", pAc);
@@ -185,18 +181,18 @@ public class CeWebContainerResult extends CeWebObject {
 				}
 			}
 
-			putStringValueIn(jObj, KEY_QUERY_TEXT, pCeResult.getQuery());
-			putLongValueIn(jObj, KEY_QUERY_TIME, pCeResult.getExecutionTime());
-			putLongValueIn(jObj, KEY_NUMROWS, queryResults.size());
+			putStringValueIn(jObj, JSON_QUERY_TEXT, pCeResult.getQuery());
+			putLongValueIn(jObj, JSON_QUERY_TIME, pCeResult.getExecutionTime());
+			putLongValueIn(jObj, JSON_NUMROWS, queryResults.size());
 
 			if (!pSuppressResult) {
-				putAllStringValuesIn(jObj, KEY_HEADERS, pCeResult.getHeaders());
-				putAllStringValuesIn(jObj, KEY_TYPES, pCeResult.getTypes());
-				putAllArrayStringValuesIn(jObj, KEY_RESULTS, queryResults);	
+				putAllStringValuesIn(jObj, JSON_HEADERS, pCeResult.getHeaders());
+				putAllStringValuesIn(jObj, JSON_TYPES, pCeResult.getTypes());
+				putAllArrayStringValuesIn(jObj, JSON_RESULTS, queryResults);	
 			}
 
 			if (pReturnInstances) {
-				createNormalisedInstanceResultsFor(pAc, jObj, KEY_INSTANCES, queryResults, pCeResult.getTypes(), pOnlyProps, pNumSteps, pRelInsts, pRefInsts, pLimRels, pSuppPropTypes);
+				createNormalisedInstanceResultsFor(pAc, jObj, JSON_INSTANCES, queryResults, pCeResult.getTypes(), pOnlyProps, pNumSteps, pRelInsts, pRefInsts, pLimRels, pSuppPropTypes);
 			}
 		} else {
 			reportError("Unexpected null container CE result encountered during details JSON rendering", pAc);
@@ -300,15 +296,15 @@ public class CeWebContainerResult extends CeWebObject {
 	}
 
 	// Keyword search response:
-	//	KEY_SEARCHTERMS
-	//	KEY_SEARCHCONS
-	//	KEY_SEARCHPROPS
-	//	KEY_SEARCHRESULTS[]
-	//		KEY_DOMAIN_NAME
-	//		KEY_INSTANCE_NAME
-	//		KEY_PROP_NAME
-	//		KEY_PROP_VAL
-	//		KEY_PROP_TYPE
+	//	JSON_SEARCHTERMS
+	//	JSON_SEARCHCONS
+	//	JSON_SEARCHPROPS
+	//	JSON_SEARCHRESULTS[]
+	//		JSON_DOMAIN_NAME
+	//		JSON_INSTANCE_NAME
+	//		JSON_PROP_NAME
+	//		JSON_PROP_VAL
+	//		JSON_PROP_TYPE
 	public static CeStoreJsonObject generateKeywordSearchResultFrom(ActionContext pAc, ArrayList<ContainerSearchResult> pResults, ArrayList<String> pSearchTerms, String[] pConceptNames, String[] pPropertyNames, boolean pRetInsts, String[] pOnlyProps, int pNumSteps, boolean pRelInsts, boolean pRefInsts, String[] pLimRels, boolean pSuppPropTypes, boolean pMinimal) {
 		CeStoreJsonObject jObj = new CeStoreJsonObject();
 
@@ -316,13 +312,13 @@ public class CeWebContainerResult extends CeWebObject {
 			if (!pResults.isEmpty()) {
 				CeStoreJsonObject jObjResult = processKeywordSearchRows(pAc, pResults, pRetInsts, pOnlyProps, pNumSteps, pRelInsts, pRefInsts, pLimRels, pSuppPropTypes, pMinimal);
 
-				putAllStringValuesIn(jObj, KEY_SEARCHTERMS, pSearchTerms);
-				putAllStringValuesIn(jObj, KEY_SEARCHCONS, pConceptNames);
-				putAllStringValuesIn(jObj, KEY_SEARCHPROPS, pPropertyNames);
-				putArrayValueIn(jObj, KEY_SEARCHRESULTS, (CeStoreJsonArray)jObjResult.get(pAc, KEY_ROWS));
+				putAllStringValuesIn(jObj, JSON_SEARCHTERMS, pSearchTerms);
+				putAllStringValuesIn(jObj, JSON_SEARCHCONS, pConceptNames);
+				putAllStringValuesIn(jObj, JSON_SEARCHPROPS, pPropertyNames);
+				putArrayValueIn(jObj, JSON_SEARCHRESULTS, (CeStoreJsonArray)jObjResult.get(pAc, JSON_ROWS));
 
 				if (pRetInsts) {
-					putObjectValueIn(jObj, KEY_INSTANCES, (CeStoreJsonObject)jObjResult.get(pAc, KEY_INSTANCES));
+					putObjectValueIn(jObj, JSON_INSTANCES, (CeStoreJsonObject)jObjResult.get(pAc, JSON_INSTANCES));
 				}
 			} else {
 				reportEmptyKeywordSearchResult(pAc, pSearchTerms, pConceptNames, pPropertyNames);
@@ -343,12 +339,12 @@ public class CeWebContainerResult extends CeWebObject {
 			CeStoreJsonObject jObjRow = new CeStoreJsonObject();
 			CeInstance resInst = pAc.getModelBuilder().getInstanceNamed(pAc, thisRes.getInstanceName());
 
-			putAllStringValuesIn(jObjRow, KEY_CONCEPT_NAMES, thisRes.getConceptNames());
-			putStringValueIn(jObjRow, KEY_INSTANCE_NAME, thisRes.getInstanceName());
-			putStringValueIn(jObjRow, KEY_INSTANCE_LABEL, resInst.calculateLabel(pAc));
-			putStringValueIn(jObjRow, KEY_PROP_NAME, thisRes.getPropertyName());
-			putStringValueIn(jObjRow, KEY_PROP_VAL, thisRes.getPropertyValue());
-			putStringValueIn(jObjRow, KEY_PROP_TYPE, thisRes.getPropertyType());
+			putAllStringValuesIn(jObjRow, JSON_CONCEPT_NAMES, thisRes.getConceptNames());
+			putStringValueIn(jObjRow, JSON_INSTANCE_NAME, thisRes.getInstanceName());
+			putStringValueIn(jObjRow, JSON_INSTANCE_LABEL, resInst.calculateLabel(pAc));
+			putStringValueIn(jObjRow, JSON_PROP_NAME, thisRes.getPropertyName());
+			putStringValueIn(jObjRow, JSON_PROP_VAL, thisRes.getPropertyValue());
+			putStringValueIn(jObjRow, JSON_PROP_TYPE, thisRes.getPropertyType());
 
 			if (pRetInsts) {
 				CeInstance thisInst = pAc.getModelBuilder().getInstanceNamed(pAc, thisRes.getInstanceName());
@@ -369,8 +365,8 @@ public class CeWebContainerResult extends CeWebObject {
 			jArr.add(jObjRow);
 		}
 
-		jObjMain.put(KEY_ROWS, jArr);
-		jObjMain.put(KEY_INSTANCES, jObjInsts);
+		jObjMain.put(JSON_ROWS, jArr);
+		jObjMain.put(JSON_INSTANCES, jObjInsts);
 
 		return jObjMain;
 	}
@@ -407,8 +403,8 @@ public class CeWebContainerResult extends CeWebObject {
 
 	//Common Values response:
 	//	[]
-	//		KEY_PROP_VAL
-	//		KEY_COUNT
+	//		JSON_PROP_VAL
+	//		JSON_COUNT
 	public static CeStoreJsonArray generateCommonValuesResultFrom(ActionContext pAc, ArrayList<ContainerCommonValues> pResults) {
 		CeStoreJsonArray jArr = new CeStoreJsonArray();
 		
@@ -416,8 +412,8 @@ public class CeWebContainerResult extends CeWebObject {
 			for (ContainerCommonValues thisRes : pResults) {
 				CeStoreJsonObject jObj = new CeStoreJsonObject();
 
-				putStringValueIn(jObj, KEY_PROP_VAL, thisRes.getName());
-				putStringValueIn(jObj, KEY_COUNT, thisRes.getCount());
+				putStringValueIn(jObj, JSON_PROP_VAL, thisRes.getName());
+				putStringValueIn(jObj, JSON_COUNT, thisRes.getCount());
 				
 				jArr.add(jObj);
 			}

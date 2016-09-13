@@ -1,26 +1,38 @@
 package com.ibm.ets.ita.ce.store.parsing.builder;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_BLANK;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_DOT;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_CONCEPTUALISE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_CONCEPTUALIZE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_DEFINE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_THE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_THERE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_NO;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_IT;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_FOR;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_IF;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_PERFORM;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_STATEMENT;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_OPENSQBR;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_CLOSESQBR;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_COLON;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportWarning;
 
 import java.util.ArrayList;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
 import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.model.CeSentence;
 import com.ibm.ets.ita.ce.store.model.CeSource;
 
 public abstract class BuilderSentence {
-
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
-
-	private static final String TOKEN_BLANK = "";
-	public static final String TOKEN_DOT = ".";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private static final int SENTYPE_UNCATEGORISED = 0;
 	public static final int SENTYPE_FACT_NORMAL = 10;
@@ -38,38 +50,22 @@ public abstract class BuilderSentence {
 	private static final String SENNAME_RULE = "Rule";
 	private static final String SENNAME_ANNO = "Annotation";
 	private static final String SENNAME_CMD = "Command";
+	private static final String SENTYPE_VALID = "Valid";
+	private static final String SENTYPE_INVALID = "Invalid";
 
 	public static final int SENVAL_VALID = 1;
 	public static final int SENVAL_INVALID = 2;
 
-	public static final String SENSOURCE_PRIMARY = "primary";
-	public static final String SENSOURCE_SECONDARY = "secondary";
+	public static final String TEMP_PROP = "***TEMP_PROP***";	//TODO: Refactor this out
 
-	private static final String MODEL_MARKER1 = "conceptualise";
-	private static final String MODEL_MARKER2 = "conceptualize";
-	private static final String MODEL_MARKER3 = "define";
-	private static final String FACT_NORMAL_MARKER1 = "the";
-	private static final String FACT_NORMAL_MARKER2 = "there";
-	private static final String FACT_NORMAL_MARKER3 = "no";
-	private static final String FACT_QUALIFIED_MARKER = "statement";
-	private static final String FACT_TEMP_MARKER1 = "it";
-	private static final String QUERY_MARKER = "for";
-	private static final String RULE_MARKER = "if";
-	private static final String NAME_STARTMARKER = "[";
-	private static final String NAME_ENDMARKER = "]";
-	private static final String CMD_MARKER = "perform";
-	private static final String ANNO_ENDMARKER = ":";
-
-	public static final String TEMP_PROP = "***TEMP_PROP***";
-
-	protected String sentenceText = "";
+	protected String sentenceText = null;
 	protected ArrayList<String> rawTokens = null;
 	protected ArrayList<String> structuredCeTokens = null;
 	public ArrayList<String> errors = null;
 	protected CeSentence convertedSentence = null;
 
-	private String firstToken = "";
-	private String firstNonNameToken = "";
+	private String firstToken = null;
+	private String firstNonNameToken = null;
 
 	protected int type = SENTYPE_UNCATEGORISED;
 	protected int validity = -1;
@@ -95,27 +91,27 @@ public abstract class BuilderSentence {
 		if ((pSentenceText != null) && (!pSentenceText.isEmpty())) {
 			if ((pTokens != null) && (!pTokens.isEmpty())) {
 				String firstWord = pTokens.get(0);
-				if (firstWord.equals(MODEL_MARKER1) || firstWord.equals(MODEL_MARKER2) || firstWord.equals(MODEL_MARKER3)) {
+				if (firstWord.equals(TOKEN_CONCEPTUALISE) || firstWord.equals(TOKEN_CONCEPTUALIZE) || firstWord.equals(TOKEN_DEFINE)) {
 					bs = new BuilderSentenceModel(pSentenceText);
-				} else if (firstWord.equals(FACT_NORMAL_MARKER1)) {
+				} else if (firstWord.equals(TOKEN_THE)) {
 					String secondWord = pTokens.get(1);
-					if (secondWord.equals(FACT_QUALIFIED_MARKER)) {
+					if (secondWord.equals(TOKEN_STATEMENT)) {
 						bs = new BuilderSentenceFactQualified(pSentenceText);
 					} else {
 						bs = new BuilderSentenceFactNormal(pSentenceText);
 					}
-				} else if (firstWord.equals(FACT_TEMP_MARKER1)) {
+				} else if (firstWord.equals(TOKEN_IT)) {
 					//TODO: Remove this test when this temporary syntax "it is true|false that" is removed
 					bs = new BuilderSentenceFactTemporary(pSentenceText);
-				} else if ((firstWord.equals(FACT_NORMAL_MARKER2)) || (firstWord.equals(FACT_NORMAL_MARKER3))) {
+				} else if ((firstWord.equals(TOKEN_THERE)) || (firstWord.equals(TOKEN_NO))) {
 					bs = new BuilderSentenceFactNormal(pSentenceText);
-				} else if (firstWord.equals(FACT_QUALIFIED_MARKER)) {
+				} else if (firstWord.equals(TOKEN_STATEMENT)) {
 					bs = new BuilderSentenceFactQualified(pSentenceText);
-				} else if (firstWord.equals(CMD_MARKER)) {
+				} else if (firstWord.equals(TOKEN_PERFORM)) {
 					bs = new BuilderSentenceCommand(pSentenceText);
-				} else if ((firstWord.equals(RULE_MARKER)) || (firstWord.equals(QUERY_MARKER)) || (firstWord.equals(NAME_STARTMARKER))) {
+				} else if ((firstWord.equals(TOKEN_IF)) || (firstWord.equals(TOKEN_FOR)) || (firstWord.equals(TOKEN_OPENSQBR))) {
 					bs = new BuilderSentenceRuleOrQuery(pSentenceText);
-				} else if (firstWord.endsWith(ANNO_ENDMARKER)) {
+				} else if (firstWord.endsWith(TOKEN_COLON)) {
 					bs = new BuilderSentenceAnnotation(pSentenceText);
 				} else {
 					if (!pAc.isValidatingOnly()) {
@@ -183,10 +179,10 @@ public abstract class BuilderSentence {
 
 		switch (pValidity) {
 			case SENVAL_VALID:
-				result = "Valid";
+				result = SENTYPE_VALID;
 				break;
 			case SENVAL_INVALID:
-				result = "Invalid";
+				result = SENTYPE_INVALID;
 				break;
 			default:
 				result = "UNKNOWN VALIDITY (" + Integer.toString(pValidity)+ ")";
@@ -302,35 +298,35 @@ public abstract class BuilderSentence {
 		if (this.rawTokens.isEmpty()) {
 			this.type = SENTYPE_UNCATEGORISED;
 		} else {
-			if (this.firstToken.equals(MODEL_MARKER1) || this.firstToken.equals(MODEL_MARKER2) || this.firstToken.equals(MODEL_MARKER3)) {
+			if (this.firstToken.equals(TOKEN_CONCEPTUALISE) || this.firstToken.equals(TOKEN_CONCEPTUALIZE) || this.firstToken.equals(TOKEN_DEFINE)) {
 				this.type = SENTYPE_MODEL;
-			} else if (this.firstToken.equals(FACT_NORMAL_MARKER1)) {
-				String secondToken = this.getRawTokens().get(1);
-				if (secondToken.equals(FACT_QUALIFIED_MARKER)) {
+			} else if (this.firstToken.equals(TOKEN_THE)) {
+				String secondToken = getRawTokens().get(1);
+				if (secondToken.equals(TOKEN_STATEMENT)) {
 					this.type = SENTYPE_FACT_QUALIFIED;
 				} else {
 					this.type = SENTYPE_FACT_NORMAL;
 				}
-			} else if (this.firstToken.equals(FACT_TEMP_MARKER1)) {
+			} else if (this.firstToken.equals(TOKEN_IT)) {
 				//TODO: Remove this test when this temporary syntax "it is true|false that" is removed
 				this.type = SENTYPE_FACT_NORMAL;
-			} else if ((this.firstToken.equals(FACT_NORMAL_MARKER2)) || (this.firstToken.equals(FACT_NORMAL_MARKER3))) {
+			} else if ((this.firstToken.equals(TOKEN_THERE)) || (this.firstToken.equals(TOKEN_NO))) {
 				this.type = SENTYPE_FACT_NORMAL;
-			} else if (this.firstToken.equals(QUERY_MARKER)) {
+			} else if (this.firstToken.equals(TOKEN_FOR)) {
 				this.type = SENTYPE_QUERY;
-			} else if (this.firstToken.equals(RULE_MARKER)) {
+			} else if (this.firstToken.equals(TOKEN_IF)) {
 				this.type = SENTYPE_RULE;
-			} else if (this.firstToken.equals(NAME_STARTMARKER)) {
-				if (this.firstNonNameToken.equals(QUERY_MARKER)) {
+			} else if (this.firstToken.equals(TOKEN_OPENSQBR)) {
+				if (this.firstNonNameToken.equals(TOKEN_FOR)) {
 					this.type = SENTYPE_QUERY;
-				} else if (this.firstNonNameToken.equals(RULE_MARKER)) {
+				} else if (this.firstNonNameToken.equals(TOKEN_IF)) {
 					this.type = SENTYPE_RULE;
 				} else {
 					this.type = SENTYPE_UNCATEGORISED;
 				}
-			} else if (this.firstToken.endsWith(ANNO_ENDMARKER)) {
+			} else if (this.firstToken.endsWith(TOKEN_COLON)) {
 				this.type = SENTYPE_ANNO;
-			} else if (this.firstToken.equals(CMD_MARKER)) {
+			} else if (this.firstToken.equals(TOKEN_PERFORM)) {
 				this.type = SENTYPE_CMD;
 			} else {
 				this.type = SENTYPE_UNCATEGORISED;
@@ -454,7 +450,7 @@ public abstract class BuilderSentence {
 				break break_position;
 			}
 
-			if (thisToken.equals(NAME_ENDMARKER)) {
+			if (thisToken.equals(TOKEN_CLOSESQBR)) {
 				foundEndMarker = true;
 			}
 		}

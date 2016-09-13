@@ -1,9 +1,18 @@
 package com.ibm.ets.ita.ce.store.agents.general;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
+
+import static com.ibm.ets.ita.ce.store.names.CeNames.PROP_GENRAT;
+import static com.ibm.ets.ita.ce.store.names.CeNames.PROP_ITER;
+import static com.ibm.ets.ita.ce.store.names.CeNames.PROP_MAXITS;
+import static com.ibm.ets.ita.ce.store.names.CeNames.PROP_RULENAME;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.CEVALUE_TRUE;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.DEFAULT_MAXITS;
+import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.getBooleanValueFrom;
+import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.getIntValueFrom;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -12,24 +21,23 @@ import com.ibm.ets.ita.ce.store.agents.CeAgent;
 import com.ibm.ets.ita.ce.store.model.CeRule;
 import com.ibm.ets.ita.ce.store.model.container.ContainerCeResult;
 import com.ibm.ets.ita.ce.store.query.QueryExecutionManager;
-import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.*;
 
 public class RuleExecutor extends CeAgent {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private static final String AGENT_NAME = "RuleExecutor";
 	private static final String AGENT_VERSION = "1.0.0";
 
-	private static final String DEFAULT_MAXITS = "10";
-
-	private static final String PROP_ITER = "iterate";
-	private static final String PROP_MAXITS = "maximum iterations";
-	private static final String PROP_RULENAME = "rule name";
-
 	private boolean iterate = true;
 	private int maxIterations = 0;
 	private ArrayList<String> ruleNames = null;
-	private HashSet<String> allSentences = new HashSet<String>();
+	private HashSet<String> allSentences = null;
+
+	public RuleExecutor() {
+		super();
+
+		this.allSentences = new HashSet<String>();
+	}
 
 	@Override
 	public String getAgentName() {
@@ -52,7 +60,7 @@ public class RuleExecutor extends CeAgent {
 			this.maxIterations = 1;
 		}
 
-		if (!isPropertySpecified(PNAME_GENRAT)) {
+		if (!isPropertySpecified(PROP_GENRAT)) {
 			//If there is no explicit "generate rationale" property specified then default to true for this agent
 			this.generateRationale = true;
 		}
@@ -138,4 +146,5 @@ public class RuleExecutor extends CeAgent {
 
 		return (count < this.allSentences.size());
 	}
+
 }

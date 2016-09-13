@@ -5,7 +5,11 @@ package com.ibm.ets.ita.ce.store.client.web;
  * All Rights Reserved
  *******************************************************************************/
 
-import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.ENCODING;
+import static com.ibm.ets.ita.ce.store.names.RestNames.HDR_AUTH;
+import static com.ibm.ets.ita.ce.store.names.RestNames.HDR_CEUSER;
+import static com.ibm.ets.ita.ce.store.names.RestNames.RESPONSE_JSON;
+import static com.ibm.ets.ita.ce.store.names.RestNames.RESPONSE_TEXT;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.ENCODING;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportDebug;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportException;
 
@@ -33,12 +37,6 @@ public class RestHandler extends HttpServlet {
 	private static final Logger logger = Logger.getLogger(PACKAGE_NAME);
 
 	private static final long serialVersionUID = 1L;
-
-	private static final String RESPONSE_JSON = "application/json";
-	private static final String RESPONSE_TEXT = "application/text";
-
-	private static final String HDR_CEUSER = "CE_User";
-	private static final String HDR_AUTH = "Authorization";
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
@@ -128,6 +126,7 @@ public class RestHandler extends HttpServlet {
 	}
 	
 	private static void setCorsResponseHeaders(HttpServletRequest pRequest, HttpServletResponse pResponse) {
+		//TODO: Abstract these
 		//Set headers to allow cross domain responses
 		pResponse.setHeader("Access-Control-Allow-Origin", pRequest.getHeader("Origin"));
 		pResponse.setHeader("Access-Control-Allow-Credentials", "true");

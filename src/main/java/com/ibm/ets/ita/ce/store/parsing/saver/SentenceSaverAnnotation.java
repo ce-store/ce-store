@@ -1,15 +1,17 @@
 package com.ibm.ets.ita.ce.store.parsing.saver;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_COLON;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_TILDE;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportWarning;
 
 import java.util.ArrayList;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
 import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
 import com.ibm.ets.ita.ce.store.model.CeModelEntity;
@@ -20,13 +22,9 @@ import com.ibm.ets.ita.ce.store.model.CeSource;
 import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentence;
 import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentenceFactNormal;
 import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentenceRuleOrQuery;
-import com.ibm.ets.ita.ce.store.parsing.tokenizer.TokenizerModelSentence;
 
 public class SentenceSaverAnnotation extends SentenceSaver {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
-
-	private static final String MARKER_PROPERTY = TokenizerModelSentence.TOKEN_TILDE;
-	private static final String MARKER_LABEL = ":";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private BuilderSentence lastSentence = null;
 
@@ -39,8 +37,8 @@ public class SentenceSaverAnnotation extends SentenceSaver {
 	protected void saveAnnotationSentence() {
 		storeValidSentence();
 
-		String words[] = this.sentenceText.split(MARKER_LABEL);
-		String annoLabel = words[0] + MARKER_LABEL;
+		String words[] = this.sentenceText.split(TOKEN_COLON);
+		String annoLabel = words[0] + TOKEN_COLON;
 		String annoText = this.sentenceText.substring(annoLabel.length(), this.sentenceText.length()).trim();
 
 		if (this.lastSentence == null) {
@@ -122,12 +120,12 @@ public class SentenceSaverAnnotation extends SentenceSaver {
 	}
 
 	private static boolean isPropertyAnnotation(String pAnnoText) {
-		return pAnnoText.startsWith(MARKER_PROPERTY);
+		return pAnnoText.startsWith(TOKEN_TILDE);
 	}
 
 	private CeProperty extractTargetPropertyFrom(String pAnnoText, CeConcept pTgtCon) {
 		CeProperty result = null;
-		String[] words = pAnnoText.split(MARKER_PROPERTY);
+		String[] words = pAnnoText.split(TOKEN_TILDE);
 
 		if (words.length > 1) {
 			String tgtPropName = words[1].trim();
@@ -148,7 +146,7 @@ public class SentenceSaverAnnotation extends SentenceSaver {
 	}
 
 	private static String extractPropertyAnnotationFrom(String pAnnoText, CeProperty pProp) {
-		String propAnnoTag = MARKER_PROPERTY + " " + pProp.getPropertyName() + " " + MARKER_PROPERTY;
+		String propAnnoTag = TOKEN_TILDE + " " + pProp.getPropertyName() + " " + TOKEN_TILDE;
 		return pAnnoText.replace(propAnnoTag, "").trim();
 	}
 

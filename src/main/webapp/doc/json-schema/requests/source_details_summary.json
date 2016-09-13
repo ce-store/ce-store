@@ -1,7 +1,0 @@
-{
-	"$schema": "http://json-schema.org/draft-04/schema#",
-	"title": "Source details (summary)",
-	"description": "Used to return the summary details for a specific source",
-	"type": "object",
-	"$ref": "./doc/json-schema/objects/source_summary.json#definitions/source"
-}

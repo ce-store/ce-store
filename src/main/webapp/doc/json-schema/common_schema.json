@@ -1,0 +1,67 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"title": "Reusable schema for parts of JSON objects.",
+	"definitions": {
+		"annotation": {
+			"title": "Annotation name and string.",
+			"description": "(annotation-name, annotation-string) pairs represented as JSON properties. Each is represented as a JSON property, the JSON property name is therefore expressed here as a wildcard (.*).",
+			"type": "object",
+            "additionalProperties": false,
+			"patternProperties": {
+				".*": {
+					"description": "An annotation name and annotation-string pair.",
+					"type": "string"
+				}
+			}
+		},
+		"property_values": {
+			"title": "Property name and values.",
+			"description": "(property-name, list-of-property-values) pairs for instances of properties. Each is represented as a JSON property, the JSON property name is therefore expressed here as a wildcard (.*).",
+			"type": "object",
+            "additionalProperties": false,
+			"patternProperties": {
+				".*": {
+					"description": "A property-name and list-of-property-values pair.",
+					"type": "array",
+					"items": {
+					    "type": "string"
+					},
+					"uniqueItems": true
+				}
+			}
+		},
+		"property_types": {
+			"title": "Property name and type.",
+			"description": "(property-name, property-type) pairs for instances of properties. Each is represented as a JSON property, the JSON property name is therefore expressed here as a wildcard (.*).",
+			"type": "object",
+            "additionalProperties": false,
+			"patternProperties": {
+				".*": {
+					"description": "A property-name and property-type pair.",
+					"type": "string",
+					"enum": [ "O", "D" ]
+				}
+			}
+		},
+		"property_rationale": {
+			"description": "object containing property-name and (object containing property-value and array-of-rationale pairs) pairs.",
+			"type": "object",
+            "additionalProperties": false,
+			"patternProperties": {
+				".*": {
+					"description": "a property-name and (object containing property-value and array-of-rationale pairs) pair.",
+					"type": "object",
+					"patternProperties" : {
+						".*" : {
+							"description": "a property-value and array-of-rationale pair.",
+		                    "type": "array",
+        		            "items": {
+								"$ref": "rationale_summary.json#/definitions/rationale"
+                    		}
+						}
+					}
+				}
+			}
+		}
+	}
+}

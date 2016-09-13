@@ -6,39 +6,40 @@ package com.ibm.ets.ita.ce.store.hudson.handler;
  *******************************************************************************/
 
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportDebug;
+import static com.ibm.ets.ita.ce.store.names.CeNames.CON_CONFCON;
+import static com.ibm.ets.ita.ce.store.names.CeNames.CON_SUPPCON;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.DEFAULT_MAXSUGGS;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_AT;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_BT;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_QT;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SUGGS;
+import static com.ibm.ets.ita.ce.store.names.CeNames.CON_IDPROPCON;
+import static com.ibm.ets.ita.ce.store.names.CeNames.CON_SEPIDCON;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.TreeMap;
 
-import com.ibm.ets.ita.ce.store.client.web.WebActionContext;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonArray;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
 import com.ibm.ets.ita.ce.store.hudson.model.Question;
 import com.ibm.ets.ita.ce.store.hudson.model.Suggestion;
 import com.ibm.ets.ita.ce.store.hudson.model.conversation.ProcessedWord;
 import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
 import com.ibm.ets.ita.ce.store.model.CeProperty;
+import com.ibm.ets.ita.ce.store.model.CePropertyInstance;
 
 public class QuestionHelpHandler extends QuestionHandler {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
-	private static final String JSON_QT = "question text";
-	private static final String JSON_SUGGS = "suggestions";
-//	private static final String JSON_D_INTS = "interpretations";
-	private static final String JSON_BT = "before text";
-	private static final String JSON_AT = "after text";
-
 	protected ArrayList<Suggestion> suggestions = null;
-//	protected ArrayList<Interpretation> interpretations = null;
-	private int maxSuggs = 10;	//TODO: Abstract this
+	private int maxSuggs = DEFAULT_MAXSUGGS;
 
-	public QuestionHelpHandler(WebActionContext pWc, boolean pDebug, String pQt, long pStartTime) {
-		super(pWc, pDebug, Question.create(pQt), pStartTime);
-
-//		this.interpretations = new ArrayList<Interpretation>();
+	public QuestionHelpHandler(ActionContext pAc, String pQt, long pStartTime) {
+		super(pAc, Question.create(pQt), pStartTime);
 
 		if (getConvConfig() != null) {
 			this.maxSuggs = getConvConfig().getMaxSuggestions();
@@ -47,24 +48,8 @@ public class QuestionHelpHandler extends QuestionHandler {
 
 	protected CeStoreJsonObject createJsonResponse() {
 		CeStoreJsonObject result = new CeStoreJsonObject();
-//		CeStoreJsonArray jInts = new CeStoreJsonArray();
 
 		result.put(JSON_SUGGS, jsonForSuggestions());
-
-//		if (this.debug) {
-//			CeStoreJsonObject jDebug = new CeStoreJsonObject();
-//			jDebug.put(JSON_ET, System.currentTimeMillis() - this.startTime);
-//			createJsonAlerts(jDebug);
-//
-//			if (!this.interpretations.isEmpty()) {
-//				for (Interpretation thisInt : this.interpretations) {
-//					jInts.add(thisInt.textSummary());
-//				}
-//				jDebug.put(JSON_D_INTS, jInts);
-//			}
-//
-//			result.put(JSON_DEBUG, jDebug);
-//		}
 
 		return result;
 	}
@@ -98,20 +83,18 @@ public class QuestionHelpHandler extends QuestionHandler {
 	}
 
 	@Override
-	public CeStoreJsonObject handleQuestion() {
+	protected CeStoreJsonObject handleQuestion() {
 		long st = System.currentTimeMillis();
 		CeStoreJsonObject result = null;
 
 		interpretQuestion();
 
 		if (!this.question.endsWithPunctuation()) {
-//			if (!isCeText()) {
-				ArrayList<Suggestion> theseSuggs = new ArrayList<Suggestion>();
-				computeSuggestions(0, theseSuggs);
-				Collections.sort(theseSuggs);
-		
-				this.suggestions = theseSuggs;
-//			}
+			ArrayList<Suggestion> theseSuggs = new ArrayList<Suggestion>();
+			computeSuggestions(0, theseSuggs);
+			Collections.sort(theseSuggs);
+	
+			this.suggestions = theseSuggs;
 		}
 
 		result = createResult();
@@ -119,10 +102,6 @@ public class QuestionHelpHandler extends QuestionHandler {
 		reportDebug("handleQuestion=" + new Long(System.currentTimeMillis() - st).toString(), this.ac);
 		return result;
 	}
-
-//	private boolean isCeText() {
-//		return ModifierHandler.isCeModifier(this.ac, this.allWords);
-//	}
 
 	private void computeSuggestions(int pStartIndex, ArrayList<Suggestion> pSuggs) {
 		String lcSeekPhrase = getPartialText(pStartIndex);
@@ -168,7 +147,7 @@ public class QuestionHelpHandler extends QuestionHandler {
 			ArrayList<CeInstance> trimmedList = new ArrayList<CeInstance>();
 	
 			for (CeInstance thisInst : instList) {
-				if (!thisInst.isOnlyConceptNamed(this.ac, GenericHandler.CON_CONFCON)) {
+				if (!thisInst.isOnlyConceptNamed(this.ac, CON_CONFCON)) {
 					trimmedList.add(thisInst);
 				}
 			}
@@ -215,7 +194,7 @@ public class QuestionHelpHandler extends QuestionHandler {
 		String lcFrag = pFragment.toLowerCase();
 
 		if (!lcFrag.isEmpty()) {
-			for (String possId : pInst.getInstanceIdentifiers(this.ac)) {
+			for (String possId : getInstanceIdentifiersFor(pInst, this.ac)) {
 				String lcId = possId.toLowerCase();
 
 				if (lcId.contains(lcFrag)) {
@@ -228,6 +207,52 @@ public class QuestionHelpHandler extends QuestionHandler {
 
 					pFinalPairs.put(afterPart, thisPair);
 					result = 1;
+					break;
+				}
+			}
+		}
+
+		return result;
+	}
+
+	public ArrayList<String> getInstanceIdentifiersFor(CeInstance pInst, ActionContext pAc) {
+		ArrayList<String> result = new ArrayList<String>();
+		
+		//Only add the instance name if no other identifiers found
+		if (!isSeparatelyIdentified(pInst, pAc)) {
+			result.add(pInst.getInstanceName());
+		}
+
+		for (CePropertyInstance thisPi : pInst.getPropertyInstances()) {
+			CeProperty relProp = thisPi.getRelatedProperty();
+			CeInstance mmInst = relProp.getMetaModelInstance(pAc);
+			
+			//TODO: Anonymise this property name
+			if (mmInst.isConceptNamed(pAc, CON_IDPROPCON)) {
+				for (String thisVal : thisPi.getValueList()) {
+					result.add(thisVal);
+				}
+			}
+		}
+
+		//If there are no identifiers found then add the instance name
+		if (result.isEmpty()) {
+			result.add(pInst.getInstanceName());
+		}
+		
+		return result;
+	}
+	
+	private boolean isSeparatelyIdentified(CeInstance pInst, ActionContext pAc) {
+		boolean result = false;
+
+		for (CeConcept dirCon : pInst.getDirectConcepts()) {
+			ArrayList<CeInstance> mmList = dirCon.retrieveMetaModelInstances(pAc, null);
+
+			for (CeInstance mmInst : mmList) {
+				//TODO: Anonymise this concept name
+				if (mmInst.isConceptNamed(pAc, CON_SEPIDCON)) {
+					result = true;
 					break;
 				}
 			}
@@ -303,10 +328,6 @@ public class QuestionHelpHandler extends QuestionHandler {
 		if (this.suggestions != null) {
 			Collections.sort(this.suggestions);
 		}
-
-//		if (this.debug) {
-//			this.interpretations = InterpretationSummary.generateInterpretations(this.allWords);
-//		}
 
 		result = createJsonResponse();
 		reportDebug("createResult=" + new Long(System.currentTimeMillis() - st).toString(), this.ac);

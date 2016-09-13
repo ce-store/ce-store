@@ -1,15 +1,17 @@
 package com.ibm.ets.ita.ce.store.utilities;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.substituteNormalParameters;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.Map.Entry;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
@@ -17,12 +19,11 @@ import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
-import com.ibm.ets.ita.ce.store.ActionResponse;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
+import com.ibm.ets.ita.ce.store.core.ActionResponse;
 
 public class ReportingUtilities {
-
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private static final String CLASS_NAME = ReportingUtilities.class.getName(); 
 	private static final String PACKAGE_NAME = ReportingUtilities.class.getPackage().getName();
@@ -46,7 +47,17 @@ public class ReportingUtilities {
 	 * Input parameters must be non-null.
 	 */
 	public static void reportError(String message, ActionContext actionContext) {
-		reportError(message, actionContext, defaultLogger, null, null);
+		reportError(message, null, actionContext, defaultLogger, null, null);
+	}
+	
+	/*
+	 * Log at Level.SEVERE using the default logger and always add to action
+	 * response if non-null.
+	 * 
+	 * Input parameters must be non-null.
+	 */
+	public static void reportError(String message, TreeMap<String, String> pParms, ActionContext actionContext) {
+		reportError(message, pParms, actionContext, defaultLogger, null, null);
 	}
 	
 	/*
@@ -58,10 +69,30 @@ public class ReportingUtilities {
 	public static void reportError(String message, ActionContext actionContext,
 	 Logger logger, String className, String methodName)
 	{
+		reportError(message, null, actionContext, defaultLogger, className, methodName);
+	}
+
+	/*
+	 * Log at Level.SEVERE using the given logger and always add to action 
+	 * response if non-null.
+	 * 
+	 * Input parameters must be non-null.
+	 */
+	public static void reportError(String message, TreeMap<String, String> pParms, ActionContext actionContext,
+	 Logger logger, String className, String methodName)
+	{
 		logger.logp(Level.SEVERE, className, methodName, message);
 		ActionResponse actionResponse = actionContext.getActionResponse();
 		if (actionResponse != null) {
-			actionResponse.addErrorMessage(message);
+			String msgText = null;
+
+			if (pParms != null) {
+				msgText = substituteNormalParameters(message, pParms);
+			} else {
+				msgText = message;
+			}
+
+			actionResponse.addErrorMessage(msgText);
 		}
 	}
 
@@ -72,7 +103,17 @@ public class ReportingUtilities {
 	 * Input parameters must be non-null.
 	 */
 	public static void reportWarning(String message, ActionContext actionContext) {
-		reportWarning(message, actionContext, defaultLogger, null, null);
+		reportWarning(message, null, actionContext, defaultLogger, null, null);
+	}
+
+	/*
+	 * Log at Level.WARNING using the default logger and always add to action
+	 * response if non-null.
+	 * 
+	 * Input parameters must be non-null.
+	 */
+	public static void reportWarning(String message, TreeMap<String, String> pParms, ActionContext actionContext) {
+		reportWarning(message, pParms, actionContext, defaultLogger, null, null);
 	}
 	
 	/*
@@ -84,10 +125,30 @@ public class ReportingUtilities {
 	public static void reportWarning(String message, ActionContext actionContext,
 	 Logger logger, String className, String methodName)
 	{
+		reportWarning(message, null, actionContext, defaultLogger, className, methodName);
+	}
+
+	/*
+	 * Log at Level.WARNING using the given logger and always add to action
+	 * response if non-null.
+	 * 
+	 * Input parameters must be non-null.
+	 */
+	public static void reportWarning(String message, TreeMap<String, String> pParms, ActionContext actionContext,
+	 Logger logger, String className, String methodName)
+	{
 		logger.logp(Level.WARNING, className, methodName, message);
 		ActionResponse actionResponse = actionContext.getActionResponse();
 		if (actionResponse != null) {
-			actionResponse.addWarningMessage(message);
+			String msgText = null;
+
+			if (pParms != null) {
+				msgText = substituteNormalParameters(message, pParms);
+			} else {
+				msgText = message;
+			}
+
+			actionResponse.addWarningMessage(msgText);
 		}
 	}
 
@@ -125,9 +186,20 @@ public class ReportingUtilities {
 	 * Input parameters must be non-null.
 	 */
 	public static void reportDebug(String message, ActionContext actionContext) {
-		reportDebug(message, actionContext, defaultLogger, null, null);
+		reportDebug(message, null, actionContext, defaultLogger, null, null);
 	}
 	
+	/*
+	 * Log at DEBUG_LEVEL using the default logger and add to action response if
+	 * logging at DEBUG_LEVEL is configured, and if non-null. See also
+	 * isReportDebug().
+	 * 
+	 * Input parameters must be non-null.
+	 */
+	public static void reportDebug(String message, TreeMap<String, String> pParms, ActionContext actionContext) {
+		reportDebug(message, pParms, actionContext, defaultLogger, null, null);
+	}
+
 	/*
 	 * Log at DEBUG_LEVEL using the given logger and add to action response if
 	 * logging at DEBUG_LEVEL is configured, and if non-null. See also
@@ -138,11 +210,32 @@ public class ReportingUtilities {
 	public static void reportDebug(String message, ActionContext actionContext,
 	 Logger logger, String className, String methodName)
 	{
+		reportDebug(message, null, actionContext, defaultLogger, className, methodName);
+	}
+
+	/*
+	 * Log at DEBUG_LEVEL using the given logger and add to action response if
+	 * logging at DEBUG_LEVEL is configured, and if non-null. See also
+	 * isReportDebug().
+	 * 
+	 * Input parameters must be non-null.
+	 */
+	public static void reportDebug(String message, TreeMap<String, String> pParms, ActionContext actionContext,
+	 Logger logger, String className, String methodName)
+	{
 		if (isReportDebug(logger)) {
 			logger.logp(DEBUG_LEVEL, className, methodName, message);
 			ActionResponse actionResponse = actionContext.getActionResponse();
 			if (actionResponse != null) {
-				actionResponse.addDebugMessage(message);
+				String msgText = null;
+
+				if (pParms != null) {
+					msgText = substituteNormalParameters(message, pParms);
+				} else {
+					msgText = message;
+				}
+
+				actionResponse.addDebugMessage(msgText);
 			}
 		}
 	}

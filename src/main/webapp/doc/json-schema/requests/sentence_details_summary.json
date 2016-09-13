@@ -1,7 +1,0 @@
-{
-	"$schema": "http://json-schema.org/draft-04/schema#",
-	"title": "Sentence details (summary)",
-	"description": "Used to return the summary details for a specific sentence",
-	"type": "object",
-	"$ref": "./doc/json-schema/objects/sentence_summary.json#definitions/sentence"
-}

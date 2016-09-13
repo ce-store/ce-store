@@ -1,7 +1,0 @@
-{
-	"$schema": "http://json-schema.org/draft-04/schema#",
-	"title": "Pattern details (summary)",
-	"description": "Used to return the summary details for a specific pattern, i.e. rule or query",
-	"type": "object",
-	"$ref": "./doc/json-schema/objects/pattern_summary.json#definitions/pattern"
-}

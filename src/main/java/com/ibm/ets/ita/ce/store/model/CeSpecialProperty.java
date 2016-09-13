@@ -1,29 +1,28 @@
 package com.ibm.ets.ita.ce.store.model;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.CeNames.SPECIALNAME_CONTAINS;
+import static com.ibm.ets.ita.ce.store.names.CeNames.SPECIALNAME_ENDSWITH;
+import static com.ibm.ets.ita.ce.store.names.CeNames.SPECIALNAME_EQUALS;
+import static com.ibm.ets.ita.ce.store.names.CeNames.SPECIALNAME_GREATER;
+import static com.ibm.ets.ita.ce.store.names.CeNames.SPECIALNAME_GREATEROREQUAL;
+import static com.ibm.ets.ita.ce.store.names.CeNames.SPECIALNAME_LESS;
+import static com.ibm.ets.ita.ce.store.names.CeNames.SPECIALNAME_LESSOREQUAL;
+import static com.ibm.ets.ita.ce.store.names.CeNames.SPECIALNAME_MATCHES;
+import static com.ibm.ets.ita.ce.store.names.CeNames.SPECIALNAME_NOTCONTAINS;
+import static com.ibm.ets.ita.ce.store.names.CeNames.SPECIALNAME_NOTEQUALS;
+import static com.ibm.ets.ita.ce.store.names.CeNames.SPECIALNAME_NOTSTARTSWITH;
+import static com.ibm.ets.ita.ce.store.names.CeNames.SPECIALNAME_STARTSWITH;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
 
 public class CeSpecialProperty extends CeProperty {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
-
-	public static final String SPECIALNAME_CONTAINS = "contains";
-	public static final String SPECIALNAME_NOTCONTAINS = "not-contains";
-	public static final String SPECIALNAME_MATCHES = "matches";
-	public static final String SPECIALNAME_STARTSWITH = "starts-with";
-	public static final String SPECIALNAME_NOTSTARTSWITH = "not-starts-with";
-	public static final String SPECIALNAME_ENDSWITH = "ends-with";
-	public static final String SPECIALNAME_EQUALS = "=";
-	public static final String SPECIALNAME_NOTEQUALS = "!=";
-	public static final String SPECIALNAME_GREATER = ">";
-	public static final String SPECIALNAME_LESS = "<";
-	public static final String SPECIALNAME_GREATEROREQUAL = ">=";
-	public static final String SPECIALNAME_LESSOREQUAL = "<=";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private CeSpecialProperty() {
 		// This is private to ensure that new instances can only be created via
@@ -98,5 +97,5 @@ public class CeSpecialProperty extends CeProperty {
 	public boolean isSpecialOperatorProperty() {
 		return true;
 	}
-	
+
 }

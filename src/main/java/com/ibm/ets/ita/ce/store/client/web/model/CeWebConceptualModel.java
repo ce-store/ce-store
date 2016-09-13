@@ -1,17 +1,32 @@
 package com.ibm.ets.ita.ce.store.client.web.model;
 
-import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportWarning;
-
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSONTYPE_CONMOD;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_TYPE;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_STYLE;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_ID;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_CREATED;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_META_INSTANCE;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SEN_COUNT;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SRC_IDS;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_CONCEPT_NAMES;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SOURCES;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_CONCEPTS;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_PROPERTIES;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SENTENCES;
+import static com.ibm.ets.ita.ce.store.names.RestNames.STYLE_FULL;
+import static com.ibm.ets.ita.ce.store.names.RestNames.STYLE_SUMMARY;
+import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportWarning;
+
 import java.util.Collection;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonArray;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
 import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.model.CeConceptualModel;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
@@ -19,17 +34,7 @@ import com.ibm.ets.ita.ce.store.model.CeProperty;
 import com.ibm.ets.ita.ce.store.model.CeSource;
 
 public class CeWebConceptualModel extends CeWebObject {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
-
-	private static final String TYPE_CM = "conceptual model";
-
-	private static final String KEY_SEN_COUNT = "sentence_count";
-	private static final String KEY_SRC_IDS = "source_ids";
-	private static final String KEY_CONCEPT_NAMES = "concept_names";
-	private static final String KEY_SOURCES = "sources";
-	private static final String KEY_CONCEPTS = "concepts";
-	private static final String KEY_PROPERTIES = "properties";
-	private static final String KEY_SENTENCES = "sentences";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	public CeWebConceptualModel(ActionContext pAc) {
 		super(pAc);
@@ -39,19 +44,19 @@ public class CeWebConceptualModel extends CeWebObject {
 		CeStoreJsonObject jObj = new CeStoreJsonObject();
 		CeWebSentence webSen = new CeWebSentence(this.ac);
 		
-		putStringValueIn(jObj, KEY_TYPE, TYPE_CM);
-		putStringValueIn(jObj, KEY_STYLE, STYLE_FULL);
-		putStringValueIn(jObj, KEY_ID, pCm.getModelName());
-		putLongValueIn(jObj, KEY_CREATED, pCm.getCreationDate());
-		putIntValueIn(jObj, KEY_SEN_COUNT, pCm.countSentences());
-		putArrayValueIn(jObj, KEY_SOURCES, processSourcesFor(pCm));
-		putArrayValueIn(jObj, KEY_CONCEPTS, processConceptsFor(pCm));
-		putArrayValueIn(jObj, KEY_PROPERTIES, processPropertiesFor(pCm));
+		putStringValueIn(jObj, JSON_TYPE, JSONTYPE_CONMOD);
+		putStringValueIn(jObj, JSON_STYLE, STYLE_FULL);
+		putStringValueIn(jObj, JSON_ID, pCm.getModelName());
+		putLongValueIn(jObj, JSON_CREATED, pCm.getCreationDate());
+		putIntValueIn(jObj, JSON_SEN_COUNT, pCm.countSentences());
+		putArrayValueIn(jObj, JSON_SOURCES, processSourcesFor(pCm));
+		putArrayValueIn(jObj, JSON_CONCEPTS, processConceptsFor(pCm));
+		putArrayValueIn(jObj, JSON_PROPERTIES, processPropertiesFor(pCm));
 		
 		// add meta-model details
 		addMetamodelInstanceFor(pCm, jObj);
 
-		putArrayValueIn(jObj, KEY_SENTENCES, webSen.generateSummaryListFrom(pCm.getSentences()));			
+		putArrayValueIn(jObj, JSON_SENTENCES, webSen.generateSummaryListFrom(pCm.getSentences()));			
 
 		return jObj;
 	}
@@ -59,13 +64,13 @@ public class CeWebConceptualModel extends CeWebObject {
 	public CeStoreJsonObject generateSummaryDetailsJsonFor(CeConceptualModel pCm) {
 		CeStoreJsonObject jObj = new CeStoreJsonObject();
 
-		putStringValueIn(jObj, KEY_TYPE, TYPE_CM);
-		putStringValueIn(jObj, KEY_STYLE, STYLE_SUMMARY);
-		putStringValueIn(jObj, KEY_ID, pCm.getModelName());
-		putLongValueIn(jObj, KEY_CREATED, pCm.getCreationDate());
-		putIntValueIn(jObj, KEY_SEN_COUNT, pCm.countSentences());
-		putAllStringValuesIn(jObj, KEY_SRC_IDS, pCm.getSourceIds());
-		putAllStringValuesIn(jObj, KEY_CONCEPT_NAMES, pCm.getDefinedConceptNames());
+		putStringValueIn(jObj, JSON_TYPE, JSONTYPE_CONMOD);
+		putStringValueIn(jObj, JSON_STYLE, STYLE_SUMMARY);
+		putStringValueIn(jObj, JSON_ID, pCm.getModelName());
+		putLongValueIn(jObj, JSON_CREATED, pCm.getCreationDate());
+		putIntValueIn(jObj, JSON_SEN_COUNT, pCm.countSentences());
+		putAllStringValuesIn(jObj, JSON_SRC_IDS, pCm.getSourceIds());
+		putAllStringValuesIn(jObj, JSON_CONCEPT_NAMES, pCm.getDefinedConceptNames());
 
 		// add meta-model details
 		addMetamodelInstanceFor(pCm, jObj);
@@ -169,7 +174,7 @@ public class CeWebConceptualModel extends CeWebObject {
 		if (mmInst != null) {
 			CeWebInstance webInst = new CeWebInstance(this.ac);
 			CeStoreJsonObject metaModelInstanceJSON = webInst.generateSummaryDetailsJsonFor(mmInst, null, 0, false, false, null, false);
-			putObjectValueIn(pJsonObj, KEY_META_INSTANCE, metaModelInstanceJSON);
+			putObjectValueIn(pJsonObj, JSON_META_INSTANCE, metaModelInstanceJSON);
 		} else {
 			reportWarning("No meta-model instance was found for conceptual model named '" + pCm.getModelName(), this.ac);
 		}

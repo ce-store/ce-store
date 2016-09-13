@@ -5,6 +5,15 @@ package com.ibm.ets.ita.ce.store.client.rest;
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_HELPER;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_EXECUTOR;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_INTERPRETER;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_ANSWERER;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_RESET;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_STATUS;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_DIR_LIST;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_DIR_LOAD;
+
 import java.util.ArrayList;
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,18 +30,6 @@ import com.ibm.ets.ita.ce.store.hudson.handler.QuestionManagementHandler;
 
 public class CeStoreRestApiSpecialHudson extends CeStoreRestApi {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
-	
-	private static final String REST_HELPER = "helper";
-	private static final String REST_EXECUTOR = "executor";
-	private static final String REST_INTERPRETER = "interpreter";
-	private static final String REST_ANSWERER = "answerer";
-	private static final String REST_RESET = "reset";
-	private static final String REST_STATUS = "status";
-	
-	private static final String REST_DIR_LIST = "directory_list";
-	private static final String REST_DIR_LOAD = "directory_load";
-
-	private static final String PARM_DEBUG = "debug";
 
 	public CeStoreRestApiSpecialHudson(WebActionContext pWc, ArrayList<String> pRestParts, HttpServletRequest pRequest) {
 		super(pWc, pRestParts, pRequest);
@@ -63,34 +60,33 @@ public class CeStoreRestApiSpecialHudson extends CeStoreRestApi {
 		CeStoreJsonObject result = null;
 		long st = System.currentTimeMillis();
 		String command = this.restParts.get(2);
-		boolean debug = getBooleanParameterNamed(PARM_DEBUG, false);
 		String qt = getTextFromRequest();
 		
 		boolean plainText = false;
 
 		if (isPost()) {
 			if (command.equals(REST_HELPER)) {
-				result = processHelperRequest(qt, debug, st);
+				result = processHelperRequest(qt, st);
 			} else if (command.equals(REST_EXECUTOR)) {
-				result = processExecutorRequest(qt, debug, st);
+				result = processExecutorRequest(qt, st);
 			} else if (command.equals(REST_INTERPRETER)) {
-				result = processInterpreterRequest(qt, debug, st);
+				result = processInterpreterRequest(qt, st);
 			} else if (command.equals(REST_ANSWERER)) {
-				result = processAnswererRequest(qt, debug, st);
+				result = processAnswererRequest(qt, st);
 				plainText = true;
 			} else if(command.equals(REST_DIR_LOAD)){
-				result = processLoadDirectoryModel(debug,st,getParameterNamed("model"));
+				result = processLoadDirectoryModel(st,getParameterNamed("model"));
 			} else {
 				reportUnhandledUrl();
 			}
 		} else if (isGet()) {
 			if (command.equals(REST_RESET)) {
 				//TODO: /reset should probably be implemented as a POST rather than GET
-				result = processResetRequest(debug, st);
+				result = processResetRequest(st);
 			} else if (command.equals(REST_STATUS)) {
-				result = processStatusRequest(debug, st);
+				result = processStatusRequest(st);
 			} else if(command.equals(REST_DIR_LIST)){
-				result = processListDirectoryModels(debug,st);
+				result = processListDirectoryModels(st);
 			}else {
 				reportUnhandledUrl();
 			}
@@ -108,72 +104,72 @@ public class CeStoreRestApiSpecialHudson extends CeStoreRestApi {
 		}
 	}
 
-	private CeStoreJsonObject processHelperRequest(String pQuestionText, boolean pDebug, long pStartTime) {
+	private CeStoreJsonObject processHelperRequest(String pQuestionText, long pStartTime) {
 		CeStoreJsonObject result = new CeStoreJsonObject();
 
-		QuestionHelpHandler qh = new QuestionHelpHandler(this.wc, pDebug, pQuestionText, pStartTime);
-		result = qh.handleQuestion();
+		QuestionHelpHandler qh = new QuestionHelpHandler(this.wc, pQuestionText, pStartTime);
+		result = qh.processQuestion();
 
 		return result;
 	}
 
-	private CeStoreJsonObject processExecutorRequest(String pQuestionText, boolean pDebug, long pStartTime) {
+	private CeStoreJsonObject processExecutorRequest(String pQuestionText, long pStartTime) {
 		CeStoreJsonObject result = new CeStoreJsonObject();
 
 		ServletStateManager.getHudsonManager(this.wc).logQuestionText(this.wc, pQuestionText);
 
-		QuestionExecutionHandler qe = new QuestionExecutionHandler(this.wc, pDebug, pQuestionText, pStartTime);
-		result = qe.handleQuestion();
+		QuestionExecutionHandler qe = new QuestionExecutionHandler(this.wc, pQuestionText, pStartTime);
+		result = qe.processQuestion();
 
 		return result;
 	}
 
-	private CeStoreJsonObject processInterpreterRequest(String pQuestionText, boolean pDebug, long pStartTime) {
+	private CeStoreJsonObject processInterpreterRequest(String pQuestionText, long pStartTime) {
 		CeStoreJsonObject result = new CeStoreJsonObject();
 
-		QuestionInterpreterHandler qh = new QuestionInterpreterHandler(this.wc, pDebug, pQuestionText, pStartTime);
-		result = qh.handleQuestion();
+		QuestionInterpreterHandler qh = new QuestionInterpreterHandler(this.wc, pQuestionText, pStartTime);
+		result = qh.processQuestion();
 
 		return result;
 	}
 
-	private CeStoreJsonObject processAnswererRequest(String pQuestionText, boolean pDebug, long pStartTime) {
+	private CeStoreJsonObject processAnswererRequest(String pQuestionText, long pStartTime) {
 		CeStoreJsonObject result = new CeStoreJsonObject();
 
-		QuestionAnswererHandler qh = new QuestionAnswererHandler(this.wc, pDebug, pQuestionText, pStartTime);
-		result = qh.handleQuestion();
+		QuestionAnswererHandler qh = new QuestionAnswererHandler(this.wc, pQuestionText, pStartTime);
+		result = qh.processInterpretation();
 
 		return result;
 	}
 
-	private CeStoreJsonObject processResetRequest(boolean pDebug, long pStartTime) {
+	private CeStoreJsonObject processResetRequest(long pStartTime) {
 		CeStoreJsonObject result = new CeStoreJsonObject();
 
-		QuestionManagementHandler qh = new QuestionManagementHandler(this.wc, pDebug, pStartTime);
+		QuestionManagementHandler qh = new QuestionManagementHandler(this.wc, pStartTime);
 		result = qh.handleReset();
 
 		return result;
 	}
 	
-	private CeStoreJsonObject processListDirectoryModels(boolean pDebug, long pStartTime) {
+	private CeStoreJsonObject processListDirectoryModels(long pStartTime) {
 		CeStoreJsonObject result = new CeStoreJsonObject();
-		ModelDirectoryHandler mdh = new ModelDirectoryHandler(this.wc, pDebug, pStartTime);
+		ModelDirectoryHandler mdh = new ModelDirectoryHandler(this.wc, pStartTime);
 		result = mdh.handleList();
 		return result;
 	}
 	
 	
-	private CeStoreJsonObject processLoadDirectoryModel(boolean pDebug, long pStartTime, String modelName) {
+	private CeStoreJsonObject processLoadDirectoryModel(long pStartTime, String modelName) {
 		CeStoreJsonObject result = new CeStoreJsonObject();
-		ModelDirectoryHandler mdh = new ModelDirectoryHandler(this.wc, pDebug, pStartTime);
+		ModelDirectoryHandler mdh = new ModelDirectoryHandler(this.wc, pStartTime);
 		result = mdh.handleLoad(modelName);
 		return result;
 	}
 
-	private CeStoreJsonObject processStatusRequest(boolean pDebug, long pStartTime) {
+	private CeStoreJsonObject processStatusRequest(long pStartTime) {
 		CeStoreJsonObject result = new CeStoreJsonObject();
 
-		QuestionManagementHandler qh = new QuestionManagementHandler(this.wc, pDebug, pStartTime);
+		QuestionManagementHandler qh = new QuestionManagementHandler(this.wc, pStartTime);
 		result = qh.handleStatus();
 
 		return result;

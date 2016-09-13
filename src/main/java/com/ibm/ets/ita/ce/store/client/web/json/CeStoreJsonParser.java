@@ -1,23 +1,37 @@
 package com.ibm.ets.ita.ce.store.client.web.json;
 
+//ALL DONE
+
 /*******************************************************************************
  * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.ParseNames.CHAR_BS;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.CHAR_CLOSEBRA;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.CHAR_CLPAR;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.CHAR_COLON;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.CHAR_COMMA;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.CHAR_DQ;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.CHAR_FQ;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.CHAR_OPENBRA;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.CHAR_OPPAR;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_FALSE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_NULL;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_TRUE;
 import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.bufferedReaderFromString;
-import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportException;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
+import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
 
 public class CeStoreJsonParser {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private static final String CLASS_NAME = CeStoreJsonParser.class.getName();
 	private static final String PACKAGE_NAME = CeStoreJsonParser.class.getPackage().getName();
@@ -29,25 +43,24 @@ public class CeStoreJsonParser {
 
 	private static final String CLASS_ARRAY = "CeStoreJsonArray";
 	private static final String CLASS_OBJECT = "CeStoreJsonObject";
-	private static final String CLASS_STRING = "String";
-	private static final String INDENT = "  ";
-	private static final String NL = "\n";
 
 	private ActionContext ac = null;
 	private String jsonText = null;
 	private char currentChar = 0;
-	private ArrayList<Object> stack = new ArrayList<Object>();
+	private ArrayList<Object> stack = null;
 
 	private boolean inQuote = false;
 	private boolean wasQuoted = false;
 	private boolean lastCharBs = false;
 	private int state = 0;
-	private StringBuilder currentItem = new StringBuilder();
+	private StringBuilder currentItem = null;
 	private String elemName = null;
 
 	public CeStoreJsonParser(ActionContext pAc, String pJsonText) {
 		this.ac = pAc;
 		this.jsonText = pJsonText;
+		this.stack = new ArrayList<Object>();
+		this.currentItem = new StringBuilder();
 	}
 
 	public void parse() {
@@ -63,81 +76,6 @@ public class CeStoreJsonParser {
 			}
 		} catch (IOException e) {
 			reportException(e, this.ac, logger, CLASS_NAME, METHOD_NAME);
-		}
-
-		if (this.ac.getCeConfig().isDebug()) {
-			debugSummary();
-		}
-	}
-
-	private void debugSummary() {
-		StringBuilder sb = new StringBuilder();
-
-		CeStoreJsonObject jObj = getRootJsonObject();
-
-		if (jObj != null) {
-			summariseObject(jObj, INDENT, sb);
-		}
-
-		CeStoreJsonArray jArr = getRootJsonArray();
-
-		if (jArr != null) {
-			summariseArray(jArr, INDENT, sb);
-		}
-	}
-
-	private void summariseObject(CeStoreJsonObject pObj, String pIndent, StringBuilder pSb) {
-		boolean firstTime = true;
-		StringBuilder thisSb = new StringBuilder();
-
-		for (String thisKey : pObj.keySet()) {
-			Object rawObj = pObj.get(this.ac, thisKey);
-
-			if (!firstTime) {
-				thisSb.append(NL);
-			}
-
-			thisSb.append(pIndent + thisKey + ": ");
-			summariseRawObject(rawObj, pIndent, thisSb);
-
-			firstTime = false;
-		}
-
-		if (thisSb.length() > 0) {
-			if (pSb.length() > 0) {
-				pSb.append(NL);
-			}
-			pSb.append(thisSb);
-		}
-	}
-
-	private void summariseArray(CeStoreJsonArray pArr, String pIndent, StringBuilder pSb) {
-		boolean firstTime = true;
-
-		for (int i = 0; i < pArr.length(); i++) {
-			Object thisObj = pArr.get(i);
-
-			if (!firstTime) {
-				pSb.append(", ");
-			}
-
-			summariseRawObject(thisObj, pIndent + INDENT, pSb);
-			firstTime = false;
-		}
-	}
-
-	private void summariseRawObject(Object pObj, String pIndent, StringBuilder pSb) {
-		String className = pObj.getClass().getSimpleName();
-
-		if (className.equals(CLASS_ARRAY)) {
-			summariseArray((CeStoreJsonArray)pObj, pIndent + INDENT, pSb);
-		} else if (className.equals(CLASS_OBJECT)){
-			summariseObject((CeStoreJsonObject)pObj, pIndent + INDENT, pSb);
-		} else if (className.equals(CLASS_STRING)){
-			pSb.append(pObj.toString());
-		} else {
-			reportError("Unexpected class (" + className + ") in summariseRawObject()", this.ac);
-			pSb.append("???");
 		}
 	}
 
@@ -157,7 +95,7 @@ public class CeStoreJsonParser {
 			String className = rawObj.getClass().getSimpleName();
 
 			if (className.equals(CLASS_OBJECT)) {
-				result = (CeStoreJsonObject)rawObj;
+				result = (CeStoreJsonObject) rawObj;
 			}
 		}
 
@@ -177,7 +115,7 @@ public class CeStoreJsonParser {
 	}
 
 	private void popStack() {
-		//Don't ever pop the last (root) item from the stack
+		// Don't ever pop the last (root) item from the stack
 		if (this.stack.size() > 1) {
 			this.stack.remove(this.stack.size() - 1);
 		}
@@ -191,7 +129,7 @@ public class CeStoreJsonParser {
 			String className = rawObj.getClass().getSimpleName();
 
 			if (className.equals(CLASS_ARRAY)) {
-				result = (CeStoreJsonArray)rawObj;
+				result = (CeStoreJsonArray) rawObj;
 			}
 		}
 
@@ -207,16 +145,16 @@ public class CeStoreJsonParser {
 	}
 
 	private void processEscapedCharacter() {
-		//This character occurs directly after an escape character (backslash)
+		// This character occurs directly after an escape character (backslash)
 		switch (this.currentChar) {
-		case '\\':
+		case CHAR_BS:
 			// A backslash character
 			doEscapedBackslash();
-		case '"':
+		case CHAR_DQ:
 			// A quote character
 			doEscapedQuote();
 			break;
-		case '/':
+		case CHAR_FQ:
 			// A forward quote character
 			doEscapedForwardSlash();
 			break;
@@ -231,28 +169,28 @@ public class CeStoreJsonParser {
 
 	private void processNormalCharacter() {
 		switch (this.currentChar) {
-		case '{':
+		case CHAR_OPENBRA:
 			doOpenBrace();
 			break;
-		case '}':
+		case CHAR_CLOSEBRA:
 			doCloseBrace();
 			break;
-		case '[':
+		case CHAR_OPPAR:
 			doOpenParenthesis();
 			break;
-		case ']':
+		case CHAR_CLPAR:
 			doCloseParenthesis();
 			break;
-		case '\\':
+		case CHAR_BS:
 			doBackslash();
 			break;
-		case '"':
+		case CHAR_DQ:
 			doQuote();
 			break;
-		case ',':
+		case CHAR_COMMA:
 			doComma();
 			break;
-		case ':':
+		case CHAR_COLON:
 			doColon();
 			break;
 		default:
@@ -263,17 +201,17 @@ public class CeStoreJsonParser {
 	}
 
 	private void doEscapedBackslash() {
-		//Simply add any escaped backslash to currentItem
+		// Simply add any escaped backslash to currentItem
 		doDefault();
 	}
 
 	private void doEscapedQuote() {
-		//Simply add any escaped quote to currentItem
+		// Simply add any escaped quote to currentItem
 		doDefault();
 	}
 
 	private void doEscapedForwardSlash() {
-		//Simply add any escaped forward slash to currentItem
+		// Simply add any escaped forward slash to currentItem
 		doDefault();
 	}
 
@@ -325,9 +263,9 @@ public class CeStoreJsonParser {
 			String className = lastObj.getClass().getSimpleName();
 
 			if (className.equals(CLASS_ARRAY)) {
-				((CeStoreJsonArray)lastObj).add(newObj);
-			} else if (className.equals(CLASS_OBJECT)){
-				((CeStoreJsonObject)lastObj).put(this.elemName, newObj);
+				((CeStoreJsonArray) lastObj).add(newObj);
+			} else if (className.equals(CLASS_OBJECT)) {
+				((CeStoreJsonObject) lastObj).put(this.elemName, newObj);
 			}
 
 			pushStack(newObj);
@@ -353,9 +291,9 @@ public class CeStoreJsonParser {
 			String className = lastObj.getClass().getSimpleName();
 
 			if (className.equals(CLASS_ARRAY)) {
-				((CeStoreJsonArray)lastObj).add(newArr);
-			} else if (className.equals(CLASS_OBJECT)){
-				((CeStoreJsonObject)lastObj).put(this.elemName, newArr);
+				((CeStoreJsonArray) lastObj).add(newArr);
+			} else if (className.equals(CLASS_OBJECT)) {
+				((CeStoreJsonObject) lastObj).put(this.elemName, newArr);
 			}
 
 			pushStack(newArr);
@@ -388,7 +326,7 @@ public class CeStoreJsonParser {
 	}
 
 	private void doEnterQuote() {
-		//Nothing is needed
+		// Nothing is needed
 	}
 
 	private void doExitQuote() {
@@ -428,18 +366,18 @@ public class CeStoreJsonParser {
 	private void saveCurrentItem() {
 		if (this.currentItem != null) {
 			switch (this.state) {
-				case STATE_DEFAULT:
-					saveElementName();
-					break;
-				case STATE_ELEMVAL:
-					saveElementValue();
-					break;
-				case STATE_ARRAYVAL:
-					saveArrayValue();
-					break;
-				default:
-					reportError("Unknown state (" + this.state + ") in saveCurrentItem()", this.ac);
-					break;
+			case STATE_DEFAULT:
+				saveElementName();
+				break;
+			case STATE_ELEMVAL:
+				saveElementValue();
+				break;
+			case STATE_ARRAYVAL:
+				saveArrayValue();
+				break;
+			default:
+				reportError("Unknown state (" + this.state + ") in saveCurrentItem()", this.ac);
+				break;
 			}
 
 			this.currentItem = null;
@@ -454,16 +392,16 @@ public class CeStoreJsonParser {
 	private void saveElementValue() {
 		if (this.wasQuoted) {
 			String elemVal = this.currentItem.toString();
-			((CeStoreJsonObject)getStackTail()).put(this.elemName, elemVal);
+			((CeStoreJsonObject) getStackTail()).put(this.elemName, elemVal);
 		} else {
-			CeStoreJsonObject jObj = ((CeStoreJsonObject)getStackTail());
+			CeStoreJsonObject jObj = ((CeStoreJsonObject) getStackTail());
 			String elemVal = this.currentItem.toString();
 
-			if (elemVal.equalsIgnoreCase("null")) {
-				jObj.put(this.elemName, (Object)null);
-			} else if (elemVal.equalsIgnoreCase("true")) {
+			if (elemVal.equalsIgnoreCase(TOKEN_NULL)) {
+				jObj.put(this.elemName, (Object) null);
+			} else if (elemVal.equalsIgnoreCase(TOKEN_TRUE)) {
 				jObj.put(this.elemName, true);
-			} else if (elemVal.equalsIgnoreCase("false")) {
+			} else if (elemVal.equalsIgnoreCase(TOKEN_FALSE)) {
 				jObj.put(this.elemName, false);
 			} else {
 				jObj.put(this.elemName, new Integer(elemVal).intValue());
@@ -476,16 +414,16 @@ public class CeStoreJsonParser {
 	private void saveArrayValue() {
 		if (this.wasQuoted) {
 			String arrayValue = this.currentItem.toString();
-			((CeStoreJsonArray)getStackTail()).add(arrayValue);
+			((CeStoreJsonArray) getStackTail()).add(arrayValue);
 		} else {
-			CeStoreJsonArray jArr = ((CeStoreJsonArray)getStackTail());
+			CeStoreJsonArray jArr = ((CeStoreJsonArray) getStackTail());
 			String elemVal = this.currentItem.toString();
 
-			if (elemVal.equalsIgnoreCase("null")) {
-				jArr.add((Object)null);
-			} else if (elemVal.equalsIgnoreCase("true")) {
+			if (elemVal.equalsIgnoreCase(TOKEN_NULL)) {
+				jArr.add((Object) null);
+			} else if (elemVal.equalsIgnoreCase(TOKEN_TRUE)) {
 				jArr.add(true);
-			} else if (elemVal.equalsIgnoreCase("false")) {
+			} else if (elemVal.equalsIgnoreCase(TOKEN_FALSE)) {
 				jArr.add(false);
 			} else {
 				jArr.add(new Integer(elemVal).intValue());

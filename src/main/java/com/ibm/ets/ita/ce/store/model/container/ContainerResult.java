@@ -1,7 +1,7 @@
 package com.ibm.ets.ita.ce.store.model.container;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
@@ -10,8 +10,7 @@ import java.util.List;
 import com.ibm.ets.ita.ce.store.model.CeSentence;
 
 public abstract class ContainerResult {
-
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private List<CeSentence> createdSentences = null;		//TODO: This should be located elsewhere (lower in the hierarchy)...
 	private long executionTime = -1;

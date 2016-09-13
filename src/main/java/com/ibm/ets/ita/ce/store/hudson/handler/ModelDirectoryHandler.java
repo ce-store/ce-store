@@ -6,6 +6,12 @@ package com.ibm.ets.ita.ce.store.hudson.handler;
  *******************************************************************************/
 
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportDebug;
+import static com.ibm.ets.ita.ce.store.names.CeNames.SRC_HUDSON;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.MODELNAME_CORE;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_ET;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_MODELS;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SM;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.CESTORENAME_DEFAULT;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -13,37 +19,27 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
-import com.ibm.ets.ita.ce.store.ModelBuilder;
-import com.ibm.ets.ita.ce.store.StoreActions;
 import com.ibm.ets.ita.ce.store.client.web.ServletStateManager;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonParser;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
+import com.ibm.ets.ita.ce.store.core.ModelBuilder;
+import com.ibm.ets.ita.ce.store.core.StoreActions;
 import com.ibm.ets.ita.ce.store.hudson.helper.HudsonManager;
 import com.ibm.ets.ita.ce.store.hudson.model.ConvConfig;
 import com.ibm.ets.ita.ce.store.model.CeRule;
 
-public class ModelDirectoryHandler extends QuestionHandler {
+public class ModelDirectoryHandler extends GenericHandler {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
-
-	private static final String CE_HUDSON_SRC = "HUDSON";
-	private static final String JSON_SM = "system_message";
-
-	public ModelDirectoryHandler(ActionContext pAc, boolean pDebug, long pStartTime) {
-		super(pAc, pDebug, null, pStartTime);
-	}
-	
-	@Override
-	public CeStoreJsonObject handleQuestion() {
-		//Nothing is needed here - no question is ever asked
-
-		return null;
+	public ModelDirectoryHandler(ActionContext pAc, long pStartTime) {
+		super(pAc, pStartTime);
 	}
 	
 	public CeStoreJsonObject handleList(){
 		CeStoreJsonObject result = new CeStoreJsonObject();	
 		StringBuilder stringBuilder = new StringBuilder();
+
 		try{
 		    URL url = new URL(this.ac.getModelBuilder().getModelDirectoryUrl());
 		    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -62,13 +58,12 @@ public class ModelDirectoryHandler extends QuestionHandler {
 	    CeStoreJsonParser parser = new CeStoreJsonParser(this.ac, stringBuilder.toString());
 	    parser.parse();
 	 
-	    result.put("models", parser.getRootJsonArray());
+	    result.put(JSON_MODELS, parser.getRootJsonArray());
 	    
 		return result;
 	}
 	
 	public CeStoreJsonObject handleLoad(String modelName){
-		
 		CeStoreJsonObject result = new CeStoreJsonObject();	
 
 		//Just reset the store and clear the config
@@ -94,7 +89,7 @@ public class ModelDirectoryHandler extends QuestionHandler {
 	
 	
 	protected static void setupCeStore(ActionContext pAc, ServletStateManager pSsm, HudsonManager pHm, String modelName) {
-		String storeName = ModelBuilder.CESTORENAME_DEFAULT;
+		String storeName = CESTORENAME_DEFAULT;
 		ModelBuilder mb = pSsm.getModelBuilder(storeName);
 		boolean storeWasLoaded = false;
 
@@ -144,16 +139,16 @@ public class ModelDirectoryHandler extends QuestionHandler {
 			reportDebug("Successfully set up CE Store named " + pStoreName, pAc);
 
 			StoreActions sa = StoreActions.createUsingDefaultConfig(pAc);
-			String tgtSrc = CE_HUDSON_SRC;
+			String tgtSrc = SRC_HUDSON;
 			
 			//load core
-			if(loadCore && !modelName.equalsIgnoreCase("core")){
-				String coreUrl = "http://ce-models.eu-gb.mybluemix.net/core";
+			if(loadCore && !modelName.equalsIgnoreCase(MODELNAME_CORE)){
+				String coreUrl = pAc.getModelBuilder().getModelDirectoryUrl() + "/" + MODELNAME_CORE;
 				sa.loadSentencesFromUrl(coreUrl, tgtSrc);
 			}
 			
 			// now load the specific model
-			String tgtUrl = "http://ce-models.eu-gb.mybluemix.net/"+modelName;
+			String tgtUrl = pAc.getModelBuilder().getModelDirectoryUrl() + "/" + modelName;
 			sa.loadSentencesFromUrl(tgtUrl, tgtSrc);
 
 			reportDebug("Successfully loaded CE from url " + tgtUrl, pAc);

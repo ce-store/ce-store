@@ -1,0 +1,64 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"title": "Property - summary details",
+	"definitions": {
+		"property": {
+			"title": "Summary property details",
+			"description": "Return the summary details about a property",
+			"type": "object",
+			"required": [ "_type", "_style", "_id", "_created", "property_name", "domain_name", "range_name", "property_style", "property_type" ],
+			"additionalProperties": false,
+			"properties": {
+				"_type": {
+					"description": "The type (always property)",
+					"type": "string",
+					"enum": [ "property" ]
+				},
+				"_style": {
+					"description": "The style (always summary)",
+					"type": "string",
+					"enum": [ "summary" ]
+				},
+				"_id": {
+					"description": "The unique id (full property name - {domain}:{property name}:{range}) for this property",
+					"type": "string"
+				},
+				"_created": {
+				    "description": "The (unix timestamp) date value on which this conceptual model was created",
+				    "type": "integer",
+				    "minimum": 0
+				},
+				"property_name": {
+					"description": "The main (but not unique) identifier (name) for a property",
+					"type": "string"
+				},
+				"asserted_domain_name": {
+					"description": "The concept against which the property was originally defined.",
+					"type": "string"
+				},
+				"domain_name": {
+					"description": "The domain (concept) name to which a property applies",
+					"type": "string"
+				},
+				"range_name": {
+					"description": "The range (concept) name by which a property is restricted",
+					"type": "string"
+				},
+				"property_style": {
+					"description": "The property declaration style",
+					"type": "string",
+					"enum": [ "functional noun", "verb singular" ]
+				},
+				"property_type": {
+					"description": "The property type indicating whether the range is a value (datatype) or concept (object).",
+					"type": "string",
+					"enum": [ "datatype", "object" ]
+				},
+				"meta_instance": {
+				    "description": "The automatically created meta-model instance that corresponds to this property.",
+				    "$ref": "instance_summary.json#/definitions/instance"
+				}
+			}
+		}
+	}
+}

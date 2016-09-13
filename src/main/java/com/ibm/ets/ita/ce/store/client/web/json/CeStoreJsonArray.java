@@ -1,17 +1,24 @@
 package com.ibm.ets.ita.ce.store.client.web.json;
 
+//ALL DONE
+
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
+
+import static com.ibm.ets.ita.ce.store.names.MiscNames.ES;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_CLOSESQBR;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_COMMA;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_OPENSQBR;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
 
 public class CeStoreJsonArray extends CeStoreJsonProcessor {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private ArrayList<Object> innerList = new ArrayList<Object>();
 
@@ -64,22 +71,22 @@ public class CeStoreJsonArray extends CeStoreJsonProcessor {
 		StringBuilder sb = new StringBuilder();
 
 		if (this.jsonText == null) {
-			String commaVal= "";
-			sb.append("[");
+			String commaVal = ES;
+			sb.append(TOKEN_OPENSQBR);
 
 			for (Object thisVal : this.innerList) {
 				sb.append(commaVal);
 				if (thisVal instanceof CeStoreJsonObject) {
-					sb.append(((CeStoreJsonObject)thisVal).serialize(pAc));
+					sb.append(((CeStoreJsonObject) thisVal).serialize(pAc));
 				} else if (thisVal instanceof CeStoreJsonArray) {
-					sb.append(((CeStoreJsonArray)thisVal).serialize(pAc));
+					sb.append(((CeStoreJsonArray) thisVal).serialize(pAc));
 				} else {
-					sb.append(encodeJsonValue((String)thisVal));
+					sb.append(encodeJsonValue((String) thisVal));
 				}
-				commaVal = ",";
+				commaVal = TOKEN_COMMA;
 			}
 
-			sb.append("]");
+			sb.append(TOKEN_CLOSESQBR);
 		} else {
 			sb.append(this.jsonText);
 		}

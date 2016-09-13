@@ -1,24 +1,33 @@
 package com.ibm.ets.ita.ce.store.parsing.processor;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.ParseNames.ANNO_TOKEN_NOTE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.CHAR_BOM;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.CHAR_CLBR;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.CHAR_CLPAR;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.CHAR_COMMA;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.CHAR_CR;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.CHAR_DOT;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.CHAR_NL;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.CHAR_OPBR;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.CHAR_OPPAR;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.CHAR_SPACE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.CHAR_TAB;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.CHAR_DASH;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_COLON;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
 import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentence;
 
 //TODO: Add test (and warning) for non-standard acsii character outside of CE sentence
 
 public class SentenceParserCe extends SentenceParser {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
-
-	private static final String STR_COLON = ":";
-	private static final char CHAR_DASH = '-';
-
-	private static final String ANNO_TOKEN_NOTE = "Note:";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private ProcessorCe proc = null;
 
@@ -63,7 +72,7 @@ public class SentenceParserCe extends SentenceParser {
 	protected void saveTokenExtra(String pToken) {
 		if (this.firstToken == null) {
 			this.firstToken = pToken;
-			this.firstTokenEndsWithColon = this.firstToken.endsWith(STR_COLON);
+			this.firstTokenEndsWithColon = this.firstToken.endsWith(TOKEN_COLON);
 		}
 	}
 

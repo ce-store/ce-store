@@ -1,11 +1,27 @@
 package com.ibm.ets.ita.ce.store.query;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
-import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.NL;
+import static com.ibm.ets.ita.ce.store.names.CeNames.SPECIALNAME_CONTAINS;
+import static com.ibm.ets.ita.ce.store.names.CeNames.SPECIALNAME_ENDSWITH;
+import static com.ibm.ets.ita.ce.store.names.CeNames.SPECIALNAME_EQUALS;
+import static com.ibm.ets.ita.ce.store.names.CeNames.SPECIALNAME_GREATER;
+import static com.ibm.ets.ita.ce.store.names.CeNames.SPECIALNAME_GREATEROREQUAL;
+import static com.ibm.ets.ita.ce.store.names.CeNames.SPECIALNAME_LESS;
+import static com.ibm.ets.ita.ce.store.names.CeNames.SPECIALNAME_LESSOREQUAL;
+import static com.ibm.ets.ita.ce.store.names.CeNames.SPECIALNAME_MATCHES;
+import static com.ibm.ets.ita.ce.store.names.CeNames.SPECIALNAME_NOTCONTAINS;
+import static com.ibm.ets.ita.ce.store.names.CeNames.SPECIALNAME_NOTEQUALS;
+import static com.ibm.ets.ita.ce.store.names.CeNames.SPECIALNAME_NOTSTARTSWITH;
+import static com.ibm.ets.ita.ce.store.names.CeNames.SPECIALNAME_STARTSWITH;
+import static com.ibm.ets.ita.ce.store.names.CeNames.RANGE_VALUE;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.HDR_CE;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.FILENAME_QUERYLOG_CE;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.NO_TS;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.NL;
 import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.joinFolderAndFilename;
 import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.writeToFile;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.reportExecutionTiming;
@@ -15,11 +31,9 @@ import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
 import java.util.ArrayList;
 import java.util.TreeMap;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
-import com.ibm.ets.ita.ce.store.ModelBuilder;
-import com.ibm.ets.ita.ce.store.StoreConfig;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
+import com.ibm.ets.ita.ce.store.core.ModelBuilder;
 import com.ibm.ets.ita.ce.store.model.CeConcept;
-import com.ibm.ets.ita.ce.store.model.CeProperty;
 import com.ibm.ets.ita.ce.store.model.CePropertyInstance;
 import com.ibm.ets.ita.ce.store.model.CeQuery;
 import com.ibm.ets.ita.ce.store.model.CeRule;
@@ -27,12 +41,9 @@ import com.ibm.ets.ita.ce.store.model.CeSpecialProperty;
 import com.ibm.ets.ita.ce.store.model.container.ContainerCeResult;
 
 public abstract class QueryExecutionManager {
-
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private static final String CLASS_NAME = QueryExecutionManager.class.getName();
-
-	protected static final String HDR_COUNT = "count";
 
 	public static final int FLAG_RESP_IDS = 1;
 	public static final int FLAG_RESP_INSTS = 2;
@@ -68,7 +79,7 @@ public abstract class QueryExecutionManager {
 
 	protected static boolean clauseTestOnDirectMatch(ActionContext pAc, CePropertyInstance pPi) {
 		//A direct match is either explicitly expressed with "=", or via the shorthand syntax of "has 'x' as blah..." 
-		return pPi.getPropertyName().equals(CeSpecialProperty.SPECIALNAME_EQUALS) || clauseTestOnDirectMatchWithoutSpecialOperator(pAc, pPi);
+		return pPi.getPropertyName().equals(SPECIALNAME_EQUALS) || clauseTestOnDirectMatchWithoutSpecialOperator(pAc, pPi);
 	}
 
 	private static boolean clauseTestOnDirectMatchWithoutSpecialOperator(ActionContext pAc, CePropertyInstance pPi) {
@@ -78,47 +89,47 @@ public abstract class QueryExecutionManager {
 	}
 
 	protected static boolean clauseTestOnPartialMatchContains(CePropertyInstance pPi) {
-		return pPi.getPropertyName().equals(CeSpecialProperty.SPECIALNAME_CONTAINS);
+		return pPi.getPropertyName().equals(SPECIALNAME_CONTAINS);
 	}
 
 	protected static boolean clauseTestOnPartialMatchNotContains(CePropertyInstance pPi) {
-		return pPi.getPropertyName().equals(CeSpecialProperty.SPECIALNAME_NOTCONTAINS);
+		return pPi.getPropertyName().equals(SPECIALNAME_NOTCONTAINS);
 	}
 
 	protected static boolean clauseTestOnPartialMatchMatches(CePropertyInstance pPi) {
-		return pPi.getPropertyName().equals(CeSpecialProperty.SPECIALNAME_MATCHES);
+		return pPi.getPropertyName().equals(SPECIALNAME_MATCHES);
 	}
 
 	protected static boolean clauseTestOnPartialMatchStartsWith(CePropertyInstance pPi) {
-		return pPi.getPropertyName().equals(CeSpecialProperty.SPECIALNAME_STARTSWITH);
+		return pPi.getPropertyName().equals(SPECIALNAME_STARTSWITH);
 	}
 
 	protected static boolean clauseTestOnPartialMatchNotStartsWith(CePropertyInstance pPi) {
-		return pPi.getPropertyName().equals(CeSpecialProperty.SPECIALNAME_NOTSTARTSWITH);
+		return pPi.getPropertyName().equals(SPECIALNAME_NOTSTARTSWITH);
 	}
 
 	protected static boolean clauseTestOnPartialMatchEndsWith(CePropertyInstance pPi) {
-		return pPi.getPropertyName().equals(CeSpecialProperty.SPECIALNAME_ENDSWITH);
+		return pPi.getPropertyName().equals(SPECIALNAME_ENDSWITH);
 	}
 
 	protected static boolean clauseTestOnNegativeMatch(CePropertyInstance pPi) {
-		return pPi.getPropertyName().equals(CeSpecialProperty.SPECIALNAME_NOTEQUALS);
+		return pPi.getPropertyName().equals(SPECIALNAME_NOTEQUALS);
 	}
 
 	protected static boolean clauseTestOnGreaterThanMatch(CePropertyInstance pPi) {
-		return pPi.getPropertyName().equals(CeSpecialProperty.SPECIALNAME_GREATER);
+		return pPi.getPropertyName().equals(SPECIALNAME_GREATER);
 	}
 
 	protected static boolean clauseTestOnGreaterThanOrEqualsMatch(CePropertyInstance pPi) {
-		return pPi.getPropertyName().equals(CeSpecialProperty.SPECIALNAME_GREATEROREQUAL);
+		return pPi.getPropertyName().equals(SPECIALNAME_GREATEROREQUAL);
 	}
 
 	protected static boolean clauseTestOnLessThanMatch(CePropertyInstance pPi) {
-		return pPi.getPropertyName().equals(CeSpecialProperty.SPECIALNAME_LESS);
+		return pPi.getPropertyName().equals(SPECIALNAME_LESS);
 	}
 
 	protected static boolean clauseTestOnLessThanOrEqualsMatch(CePropertyInstance pPi) {
-		return pPi.getPropertyName().equals(CeSpecialProperty.SPECIALNAME_LESSOREQUAL);
+		return pPi.getPropertyName().equals(SPECIALNAME_LESSOREQUAL);
 	}
 
 	protected static boolean isDatatypeVariable(CePropertyInstance pPi) {
@@ -136,17 +147,17 @@ public abstract class QueryExecutionManager {
 	}
 
 	private static long extractTimestampFrom(ActionContext pAc, String pTsText) {
-		long ts = ModelBuilder.NO_TS;
+		long ts = NO_TS;
 		
 		if ((pTsText != null) && (!pTsText.isEmpty())) {
 			try {
 				ts = new Long(pTsText).longValue();
 			} catch (Exception e) {
-				ts = ModelBuilder.NO_TS;
+				ts = NO_TS;
 				reportError("Timestamp could not be processed (must be a long numeric value, was '" + pTsText + "')", pAc);
 			}
 		} else {
-			ts = ModelBuilder.NO_TS;
+			ts = NO_TS;
 		}
 		
 		return ts;
@@ -263,7 +274,7 @@ public abstract class QueryExecutionManager {
 				}
 			} else {
 				//If the result is empty then there were no matches so put in an empty count row
-				if (!result.getHeaders().contains("count")) {
+				if (!result.getHeaders().contains("count")) {	//TODO: Abstract these
 					result.addHeader("count", "count");
 					ArrayList<String> zeroRow = new ArrayList<String>();
 					zeroRow.add("0");
@@ -280,15 +291,9 @@ public abstract class QueryExecutionManager {
 	protected void addToCeTemplateSimple(CeConcept pSrcCon, String pSrcVarId) {
 		String prefix = cePrefix();
 		String postfix = cePostfix();
-//		String constPrefix = ceConstPrefix();
 		String srcConceptName = pSrcCon.getConceptName();
 		
 		String thisTemplate = prefix + "there is %CONQUAL% %CONNAME% named '%INSTNAME%'" + postfix;
-		
-//		if (srcConceptName.equals(CeProperty.RANGE_VALUE)) {
-//			//This is a value based operator so append this bit of CE as a comment
-//			thisTemplate = constPrefix + thisTemplate;
-//		}
 		
 		TreeMap<String, String> ceParms = new TreeMap<String, String>();
 		ceParms.put("%CONQUAL%", pSrcCon.conceptQualifier());
@@ -321,9 +326,8 @@ public abstract class QueryExecutionManager {
 		String thisTemplate = "";
 		String prefix = cePrefix();
 		String postfix = cePostfix();
-//		String constPrefix = ceConstPrefix();
 		
-		if (pTgtConceptName.equals(CeProperty.RANGE_VALUE)) {
+		if (pTgtConceptName.equals(RANGE_VALUE)) {
 			if (this.targetQuery.isRule()) {
 				if (CeSpecialProperty.isSpecialValueOperator(pPropName)) {
 					thisTemplate = prefix + "the %01 '%03' has '%04' as %02" + postfix;
@@ -361,17 +365,6 @@ public abstract class QueryExecutionManager {
 			}
 		}
 		
-//		if (pSrcConceptName.equals(CeProperty.RANGE_VALUE)) {
-//			//This is a value based operator so append this bit of CE as a comment
-//			thisTemplate = constPrefix + thisTemplate;
-//		}
-
-		//DSB 24/09/2013 - Added to prevent parsing issues with negated rationale
-//		if (pIsNegated) {
-//			//This is a negated clause so append this bit of CE as a comment
-//			thisTemplate = constPrefix + thisTemplate;
-//		}
-
 		TreeMap<String, String> ceParms = new TreeMap<String, String>();
 		ceParms.put("%01", pSrcConceptName);
 		ceParms.put("%02", pPropName);
@@ -389,9 +382,8 @@ public abstract class QueryExecutionManager {
 		
 		String prefix = cePrefix();
 		String postfix = cePostfix();
-//		String constPrefix = ceConstPrefix();
 
-		if (pTgtConceptName.equals(CeProperty.RANGE_VALUE)) {
+		if (pTgtConceptName.equals(RANGE_VALUE)) {
 			if (this.targetQuery.isRule()) {
 				if (CeSpecialProperty.isSpecialValueOperator(pPropName)) {
 					thisTemplate = prefix + "the %01 '%03' %02 '%04'" + postfix;
@@ -430,14 +422,7 @@ public abstract class QueryExecutionManager {
 			}
 		}
 		
-//		if (pSrcConceptName.equals(CeProperty.RANGE_VALUE)) {
-//			//This is a value based operator so append this bit of CE as a comment
-//			thisTemplate = constPrefix + thisTemplate;
-//			encTgtVar = pTgtVarId;
-//		} else {
-			encTgtVar = pTgtVarId;
-//		}
-		
+		encTgtVar = pTgtVarId;		
 		encSrcVar = pSrcVarId;
 
 		TreeMap<String, String> ceParms = new TreeMap<String, String>();
@@ -455,7 +440,6 @@ public abstract class QueryExecutionManager {
 		
 		if (this.targetQuery.isRule()) {
 			result = "  ";
-//			result = "--  (";
 		} else {
 			result = "";
 		}
@@ -489,14 +473,14 @@ public abstract class QueryExecutionManager {
 
 	private void logQuery(String pQuery) {
 		if (this.ac.getCeConfig().isLoggingQueries()) {
-			String logFilename = joinFolderAndFilename(this.ac, this.ac.getCeConfig().getTempPath(), StoreConfig.FILENAME_QUERYLOG_CE);
+			String logFilename = joinFolderAndFilename(this.ac, this.ac.getCeConfig().getTempPath(), FILENAME_QUERYLOG_CE);
 
 			writeToFile(this.ac, logFilename, pQuery, true);
 		}
 	}
 
 	private void addCeToResultSet(ContainerCeResult pResult, CeQuery pQuery) {
-		pResult.addHeader(ContainerCeResult.HDR_CE, ContainerCeResult.HDR_CE);
+		pResult.addHeader(HDR_CE, HDR_CE);
 
 		for (int i = 0; i < pResult.getResultRows().size(); i++) {
 			ArrayList<String> thisRow = pResult.getResultRows().get(i);

@@ -1,21 +1,23 @@
 package com.ibm.ets.ita.ce.store.model;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
-import static com.ibm.ets.ita.ce.store.StaticCeRepository.NAME_CMGLOBAL;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.CM_GLOBAL;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.FORMAT_SRC;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.PREFIX_SRC;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.concurrent.atomic.AtomicLong;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
 
 public class CeSource extends CeModelEntity {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	//External types
 	private static final int SRCTYPE_ID_UNKNOWN = -1;
@@ -35,8 +37,6 @@ public class CeSource extends CeModelEntity {
 	private static final String SRCTYPE_NAME_INTERNAL = "Internal";
 	private static final String SRCTYPE_NAME_RULE = "Rule";
 	private static final String SRCTYPE_NAME_QUERY = "Query";
-
-	private static final String SRC_ID_PREFIX = "src_";
 
 	private static AtomicLong sourceIdVal = new AtomicLong(0);
 
@@ -100,7 +100,7 @@ public class CeSource extends CeModelEntity {
 		if (pOptionalSrcId != null) {
 			newSrcId = pOptionalSrcId;
 		} else {
-			newSrcId = SRC_ID_PREFIX + nextSourceIdValue();
+			newSrcId = PREFIX_SRC + nextSourceIdValue();
 		}
 
 		//Try to get an existing source with this id
@@ -132,11 +132,11 @@ public class CeSource extends CeModelEntity {
 	public static void renumberThisSource(CeSource pSrc) {
 		String nextSrcId = nextSourceIdValue();
 		
-		pSrc.name = SRC_ID_PREFIX + nextSrcId;
+		pSrc.name = PREFIX_SRC + nextSrcId;
 	}
 
 	private static String nextSourceIdValue() {
-		return String.format("%03d", new Long(sourceIdVal.incrementAndGet()));
+		return String.format(FORMAT_SRC, new Long(sourceIdVal.incrementAndGet()));
 	}
 
 	public boolean isSource() {
@@ -347,13 +347,11 @@ public class CeSource extends CeModelEntity {
 	}
 	
 	public CeConceptualModel addDefaultConceptualModel(ActionContext pAc) {
-		String cmName = NAME_CMGLOBAL;
-		
-		return CeConceptualModel.createConceptualModel(pAc, cmName, this);
+		return CeConceptualModel.createConceptualModel(pAc, CM_GLOBAL, this);
 	}
 
 	public String formattedType() {
-		String result = "";
+		String result = null;
 
 		switch (this.type) {
 		case SRCTYPE_ID_URL:
@@ -459,18 +457,6 @@ public class CeSource extends CeModelEntity {
 		this.affectedConcepts = new HashSet<CeConcept>();
 		this.affectedProperties = new HashSet<CeProperty>();
 		this.affectedRules = new HashSet<CeRule>();
-	}
-
-	public void debugAffectedConceptsAndProperties(ActionContext pAc) {
-//		if (isReportDebug()) {
-//			for (CeConcept affCon : this.affectedConcepts) {
-//				reportDebug("Affected concept: " + affCon.getConceptName(), pAc);
-//			}
-//
-//			for (CeProperty affProp : this.affectedProperties) {
-//				reportDebug("Affected property: " + affProp.formattedFullPropertyName(), pAc);
-//			}
-//		}
 	}
 
 }

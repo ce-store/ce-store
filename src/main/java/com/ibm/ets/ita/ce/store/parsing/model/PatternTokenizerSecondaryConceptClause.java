@@ -1,18 +1,17 @@
 package com.ibm.ets.ita.ce.store.parsing.model;
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_VARIABLE;
 import java.util.ArrayList;
 
 import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.parsing.tokenizer.TokenizerFactSentence;
 
 public class PatternTokenizerSecondaryConceptClause extends TokenizerSecondaryConceptClause {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
-
-	private static final String MARKER_VARIABLE = "#";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private String secConVariable = null;
 
@@ -21,7 +20,7 @@ public class PatternTokenizerSecondaryConceptClause extends TokenizerSecondaryCo
 	}
 
 	private static boolean isVariableConceptName(String pToken) {
-		return pToken.startsWith(MARKER_VARIABLE);
+		return pToken.startsWith(TOKEN_VARIABLE);
 	}
 
 	@Override
@@ -98,4 +97,5 @@ public class PatternTokenizerSecondaryConceptClause extends TokenizerSecondaryCo
 			super.save(pTokensOnly);
 		}
 	}
+
 }

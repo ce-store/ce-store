@@ -1,10 +1,53 @@
 package com.ibm.ets.ita.ce.store.parsing.builder;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.MiscNames.SENMODE_NORMAL;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_AGENT;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_BUILD;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_CACHED;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_CE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_DELETE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_EMPTY;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_FILE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_FOR;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_FROM;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_ID;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_INSTANCES;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_INTO;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_LOAD;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_NAME;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_NAMED;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_NEXT;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_PREPARE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_QUERY;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_RELOAD;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_RESET;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_RUN;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_SAVE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_SCHEMA;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_SENTENCES;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_SET;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_SHOW;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_SOURCE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_SOURCES;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_STARTING;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_STORE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_SWITCH;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_THE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_TO;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_UID;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_URL;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_USING;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_VALUE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_WITH;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.VARNAME_ARR;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.VARNAME_MDU;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.VARVAL_TRUE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.UID_NEXTAVAIL;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.decodeForCe;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.stripDelimitingQuotesFrom;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.isReportMicroDebug;
@@ -12,72 +55,25 @@ import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportMicroD
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportWarning;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
-import com.ibm.ets.ita.ce.store.StoreActions;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
+import com.ibm.ets.ita.ce.store.core.StoreActions;
 import com.ibm.ets.ita.ce.store.model.container.ContainerSentenceLoadResult;
 import com.ibm.ets.ita.ce.store.persistence.PersistenceManagerFactory;
 
 public class BuilderSentenceCommand extends BuilderSentence {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
-
-	private static final String VARNAME_ARR = "autorun rules";
-	private static final String VARNAME_MDU = "model directory url";
-	private static final String VARVAL_TRUE = "true";
-
-	private static final String CMD_RESET = "reset";
-	private static final String CMD_RELOAD = "reload";
-	private static final String CMD_STORE = "store";
-	private static final String CMD_STARTING = "starting";
-	private static final String CMD_UID = "uid";
-	private static final String CMD_BUILD = "build";
-	private static final String CMD_SCHEMA = "schema";
-	private static final String CMD_EMPTY = "empty";
-	private static final String CMD_INSTANCES = "instances";
-	private static final String CMD_LOAD = "load";
-	private static final String CMD_DELETE = "delete";
-	private static final String CMD_SENTENCES = "sentences";
-	private static final String CMD_FROM = "from";
-	private static final String CMD_URL = "url";
-	private static final String CMD_FILE = "file";
-	private static final String CMD_QUERY = "query";
-	private static final String CMD_USING = "using";
-	private static final String CMD_INTO = "into";
-	private static final String CMD_RUN = "run";
-	private static final String CMD_THE = "the";
-	private static final String CMD_NAMED = "named";
-	private static final String CMD_SOURCE = "source";
-	private static final String CMD_SOURCES = "sources";
-	private static final String CMD_WITH = "with";
-	private static final String CMD_NAME = "name";
-	private static final String CMD_AGENT = "agent";
-	private static final String CMD_ID = "id";
-	private static final String CMD_SHOW = "show";
-//	private static final String CMD_SET = "set";
-	private static final String CMD_NEXT = "next";
-	private static final String CMD_VALUE = "value";
-	private static final String CMD_TO = "to";
-//	private static final String CMD_AVAIL = "available";
-	private static final String CMD_PREPARE = "prepare";
-	private static final String CMD_FOR = "for";
-	private static final String CMD_CACHED = "cached";
-	private static final String CMD_SAVE = "save";
-	private static final String CMD_CE = "CE";
-	private static final String CMD_SWITCH = "switch";
-	private static final String CMD_SET = "set";
-
-	private static final String UID_NEXTAVAIL = "(next available)";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private boolean isValid = false;
-	private String cmdTargetUrlOrFile = "";
-	private String cmdTargetQuery = "";
-	private String cmdEmbeddedCe = "";
-	private String cmdAgentInstName = "";
-	private String cmdAgentConceptName = "";
-	private String cmdTargetSourceName = "";
-	private String cmdTargetSourceId = "";
-	private String cmdTargetSourceAgentId = "";
-	private String cmdStartingUid = "";
-	private String cmdTargetStore = "";
+	private String cmdTargetUrlOrFile = null;
+	private String cmdTargetQuery = null;
+	private String cmdEmbeddedCe = null;
+	private String cmdAgentInstName = null;
+	private String cmdAgentConceptName = null;
+	private String cmdTargetSourceName = null;
+	private String cmdTargetSourceId = null;
+	private String cmdTargetSourceAgentId = null;
+	private String cmdStartingUid = null;
+	private String cmdTargetStore = null;
 
 	public BuilderSentenceCommand(String pSenText) {
 		super(pSenText);
@@ -99,7 +95,7 @@ public class BuilderSentenceCommand extends BuilderSentence {
 
 		if (this.rawTokens.size() == 3) {
 			// No need to check first token as it must be 'perform' for this to be a command sentence
-			result = (this.rawTokens.get(1).equals(CMD_SAVE)) && (this.rawTokens.get(2).equals(CMD_STORE));
+			result = (this.rawTokens.get(1).equals(TOKEN_SAVE)) && (this.rawTokens.get(2).equals(TOKEN_STORE));
 			if (result) {
 				this.isValid = true;
 			}
@@ -115,7 +111,7 @@ public class BuilderSentenceCommand extends BuilderSentence {
 
 		if (this.rawTokens.size() == 3) {
 			// No need to check first token as it must be 'perform' for this to be a command sentence
-			result = (this.rawTokens.get(1).equals(CMD_LOAD)) && (this.rawTokens.get(2).equals(CMD_STORE));
+			result = (this.rawTokens.get(1).equals(TOKEN_LOAD)) && (this.rawTokens.get(2).equals(TOKEN_STORE));
 			if (result) {
 				this.isValid = true;
 			}
@@ -131,7 +127,7 @@ public class BuilderSentenceCommand extends BuilderSentence {
 
 		if (this.rawTokens.size() == 5) {
 			// No need to check first token as it must be 'perform' for this to be a command sentence
-			result = (this.rawTokens.get(1).equals(CMD_SET)) && (this.rawTokens.get(3).equals(CMD_TO));
+			result = (this.rawTokens.get(1).equals(TOKEN_SET)) && (this.rawTokens.get(3).equals(TOKEN_TO));
 			if (result) {
 				this.isValid = true;
 			}
@@ -151,7 +147,7 @@ public class BuilderSentenceCommand extends BuilderSentence {
 
 		if (this.rawTokens.size() == 3) {
 			//No need to check first token as it must be 'perform' for this to be a command sentence
-			result = (this.rawTokens.get(1).equals(CMD_RESET)) && (this.rawTokens.get(2).equals(CMD_STORE));
+			result = (this.rawTokens.get(1).equals(TOKEN_RESET)) && (this.rawTokens.get(2).equals(TOKEN_STORE));
 			if (result) {
 				this.isValid = true;
 			}
@@ -167,7 +163,7 @@ public class BuilderSentenceCommand extends BuilderSentence {
 
 		if (this.rawTokens.size() == 7) {
 			//No need to check first token as it must be 'perform' for this to be a command sentence
-			result = (this.rawTokens.get(1).equals(CMD_RESET)) && (this.rawTokens.get(2).equals(CMD_STORE)) && (this.rawTokens.get(3).equals(CMD_WITH)) && (this.rawTokens.get(4).equals(CMD_STARTING)) && (this.rawTokens.get(5).equals(CMD_UID));
+			result = (this.rawTokens.get(1).equals(TOKEN_RESET)) && (this.rawTokens.get(2).equals(TOKEN_STORE)) && (this.rawTokens.get(3).equals(TOKEN_WITH)) && (this.rawTokens.get(4).equals(TOKEN_STARTING)) && (this.rawTokens.get(5).equals(TOKEN_UID));
 
 			if (result) {
 				this.isValid = true;
@@ -185,7 +181,7 @@ public class BuilderSentenceCommand extends BuilderSentence {
 
 		if (this.rawTokens.size() == 3) {
 			//No need to check first token as it must be 'perform' for this to be a command sentence
-			result = (this.rawTokens.get(1).equals(CMD_RELOAD)) && (this.rawTokens.get(2).equals(CMD_STORE));
+			result = (this.rawTokens.get(1).equals(TOKEN_RELOAD)) && (this.rawTokens.get(2).equals(TOKEN_STORE));
 			if (result) {
 				this.isValid = true;
 			}
@@ -201,7 +197,7 @@ public class BuilderSentenceCommand extends BuilderSentence {
 
 		if (this.rawTokens.size() == 5) {
 			//No need to check first token as it must be 'perform' for this to be a command sentence
-			result = (this.rawTokens.get(1).equals(CMD_SWITCH)) && (this.rawTokens.get(2).equals(CMD_STORE)) && (this.rawTokens.get(3).equals(CMD_TO));
+			result = (this.rawTokens.get(1).equals(TOKEN_SWITCH)) && (this.rawTokens.get(2).equals(TOKEN_STORE)) && (this.rawTokens.get(3).equals(TOKEN_TO));
 
 			if (result) {
 				this.isValid = true;
@@ -219,7 +215,7 @@ public class BuilderSentenceCommand extends BuilderSentence {
 
 		if (this.rawTokens.size() == 4) {
 			//No need to check first token as it must be 'perform' for this to be a command sentence
-			result = (this.rawTokens.get(1).equals(CMD_BUILD)) && (this.rawTokens.get(2).equals(CMD_STORE)) && (this.rawTokens.get(3).equals(CMD_SCHEMA));
+			result = (this.rawTokens.get(1).equals(TOKEN_BUILD)) && (this.rawTokens.get(2).equals(TOKEN_STORE)) && (this.rawTokens.get(3).equals(TOKEN_SCHEMA));
 			if (result) {
 				this.isValid = true;
 			}
@@ -235,7 +231,7 @@ public class BuilderSentenceCommand extends BuilderSentence {
 
 		if (this.rawTokens.size() == 3) {
 			//No need to check first token as it must be 'perform' for this to be a command sentence
-			result = (this.rawTokens.get(1).equals(CMD_EMPTY)) && (this.rawTokens.get(2).equals(CMD_INSTANCES));
+			result = (this.rawTokens.get(1).equals(TOKEN_EMPTY)) && (this.rawTokens.get(2).equals(TOKEN_INSTANCES));
 			if (result) {
 				this.isValid = true;
 			}
@@ -251,7 +247,7 @@ public class BuilderSentenceCommand extends BuilderSentence {
 
 		if (this.rawTokens.size() == 6) {
 			//No need to check first token as it must be 'perform' for this to be a command sentence
-			result = (this.rawTokens.get(1).equals(CMD_LOAD)) && (this.rawTokens.get(2).equals(CMD_SENTENCES)) && (this.rawTokens.get(3).equals(CMD_FROM)) && (this.rawTokens.get(4).equals(CMD_URL));
+			result = (this.rawTokens.get(1).equals(TOKEN_LOAD)) && (this.rawTokens.get(2).equals(TOKEN_SENTENCES)) && (this.rawTokens.get(3).equals(TOKEN_FROM)) && (this.rawTokens.get(4).equals(TOKEN_URL));
 			this.cmdTargetUrlOrFile = stripDelimitingQuotesFrom(this.rawTokens.get(5));	//TODO: Make this better; this property should not be initialised in this "is" method
 			if (result) {
 				this.isValid = true;
@@ -268,7 +264,7 @@ public class BuilderSentenceCommand extends BuilderSentence {
 
 		if (this.rawTokens.size() == 9) {
 			//No need to check first token as it must be 'perform' for this to be a command sentence
-			result = (this.rawTokens.get(1).equals(CMD_LOAD)) && (this.rawTokens.get(2).equals(CMD_SENTENCES)) && (this.rawTokens.get(3).equals(CMD_FROM)) && (this.rawTokens.get(4).equals(CMD_URL)) && (this.rawTokens.get(6).equals(CMD_INTO)) && (this.rawTokens.get(7).equals(CMD_SOURCE));
+			result = (this.rawTokens.get(1).equals(TOKEN_LOAD)) && (this.rawTokens.get(2).equals(TOKEN_SENTENCES)) && (this.rawTokens.get(3).equals(TOKEN_FROM)) && (this.rawTokens.get(4).equals(TOKEN_URL)) && (this.rawTokens.get(6).equals(TOKEN_INTO)) && (this.rawTokens.get(7).equals(TOKEN_SOURCE));
 			this.cmdTargetUrlOrFile = stripDelimitingQuotesFrom(this.rawTokens.get(5));
 			this.cmdTargetSourceId = stripDelimitingQuotesFrom(this.rawTokens.get(8));
 			if (result) {
@@ -286,7 +282,7 @@ public class BuilderSentenceCommand extends BuilderSentence {
 
 		if (this.rawTokens.size() == 6) {
 			//No need to check first token as it must be 'perform' for this to be a command sentence
-			result = (this.rawTokens.get(1).equals(CMD_LOAD)) && (this.rawTokens.get(2).equals(CMD_SENTENCES)) && (this.rawTokens.get(3).equals(CMD_FROM)) && (this.rawTokens.get(4).equals(CMD_FILE));
+			result = (this.rawTokens.get(1).equals(TOKEN_LOAD)) && (this.rawTokens.get(2).equals(TOKEN_SENTENCES)) && (this.rawTokens.get(3).equals(TOKEN_FROM)) && (this.rawTokens.get(4).equals(TOKEN_FILE));
 			this.cmdTargetUrlOrFile = stripDelimitingQuotesFrom(this.rawTokens.get(5));	//TODO: Make this better; this property should not be initialised in this "is" method
 			if (result) {
 				this.isValid = true;
@@ -303,7 +299,7 @@ public class BuilderSentenceCommand extends BuilderSentence {
 
 		if (this.rawTokens.size() == 6) {
 			//No need to check first token as it must be 'perform' for this to be a command sentence
-			result = (this.rawTokens.get(1).equals(CMD_LOAD)) && (this.rawTokens.get(2).equals(CMD_SENTENCES)) && (this.rawTokens.get(3).equals(CMD_FROM)) && (this.rawTokens.get(4).equals(CMD_QUERY));
+			result = (this.rawTokens.get(1).equals(TOKEN_LOAD)) && (this.rawTokens.get(2).equals(TOKEN_SENTENCES)) && (this.rawTokens.get(3).equals(TOKEN_FROM)) && (this.rawTokens.get(4).equals(TOKEN_QUERY));
 			this.cmdTargetQuery = stripDelimitingQuotesFrom(this.rawTokens.get(5));	//TODO: Make this better; this property should not be initialised in this "is" method
 			if (result) {
 				this.isValid = true;
@@ -320,12 +316,12 @@ public class BuilderSentenceCommand extends BuilderSentence {
 
 		if (this.rawTokens.size() == 8) {
 			//No need to check first token as it must be 'perform' for this to be a command sentence
-			result = (this.rawTokens.get(1).equals(CMD_DELETE)) &&
-						(this.rawTokens.get(2).equals(CMD_SENTENCES)) &&
-						(this.rawTokens.get(3).equals(CMD_FROM)) &&
-						(this.rawTokens.get(4).equals(CMD_SOURCES)) &&
-						(this.rawTokens.get(5).equals(CMD_WITH)) &&
-						(this.rawTokens.get(6).equals(CMD_NAME));
+			result = (this.rawTokens.get(1).equals(TOKEN_DELETE)) &&
+						(this.rawTokens.get(2).equals(TOKEN_SENTENCES)) &&
+						(this.rawTokens.get(3).equals(TOKEN_FROM)) &&
+						(this.rawTokens.get(4).equals(TOKEN_SOURCES)) &&
+						(this.rawTokens.get(5).equals(TOKEN_WITH)) &&
+						(this.rawTokens.get(6).equals(TOKEN_NAME));
 			this.cmdTargetSourceName = stripDelimitingQuotesFrom(this.rawTokens.get(7));	//TODO: Make this better; this property should not be initialised in this "is" method
 			if (result) {
 				this.isValid = true;
@@ -342,12 +338,12 @@ public class BuilderSentenceCommand extends BuilderSentence {
 
 		if (this.rawTokens.size() == 8) {
 			//No need to check first token as it must be 'perform' for this to be a command sentence
-			result = (this.rawTokens.get(1).equals(CMD_DELETE)) &&
-						(this.rawTokens.get(2).equals(CMD_SENTENCES)) &&
-						(this.rawTokens.get(3).equals(CMD_FROM)) &&
-						(this.rawTokens.get(4).equals(CMD_SOURCE)) &&
-						(this.rawTokens.get(5).equals(CMD_WITH)) &&
-						(this.rawTokens.get(6).equals(CMD_ID));
+			result = (this.rawTokens.get(1).equals(TOKEN_DELETE)) &&
+						(this.rawTokens.get(2).equals(TOKEN_SENTENCES)) &&
+						(this.rawTokens.get(3).equals(TOKEN_FROM)) &&
+						(this.rawTokens.get(4).equals(TOKEN_SOURCE)) &&
+						(this.rawTokens.get(5).equals(TOKEN_WITH)) &&
+						(this.rawTokens.get(6).equals(TOKEN_ID));
 			this.cmdTargetSourceId = stripDelimitingQuotesFrom(this.rawTokens.get(7));	//TODO: Make this better; this property should not be initialised in this "is" method
 			if (result) {
 				this.isValid = true;
@@ -364,13 +360,13 @@ public class BuilderSentenceCommand extends BuilderSentence {
 
 		if (this.rawTokens.size() == 9) {
 			//No need to check first token as it must be 'perform' for this to be a command sentence
-			result = (this.rawTokens.get(1).equals(CMD_DELETE)) &&
-						(this.rawTokens.get(2).equals(CMD_SENTENCES)) &&
-						(this.rawTokens.get(3).equals(CMD_FROM)) &&
-						(this.rawTokens.get(4).equals(CMD_SOURCES)) &&
-						(this.rawTokens.get(5).equals(CMD_WITH)) &&
-						(this.rawTokens.get(6).equals(CMD_AGENT)) &&
-						(this.rawTokens.get(7).equals(CMD_ID));
+			result = (this.rawTokens.get(1).equals(TOKEN_DELETE)) &&
+						(this.rawTokens.get(2).equals(TOKEN_SENTENCES)) &&
+						(this.rawTokens.get(3).equals(TOKEN_FROM)) &&
+						(this.rawTokens.get(4).equals(TOKEN_SOURCES)) &&
+						(this.rawTokens.get(5).equals(TOKEN_WITH)) &&
+						(this.rawTokens.get(6).equals(TOKEN_AGENT)) &&
+						(this.rawTokens.get(7).equals(TOKEN_ID));
 			this.cmdTargetSourceAgentId = stripDelimitingQuotesFrom(this.rawTokens.get(8));	//TODO: Make this better; this property should not be initialised in this "is" method
 			if (result) {
 				this.isValid = true;
@@ -387,7 +383,7 @@ public class BuilderSentenceCommand extends BuilderSentence {
 
 		if (this.rawTokens.size() == 5) {
 			//No need to check first token as it must be 'perform' for this to be a command sentence
-			result = (this.rawTokens.get(1).equals(CMD_LOAD)) && (this.rawTokens.get(2).equals(CMD_SENTENCES)) && (this.rawTokens.get(3).equals(CMD_USING));
+			result = (this.rawTokens.get(1).equals(TOKEN_LOAD)) && (this.rawTokens.get(2).equals(TOKEN_SENTENCES)) && (this.rawTokens.get(3).equals(TOKEN_USING));
 			this.cmdEmbeddedCe = stripDelimitingQuotesFrom(decodeForCe(this.rawTokens.get(4)));	//TODO: Make this better; this property should not be initialised in this "is" method
 			if (result) {
 				this.isValid = true;
@@ -405,7 +401,7 @@ public class BuilderSentenceCommand extends BuilderSentence {
 		int tokLen = this.rawTokens.size();
 		if (tokLen >= 4) {
 			//No need to check first token as it must be 'perform' for this to be a command sentence
-			result = ((this.rawTokens.get(1).equals(CMD_RUN)) && (this.rawTokens.get(2).equals(CMD_THE)) && (this.rawTokens.get(tokLen - 2).equals(CMD_NAMED)));
+			result = ((this.rawTokens.get(1).equals(TOKEN_RUN)) && (this.rawTokens.get(2).equals(TOKEN_THE)) && (this.rawTokens.get(tokLen - 2).equals(TOKEN_NAMED)));
 			this.cmdAgentInstName = stripDelimitingQuotesFrom(this.rawTokens.get(tokLen - 1));
 			this.cmdAgentConceptName = "";
 			String sepChar = "";
@@ -430,7 +426,7 @@ public class BuilderSentenceCommand extends BuilderSentence {
 		int tokLen = this.rawTokens.size();
 		if (tokLen == 5) {
 			//No need to check first token as it must be 'perform' for this to be a command sentence
-			result = ((this.rawTokens.get(1).equals(CMD_SHOW)) && (this.rawTokens.get(2).equals(CMD_NEXT)) && (this.rawTokens.get(3).equals(CMD_UID)) && (this.rawTokens.get(4).equals(CMD_VALUE)));
+			result = ((this.rawTokens.get(1).equals(TOKEN_SHOW)) && (this.rawTokens.get(2).equals(TOKEN_NEXT)) && (this.rawTokens.get(3).equals(TOKEN_UID)) && (this.rawTokens.get(4).equals(TOKEN_VALUE)));
 		} else {
 			result = false;
 		}
@@ -444,11 +440,11 @@ public class BuilderSentenceCommand extends BuilderSentence {
 //		int tokLen = this.rawTokens.size();
 //		if (tokLen == 7) {
 //			//No need to check first token as it must be 'perform' for this to be a command sentence
-//			result = ((this.rawTokens.get(1).equals(CMD_SET)) && (this.rawTokens.get(2).equals(CMD_NEXT)) && (this.rawTokens.get(3).equals(CMD_UID)) && (this.rawTokens.get(4).equals(CMD_VALUE)) && (this.rawTokens.get(5).equals(CMD_TO)));
+//			result = ((this.rawTokens.get(1).equals(TOKEN_SET)) && (this.rawTokens.get(2).equals(TOKEN_NEXT)) && (this.rawTokens.get(3).equals(TOKEN_UID)) && (this.rawTokens.get(4).equals(TOKEN_VALUE)) && (this.rawTokens.get(5).equals(TOKEN_TO)));
 //			this.cmdStartingUid = stripDelimitingQuotesFrom(this.rawTokens.get(6));
 //		} else if (tokLen == 8) {
 //			//No need to check first token as it must be 'perform' for this to be a command sentence
-//			result = ((this.rawTokens.get(1).equals(CMD_SET)) && (this.rawTokens.get(2).equals(CMD_NEXT)) && (this.rawTokens.get(3).equals(CMD_UID)) && (this.rawTokens.get(4).equals(CMD_VALUE)) && (this.rawTokens.get(5).equals(CMD_TO)) && (this.rawTokens.get(6).equals(CMD_NEXT)) && (this.rawTokens.get(7).equals(CMD_AVAIL)));
+//			result = ((this.rawTokens.get(1).equals(TOKEN_SET)) && (this.rawTokens.get(2).equals(TOKEN_NEXT)) && (this.rawTokens.get(3).equals(TOKEN_UID)) && (this.rawTokens.get(4).equals(TOKEN_VALUE)) && (this.rawTokens.get(5).equals(TOKEN_TO)) && (this.rawTokens.get(6).equals(TOKEN_NEXT)) && (this.rawTokens.get(7).equals(TOKEN_AVAIL)));
 //			this.cmdStartingUid = UID_NEXTAVAIL;
 //		} else {
 //			result = false;
@@ -463,7 +459,7 @@ public class BuilderSentenceCommand extends BuilderSentence {
 		int tokLen = this.rawTokens.size();
 		if (tokLen == 6) {
 			//No need to check first token as it must be 'perform' for this to be a command sentence
-			result = ((this.rawTokens.get(1).equals(CMD_PREPARE)) && (this.rawTokens.get(2).equals(CMD_FOR)) && (this.rawTokens.get(3).equals(CMD_CACHED)) && (this.rawTokens.get(4).equals(CMD_CE)) && (this.rawTokens.get(5).equals(CMD_LOAD)));
+			result = ((this.rawTokens.get(1).equals(TOKEN_PREPARE)) && (this.rawTokens.get(2).equals(TOKEN_FOR)) && (this.rawTokens.get(3).equals(TOKEN_CACHED)) && (this.rawTokens.get(4).equals(TOKEN_CE)) && (this.rawTokens.get(5).equals(TOKEN_LOAD)));
 		} else {
 			result = false;
 		}
@@ -548,7 +544,7 @@ public class BuilderSentenceCommand extends BuilderSentence {
 		} else if (isCmdLoadFromQuery()) {
 			pSenStats.updateFrom(sa.loadSentencesFromQuery(getCmdTargetQuery()), true);
 		} else if (isCmdLoadUsing()) {
-			pSenStats.updateFrom(sa.loadSentencesFromForm(getCmdEmbeddedCe(), "cmd", StoreActions.MODE_NORMAL), true);
+			pSenStats.updateFrom(sa.loadSentencesFromForm(getCmdEmbeddedCe(), "cmd", SENMODE_NORMAL), true);
 		} else if (isCmdDeleteSourceByName()) {
 			pSenStats.updateFrom(sa.deleteSentencesFromSourceByName(getCmdTargetSourceName()), true);
 		} else if (isCmdDeleteSourceById()) {

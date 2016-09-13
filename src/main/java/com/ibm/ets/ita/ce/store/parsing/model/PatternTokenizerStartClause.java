@@ -1,15 +1,17 @@
 package com.ibm.ets.ita.ce.store.parsing.model;
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
 import java.util.ArrayList;
 
 import com.ibm.ets.ita.ce.store.parsing.tokenizer.TokenizerFactSentence;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_NAMED;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_VALUE;
 
 public class PatternTokenizerStartClause extends TokenizerStartClause {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	public PatternTokenizerStartClause(TokenizerFactSentence pParent, ArrayList<String> pRawTokens, String pDelimiter, TokenizerClause pLastClause) {
 		super(pParent, pRawTokens, pDelimiter, pLastClause, true);

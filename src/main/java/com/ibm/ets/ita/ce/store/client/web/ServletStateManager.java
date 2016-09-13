@@ -5,6 +5,7 @@ package com.ibm.ets.ita.ce.store.client.web;
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.MiscNames.CESTORENAME_DEFAULT;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportDebug;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
 
@@ -13,14 +14,13 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
-import com.ibm.ets.ita.ce.store.ModelBuilder;
-import com.ibm.ets.ita.ce.store.StoreActions;
-import com.ibm.ets.ita.ce.store.StoreConfig;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
+import com.ibm.ets.ita.ce.store.core.ModelBuilder;
+import com.ibm.ets.ita.ce.store.core.StoreActions;
+import com.ibm.ets.ita.ce.store.core.StoreConfig;
 import com.ibm.ets.ita.ce.store.hudson.helper.HudsonManager;
 
 public class ServletStateManager {
-
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	// Static variables
@@ -33,12 +33,13 @@ public class ServletStateManager {
 
 	// Local variables
 	private StoreConfig cc = null;
-	private ConcurrentHashMap<String, ModelBuilder> mbs = new ConcurrentHashMap<String, ModelBuilder>();
+	private ConcurrentHashMap<String, ModelBuilder> mbs = null;
 
 	//TODO: StoreConfig should probably apply to each CE Store rather than the CE Server
 	
 	private ServletStateManager(ActionContext pAc) {
 		this.cc = pAc.getCeConfig();
+		this.mbs = new ConcurrentHashMap<String, ModelBuilder>();
 	}
 
 	protected static WebActionContext createWebActionContext(HttpServletRequest pRequest, String pUserName) {
@@ -87,7 +88,7 @@ public class ServletStateManager {
 			int portName = pRequest.getServerPort();
 			String path = pRequest.getContextPath();
 
-			defaultRootUrl = scheme + "://" + serverName + ":" + portName;
+			defaultRootUrl = scheme + "://" + serverName + ":" + portName;	//TODO: Anaonymise these
 
 			if ((path != null) && (!path.isEmpty())) {
 				defaultCurrentUrl = defaultRootUrl + path + "/";
@@ -104,7 +105,7 @@ public class ServletStateManager {
 	}
 
 	private static String keyForCeStoreName(String pCeStoreName) {
-		String result = ModelBuilder.CESTORENAME_DEFAULT;
+		String result = CESTORENAME_DEFAULT;
 
 		if ((pCeStoreName != null) && (!pCeStoreName.trim().isEmpty())) {
 			result = pCeStoreName.trim();
@@ -152,7 +153,7 @@ public class ServletStateManager {
 		//...thus enabling users to use the CE store without being forced to issue
 		//the command "perform reset store.".
 		StoreActions sa = StoreActions.createUsingDefaultConfig(pAc);
-		sa.resetStore("1", false);
+		sa.resetStore("1", false);	//TODO: Anonymise this
 
 		return newMb;
 	}

@@ -1,22 +1,20 @@
 package com.ibm.ets.ita.ce.store.hudson.model.special;
 
-/*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
- * All Rights Reserved
- *******************************************************************************/
+import static com.ibm.ets.ita.ce.store.names.JsonNames.SPEC_COLLECTION;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_CONS;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_INSTS;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_PROPS;
 
 import java.util.ArrayList;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonArray;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
 import com.ibm.ets.ita.ce.store.hudson.handler.QuestionInterpreterHandler;
 import com.ibm.ets.ita.ce.store.hudson.model.conversation.MatchedItem;
 
 public class SpCollection extends SpThing {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
-
-	private static final String TYPE_NAME = "collection";
 
 	private static final String JSON_CONNS = "connectors";
 
@@ -53,7 +51,7 @@ public class SpCollection extends SpThing {
 		CeStoreJsonArray jCons = new CeStoreJsonArray();
 		CeStoreJsonArray jProps = new CeStoreJsonArray();
 
-		addStandardFields(jResult, TYPE_NAME);
+		addStandardFields(jResult, SPEC_COLLECTION);
 		
 		for (MatchedItem mi : getConnectors()) {
 			CeStoreJsonArray mmArr = new CeStoreJsonArray();
@@ -88,15 +86,15 @@ public class SpCollection extends SpThing {
 		}
 
 		if (!jInsts.isEmpty()) {
-			jResult.put(QuestionInterpreterHandler.JSON_INSTS, jInsts);
+			jResult.put(JSON_INSTS, jInsts);
 		}
 
 		if (!jCons.isEmpty()) {
-			jResult.put(QuestionInterpreterHandler.JSON_CONS, jCons);
+			jResult.put(JSON_CONS, jCons);
 		}
 		
 		if (!jProps.isEmpty()) {
-			jResult.put(QuestionInterpreterHandler.JSON_PROPS, jProps);
+			jResult.put(JSON_PROPS, jProps);
 		}
 
 		return jResult;

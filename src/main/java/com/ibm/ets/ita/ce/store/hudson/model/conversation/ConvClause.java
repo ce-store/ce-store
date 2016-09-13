@@ -1,25 +1,24 @@
 package com.ibm.ets.ita.ce.store.hudson.model.conversation;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.CeNames.CON_CONVCLAUSE;
 import java.util.ArrayList;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
 
 public class ConvClause extends ConvItem {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
-
-	private static final String CON_NAME = "conv clause";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private ConvSentence parentSentence = null;
 	private ArrayList<ConvWord> childWords = null;
 	private String[] punctuationList = null;
 	
 	private ConvClause(ActionContext pAc, String pClauseText, ConvSentence pParent) {
-		super(pAc, CON_NAME, pClauseText);
+		super(pAc, CON_CONVCLAUSE, pClauseText);
 
 		this.parentSentence = pParent;
 		this.parentSentence.addChildClause(this);
@@ -34,7 +33,7 @@ public class ConvClause extends ConvItem {
 	}
 
 	public static String getConceptName() {
-		return CON_NAME;
+		return CON_CONVCLAUSE;
 	}
 
 	public String getClauseText() {

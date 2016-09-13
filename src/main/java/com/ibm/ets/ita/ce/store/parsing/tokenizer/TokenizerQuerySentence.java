@@ -1,10 +1,34 @@
 package com.ibm.ets.ita.ce.store.parsing.tokenizer;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_IS;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_AND;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_THAT;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_OPENSQBR;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_CLOSESQBR;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_OPENPAR;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_CLOSEPAR;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_COMMA;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_FOR;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_HOW;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_MANY;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_WHICH;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_IT;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_TRUE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_OR;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_ORDER;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_LIMIT;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_BY;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_ASCENDING;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_DESCENDING;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.SCELABEL_NORMAL;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.SCELABEL_RQNAME;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.SCELABEL_RQSTART;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.SCELABEL_CONNECTOR;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.isReportDebug;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportDebug;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
@@ -20,27 +44,7 @@ import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentenceFactNormal;
 import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentenceRuleOrQuery;
 
 public class TokenizerQuerySentence extends TokenizerSentence {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
-
-	private static final String TOKEN_OPENSQBR = "[";
-	private static final String TOKEN_CLOSESQBR = "]";
-	private static final String TOKEN_OPENPAR = "(";
-	private static final String TOKEN_CLOSEPAR = ")";
-	private static final String TOKEN_COMMA = ",";
-	private static final String TOKEN_FOR = "for";
-	private static final String TOKEN_HOW = "how";
-	private static final String TOKEN_MANY = "many";
-	private static final String TOKEN_WHICH = "which";
-	private static final String TOKEN_IT = "it";
-	private static final String TOKEN_TRUE = "true";
-
-	//DSB 01/05/2015 #1095
-	private static final String TOKEN_OR = "or";
-	private static final String TOKEN_ORDER = "order";	
-	private static final String TOKEN_LIMIT = "limit";	
-	private static final String TOKEN_BY = "by";
-	private static final String TOKEN_ASCENDING = "ascending";
-	private static final String TOKEN_DESCENDING = "descending";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private boolean insideSqBr = false;
 	private boolean insidePar = false;

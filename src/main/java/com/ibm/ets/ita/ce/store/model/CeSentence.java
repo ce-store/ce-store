@@ -1,10 +1,17 @@
 package com.ibm.ets.ita.ce.store.model;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.ParseNames.SCELABEL_QUOTE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_DOT;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.PREFIX_SEN;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.LABEL_PREFIX;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.LABEL_SUFFIX;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.PROPDEF_PREFIX;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.PROPDEF_SUFFIX;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.encodeForCe;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.timestampNow;
 
@@ -12,21 +19,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicLong;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
 import com.ibm.ets.ita.ce.store.model.rationale.CeRationaleReasoningStep;
 import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentence;
-import com.ibm.ets.ita.ce.store.parsing.tokenizer.TokenizerFactSentence;
 
 public class CeSentence implements Comparable<CeSentence> {
-
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
-
-	public static String PREFIX_SEN = "sen_";
-	private static final String LABEL_PREFIX = "{";
-	private static final String LABEL_SUFFIX = "}:";
-
-	public static final String PROPDEF_PREFIX = "[";
-	public static final String PROPDEF_SUFFIX = "]:";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private static AtomicLong sentenceIdVal = new AtomicLong(0);
 
@@ -281,11 +279,11 @@ public class CeSentence implements Comparable<CeSentence> {
 	}
 	
 	private static boolean isQuoteLabelToken(String pToken) {
-		return pToken.equals(TokenizerFactSentence.SCELABEL_QUOTE);
+		return pToken.equals(SCELABEL_QUOTE);
 	}
 	
 	private static boolean isDotToken(String pToken) {
-		return pToken.equals(BuilderSentence.TOKEN_DOT);
+		return pToken.equals(TOKEN_DOT);
 	}
 
 	public String getCeTextWithoutFullStop(ActionContext pAc) {

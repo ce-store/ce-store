@@ -1,10 +1,20 @@
 package com.ibm.ets.ita.ce.store.client.rest;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSONTYPE_PROP;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_RANGE;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_COMMON;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_DATATYPE;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_OBJECT;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_RATIONALE;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_SENTENCE;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_PRIMARY;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_SECONDARY;
+import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.appendNewLineToSb;
 import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.appendToSb;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
 
@@ -13,10 +23,10 @@ import java.util.HashSet;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.ibm.ets.ita.ce.store.StoreActions;
 import com.ibm.ets.ita.ce.store.client.web.WebActionContext;
 import com.ibm.ets.ita.ce.store.client.web.model.CeWebContainerResult;
 import com.ibm.ets.ita.ce.store.client.web.model.CeWebProperty;
+import com.ibm.ets.ita.ce.store.core.StoreActions;
 import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
 import com.ibm.ets.ita.ce.store.model.CeProperty;
@@ -25,13 +35,7 @@ import com.ibm.ets.ita.ce.store.model.container.ContainerCommonValues;
 import com.ibm.ets.ita.ce.store.model.rationale.CeRationaleReasoningStep;
 
 public class CeStoreRestApiProperty extends CeStoreRestApi {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
-
-	private static final String REST_COMMON = "common";
-
-	private static final String PARM_RANGE = "range";
-
-	private static final String TYPE_PROP = "property";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	public CeStoreRestApiProperty(WebActionContext pWc, ArrayList<String> pRestParts, HttpServletRequest pRequest) {
 		super(pWc, pRestParts, pRequest);
@@ -401,11 +405,11 @@ public class CeStoreRestApiProperty extends CeStoreRestApi {
 		StringBuilder sb = new StringBuilder();
 
 		appendToSb(sb, "-- All sentences for property " + pTgtProp.formattedFullPropertyName());
-		appendToSb(sb, "");
+		appendNewLineToSb(sb);
 
 		for (CeSentence thisSen : pTgtProp.listAllSentences()) {
 			CeStoreRestApiSentence.generateTextForSentence(this.wc, sb, thisSen, isFullStyle());
-			appendToSb(sb, "");
+			appendNewLineToSb(sb);
 		}
 
 		getWebActionResponse().setPlainTextPayload(this.wc, sb.toString());
@@ -429,11 +433,11 @@ public class CeStoreRestApiProperty extends CeStoreRestApi {
 		StringBuilder sb = new StringBuilder();
 
 		appendToSb(sb, "-- All primary sentences for property " + pTgtProp.formattedFullPropertyName());
-		appendToSb(sb, "");
+		appendNewLineToSb(sb);
 
 		for (CeSentence thisSen : pTgtProp.getPrimarySentences()) {
 			CeStoreRestApiSentence.generateTextForSentence(this.wc, sb, thisSen, isFullStyle());
-			appendToSb(sb, "");
+			appendNewLineToSb(sb);
 		}
 
 		getWebActionResponse().setPlainTextPayload(this.wc, sb.toString());
@@ -460,7 +464,7 @@ public class CeStoreRestApiProperty extends CeStoreRestApi {
 
 		for (CeSentence thisSen : pTgtProp.listSecondarySentences()) {
 			CeStoreRestApiSentence.generateTextForSentence(this.wc, sb, thisSen, isFullStyle());
-			appendToSb(sb, "");
+			appendNewLineToSb(sb);
 		}
 
 		getWebActionResponse().setPlainTextPayload(this.wc, sb.toString());
@@ -544,7 +548,7 @@ public class CeStoreRestApiProperty extends CeStoreRestApi {
 	}
 
 	private void reportNotFoundError(String pPropName) {
-		reportNotFoundError(TYPE_PROP, pPropName);
+		reportNotFoundError(JSONTYPE_PROP, pPropName);
 	}
 
 	private void setPropertyDetailsAsStructuredResult(CeProperty pProperty) {

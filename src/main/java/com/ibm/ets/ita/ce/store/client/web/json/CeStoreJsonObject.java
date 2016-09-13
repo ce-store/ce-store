@@ -1,20 +1,27 @@
 package com.ibm.ets.ita.ce.store.client.web.json;
 
+//ALL DONE
+
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.MiscNames.ES;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_CLOSEBRA;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_COMMA;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_NULL;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_OPENBRA;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Set;
 
-import com.ibm.ets.ita.ce.store.ActionContext;
+import com.ibm.ets.ita.ce.store.core.ActionContext;
 
 public class CeStoreJsonObject extends CeStoreJsonProcessor {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private static final String MAP_STRING = "stringMap";
 	private static final String MAP_OBJECT = "objectMap";
@@ -38,7 +45,9 @@ public class CeStoreJsonObject extends CeStoreJsonProcessor {
 			} else if (tgtMap.equals(MAP_JSON)) {
 				result = this.jsonMap.get(pKey);
 			} else {
-				reportError("Unknown map type '" + tgtMap + "' encountered during JSON processing for key '" + pKey + "'", pAc);
+				reportError(
+						"Unknown map type '" + tgtMap + "' encountered during JSON processing for key '" + pKey + "'",
+						pAc);
 			}
 		}
 
@@ -89,11 +98,11 @@ public class CeStoreJsonObject extends CeStoreJsonProcessor {
 	}
 
 	public CeStoreJsonObject getJsonObject(String pKey) {
-		return (CeStoreJsonObject)this.jsonMap.get(pKey);
+		return (CeStoreJsonObject) this.jsonMap.get(pKey);
 	}
 
 	public CeStoreJsonArray getJsonArray(String pKey) {
-		return (CeStoreJsonArray)this.jsonMap.get(pKey);
+		return (CeStoreJsonArray) this.jsonMap.get(pKey);
 	}
 
 	public boolean isEmpty() {
@@ -109,8 +118,8 @@ public class CeStoreJsonObject extends CeStoreJsonProcessor {
 		StringBuilder sb = new StringBuilder();
 
 		if (this.jsonText == null) {
-			String commaVal = "";
-			sb.append("{");
+			String commaVal = ES;
+			sb.append(TOKEN_OPENBRA);
 
 			for (String thisKey : this.keyMap.keySet()) {
 				sb.append(commaVal);
@@ -129,16 +138,17 @@ public class CeStoreJsonObject extends CeStoreJsonProcessor {
 					if (thisJp != null) {
 						sb.append(thisJp.serialize(pAc));
 					} else {
-						sb.append("null");
+						sb.append(TOKEN_NULL);
 					}
 				} else {
-					reportError("Unknown map type '" + tgtMap + "' encountered during JSON serializing for key '" + thisKey + "'", pAc);
+					reportError("Unknown map type '" + tgtMap + "' encountered during JSON serializing for key '"
+							+ thisKey + "'", pAc);
 				}
 
-				commaVal = ",";
+				commaVal = TOKEN_COMMA;
 			}
 
-			sb.append("}");
+			sb.append(TOKEN_CLOSEBRA);
 		} else {
 			sb.append(this.jsonText);
 		}

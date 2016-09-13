@@ -1,6 +1,7 @@
 package com.ibm.ets.ita.ce.store.parsing.model;
+
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
@@ -10,7 +11,7 @@ import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.parsing.tokenizer.TokenizerFactSentence;
 
 public class TokenizerSecondaryConceptClause extends TokenizerNormalClause {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	protected static final String TYPE_ISA = "is a";
 	protected static final String TYPE_ISAN = "is an";
