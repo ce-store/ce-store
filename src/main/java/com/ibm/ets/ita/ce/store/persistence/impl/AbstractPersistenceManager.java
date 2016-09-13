@@ -6,7 +6,6 @@ package com.ibm.ets.ita.ce.store.persistence.impl;
  *******************************************************************************/
 
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.ibm.ets.ita.ce.store.core.ActionContext;
@@ -102,7 +101,7 @@ public abstract class AbstractPersistenceManager implements PersistenceManager {
 			//writeSources(storeName, newSources);
 			int lastSavedSentenceId = getLastSavedSentenceId(storeName);
 			List<CeSentence> newSentences = store.getSentences(lastSavedSentenceId + 1);
-			logger.logp(Level.FINER, CLASS_NAME, METHOD_NAME, saveNumbersToString(lastSavedSentenceId, newSentences.size()));
+//			logger.logp(Level.FINER, CLASS_NAME, METHOD_NAME, saveNumbersToString(lastSavedSentenceId, newSentences.size()));
 			writeSentences(storeName, newSentences);
 		}
 		updateStoreStats(store);
@@ -122,7 +121,7 @@ public abstract class AbstractPersistenceManager implements PersistenceManager {
 		store.reset(actionContext);
 		resetStoreStats(store.getName());
 		List<String> sentences = readSentences(storeName);
-		logger.logp(Level.FINER, CLASS_NAME, METHOD_NAME, loadNumbersToString(sentences.size()));
+//		logger.logp(Level.FINER, CLASS_NAME, METHOD_NAME, loadNumbersToString(sentences.size()));
 		store.loadSentences(sentences, actionContext);
 		updateStoreStats(store);
 		this.actionContext = null;

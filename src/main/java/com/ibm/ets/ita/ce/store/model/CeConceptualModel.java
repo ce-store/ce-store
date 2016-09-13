@@ -9,19 +9,14 @@ import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportWarnin
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import com.ibm.ets.ita.ce.store.core.ActionContext;
 
 public class CeConceptualModel extends CeModelEntity {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
-	private static final String CLASS_NAME = CeConceptualModel.class.getName();
-	private static final String PACKAGE_NAME = CeConceptualModel.class.getPackage().getName();
-	private static final Logger logger = Logger.getLogger(PACKAGE_NAME);
-
-	//TODO: Need to populate primary sentences for this when creating (via meta-model)
+	// TODO: Need to populate primary sentences for this when creating (via
+	// meta-model)
 
 	private CeConcept[] definedConcepts = new CeConcept[0];
 	private CeProperty[] definedProperties = new CeProperty[0];
@@ -44,12 +39,12 @@ public class CeConceptualModel extends CeModelEntity {
 	}
 
 	public void addDefinedConceptByName(ActionContext pAc, String pConName) {
-		CeConcept tgtCon = pAc.getModelBuilder().getConceptNamed(pAc,  pConName);
+		CeConcept tgtCon = pAc.getModelBuilder().getConceptNamed(pAc, pConName);
 
 		if (tgtCon != null) {
 			addDefinedConcept(tgtCon);
 
-			//Also add the conceptual model to the concept
+			// Also add the conceptual model to the concept
 			tgtCon.addConceptualModel(this);
 		} else {
 			reportWarning("Unable to locate concept named '' during meta-model (conceptual model) generation", pAc);
@@ -92,7 +87,7 @@ public class CeConceptualModel extends CeModelEntity {
 
 	public ArrayList<CeConcept> listDefinedConcepts() {
 		ArrayList<CeConcept> result = new ArrayList<CeConcept>();
-		
+
 		for (CeConcept thisCon : getDefinedConcepts()) {
 			result.add(thisCon);
 		}
@@ -100,21 +95,22 @@ public class CeConceptualModel extends CeModelEntity {
 	}
 
 	public void addDefinedConcept(CeConcept pCon) {
-	  final String METHOD_NAME = "addDefinedConcept";
-	  
+		// final String METHOD_NAME = "addDefinedConcept";
+
 		if (!hasDefinedConcept(pCon)) {
 			int currLen = this.definedConcepts.length;
 			CeConcept[] newArray = new CeConcept[currLen + 1];
 			System.arraycopy(this.definedConcepts, 0, newArray, 0, currLen);
 			newArray[currLen] = pCon;
 			this.definedConcepts = newArray;
-			logger.logp(Level.FINEST, CLASS_NAME, METHOD_NAME, this + " -> " + pCon);
+			// logger.logp(Level.FINEST, CLASS_NAME, METHOD_NAME, this + " -> "
+			// + pCon);
 		}
 	}
-	
+
 	public boolean hasDefinedConcept(CeConcept pCon) {
 		boolean result = false;
-		
+
 		for (CeConcept defCon : this.definedConcepts) {
 			if (!result) {
 				if (defCon == pCon) {
@@ -122,17 +118,17 @@ public class CeConceptualModel extends CeModelEntity {
 				}
 			}
 		}
-		
+
 		return result;
 	}
 
 	public ArrayList<String> getDefinedConceptNames() {
 		ArrayList<String> result = new ArrayList<String>();
-		
+
 		for (CeConcept thisCon : getDefinedConcepts()) {
 			result.add(thisCon.getConceptName());
 		}
-		
+
 		return result;
 	}
 
@@ -142,7 +138,7 @@ public class CeConceptualModel extends CeModelEntity {
 
 	public ArrayList<CeProperty> listDefinedProperties() {
 		ArrayList<CeProperty> result = new ArrayList<CeProperty>();
-		
+
 		for (CeProperty thisProp : getDefinedProperties()) {
 			result.add(thisProp);
 		}
@@ -152,19 +148,19 @@ public class CeConceptualModel extends CeModelEntity {
 	public void addDefinedProperty(CeProperty pProperty) {
 		if (!hasDefinedProperty(pProperty)) {
 			int currLen = 0;
-	
+
 			currLen = this.definedProperties.length;
 			CeProperty[] newArray = new CeProperty[currLen + 1];
 			System.arraycopy(this.definedProperties, 0, newArray, 0, currLen);
 			this.definedProperties = newArray;
-	
+
 			this.definedProperties[currLen] = pProperty;
 		}
 	}
 
 	public boolean hasDefinedProperty(CeProperty pProp) {
 		boolean result = false;
-	
+
 		for (CeProperty defProp : this.definedProperties) {
 			if (!result) {
 				if (defProp == pProp) {
@@ -198,7 +194,7 @@ public class CeConceptualModel extends CeModelEntity {
 			CeSource[] newArray = new CeSource[currLen + 1];
 			System.arraycopy(this.sources, 0, newArray, 0, currLen);
 			this.sources = newArray;
-	
+
 			this.sources[currLen] = pSrc;
 		}
 	}
@@ -249,7 +245,7 @@ public class CeConceptualModel extends CeModelEntity {
 		return result;
 	}
 
-	public CeInstance retrieveMetaModelInstance(ActionContext pAc){
+	public CeInstance retrieveMetaModelInstance(ActionContext pAc) {
 		return pAc.getModelBuilder().getInstanceNamed(pAc, getModelName());
 	}
 

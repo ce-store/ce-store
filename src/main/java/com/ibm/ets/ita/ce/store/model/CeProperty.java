@@ -5,9 +5,10 @@ package com.ibm.ets.ita.ce.store.model;
  * All Rights Reserved
  *******************************************************************************/
 
-import static com.ibm.ets.ita.ce.store.names.CeNames.RANGE_VALUE;
 import static com.ibm.ets.ita.ce.store.names.CeNames.PROP_PASTTENSE;
 import static com.ibm.ets.ita.ce.store.names.CeNames.PROP_PLURAL;
+import static com.ibm.ets.ita.ce.store.names.CeNames.RANGE_VALUE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_COLON;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.encodeForCe;
 
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ public class CeProperty extends CeModelEntity {
 	private CeConcept rangeConcept = null;
 	private CeProperty statedSourceProperty = null;
 	private CeProperty[] inferredPropertyList = null;
-	
+
 	public static final int STYLE_FN = 0;
 	public static final int STYLE_VS = 1;
 	private static final String STYLENAME_FN = "functional noun";
@@ -46,10 +47,9 @@ public class CeProperty extends CeModelEntity {
 	public static final int CARDINALITY_SINGLE_EXACT = 1;
 	public static final int CARDINALITY_MULTI = 2;
 
-	private static final String PROP_NAME_SEPARATOR = ":";
-
 	protected CeProperty() {
-		//This is private to ensure that new instances can only be created via the various static methods
+		// This is private to ensure that new instances can only be created via
+		// the various static methods
 	}
 
 	@Override
@@ -64,35 +64,38 @@ public class CeProperty extends CeModelEntity {
 
 	public static String calculateFullPropertyNameFor(String pDomainName, String pPropertyName, String pRangeName) {
 		String rangeName;
-		
+
 		if ((pRangeName == null) || (pRangeName.isEmpty())) {
 			rangeName = RANGE_VALUE;
 		} else {
 			rangeName = pRangeName;
 		}
-		
-		return pDomainName + PROP_NAME_SEPARATOR + pPropertyName + PROP_NAME_SEPARATOR + rangeName;
+
+		return pDomainName + TOKEN_COLON + pPropertyName + TOKEN_COLON + rangeName;
 	}
 
-	public static CeProperty createOrRetrieveFnDatatypeProperty(ActionContext pAc, CeConcept pConcept, String pPropName, int pCeCardinality) {
+	public static CeProperty createOrRetrieveFnDatatypeProperty(ActionContext pAc, CeConcept pConcept, String pPropName,
+			int pCeCardinality) {
 		return createOrRetrieveProperty(pAc, pConcept, pPropName, STYLE_FN, pCeCardinality, null);
 	}
 
-	public static CeProperty createOrRetrieveVsDatatypeProperty(ActionContext pAc, CeConcept pConcept, String pPropName, int pCeCardinality) {
+	public static CeProperty createOrRetrieveVsDatatypeProperty(ActionContext pAc, CeConcept pConcept, String pPropName,
+			int pCeCardinality) {
 		return createOrRetrieveProperty(pAc, pConcept, pPropName, STYLE_VS, pCeCardinality, null);
 	}
 
-	public static CeProperty createOrRetrieveFnObjectProperty(ActionContext pAc, CeConcept pConcept, String pPropName, int pCeCardinality, CeConcept pRangeConcept) {
+	public static CeProperty createOrRetrieveFnObjectProperty(ActionContext pAc, CeConcept pConcept, String pPropName,
+			int pCeCardinality, CeConcept pRangeConcept) {
 		return createOrRetrieveProperty(pAc, pConcept, pPropName, STYLE_FN, pCeCardinality, pRangeConcept);
 	}
 
-	public static CeProperty createOrRetrieveVsObjectProperty(ActionContext pAc, CeConcept pConcept, String pPropName, int pCeCardinality, CeConcept pRangeConcept) {
+	public static CeProperty createOrRetrieveVsObjectProperty(ActionContext pAc, CeConcept pConcept, String pPropName,
+			int pCeCardinality, CeConcept pRangeConcept) {
 		return createOrRetrieveProperty(pAc, pConcept, pPropName, STYLE_VS, pCeCardinality, pRangeConcept);
 	}
 
-	private static CeProperty createOrRetrieveProperty(ActionContext pAc,
-		CeConcept pConcept, String pPropName, int pCeStyle,
-		int pCeCardinality, CeConcept pRangeConcept) {
+	private static CeProperty createOrRetrieveProperty(ActionContext pAc, CeConcept pConcept, String pPropName,
+			int pCeStyle, int pCeCardinality, CeConcept pRangeConcept) {
 		ModelBuilder mb = pAc.getModelBuilder();
 		String rangeName = null;
 
@@ -107,10 +110,11 @@ public class CeProperty extends CeModelEntity {
 
 		if (result == null) {
 			// Create the new property
-			result = createNewProperty(pAc, pConcept, pConcept, pPropName, pCeStyle, pCeCardinality, pRangeConcept, null);
+			result = createNewProperty(pAc, pConcept, pConcept, pPropName, pCeStyle, pCeCardinality, pRangeConcept,
+					null);
 
 			if (result != null) {
-				//Add the property to the concept
+				// Add the property to the concept
 				pConcept.attachDirectProperty(pAc, result);
 			}
 		}
@@ -118,7 +122,9 @@ public class CeProperty extends CeModelEntity {
 		return result;
 	}
 
-	private static CeProperty createNewProperty(ActionContext pAc, CeConcept pDomainConcept, CeConcept pAssertedConcept, String pPropName, int pCeStyle, int pCeCardinality, CeConcept pRangeConcept, CeProperty pStatedSourceProperty) {
+	private static CeProperty createNewProperty(ActionContext pAc, CeConcept pDomainConcept, CeConcept pAssertedConcept,
+			String pPropName, int pCeStyle, int pCeCardinality, CeConcept pRangeConcept,
+			CeProperty pStatedSourceProperty) {
 		CeProperty newProp = new CeProperty();
 		String thisRangeName = "";
 
@@ -137,7 +143,7 @@ public class CeProperty extends CeModelEntity {
 		newProp.rangeConcept = pRangeConcept;
 
 		newProp.inferredPropertyList = null;
-		
+
 		newProp.calculateFullPropertyName();
 
 		if (pStatedSourceProperty == null) {
@@ -154,11 +160,12 @@ public class CeProperty extends CeModelEntity {
 			newProp.statedSourceProperty.addInferredProperty(newProp);
 		}
 
-		//Added by Dave Braines - 26/05/2015 - The property must not be saved if validating only
+		// Added by Dave Braines - 26/05/2015 - The property must not be saved
+		// if validating only
 		if (!pAc.isValidatingOnly()) {
 			pAc.getModelBuilder().addProperty(newProp);
-	
-			//Ensure the property name cache is cleared
+
+			// Ensure the property name cache is cleared
 			pAc.getIndexedEntityAccessor().clearPropertyNameCaches();
 		}
 
@@ -168,27 +175,32 @@ public class CeProperty extends CeModelEntity {
 	public static boolean isSpecialPropertyName(String pPropName, String pConName) {
 		boolean result = false;
 
-		//Dave Braines 02/07/2014 - Due to fixes elsewhere the pConName may now be null (which requires the same interpretation as RANGE_VALUE)
+		// Dave Braines 02/07/2014 - Due to fixes elsewhere the pConName may now
+		// be null (which requires the same interpretation as RANGE_VALUE)
 		if ((pConName == null) || (pConName.equals(RANGE_VALUE))) {
 			result = CeSpecialProperty.isSpecialValueOperator(pPropName);
 		}
 
-		//Dave Braines 02/07/2014 - Always test for universal operators, even when the range is value
+		// Dave Braines 02/07/2014 - Always test for universal operators, even
+		// when the range is value
 		if (!result) {
 			result = CeSpecialProperty.isSpecialUniversalOperator(pPropName);
 		}
-		
+
 		return result;
 	}
-	
+
 	public static boolean isDatatypeRangeName(String pRangeName) {
 		return (pRangeName == null) || (pRangeName.isEmpty()) || pRangeName.equals(RANGE_VALUE);
 	}
-	
+
 	public CeProperty cloneToGetInferredProperty(ActionContext pAc, CeConcept pDomainConcept) {
-		// Create a new instance of CeProperty with most of the same properties as this
-		// instance but specifically override some using the specified passed values
-		CeProperty newProperty = CeProperty.createNewProperty(pAc, pDomainConcept, this.assertedDomainConcept, getPropertyName(), this.ceStyle, this.ceCardinality, this.rangeConcept, this);
+		// Create a new instance of CeProperty with most of the same properties
+		// as this
+		// instance but specifically override some using the specified passed
+		// values
+		CeProperty newProperty = CeProperty.createNewProperty(pAc, pDomainConcept, this.assertedDomainConcept,
+				getPropertyName(), this.ceStyle, this.ceCardinality, this.rangeConcept, this);
 
 		return newProperty;
 	}
@@ -203,8 +215,9 @@ public class CeProperty extends CeModelEntity {
 
 	@SuppressWarnings("static-method")
 	public boolean isSpecialOperatorProperty() {
-		//This must not be a static method since it is overridden by the subclass implementation
-		//TODO: Improve this as it is confusing
+		// This must not be a static method since it is overridden by the
+		// subclass implementation
+		// TODO: Improve this as it is confusing
 		return false;
 	}
 
@@ -215,26 +228,26 @@ public class CeProperty extends CeModelEntity {
 		for (CeSentence priSen : getPrimarySentences()) {
 			result.add(priSen);
 		}
-		
+
 		return result;
 	}
 
-    @Override
+	@Override
 	public ArrayList<CeSentence> listSecondarySentences() {
 		return new ArrayList<CeSentence>();
 	}
 
-    @Override
+	@Override
 	public ArrayList<ArrayList<CeSentence>> listAllSentencesAsPair() {
-    	ArrayList<ArrayList<CeSentence>> senListPair = new ArrayList<ArrayList<CeSentence>>();
-    	
-    	senListPair.add(listPrimarySentences());
-    	senListPair.add(listSecondarySentences());
-    	
-    	return senListPair;
-    }
+		ArrayList<ArrayList<CeSentence>> senListPair = new ArrayList<ArrayList<CeSentence>>();
 
-    public void addInferredProperty(CeProperty pProperty) {
+		senListPair.add(listPrimarySentences());
+		senListPair.add(listSecondarySentences());
+
+		return senListPair;
+	}
+
+	public void addInferredProperty(CeProperty pProperty) {
 		if (!hasInferredProperty(pProperty)) {
 			int currLen = 0;
 
@@ -245,17 +258,17 @@ public class CeProperty extends CeModelEntity {
 				currLen = this.inferredPropertyList.length;
 				CeProperty[] newArray = new CeProperty[currLen + 1];
 				System.arraycopy(this.inferredPropertyList, 0, newArray, 0, currLen);
-	
+
 				this.inferredPropertyList = newArray;
 			}
-	
-			this.inferredPropertyList[currLen] = pProperty;			
+
+			this.inferredPropertyList[currLen] = pProperty;
 		}
 	}
 
 	public boolean hasInferredProperty(CeProperty pProp) {
 		boolean result = false;
-		
+
 		if (this.inferredPropertyList != null) {
 			for (CeProperty thisProp : this.inferredPropertyList) {
 				if (!result) {
@@ -265,7 +278,7 @@ public class CeProperty extends CeModelEntity {
 				}
 			}
 		}
-		
+
 		return result;
 	}
 
@@ -336,12 +349,14 @@ public class CeProperty extends CeModelEntity {
 	}
 
 	public String calculateDomainConceptName() {
-		String result = "";
-		
+		String result = null;
+
 		if (this.domainConcept != null) {
 			result = this.domainConcept.getConceptName();
+		} else {
+			result = "";
 		}
-		
+
 		return result;
 	}
 
@@ -350,12 +365,14 @@ public class CeProperty extends CeModelEntity {
 	}
 
 	public String calculateAssertedDomainConceptName() {
-		String result = "";
-		
+		String result = null;
+
 		if (this.assertedDomainConcept != null) {
 			result = this.assertedDomainConcept.getConceptName();
+		} else {
+			result = "";
 		}
-		
+
 		return result;
 	}
 
@@ -388,7 +405,7 @@ public class CeProperty extends CeModelEntity {
 	}
 
 	private String formattedRangeName() {
-		String result = "";
+		String result = null;
 
 		if (this.rangeConcept == null) {
 			result = RANGE_VALUE;
@@ -402,29 +419,29 @@ public class CeProperty extends CeModelEntity {
 	public String formattedFullPropertyName() {
 		return this.idKey;
 	}
-	
+
 	private void calculateFullPropertyName() {
-		String cName = "";
-		
+		String cName = null;
+
 		if (this.domainConcept != null) {
 			cName = this.domainConcept.getConceptName();
 		} else {
 			cName = RANGE_VALUE;
 		}
 
-		this.idKey = cName + PROP_NAME_SEPARATOR + getPropertyName() + PROP_NAME_SEPARATOR + formattedRangeName();
+		this.idKey = cName + TOKEN_COLON + getPropertyName() + TOKEN_COLON + formattedRangeName();
 	}
 
 	public String formattedAssertedPropertyName() {
-		String cName = "";
-		
+		String cName = null;
+
 		if (this.assertedDomainConcept != null) {
 			cName = this.assertedDomainConcept.getConceptName();
 		} else {
 			cName = RANGE_VALUE;
 		}
-		
-		return cName + PROP_NAME_SEPARATOR + getPropertyName() + PROP_NAME_SEPARATOR + formattedRangeName();
+
+		return cName + TOKEN_COLON + getPropertyName() + TOKEN_COLON + formattedRangeName();
 	}
 
 	public String ceEncodedPropertyName() {
@@ -433,7 +450,7 @@ public class CeProperty extends CeModelEntity {
 
 	public boolean hasSentence(CeSentence pSen) {
 		boolean result = false;
-		
+
 		if (hasPrimarySentence(pSen)) {
 			result = true;
 		}
@@ -443,7 +460,7 @@ public class CeProperty extends CeModelEntity {
 
 	public boolean hasOtherSentences(CeSentence pSen) {
 		boolean result = false;
-		
+
 		for (CeSentence thisSen : listAllSentences()) {
 			if (!result) {
 				if (thisSen != pSen) {
@@ -451,7 +468,7 @@ public class CeProperty extends CeModelEntity {
 				}
 			}
 		}
-		
+
 		return result;
 	}
 
@@ -478,17 +495,17 @@ public class CeProperty extends CeModelEntity {
 
 		return result;
 	}
-	
+
 	public String pluralFormName(ActionContext pAc) {
 		String result = null;
 		CeProperty tgtProp = null;
-		
+
 		if (isInferredProperty()) {
 			tgtProp = getStatedSourceProperty();
 		} else {
 			tgtProp = this;
 		}
-		
+
 		CeInstance mmInst = pAc.getModelBuilder().getInstanceNamed(pAc, tgtProp.formattedFullPropertyName());
 
 		if (mmInst != null) {
@@ -496,26 +513,26 @@ public class CeProperty extends CeModelEntity {
 
 			if ((result == null) || result.isEmpty()) {
 				result = defaultPluralFormFor(tgtProp);
-//				result = tgtProp.getPropertyName();
+				// result = tgtProp.getPropertyName();
 			}
 		} else {
-			//There is no meta-model instance, so return the normal name
+			// There is no meta-model instance, so return the normal name
 			result = defaultPluralFormFor(tgtProp);
 		}
 
 		return result;
 	}
-	
+
 	public String pastTenseName(ActionContext pAc) {
 		String result = null;
 		CeProperty tgtProp = null;
-		
+
 		if (isInferredProperty()) {
 			tgtProp = getStatedSourceProperty();
 		} else {
 			tgtProp = this;
 		}
-		
+
 		CeInstance mmInst = pAc.getModelBuilder().getInstanceNamed(pAc, tgtProp.formattedFullPropertyName());
 
 		if (mmInst != null) {
@@ -527,7 +544,7 @@ public class CeProperty extends CeModelEntity {
 				result = defaultPastTenseFor(tgtProp);
 			}
 		} else {
-			//There is no meta-model instance, so return the normal name
+			// There is no meta-model instance, so return the normal name
 			result = defaultPastTenseFor(tgtProp);
 		}
 
@@ -535,13 +552,13 @@ public class CeProperty extends CeModelEntity {
 	}
 
 	private static String defaultPluralFormFor(CeProperty pProp) {
-		return pProp.getPropertyName() + "s";
+		return pProp.getPropertyName() + "s"; // TODO: Abstract this
 	}
 
 	private static String defaultPastTenseFor(CeProperty pProp) {
 		String result = pProp.getPropertyName();
-		
-		if (result.endsWith("e")) {
+
+		if (result.endsWith("e")) { // TODO: Abstract these
 			result += "d";
 		} else {
 			result += "ed";
@@ -552,11 +569,11 @@ public class CeProperty extends CeModelEntity {
 
 	public CeInstance getMetaModelInstance(ActionContext pAc) {
 		CeInstance result = pAc.getModelBuilder().getInstanceNamed(pAc, this.formattedFullPropertyName());
-		
+
 		if (result == null) {
 			result = pAc.getModelBuilder().getInstanceNamed(pAc, this.formattedAssertedPropertyName());
 		}
-		
+
 		return result;
 	}
 

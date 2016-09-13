@@ -590,15 +590,9 @@ public class StoreActions {
 	}
 
 	
-	public ArrayList<CeSentence> listAllNormalFactSentences() {
+	public ArrayList<CeSentence> listAllFactSentences() {
 		QueryHandler qh = new QueryHandler(this.ac);
-		return qh.listAllNormalFactSentences();
-	}
-
-	
-	public ArrayList<CeSentence> listAllQualifiedFactSentences() {
-		QueryHandler qh = new QueryHandler(this.ac);
-		return qh.listAllQualifiedFactSentences();
+		return qh.listAllFactSentences();
 	}
 
 	

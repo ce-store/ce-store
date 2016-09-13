@@ -1,5 +1,7 @@
 package com.ibm.ets.ita.ce.store.model;
 
+//ALL DONE
+
 /*******************************************************************************
  * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
@@ -22,7 +24,7 @@ public abstract class CeModelEntity implements Comparable<CeModelEntity> {
 
 	private static AtomicLong seqNumCtr = new AtomicLong(0);
 
-	protected String name = null;		//No getters and setters on this class... should be implemented (with more specific names) by extending classes
+	protected String name = null;
 	private long seqNum = CeModelEntity.seqNumCtr.getAndIncrement();
 	private long creationDate = NO_TS;
 	private boolean metaModelGenerated = false;
@@ -30,7 +32,9 @@ public abstract class CeModelEntity implements Comparable<CeModelEntity> {
 	private CeSentence[] primarySentences = new CeSentence[0];
 
 	public abstract HashSet<CeSentence> listAllSentences();
+
 	public abstract ArrayList<CeSentence> listSecondarySentences();
+
 	public abstract ArrayList<ArrayList<CeSentence>> listAllSentencesAsPair();
 
 	protected CeModelEntity() {
@@ -172,7 +176,7 @@ public abstract class CeModelEntity implements Comparable<CeModelEntity> {
 			System.arraycopy(this.primarySentences, 0, newArray, 0, currLen);
 
 			this.primarySentences = newArray;
-			this.primarySentences[currLen] = pSen;			
+			this.primarySentences[currLen] = pSen;
 		}
 	}
 
@@ -241,7 +245,8 @@ public abstract class CeModelEntity implements Comparable<CeModelEntity> {
 	}
 
 	public int countAnnotationSentences() {
-		//In this case the count of the sentences is the same as the count of the annotations
+		// In this case the count of the sentences is the same as the count of
+		// the annotations
 		return countAnnotations();
 	}
 
@@ -255,12 +260,13 @@ public abstract class CeModelEntity implements Comparable<CeModelEntity> {
 
 		if (pObj != null) {
 			if (pObj.hashCode() == hashCode()) {
-				//The hash codes match so these objects MAY be the same.  Now check on the strings
-				CeModelEntity pMe = (CeModelEntity)pObj;
+				// The hash codes match so these objects MAY be the same. Now
+				// check on the strings
+				CeModelEntity pMe = (CeModelEntity) pObj;
 				result = (identityKey().equals(pMe.identityKey()));
 			}
 		}
-		
+
 		return result;
 	}
 
@@ -279,7 +285,7 @@ public abstract class CeModelEntity implements Comparable<CeModelEntity> {
 	}
 
 	public String toString() {
-	  return (this.name==null) ? super.toString() : this.name;
+		return (this.name == null) ? super.toString() : this.name;
 	}
 
 }

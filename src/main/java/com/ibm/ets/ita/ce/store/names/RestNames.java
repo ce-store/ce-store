@@ -68,8 +68,6 @@ public class RestNames {
 	public static final String REST_BATCH = "batch";
 	public static final String REST_SEN_MODEL = "model";
 	public static final String REST_SEN_FACT = "fact";
-	public static final String REST_SEN_NORMAL = "fact-normal";
-	public static final String REST_SEN_QUALIFIED = "fact-qualified";
 	public static final String REST_SEN_RULE = "rule";
 	public static final String REST_SEN_QUERY = "query";
 	public static final String REST_SEN_PATTERN = "pattern";
@@ -78,7 +76,7 @@ public class RestNames {
 	public static final String REST_SEN_VALID = "valid";
 	public static final String REST_SEN_INVALID = "invalid";
 
-	public static final String[] REST_SEN_ALL_TYPES = { REST_SEN_MODEL, REST_SEN_FACT, REST_SEN_NORMAL, REST_SEN_QUALIFIED, REST_SEN_RULE, REST_SEN_QUERY, REST_SEN_PATTERN, REST_SEN_ANNOTATION, REST_SEN_COMMAND };
+	public static final String[] REST_SEN_ALL_TYPES = { REST_SEN_MODEL, REST_SEN_FACT, REST_SEN_RULE, REST_SEN_QUERY, REST_SEN_PATTERN, REST_SEN_ANNOTATION, REST_SEN_COMMAND };
 	public static final String[] REST_SEN_ALL_VALIDITIES = { REST_SEN_VALID, REST_SEN_INVALID };
 
 	//Hudson

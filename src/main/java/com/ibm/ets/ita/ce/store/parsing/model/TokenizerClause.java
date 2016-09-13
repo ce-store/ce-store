@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 import com.ibm.ets.ita.ce.store.core.ActionContext;
 import com.ibm.ets.ita.ce.store.model.CeConcept;
-import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentenceFactNormal;
+import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentenceFact;
 import com.ibm.ets.ita.ce.store.parsing.tokenizer.TokenizerFactSentence;
 
 public abstract class TokenizerClause {
@@ -19,7 +19,7 @@ public abstract class TokenizerClause {
 
 	protected TokenizerFactSentence parent = null;
 	protected ActionContext ac = null;
-	protected BuilderSentenceFactNormal sen = null;
+	protected BuilderSentenceFact sen = null;
 	protected String delimiter = null;
 	protected ArrayList<String> rawTokens = null;
 	protected TokenizerClause previousClause = null;

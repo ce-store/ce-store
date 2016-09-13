@@ -21,7 +21,7 @@ import com.ibm.ets.ita.ce.store.model.CeSentence;
 import com.ibm.ets.ita.ce.store.model.CeSequence;
 import com.ibm.ets.ita.ce.store.model.CeSpecialProperty;
 
-public class BuilderSentenceFactNormal extends BuilderSentence {
+public class BuilderSentenceFact extends BuilderSentence {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	//TODO: Complete sequence implementation
@@ -40,7 +40,7 @@ public class BuilderSentenceFactNormal extends BuilderSentence {
 	private boolean quotedInstanceName = false;
 	private ArrayList<String> conceptVariableTokens = null;
 
-	public BuilderSentenceFactNormal(String pSenText) {
+	public BuilderSentenceFact(String pSenText) {
 		super(pSenText);
 
 		this.secondaryConceptsNormal = new ArrayList<CeConcept>();

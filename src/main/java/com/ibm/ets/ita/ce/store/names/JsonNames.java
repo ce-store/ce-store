@@ -153,22 +153,7 @@ public class JsonNames {
 	public static final String JSON_SEN_SRC_ID = "source_id";
 	public static final String JSON_SEN_STRUCTUREDTEXT = "ce_structured_text";
 
-	public static final String JSON_SEN_QUALSENS = "qualified_sentences";
 	public static final String JSON_SEN_RATSTEPS = "rationale";
-	public static final String JSON_SENQUAL = "qualifications";
-	public static final String JSON_SENINNER = "inner_sentence";
-	public static final String JSON_SENINNER_ID = "inner_sentence_id";
-
-	public static final String JSON_SENQUAL_AN = "author_name";
-	public static final String JSON_SENQUAL_AC = "author_concept";
-	public static final String JSON_SENQUAL_QN = "qualified_name";
-	public static final String JSON_SENQUAL_QC = "qualified_concept";
-	public static final String JSON_SENQUAL_CN = "context_name";
-	public static final String JSON_SENQUAL_CC = "context_concept";
-	public static final String JSON_SENQUAL_ST = "statement_type";
-	public static final String JSON_SENQUAL_TF = "timeframe";
-	public static final String JSON_SENQUAL_TS = "timestamp";
-	public static final String JSON_SENQUAL_TV = "truth_value";
 
 	public static final String JSON_IDX = "index";
 	public static final String JSON_FRAGTYPE = "type";

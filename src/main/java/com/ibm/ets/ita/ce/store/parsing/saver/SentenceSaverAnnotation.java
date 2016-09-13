@@ -20,7 +20,7 @@ import com.ibm.ets.ita.ce.store.model.CeQuery;
 import com.ibm.ets.ita.ce.store.model.CeRule;
 import com.ibm.ets.ita.ce.store.model.CeSource;
 import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentence;
-import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentenceFactNormal;
+import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentenceFact;
 import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentenceRuleOrQuery;
 
 public class SentenceSaverAnnotation extends SentenceSaver {
@@ -74,7 +74,7 @@ public class SentenceSaverAnnotation extends SentenceSaver {
 				}
 			} else if (this.lastSentence.isFactSentence()) {
 				//Fact sentence - save to the instance
-				String tgtInstName = ((BuilderSentenceFactNormal)this.lastSentence).getInstanceName();
+				String tgtInstName = ((BuilderSentenceFact)this.lastSentence).getInstanceName();
 				CeInstance tgtInst = this.ac.getModelBuilder().getInstanceNamed(this.ac, tgtInstName);
 
 				if (tgtInst != null) {

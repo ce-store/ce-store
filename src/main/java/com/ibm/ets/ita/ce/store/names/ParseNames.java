@@ -55,6 +55,7 @@ public class ParseNames {
 	public static final String TOKEN_CLOSEBRA = "}";
 	public static final String TOKEN_COMMA = ",";
 	public static final String TOKEN_SPACE = " ";
+	public static final String TOKEN_SQ = "'";
 	public static final String TOKEN_DQ = "\"";
 
 	public static final String TOKEN_BECAUSE = "because";
@@ -73,7 +74,8 @@ public class ParseNames {
 	public static final String TOKEN_THAT = "that";
 	public static final String TOKEN_NO = "no";
 	public static final String TOKEN_PERFORM = "perform";
-	public static final String TOKEN_STATEMENT = "statement";
+	public static final String TOKEN_IT = "it";
+	public static final String TOKEN_WITH = "with";
 
 	public static final String TOKEN_CONCEPTUALISE = "conceptualise";
 	public static final String TOKEN_CONCEPTUALIZE = "conceptualize";
@@ -88,7 +90,6 @@ public class ParseNames {
 	public static final String TOKEN_HOW = "how";
 	public static final String TOKEN_MANY = "many";
 	public static final String TOKEN_WHICH = "which";
-	public static final String TOKEN_IT = "it";
 	public static final String TOKEN_TRUE = "true";
 	public static final String TOKEN_FALSE = "false";
 
@@ -101,25 +102,6 @@ public class ParseNames {
 
 	public static final String TOKEN_IF = "if";
 	public static final String TOKEN_THEN = "then";
-
-	//Qualified sentence tokens
-	public static final String TOKEN_TIMESTAMPED = "time-stamped";
-	public static final String TOKEN_IN = "in";
-	public static final String TOKEN_QUALIFIED = "qualified";
-	public static final String TOKEN_WITH = "with";
-	public static final String TOKEN_TRUST = "trust";
-	public static final String TOKEN_LEVEL = "level";
-	public static final String TOKEN_CURRENTLY = "currently";
-	public static final String TOKEN_HISTORICALLY = "historically";
-	public static final String TOKEN_INFUTURE = "in-future";
-	public static final String TOKEN_ALWAYS = "always";
-	public static final String TOKEN_POSSIBLE = "possible";
-	public static final String TOKEN_IMPOSSIBLE = "impossible";
-	public static final String TOKEN_HYPOTHESISED = "hypothesised";
-	public static final String TOKEN_ASSUMED = "assumed";
-	public static final String TOKEN_ASSERTED = "asserted";
-	public static final String TOKEN_DECLARED = "declared";
-	public static final String TOKEN_INFERRED = "inferred";
 
 	public static final String TOKEN_RESET = "reset";
 	public static final String TOKEN_RELOAD = "reload";

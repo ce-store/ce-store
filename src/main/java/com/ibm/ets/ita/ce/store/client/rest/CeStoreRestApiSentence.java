@@ -28,9 +28,7 @@ import static com.ibm.ets.ita.ce.store.names.RestNames.REST_SEN_ANNOTATION;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REST_SEN_COMMAND;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REST_SEN_FACT;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REST_SEN_MODEL;
-import static com.ibm.ets.ita.ce.store.names.RestNames.REST_SEN_NORMAL;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REST_SEN_PATTERN;
-import static com.ibm.ets.ita.ce.store.names.RestNames.REST_SEN_QUALIFIED;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REST_SEN_QUERY;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REST_SEN_RULE;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REST_SEN_VALID;
@@ -241,10 +239,6 @@ public class CeStoreRestApiSentence extends CeStoreRestApi {
 				result = getModelBuilder().listAllModelSentences();
 			} else if (qualifier.equals(REST_SEN_FACT)) {
 				result = getModelBuilder().listAllFactSentences();
-			} else if (qualifier.equals(REST_SEN_NORMAL)) {
-				result = getModelBuilder().listAllNormalFactSentences();
-			} else if (qualifier.equals(REST_SEN_QUALIFIED)) {
-				result = getModelBuilder().listAllQualifiedFactSentences();
 			} else if (qualifier.equals(REST_SEN_PATTERN)) {
 				result = getModelBuilder().listAllRuleOrQuerySentences();
 			} else if (qualifier.equals(REST_SEN_RULE)) {
@@ -272,14 +266,6 @@ public class CeStoreRestApiSentence extends CeStoreRestApi {
 					}
 				} else if (qualifier.equals(REST_SEN_FACT)) {
 					if (!thisSen.isFactSentence()) {
-						iterator.remove();
-					}
-				} else if (qualifier.equals(REST_SEN_NORMAL)) {
-					if (!thisSen.isFactSentenceNormal()) {
-						iterator.remove();
-					}
-				} else if (qualifier.equals(REST_SEN_QUALIFIED)) {
-					if (!thisSen.isFactSentenceQualified()) {
 						iterator.remove();
 					}
 				} else if (qualifier.equals(REST_SEN_PATTERN)) {

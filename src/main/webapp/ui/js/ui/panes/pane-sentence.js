@@ -55,8 +55,6 @@ function PaneSentence() {
 		list.push({ name: 'All sentences', jsParts: [ gEp.ui.links.JS_SEN_ALLLIST ]});
 		list.push({ name: 'Model sentences', jsParts: [ gEp.ui.links.JS_SEN_QUALLIST, 'model' ]});
 		list.push({ name: 'Fact sentences', jsParts: [ gEp.ui.links.JS_SEN_QUALLIST, 'fact' ]});
-		list.push({ name: 'Fact (normal) sentences', jsParts: [ gEp.ui.links.JS_SEN_QUALLIST, 'fact-normal' ]});
-		list.push({ name: 'Fact (qualified) sentences', jsParts: [ gEp.ui.links.JS_SEN_QUALLIST, 'fact-qualifiedl' ]});
 		list.push({ name: 'Pattern sentences', jsParts: [ gEp.ui.links.JS_SEN_QUALLIST, 'pattern' ]});
 		list.push({ name: 'Rule sentences', jsParts: [ gEp.ui.links.JS_SEN_QUALLIST, 'rule' ]});
 		list.push({ name: 'Query sentences', jsParts: [ gEp.ui.links.JS_SEN_QUALLIST, 'query' ]});

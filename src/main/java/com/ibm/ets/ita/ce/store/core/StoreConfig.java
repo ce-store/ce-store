@@ -19,15 +19,9 @@ import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.setDebugOn;
 
 import java.io.File;
 import java.util.LinkedHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public abstract class StoreConfig {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
-
-	private static final String CLASS_NAME = StoreConfig.class.getName(); 
-	private static final String PACKAGE_NAME = StoreConfig.class.getPackage().getName();
-	private static final Logger logger = Logger.getLogger(PACKAGE_NAME);
 
 	// Environment Context (Modifiable) Keys
 	protected static final String ECKEY_DEBUG = "debug";
@@ -107,12 +101,12 @@ public abstract class StoreConfig {
 	protected abstract void initialise();	
 	
 	protected StoreConfig() {
-		final String METHOD_NAME = "StoreConfig";
+//		final String METHOD_NAME = "StoreConfig";
 		initialise();
-		if (logger.isLoggable(Level.FINER)) {
-			logger.logp(Level.FINER, CLASS_NAME, METHOD_NAME, getAllGeneralProperties().toString());
-			logger.logp(Level.FINER, CLASS_NAME, METHOD_NAME, getAllEnvironmentProperties().toString());
-		}
+//		if (logger.isLoggable(Level.FINER)) {
+//			logger.logp(Level.FINER, CLASS_NAME, METHOD_NAME, getAllGeneralProperties().toString());
+//			logger.logp(Level.FINER, CLASS_NAME, METHOD_NAME, getAllEnvironmentProperties().toString());
+//		}
 	}
 	
 	/*

@@ -480,11 +480,13 @@ public class CeInstance extends CeModelEntity {
 	}
 
 	public String getSingleValueFromPropertyNamed(String pPropName) {
-		String result = "";
+		String result = null;
 		CePropertyInstance targetPi = getPropertyInstanceNamed(pPropName);
 
 		if (targetPi != null) {
 			result = targetPi.getSingleOrFirstValue();
+		} else {
+			result = "";
 		}
 
 		return result;

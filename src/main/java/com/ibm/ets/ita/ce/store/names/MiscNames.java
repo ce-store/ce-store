@@ -70,9 +70,13 @@ public class MiscNames {
 	public static final String TRIGTYPE_CON = "CONCEPT";
 	public static final String HDR_CE = "CE";
 	public static final String HDR_COUNT = "count";
-	public static String PREFIX_ANNO = "anno_";
-	public static String PREFIX_SEN = "sen_";
-	public static String PREFIX_SRC = "src_";
+	public static final String PREFIX_ANNO = "anno_";
+	public static final String PREFIX_SEN = "sen_";
+	public static final String PREFIX_SRC = "src_";
+	public static final String PREFIX_CLAUSE = "clause_";
+	public static final String PREFIX_CONCAT = "ccv_";
+	public static final String PREFIX_PROPVAL = "pv_";
+	public static final String PREFIX_TEMP = "temp_";
 	public static final String FORMAT_SRC = "%03d";
 
 	public static final String MODELNAME_CORE = "core";

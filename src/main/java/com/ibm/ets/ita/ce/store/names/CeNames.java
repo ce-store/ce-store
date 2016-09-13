@@ -26,9 +26,6 @@ public class CeNames {
 	public static final String CON_SEQUENCE = "sequence";
 	public static final String CON_CTE= "CE triggered event";
 
-	//Concepts: Qualified sentence
-	public static final String CON_TRUSTLEVEL = "trust level";
-
 	//Concepts: Conversation
 	public static final String CON_CARD = "card";
 	public static final String CON_TELLCARD = "tell card";

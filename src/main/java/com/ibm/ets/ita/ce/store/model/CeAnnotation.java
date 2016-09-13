@@ -1,5 +1,7 @@
 package com.ibm.ets.ita.ce.store.model;
 
+//ALL DONE
+
 /*******************************************************************************
  * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
@@ -32,9 +34,10 @@ public class CeAnnotation {
 		this.creationDate = timestampNow();
 	}
 
-	public static CeAnnotation createAnnotationFrom(ActionContext pAc, String pAnnoLabel, String pAnnoText, CeSentence pAnnoSen) {
+	public static CeAnnotation createAnnotationFrom(ActionContext pAc, String pAnnoLabel, String pAnnoText,
+			CeSentence pAnnoSen) {
 		CeAnnotation newAnno = new CeAnnotation();
-		
+
 		newAnno.id = PREFIX_ANNO + nextAnnotationId();
 		newAnno.label = pAc.getModelBuilder().getCachedStringValueLevel3(pAnnoLabel);
 		newAnno.text = pAc.getModelBuilder().getCachedStringValueLevel3(pAnnoText);
@@ -42,7 +45,7 @@ public class CeAnnotation {
 		if (pAc.getCeConfig().isSavingCeSentences()) {
 			newAnno.annotationSentence = pAnnoSen;
 		}
-		
+
 		return newAnno;
 	}
 
@@ -61,27 +64,27 @@ public class CeAnnotation {
 	public long getCreationDate() {
 		return this.creationDate;
 	}
-	
+
 	public String getLabel() {
 		return this.label;
 	}
-	
+
 	public String trimmedLabel() {
 		return this.label.replace(TOKEN_COLON, ES);
 	}
-	
+
 	public String getText() {
 		return this.text;
 	}
-	
+
 	public CeSentence getAnnotationSentence() {
 		return this.annotationSentence;
 	}
-	
+
 	public boolean metaModelHasBeenGenerated() {
 		return this.metaModelGenerated;
 	}
-	
+
 	public void markAsMetaModelGenerated() {
 		this.metaModelGenerated = true;
 	}
@@ -89,7 +92,7 @@ public class CeAnnotation {
 	public boolean isModelAnnotation() {
 		return this.label.equals(ANNO_TOKEN_MODEL);
 	}
-	
+
 	@Override
 	public String toString() {
 		return "CeAnnotation - " + this.text + " (" + this.label + ")";

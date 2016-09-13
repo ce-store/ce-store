@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.ibm.ets.ita.ce.store.model.CeSentence;
@@ -75,8 +74,8 @@ public class SentenceList {
 
   // constructor, diagnostic output.
   SentenceList() {
-    String objectId = Integer.toHexString(System.identityHashCode(this));
-    logger.logp(Level.FINER, CLASS_NAME, "SentenceList", "constructor, " + objectId + ", " + this.createEventId);
+//    String objectId = Integer.toHexString(System.identityHashCode(this));
+//    logger.logp(Level.FINER, CLASS_NAME, "SentenceList", "constructor, " + objectId + ", " + this.createEventId);
   }
   
   // assumes integerId is non-null.

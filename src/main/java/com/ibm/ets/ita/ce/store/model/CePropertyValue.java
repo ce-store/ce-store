@@ -6,6 +6,7 @@ package com.ibm.ets.ita.ce.store.model;
  *******************************************************************************/
 
 import static com.ibm.ets.ita.ce.store.names.MiscNames.NO_TS;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.PREFIX_PROPVAL;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.timestampNow;
 
 import java.util.concurrent.atomic.AtomicLong;
@@ -32,7 +33,7 @@ public class CePropertyValue {
 
 	public static CePropertyValue createUsing(ActionContext pAc, String pValue, String pRangeName, boolean pHadQuotesOriginally, boolean pIsNegated, CeSentence pSen) {
 		CePropertyValue thisPv = new CePropertyValue();
-		thisPv.id = "pv_" + nextPropvalId();
+		thisPv.id = PREFIX_PROPVAL + nextPropvalId();
 
 		thisPv.setValue(pAc, pValue);
 		thisPv.rangeName = pAc.getModelBuilder().getCachedStringValueLevel1(pRangeName);
@@ -122,7 +123,7 @@ public class CePropertyValue {
 
 	@Override
 	public String toString() {
-		String result = "";
+		String result = null;
 		
 		result = "CePropertyValue: ";
 		result += "'" + this.value + "'";

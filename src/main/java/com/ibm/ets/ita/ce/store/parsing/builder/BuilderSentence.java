@@ -13,11 +13,9 @@ import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_DEFINE;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_THE;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_THERE;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_NO;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_IT;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_FOR;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_IF;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_PERFORM;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_STATEMENT;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_OPENSQBR;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_CLOSESQBR;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_COLON;
@@ -35,16 +33,14 @@ public abstract class BuilderSentence {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private static final int SENTYPE_UNCATEGORISED = 0;
-	public static final int SENTYPE_FACT_NORMAL = 10;
-	public static final int SENTYPE_FACT_QUALIFIED = 11;
+	public static final int SENTYPE_FACT = 10;
 	public static final int SENTYPE_MODEL = 20;
 	public static final int SENTYPE_RULE = 30;
 	public static final int SENTYPE_QUERY = 40;
 	public static final int SENTYPE_ANNO = 50;
 	public static final int SENTYPE_CMD = 60;
 
-	private static final String SENNAME_FACT_NORMAL = "Fact";
-	private static final String SENNAME_FACT_QUALIFIED = "Fact (qualified)";
+	private static final String SENNAME_FACT = "Fact";
 	private static final String SENNAME_MODEL = "Model";
 	private static final String SENNAME_QUERY = "Query";
 	private static final String SENNAME_RULE = "Rule";
@@ -93,20 +89,8 @@ public abstract class BuilderSentence {
 				String firstWord = pTokens.get(0);
 				if (firstWord.equals(TOKEN_CONCEPTUALISE) || firstWord.equals(TOKEN_CONCEPTUALIZE) || firstWord.equals(TOKEN_DEFINE)) {
 					bs = new BuilderSentenceModel(pSentenceText);
-				} else if (firstWord.equals(TOKEN_THE)) {
-					String secondWord = pTokens.get(1);
-					if (secondWord.equals(TOKEN_STATEMENT)) {
-						bs = new BuilderSentenceFactQualified(pSentenceText);
-					} else {
-						bs = new BuilderSentenceFactNormal(pSentenceText);
-					}
-				} else if (firstWord.equals(TOKEN_IT)) {
-					//TODO: Remove this test when this temporary syntax "it is true|false that" is removed
-					bs = new BuilderSentenceFactTemporary(pSentenceText);
-				} else if ((firstWord.equals(TOKEN_THERE)) || (firstWord.equals(TOKEN_NO))) {
-					bs = new BuilderSentenceFactNormal(pSentenceText);
-				} else if (firstWord.equals(TOKEN_STATEMENT)) {
-					bs = new BuilderSentenceFactQualified(pSentenceText);
+				} else if ((firstWord.equals(TOKEN_THE)) || (firstWord.equals(TOKEN_THERE)) || (firstWord.equals(TOKEN_NO))) {
+					bs = new BuilderSentenceFact(pSentenceText);
 				} else if (firstWord.equals(TOKEN_PERFORM)) {
 					bs = new BuilderSentenceCommand(pSentenceText);
 				} else if ((firstWord.equals(TOKEN_IF)) || (firstWord.equals(TOKEN_FOR)) || (firstWord.equals(TOKEN_OPENSQBR))) {
@@ -136,20 +120,12 @@ public abstract class BuilderSentence {
 		return bs;
 	}
 
-	@SuppressWarnings("static-method")
-	public boolean isQualified() {
-		return false;
-	}
-
 	public static String formattedSentenceType(int pType) {
-		String result = "";
+		String result = null;
 
 		switch (pType) {
-		case SENTYPE_FACT_NORMAL:
-			result = SENNAME_FACT_NORMAL;
-			break;
-		case SENTYPE_FACT_QUALIFIED:
-			result = SENNAME_FACT_QUALIFIED;
+		case SENTYPE_FACT:
+			result = SENNAME_FACT;
 			break;
 		case SENTYPE_MODEL:
 			result = SENNAME_MODEL;
@@ -300,18 +276,8 @@ public abstract class BuilderSentence {
 		} else {
 			if (this.firstToken.equals(TOKEN_CONCEPTUALISE) || this.firstToken.equals(TOKEN_CONCEPTUALIZE) || this.firstToken.equals(TOKEN_DEFINE)) {
 				this.type = SENTYPE_MODEL;
-			} else if (this.firstToken.equals(TOKEN_THE)) {
-				String secondToken = getRawTokens().get(1);
-				if (secondToken.equals(TOKEN_STATEMENT)) {
-					this.type = SENTYPE_FACT_QUALIFIED;
-				} else {
-					this.type = SENTYPE_FACT_NORMAL;
-				}
-			} else if (this.firstToken.equals(TOKEN_IT)) {
-				//TODO: Remove this test when this temporary syntax "it is true|false that" is removed
-				this.type = SENTYPE_FACT_NORMAL;
-			} else if ((this.firstToken.equals(TOKEN_THERE)) || (this.firstToken.equals(TOKEN_NO))) {
-				this.type = SENTYPE_FACT_NORMAL;
+			} else if ((this.firstToken.equals(TOKEN_THE)) || (this.firstToken.equals(TOKEN_THERE)) || (this.firstToken.equals(TOKEN_NO))) {
+				this.type = SENTYPE_FACT;
 			} else if (this.firstToken.equals(TOKEN_FOR)) {
 				this.type = SENTYPE_QUERY;
 			} else if (this.firstToken.equals(TOKEN_IF)) {
@@ -337,15 +303,7 @@ public abstract class BuilderSentence {
 	}
 
 	public boolean isFactSentence() {
-		return isFactSentenceNormal() || isFactSentenceQualified();
-	}
-
-	public boolean isFactSentenceNormal() {
-		return (this.type == SENTYPE_FACT_NORMAL);
-	}
-
-	public boolean isFactSentenceQualified() {
-		return (this.type == SENTYPE_FACT_QUALIFIED);
+		return (this.type == SENTYPE_FACT);
 	}
 
 	public boolean isModelSentence() {

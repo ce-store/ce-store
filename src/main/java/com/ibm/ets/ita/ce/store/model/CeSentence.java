@@ -5,8 +5,12 @@ package com.ibm.ets.ita.ce.store.model;
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_BECAUSE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_SQ;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_DQ;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.SCELABEL_QUOTE;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_DOT;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.NL;
 import static com.ibm.ets.ita.ce.store.names.MiscNames.PREFIX_SEN;
 import static com.ibm.ets.ita.ce.store.names.MiscNames.LABEL_PREFIX;
 import static com.ibm.ets.ita.ce.store.names.MiscNames.LABEL_SUFFIX;
@@ -41,7 +45,6 @@ public class CeSentence implements Comparable<CeSentence> {
 	private CeConcept targetConcept = null;
 
 	private CeSentence[] annotationSentences = new CeSentence[0];
-	private CeSentenceQualified[] qualifiedSentences = new CeSentenceQualified[0];
 	private CeRationaleReasoningStep rationaleReasoningStep = null;
 
 	private CeSentence() {
@@ -134,15 +137,7 @@ public class CeSentence implements Comparable<CeSentence> {
 	}
 	
 	public boolean isFactSentence() {
-		return isFactSentenceNormal() || isFactSentenceQualified();
-	}
-
-	public boolean isFactSentenceNormal() {
-		return (this.sentenceType == BuilderSentence.SENTYPE_FACT_NORMAL);
-	}
-	
-	public boolean isFactSentenceQualified() {
-		return (this.sentenceType == BuilderSentence.SENTYPE_FACT_QUALIFIED);
+		return (this.sentenceType == BuilderSentence.SENTYPE_FACT);
 	}
 	
 	public boolean isModelSentence() {
@@ -210,10 +205,10 @@ public class CeSentence implements Comparable<CeSentence> {
 		String result = getCeText(pAc);
 
 		//TODO: Is there a cleaner way?
-		String ratWords[] = result.split("\nbecause\n");
+		String ratWords[] = result.split(NL + TOKEN_BECAUSE + NL);
 		
 		if (ratWords.length > 1) {
-			result = ratWords[0] + ".";
+			result = ratWords[0] + TOKEN_DOT;
 		}
 
 		return result;
@@ -269,7 +264,7 @@ public class CeSentence implements Comparable<CeSentence> {
 	}
 
 	private static boolean tokenStartsWithQuote(String pToken) {
-		return pToken.startsWith("'") || pToken.startsWith("\"");
+		return pToken.startsWith(TOKEN_SQ) || pToken.startsWith(TOKEN_DQ);
 	}
 	
 	public static boolean isLabelToken(String pToken) {
@@ -300,72 +295,6 @@ public class CeSentence implements Comparable<CeSentence> {
 		return this.structuredCeTextList;
 	}
 	
-	public String calculateCeTextWithoutRationale() {
-		String result = null;
-
-		if ((this.rationaleText == null) || (this.rationaleText.isEmpty())) {
-			//There is no rationale - just return the ceText
-			result = this.ceText;
-		} else {
-			//Rebuild the CE until the point where rationale starts and return only that
-			StringBuilder sb = new StringBuilder();
-			boolean nextTokenIsQuote = false;
-			boolean inQuote = false;
-			String spaceBefore = "";
-			String spaceAfter = "";
-
-			for (String thisToken : this.structuredCeTextList) {
-				if (nextTokenIsQuote) {
-					nextTokenIsQuote = false;
-					inQuote = !inQuote;
-					
-					if (inQuote) {
-						sb.append(" ");
-						sb.append(thisToken);
-						spaceBefore = "";
-						spaceAfter = "";
-					} else {
-						sb.append(thisToken);
-						spaceBefore = " ";
-					}
-				} else {
-					if (thisToken.equals("{Because}:")) {
-						//This token signifies the beginning of the rationale, so stop here
-						sb.append(".");
-						break;
-					} else if (thisToken.equals("{Connector}:")) {
-						//These indicate a new clause
-						sb.append("\n  ");
-					} else if (thisToken.equals("{Property}:")) {
-						//Remember that an extra space is needed after the next word
-						spaceAfter = " ";
-					} else if (thisToken.equals("{Quote}:")) {
-						//Special processing for quotes
-						nextTokenIsQuote = true;
-					} else if (thisToken.startsWith("{")) {
-						//Anything else can be ignored and replaced with a space (unless in a quote)
-						if (!inQuote) {
-							sb.append(" ");
-						}
-					} else if (thisToken.startsWith("[")) {
-						//Just ignore these - they define property domain and range
-					} else {
-						sb.append(spaceBefore);
-						sb.append(thisToken);
-						sb.append(spaceAfter);
-
-						spaceBefore = "";
-						spaceAfter = "";
-					}
-				}
-			}
-
-			result = sb.toString();
-		}
-
-		return result;
-	}
-
 	protected void createStructuredCeTextFrom(ArrayList<String> pCeTextList) {
 		if (pCeTextList != null) {
 			this.structuredCeTextList = new String[pCeTextList.size()];
@@ -462,41 +391,6 @@ public class CeSentence implements Comparable<CeSentence> {
 		return (getAnnotationSentences().length > 0);
 	}
 
-	public CeSentenceQualified[] getQualifiedSentences() {
-		return this.qualifiedSentences;
-	}
-	
-	public void addQualifiedSentence(CeSentenceQualified pQualSen) {
-		if (!hasQualifiedSentence(pQualSen)) {
-			int currLen = 0;
-
-			currLen = this.qualifiedSentences.length;
-			CeSentenceQualified[] newArray = new CeSentenceQualified[currLen + 1];
-			System.arraycopy(this.qualifiedSentences, 0, newArray, 0, currLen);
-			this.qualifiedSentences = newArray;
-	
-			this.qualifiedSentences[currLen] = pQualSen;			
-		}
-	}
-	
-	public boolean hasQualifiedSentence(CeSentenceQualified pQualSen) {
-		boolean result = false;
-		
-		for (CeSentenceQualified thisSen : this.qualifiedSentences) {
-			if (!result) {
-				if (thisSen == pQualSen) {
-					result = true;
-				}
-			}
-		}
-		
-		return result;
-	}
-
-	public boolean hasQualifiedSentences() {
-		return (this.qualifiedSentences.length > 0);
-	}
-	
 	public boolean hasRationale() {
 		return (!this.rationaleText.isEmpty());
 	}
@@ -520,33 +414,13 @@ public class CeSentence implements Comparable<CeSentence> {
 		return this.id - pOtherSen.getId();
 	}
 
-	public String extractAnnotationText(ActionContext pAc) {
-		//everything to the left of the first colon character should be removed to get the annotation text
-		String result = "";
-		int markerPos = getCeText(pAc).indexOf(":");
-		
-		if (markerPos > 0) {
-			result = getCeText(pAc).substring(markerPos + 1, getCeText(pAc).length());
-			result = result.trim();
-		} else {
-			result = getCeText(pAc);
-		}
-		
-		return result;
-	}
-	
-	@SuppressWarnings("static-method")
-	public boolean isQualified() {
-		return false;
-	}
-	
 	public CeConcept getTargetConcept() {
 		return this.targetConcept;
 	}
 	
 	@Override
 	public String toString() {
-		String result = "";
+		String result = null;
 		
 		result = "CeSentence '" + getId() + "' (" + formattedValidity() + "," + formattedSentenceType() + ") : " + calculateCeText();
 		

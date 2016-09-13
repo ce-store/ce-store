@@ -7,6 +7,7 @@ package com.ibm.ets.ita.ce.store.model;
 
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_A;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_AN;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_COLON;
 import static com.ibm.ets.ita.ce.store.names.CeNames.PROP_PASTTENSE;
 import static com.ibm.ets.ita.ce.store.names.CeNames.PROP_PLURAL;
 import static com.ibm.ets.ita.ce.store.names.CeNames.CON_THING;
@@ -94,18 +95,6 @@ public class CeConcept extends CeModelEntity {
 		return this.qualifiedWithAn;
 	}
 	
-	public String qualifier() {
-		String result = null;
-
-		if (isQualifiedWithAn()) {
-			result = "an";
-		} else {
-			result = "a";
-		}
-
-		return result;
-	}
-
 	public void markAsQualifiedWithAn() {
 		this.qualifiedWithAn = true;
 	}
@@ -627,7 +616,7 @@ public class CeConcept extends CeModelEntity {
 					if (childProp.getRangeConceptName().equals(pProperty.getRangeConceptName())) {
 						//Remove the existing direct property...
 						//A new inferred one will be created since this direct property exists on the parent concept
-						String propAndRange = pProperty.getPropertyName() + ":" + pProperty.getRangeConceptName();
+						String propAndRange = pProperty.getPropertyName() + TOKEN_COLON + pProperty.getRangeConceptName();
 						reportWarning("Found existing child definition of property named '" + propAndRange + "' on concept named '" + thisChild.getConceptName() + "' is a duplication of the existing property definition of the same name on the parent concept named '" + getConceptName() + "'", pAc);
 						propsToRemove.add(childProp);
 					}
@@ -648,7 +637,7 @@ public class CeConcept extends CeModelEntity {
 			for (CeProperty parentProp : thisParent.getDirectProperties()) {
 				if (parentProp.getPropertyName().equals(pProperty.getPropertyName())) {
 					if (parentProp.getRangeConceptName().equals(pProperty.getRangeConceptName())) {
-						String propAndRange = pProperty.getPropertyName() + ":" + pProperty.getRangeConceptName();
+						String propAndRange = pProperty.getPropertyName() + TOKEN_COLON + pProperty.getRangeConceptName();
 						reportWarning("Definition of property named '" + propAndRange + "' on concept named '" + getConceptName() + "' is a duplication of the existing property definition of the same name on the parent concept '" + thisParent.getConceptName() + "'", pAc);
 						result = true;
 					}
@@ -838,7 +827,7 @@ public class CeConcept extends CeModelEntity {
 		boolean result = false;
 
 		for (CeConcept parCon : retrieveAllParents(true)) {
-			if ((!parCon.isThing) && (!parCon.getConceptName().equals("primary thing"))) {
+			if (!parCon.isThing) {
 				if (pConcept.equalsOrHasParent(parCon)) {
 					result = true;
 				}
@@ -1184,13 +1173,13 @@ public class CeConcept extends CeModelEntity {
 	}
 
 	private String defaultPlural() {
-		return this.name + "s";
+		return this.name + "s";	//TODO: Abstract this
 	}
 
 	private String defaultPastTense() {
 		String result = null;
 		
-		if (this.name.endsWith("e")) {
+		if (this.name.endsWith("e")) {	//TODO: Abstract these
 			result = this.name + "d";
 		} else {
 			result = this.name + "ed";

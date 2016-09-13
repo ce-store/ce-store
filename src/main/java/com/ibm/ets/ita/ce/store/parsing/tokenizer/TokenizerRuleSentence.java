@@ -29,7 +29,7 @@ import com.ibm.ets.ita.ce.store.model.CeQuery;
 import com.ibm.ets.ita.ce.store.model.CeRule;
 import com.ibm.ets.ita.ce.store.model.CeSource;
 import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentence;
-import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentenceFactNormal;
+import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentenceFact;
 import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentenceRuleOrQuery;
 
 public class TokenizerRuleSentence extends TokenizerSentence {
@@ -52,7 +52,7 @@ public class TokenizerRuleSentence extends TokenizerSentence {
 		thisClause = null;
 	}
 
-	private static void doNormalClauseProcessingOn(BuilderSentenceFactNormal pSenBuilder, CeClause pClause) {
+	private static void doNormalClauseProcessingOn(BuilderSentenceFact pSenBuilder, CeClause pClause) {
 		CeClause thisClause = null;
 		String origSeqId = pClause.getSeqId();
 		int seqCounter = 0;
@@ -318,7 +318,7 @@ public class TokenizerRuleSentence extends TokenizerSentence {
 	private void processClause(CeClause pClause, boolean pFirstClause) {
 		String clauseText = pClause.terminatedClauseText();
 		if (!clauseText.isEmpty()) {
-			BuilderSentenceFactNormal bsF = (BuilderSentenceFactNormal)BuilderSentence.createForSentenceText(this.ac, clauseText, pClause.getRawTokens());
+			BuilderSentenceFact bsF = (BuilderSentenceFact)BuilderSentence.createForSentenceText(this.ac, clauseText, pClause.getRawTokens());
 
 			if (bsF != null) {
 				bsF.markAsClause();

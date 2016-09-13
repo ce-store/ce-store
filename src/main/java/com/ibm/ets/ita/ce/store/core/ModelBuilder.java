@@ -917,11 +917,8 @@ public class ModelBuilder implements PersistableStore {
 		ArrayList<CeSentence> result = null;
 		
 		switch (pSenType) {
-		case BuilderSentence.SENTYPE_FACT_NORMAL:
-			result = listAllNormalFactSentences();
-			break;
-		case BuilderSentence.SENTYPE_FACT_QUALIFIED:
-			result = listAllQualifiedFactSentences();
+		case BuilderSentence.SENTYPE_FACT:
+			result = listAllFactSentences();
 			break;
 		case BuilderSentence.SENTYPE_MODEL:
 			result = listAllModelSentences();
@@ -959,20 +956,7 @@ public class ModelBuilder implements PersistableStore {
 	}
 	
 	public ArrayList<CeSentence> listAllFactSentences() {
-		ArrayList<CeSentence> result = new ArrayList<CeSentence>();
-		
-		result.addAll(listAllNormalFactSentences());
-		result.addAll(listAllQualifiedFactSentences());
-		
-		return result;
-	}
-
-	public ArrayList<CeSentence> listAllNormalFactSentences() {
-		return listAllSentencesOfTypeWith(BuilderSentence.SENTYPE_FACT_NORMAL);		
-	}
-	
-	public ArrayList<CeSentence> listAllQualifiedFactSentences() {
-		return listAllSentencesOfTypeWith(BuilderSentence.SENTYPE_FACT_QUALIFIED);		
+		return listAllSentencesOfTypeWith(BuilderSentence.SENTYPE_FACT);		
 	}
 
 	public ArrayList<CeSentence> listAllRuleSentences() {
@@ -1113,10 +1097,10 @@ public class ModelBuilder implements PersistableStore {
 	private void deleteAllFactAndAnnotationSentences() {
 		int[] typesToRemove;
 
-		typesToRemove = new int[] {BuilderSentence.SENTYPE_FACT_NORMAL, BuilderSentence.SENTYPE_FACT_QUALIFIED};
+		typesToRemove = new int[] {BuilderSentence.SENTYPE_FACT};
 		this.allValidSentences.removeSentencesOfTypes(typesToRemove);
 
-		typesToRemove = new int[] {BuilderSentence.SENTYPE_FACT_NORMAL, BuilderSentence.SENTYPE_ANNO};
+		typesToRemove = new int[] {BuilderSentence.SENTYPE_FACT, BuilderSentence.SENTYPE_ANNO};
 		this.allInvalidSentences.removeSentencesOfTypes(typesToRemove);
 	}
 

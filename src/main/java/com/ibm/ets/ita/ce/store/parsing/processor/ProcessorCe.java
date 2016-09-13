@@ -62,7 +62,7 @@ import com.ibm.ets.ita.ce.store.model.rationale.CeRationalePremise;
 import com.ibm.ets.ita.ce.store.model.rationale.CeRationaleReasoningStep;
 import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentence;
 import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentenceCommand;
-import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentenceFactNormal;
+import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentenceFact;
 import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentenceRuleOrQuery;
 import com.ibm.ets.ita.ce.store.parsing.saver.SentenceSaver;
 import com.ibm.ets.ita.ce.store.parsing.tokenizer.TokenizerSentence;
@@ -167,12 +167,7 @@ public class ProcessorCe {
 
 		//If this sentence is not an annotation sentence then store it as the last sentence processed
 		if (!pSentence.isAnnotationSentence()) {
-			if (!pSentence.isQualified()) {
-				this.lastSentence = pSentence;
-			} else {
-				//Using the last sentence is no good for qualified sentences.
-				//TODO: Fix this
-			}
+			this.lastSentence = pSentence;
 		}
 	}
 
@@ -182,17 +177,14 @@ public class ProcessorCe {
 
 			if (sentenceShouldBeSaved(pAc, pSentence)) {
 				if (!pSentence.hasErrors()) {
-					//Don't save qualified sentences - they have already been saved
-					if (!pSentence.isQualified()) {
-						//Don't save the sentence if it is part of the rationale of another sentence
-						if (!pSentence.isRationaleProcessing()) {
-							SentenceSaver.saveValidSentence(pAc, pSentence, pLastSentence);
-						}
+					//Don't save the sentence if it is part of the rationale of another sentence
+					if (!pSentence.isRationaleProcessing()) {
+						SentenceSaver.saveValidSentence(pAc, pSentence, pLastSentence);
 					}
 
 					if (pSentence.hasRationale()) {
 						//If the sentence has rationale then it must be a normal fact sentence
-						doRationaleTokenizingFor(pAc, (BuilderSentenceFactNormal)pSentence, pSenStats);
+						doRationaleTokenizingFor(pAc, (BuilderSentenceFact)pSentence, pSenStats);
 					}
 				} else {
 					SentenceSaver.saveInvalidSentence(pAc, pSentence);
@@ -217,7 +209,7 @@ public class ProcessorCe {
 		return result;
 	}
 
-	public static void doRationaleTokenizingFor(ActionContext pAc, BuilderSentenceFactNormal pSenBldr, ContainerSentenceLoadResult pSenStats) {
+	public static void doRationaleTokenizingFor(ActionContext pAc, BuilderSentenceFact pSenBldr, ContainerSentenceLoadResult pSenStats) {
 		String ruleName = pSenBldr.getRationaleRuleName();
 		CeSentence actualSen = pSenBldr.getConvertedSentence();
 		String ratText = pSenBldr.getSentenceText();
@@ -238,7 +230,7 @@ public class ProcessorCe {
 			ProcessorCe procCe = new ProcessorCe(pAc, true, pSenStats);
 			procCe.markAsRationaleProcessing();
 			procCe.processRationaleSentence(thisRatText);
-			BuilderSentenceFactNormal ratSentence = (BuilderSentenceFactNormal)procCe.getLastSentence();
+			BuilderSentenceFact ratSentence = (BuilderSentenceFact)procCe.getLastSentence();
 
 			if (ratSentence != null) {
 				ratTokens.addAll(ratSentence.getStructuredCeTokens());
@@ -267,7 +259,7 @@ public class ProcessorCe {
 		actualSen.setRationaleReasoningStep(ratRs);
 	}
 
-	private static void generateRationalePremises(ActionContext pAc, CeRationaleReasoningStep pRs, BuilderSentenceFactNormal pRatSen) {
+	private static void generateRationalePremises(ActionContext pAc, CeRationaleReasoningStep pRs, BuilderSentenceFact pRatSen) {
 		String instName = pRatSen.getInstanceName();
 		String conName = "";
 		boolean conIsNegated = false;
@@ -322,7 +314,7 @@ public class ProcessorCe {
 		}
 	}
 
-	private static void generateRationaleConclusions(ActionContext pAc, CeRationaleReasoningStep pRs, BuilderSentenceFactNormal pOrigSen) {
+	private static void generateRationaleConclusions(ActionContext pAc, CeRationaleReasoningStep pRs, BuilderSentenceFact pOrigSen) {
 		String instName = pOrigSen.getInstanceName();
 		String conName = "";
 		boolean conIsNegated = false;

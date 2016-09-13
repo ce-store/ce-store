@@ -12,8 +12,7 @@ import com.ibm.ets.ita.ce.store.core.ModelBuilder;
 import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.model.CeSentence;
 import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentence;
-import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentenceFactNormal;
-import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentenceFactQualified;
+import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentenceFact;
 
 public abstract class SentenceSaver {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
@@ -45,13 +44,9 @@ public abstract class SentenceSaver {
 	}
 
 	public static void saveValidSentence(ActionContext pAc, BuilderSentence pSentence, BuilderSentence pLastSentence) {		
-		if (pSentence.isFactSentenceNormal()) {
-			BuilderSentenceFactNormal factSentence = (BuilderSentenceFactNormal)pSentence;
+		if (pSentence.isFactSentence()) {
+			BuilderSentenceFact factSentence = (BuilderSentenceFact)pSentence;
 			SentenceSaverFact ssF = new SentenceSaverFact(pAc, factSentence);
-			ssF.saveFactSentence();
-		} else if (pSentence.isFactSentenceQualified()) {
-			BuilderSentenceFactQualified qfSentence = (BuilderSentenceFactQualified)pSentence;
-			SentenceSaverFact ssF = new SentenceSaverFact(pAc, qfSentence);
 			ssF.saveFactSentence();
 		} else if (pSentence.isModelSentence()) {
 			SentenceSaverModel ssM = new SentenceSaverModel(pAc, pSentence);

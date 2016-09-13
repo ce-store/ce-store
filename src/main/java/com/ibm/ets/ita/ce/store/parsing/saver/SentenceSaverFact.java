@@ -17,7 +17,7 @@ import com.ibm.ets.ita.ce.store.model.CePropertyInstance;
 import com.ibm.ets.ita.ce.store.model.CePropertyValue;
 import com.ibm.ets.ita.ce.store.model.CeSequence;
 import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentence;
-import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentenceFactNormal;
+import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentenceFact;
 
 public class SentenceSaverFact extends SentenceSaver {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
@@ -26,14 +26,14 @@ public class SentenceSaverFact extends SentenceSaver {
 		super (pAc, pSentence);
 	}
 
-	private BuilderSentenceFactNormal getTargetFactSentence() {
-		return (BuilderSentenceFactNormal)this.targetSentence;
+	private BuilderSentenceFact getTargetFactSentence() {
+		return (BuilderSentenceFact)this.targetSentence;
 	}
 
 	public void saveFactSentence() {
 		storeValidSentence();
 
-		if ((this.targetConcept == null) && (!this.targetSentence.isQualified())) {
+		if (this.targetConcept == null) {
 			if (this.targetSentence.isRationaleProcessing()) {
 				//Nothing needs to be done here...
 				//rationale sentences can have null target concepts (e.g. when the subject is "the value"
@@ -43,9 +43,7 @@ public class SentenceSaverFact extends SentenceSaver {
 				reportError("Unexpected null targetConcept, for sentence: " + this.sentenceText, this.ac);
 			}
 		} else {
-			if (!this.targetSentence.isQualified()) {
-				processMainInstance();
-			}
+			processMainInstance();
 		}
 	}
 

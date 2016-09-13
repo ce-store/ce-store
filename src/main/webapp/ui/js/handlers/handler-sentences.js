@@ -10,8 +10,6 @@ function HandlerSentences() {
 
 	this.QUAL_MODEL = 'model';
 	this.QUAL_FACT = 'fact';
-	this.QUAL_FACTNORMAL = 'fact-normal';
-	this.QUAL_FACTQUAL = 'fact-qualified';
 	this.QUAL_PATTERN = 'pattern';
 	this.QUAL_RULE = 'rule';
 	this.QUAL_QUERY = 'query';

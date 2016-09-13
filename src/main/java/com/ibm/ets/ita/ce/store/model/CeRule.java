@@ -6,6 +6,7 @@ package com.ibm.ets.ita.ce.store.model;
  *******************************************************************************/
 
 import static com.ibm.ets.ita.ce.store.names.MiscNames.NL;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.PREFIX_TEMP;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportWarning;
 
 import java.util.ArrayList;
@@ -19,14 +20,16 @@ public class CeRule extends CeQuery {
 	private CeSentence[] inferredSentences = new CeSentence[0];
 	private ArrayList<CeClause> directConclusionClauses = new ArrayList<CeClause>();
 
-	//For performance purposes only - when determining if this rule has already inferred a particular sentence
+	// For performance purposes only - when determining if this rule has already
+	// inferred a particular sentence
 	private HashSet<String> sentenceLookup = null;
 
 	private CeRule(String pRuleCe, String pRuleName) {
-		//This is private to ensure that new instances can only be created via the various static methods
+		// This is private to ensure that new instances can only be created via
+		// the various static methods
 		super(pRuleCe, pRuleName);
 
-		//Rules are always "normal" queries... they can never be count queries
+		// Rules are always "normal" queries... they can never be count queries
 		markAsNormalQuery();
 	}
 
@@ -35,50 +38,50 @@ public class CeRule extends CeQuery {
 	}
 
 	public static boolean isTemporaryRuleName(String pRuleName) {
-		return pRuleName.startsWith("temp_");
+		return pRuleName.startsWith(PREFIX_TEMP);
 	}
 
 	@Override
 	public boolean isRule() {
 		return true;
 	}
-	
+
 	@Override
 	public boolean isQuery() {
 		return false;
 	}
-	
+
 	public String getRuleName() {
 		return this.name;
 	}
-	
+
 	public ArrayList<CeClause> getDirectConclusionClauses() {
 		return this.directConclusionClauses;
 	}
-	
+
 	public void addDirectConclusionClause(CeClause pClause) {
 		this.directConclusionClauses.add(pClause);
 	}
-	
+
 	@Override
 	public ArrayList<CeClause> getAllDirectClauses() {
 		ArrayList<CeClause> result = new ArrayList<CeClause>();
-		
+
 		result.addAll(getDirectPremiseClauses());
 		result.addAll(getDirectConclusionClauses());
-		
+
 		return result;
 	}
-	
+
 	public CeSentence[] getInferredSentences() {
 		return this.inferredSentences;
 	}
 
 	public void markAsTemporary() {
-		//this is a temporary rule so add the prefix to the rule name
-		this.name = "temp_" + this.name;
+		// this is a temporary rule so add the prefix to the rule name
+		this.name = PREFIX_TEMP + this.name;
 	}
-	
+
 	public void addInferredSentence(CeSentence pSen) {
 		int currLen = 0;
 
@@ -92,7 +95,7 @@ public class CeRule extends CeQuery {
 
 	public void createSentenceLookup(ActionContext pAc) {
 		this.sentenceLookup = new HashSet<String>();
-		
+
 		for (CeSentence thisSen : this.inferredSentences) {
 			this.sentenceLookup.add(thisSen.getCeText(pAc));
 		}
@@ -115,7 +118,7 @@ public class CeRule extends CeQuery {
 
 	@Override
 	public String toString() {
-		String result = "";
+		String result = null;
 
 		result = "CeRule (" + getRuleName() + "):" + NL;
 		result += "  Premises:" + NL;
@@ -133,30 +136,30 @@ public class CeRule extends CeQuery {
 	@Override
 	public ArrayList<CeClause> listAllChildPremiseClauses() {
 		ArrayList<CeClause> result = new ArrayList<CeClause>();
-		
+
 		for (CeClause directClause : getDirectPremiseClauses()) {
 			result.addAll(directClause.getChildClauses());
 		}
-		
+
 		return result;
 	}
 
 	public ArrayList<CeClause> listAllChildConclusionClauses() {
 		ArrayList<CeClause> result = new ArrayList<CeClause>();
-		
+
 		for (CeClause directClause : getDirectConclusionClauses()) {
 			result.addAll(directClause.getChildClauses());
 		}
-		
+
 		return result;
 	}
 
 	@Override
 	public boolean isIncludedVarId(String pVarId) {
-		//This is a rule, so every clause is always included
+		// This is a rule, so every clause is always included
 		return true;
 	}
-	
+
 	public HashSet<CeConcept> listAllPremiseConcepts() {
 		HashSet<CeConcept> result = new HashSet<CeConcept>();
 
@@ -174,7 +177,7 @@ public class CeRule extends CeQuery {
 
 		for (CeClause premClause : listAllChildPremiseClauses()) {
 			for (CePropertyInstance thisPi : premClause.getAllProperties()) {
-				//Ignore special operator properties
+				// Ignore special operator properties
 				if (!thisPi.isSpecialOperatorPropertyInstance()) {
 					result.add(thisPi.getRelatedProperty());
 				}
@@ -200,14 +203,15 @@ public class CeRule extends CeQuery {
 	public void testIntegrity(ActionContext pAc) {
 		super.testIntegrity(pAc);
 
-		//Test for duplicate conclusion clauses
+		// Test for duplicate conclusion clauses
 		HashSet<String> clauseTexts = new HashSet<String>();
 
 		for (CeClause thisClause : this.directConclusionClauses) {
 			String thisClauseText = thisClause.calculateRawText();
 
 			if (clauseTexts.contains(thisClauseText)) {
-				reportWarning("Duplicate conculsion clause detected in rule '" + getQueryName() + "' (" + thisClauseText + ")", pAc);
+				reportWarning("Duplicate conculsion clause detected in rule '" + getQueryName() + "' (" + thisClauseText
+						+ ")", pAc);
 			} else {
 				clauseTexts.add(thisClauseText);
 			}

@@ -29,7 +29,6 @@ import com.ibm.ets.ita.ce.store.model.CePropertyInstance;
 import com.ibm.ets.ita.ce.store.model.CeQuery;
 import com.ibm.ets.ita.ce.store.model.CeRule;
 import com.ibm.ets.ita.ce.store.model.CeSentence;
-import com.ibm.ets.ita.ce.store.model.CeSentenceQualified;
 import com.ibm.ets.ita.ce.store.model.CeSource;
 import com.ibm.ets.ita.ce.store.model.HelperConcept;
 import com.ibm.ets.ita.ce.store.model.container.ContainerCeResult;
@@ -357,30 +356,8 @@ public class QueryHandler {
 		return listAllSentencesOfType(BuilderSentence.SENTYPE_MODEL);
 	}
 
-	public ArrayList<CeSentence> listAllNormalFactSentences() {
-		return listAllSentencesOfType(BuilderSentence.SENTYPE_FACT_NORMAL);
-	}
-
-	public ArrayList<CeSentence> listAllQualifiedFactSentences() {
-		ArrayList<CeSentence> result = new ArrayList<CeSentence>();
-
-		for (CeSentence thisSen : this.mb.getAllValidSentences()) {
-			if (thisSen.hasQualifiedSentences()) {
-				for (CeSentenceQualified thisQs : thisSen.getQualifiedSentences()) {
-					result.add(thisQs);
-				}
-			}
-		}
-
-		for (CeSentence thisSen : this.mb.getAllInvalidSentences()) {
-			if (thisSen.hasQualifiedSentences()) {
-				for (CeSentenceQualified thisQs : thisSen.getQualifiedSentences()) {
-					result.add(thisQs);
-				}
-			}
-		}
-
-		return result;
+	public ArrayList<CeSentence> listAllFactSentences() {
+		return listAllSentencesOfType(BuilderSentence.SENTYPE_FACT);
 	}
 
 	public ArrayList<CeSentence> listAllRuleSentences() {

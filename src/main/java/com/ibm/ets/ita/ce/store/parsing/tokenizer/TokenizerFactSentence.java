@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import com.ibm.ets.ita.ce.store.core.ActionContext;
 import com.ibm.ets.ita.ce.store.core.ModelBuilder;
 import com.ibm.ets.ita.ce.store.model.CeProperty;
-import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentenceFactNormal;
+import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentenceFact;
 import com.ibm.ets.ita.ce.store.parsing.model.TokenizerClause;
 import com.ibm.ets.ita.ce.store.parsing.model.TokenizerNormalClause;
 import com.ibm.ets.ita.ce.store.parsing.model.TokenizerRationaleClause;
@@ -35,7 +35,7 @@ public class TokenizerFactSentence {
 
 	private ActionContext ac = null;
 	private ModelBuilder mb = null;
-	private BuilderSentenceFactNormal sen = null;
+	private BuilderSentenceFact sen = null;
 	private ArrayList<String> tokens = null;
 	
 	private int posCtr = 0;
@@ -47,11 +47,11 @@ public class TokenizerFactSentence {
 		return this.ac;
 	}
 
-	public BuilderSentenceFactNormal getSentence() {
+	public BuilderSentenceFact getSentence() {
 		return this.sen;
 	}
 
-	public void tokenizeNormalSentence(ActionContext pAc, BuilderSentenceFactNormal pSen, boolean pIsPatternClause) {
+	public void tokenizeNormalSentence(ActionContext pAc, BuilderSentenceFact pSen, boolean pIsPatternClause) {
 		initialise(pAc, pSen, pIsPatternClause);
 
 		//Create the clauses by iterating over all the rawTokens
@@ -68,7 +68,7 @@ public class TokenizerFactSentence {
 		}
 	}
 
-	public void tokenizePatternClause(ActionContext pAc, BuilderSentenceFactNormal pSen, boolean pIsPatternClause) {
+	public void tokenizePatternClause(ActionContext pAc, BuilderSentenceFact pSen, boolean pIsPatternClause) {
 		initialise(pAc, pSen, pIsPatternClause);
 
 		//Create the clauses by iterating over all the rawTokens
@@ -85,7 +85,7 @@ public class TokenizerFactSentence {
 		}
 	}
 
-	private void initialise(ActionContext pAc, BuilderSentenceFactNormal pSen, boolean pIsPatternClause) {
+	private void initialise(ActionContext pAc, BuilderSentenceFact pSen, boolean pIsPatternClause) {
 		this.ac = pAc;
 		this.mb = this.ac.getModelBuilder();
 		this.sen = pSen;

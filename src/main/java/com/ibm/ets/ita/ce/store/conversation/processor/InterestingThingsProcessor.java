@@ -20,7 +20,7 @@ import com.ibm.ets.ita.ce.store.model.CeInstance;
 import com.ibm.ets.ita.ce.store.model.CeProperty;
 import com.ibm.ets.ita.ce.store.model.CePropertyInstance;
 import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentence;
-import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentenceFactNormal;
+import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentenceFact;
 import com.ibm.ets.ita.ce.store.parsing.processor.ProcessorCe;
 
 public class InterestingThingsProcessor {
@@ -69,11 +69,11 @@ public class InterestingThingsProcessor {
 		
 		if (valSens != null) {
 			for (BuilderSentence thisBs : valSens) {
-				if (thisBs.isFactSentenceNormal()) {
-					BuilderSentenceFactNormal fnBs = (BuilderSentenceFactNormal)thisBs;
+				if (thisBs.isFactSentence()) {
+					BuilderSentenceFact fBs = (BuilderSentenceFact)thisBs;
 
 					//Only add the main (subject) instance name
-					String instName = fnBs.getInstanceName();
+					String instName = fBs.getInstanceName();
 					CeInstance mainInst = this.ac.getModelBuilder().getInstanceNamed(this.ac, instName);
 
 					if (mainInst != null) {
@@ -93,8 +93,8 @@ public class InterestingThingsProcessor {
 		
 		if (valSens != null) {
 			for (BuilderSentence thisBs : pProcCe.getValidatedSentences()) {
-				if (thisBs.isFactSentenceNormal()) {
-					BuilderSentenceFactNormal fnBs = (BuilderSentenceFactNormal)thisBs;
+				if (thisBs.isFactSentence()) {
+					BuilderSentenceFact fnBs = (BuilderSentenceFact)thisBs;
 					
 					//Only add instance names of mentioned instances
 					for (CePropertyInstance oPi : fnBs.getObjectProperties()) {

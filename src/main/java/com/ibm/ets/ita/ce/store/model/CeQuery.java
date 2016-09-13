@@ -5,9 +5,9 @@ package com.ibm.ets.ita.ce.store.model;
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.MiscNames.NL;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_COUNT;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_SUM;
-import static com.ibm.ets.ita.ce.store.names.MiscNames.NL;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportWarning;
 
 import java.util.ArrayList;
@@ -22,7 +22,7 @@ public class CeQuery extends CeModelEntity {
 
 	private static AtomicLong patternIdVal = new AtomicLong(0);
 
-	private String ceText = "";
+	private String ceText = null;
 	private int type = -1;
 	private ArrayList<String> allVariableIds = new ArrayList<String>();
 	private TreeMap<String, String> allVariableTypes = new TreeMap<String, String>();
@@ -291,7 +291,7 @@ public class CeQuery extends CeModelEntity {
 
 	@Override
 	public String toString() {
-		String result = "";
+		String result = null;
 
 		result = "CeQuery (" + this.ceText + "):" + NL;
 		result += "  Premises:" + NL;
@@ -364,40 +364,6 @@ public class CeQuery extends CeModelEntity {
 				clauseTexts.add(thisClauseText);
 			}
 		}
-	}
-
-	public boolean isDatabaseBacked(ActionContext pAc) {
-		boolean result = false;
-
-		for (CeConcept thisCon : getAllReferencedPremiseConcepts()) {
-			CeInstance mdInst = thisCon.retrieveMetadataInstance(pAc);
-
-			if (mdInst != null) {
-				//TODO: Remove hardcoded name and also raise to higher general database concept
-				result = mdInst.isConceptNamed(pAc, "gaian concept");
-			}
-		}
-
-		return result;
-	}
-
-	public String calculateSql(ActionContext pAc) {
-		String result = "";
-
-		for (CeConcept thisCon : getAllReferencedPremiseConcepts()) {
-			CeInstance mdInst = thisCon.retrieveMetadataInstance(pAc);
-
-			if (mdInst != null) {
-				//TODO: Remove hardcoded name and also raise to higher general database concept
-				if (mdInst.isConceptNamed(pAc, "gaian concept")) {
-					//TODO: Remove this hardcoded value
-					String tablename = mdInst.getSingleValueFromPropertyNamed("table name");
-					result += "select * from triple_store_s where body_type = '" + tablename + "'";
-				}
-			}
-		}
-
-		return result;
 	}
 
 	public static boolean isCountHeader(String pHdr) {

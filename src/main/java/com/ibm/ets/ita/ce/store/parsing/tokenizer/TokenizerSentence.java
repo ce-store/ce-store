@@ -14,7 +14,7 @@ import com.ibm.ets.ita.ce.store.core.ActionContext;
 import com.ibm.ets.ita.ce.store.core.ModelBuilder;
 import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentence;
-import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentenceFactNormal;
+import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentenceFact;
 
 public abstract class TokenizerSentence {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
@@ -31,10 +31,8 @@ public abstract class TokenizerSentence {
 	public static void doTokenizingFor(ActionContext pAc, BuilderSentence pSentence, boolean pIsInClause) {
 		ModelBuilder mb = pAc.getModelBuilder();
 
-		if (pSentence.isFactSentenceNormal()) {
-			new TokenizerFactSentence().tokenizeNormalSentence(pAc, (BuilderSentenceFactNormal)pSentence, pIsInClause);
-		} else if (pSentence.isFactSentenceQualified()) {
-			new TokenizerFactSentenceQualified().tokenizeSentence(pAc, mb, pSentence);
+		if (pSentence.isFactSentence()) {
+			new TokenizerFactSentence().tokenizeNormalSentence(pAc, (BuilderSentenceFact)pSentence, pIsInClause);
 		} else if (pSentence.isModelSentence()) {
 			new TokenizerModelSentence().tokenizeSentence(pAc, mb, pSentence);
 		} else if (pSentence.isRuleSentence()) {
