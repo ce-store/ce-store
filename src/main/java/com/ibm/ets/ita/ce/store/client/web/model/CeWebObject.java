@@ -1,11 +1,14 @@
 package com.ibm.ets.ita.ce.store.client.web.model;
 
+//ALL DONE
+
 /*******************************************************************************
  * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_ANNOTATIONS;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -21,7 +24,8 @@ public abstract class CeWebObject {
 
 	protected ActionContext ac = null;
 
-	//TODO: Review this when complete - e.g. move methods from static to instance
+	// TODO: Review this when complete - e.g. move methods from static to
+	// instance
 
 	public CeWebObject(ActionContext pAc) {
 		this.ac = pAc;
@@ -105,7 +109,8 @@ public abstract class CeWebObject {
 		}
 	}
 
-	protected static void putAllArrayStringValuesIn(CeStoreJsonObject pObj, String pKey, ArrayList<ArrayList<String>> pVals) {
+	protected static void putAllArrayStringValuesIn(CeStoreJsonObject pObj, String pKey,
+			ArrayList<ArrayList<String>> pVals) {
 		if ((pVals != null)) {
 			CeStoreJsonArray jOuterArr = new CeStoreJsonArray();
 
@@ -113,7 +118,7 @@ public abstract class CeWebObject {
 				CeStoreJsonArray jInnerArr = new CeStoreJsonArray();
 				for (String thisVal : thisArr) {
 					jInnerArr.add(thisVal);
-				}	
+				}
 				jOuterArr.add(jInnerArr);
 			}
 			pObj.put(pKey, jOuterArr);

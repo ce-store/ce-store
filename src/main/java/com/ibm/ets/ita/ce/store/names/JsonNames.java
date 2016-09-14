@@ -163,9 +163,6 @@ public class JsonNames {
 
 	public static final String PREFIX_QUOTED_OPERATOR = "T_";
 
-	public static final String PROPTYPE_DATATYPE = "D";
-	public static final String PROPTYPE_OBJECT = "O";
-
 	public static final String VAL_UNDEFINED = "undefined";
 
 	public static final String SENSOURCE_PRIMARY = "primary";
@@ -183,10 +180,6 @@ public class JsonNames {
 	public static final String JSON_SERVER_TIME = "server_time";
 	public static final String JSON_INST_COUNT = "instance_count";
 	public static final String JSON_STRUCTURED = "structured_response";
-
-//	public static final String JSON_UID_PREFIX = "UID prefix";
-//	public static final String JSON_UID_BATCHSTART = "UID batch start";
-//	public static final String JSON_UID_BATCHEND = "UID batch end";
 
 	public static final String JSON_ENV_PROPS = "environment_properties";
 	public static final String JSON_GEN_PROPS = "general_properties";
@@ -208,6 +201,10 @@ public class JsonNames {
 	public static final String JSON_NEWINSTS = "new_instances";
 	public static final String JSON_STORE_VERSION = "store_version";
 	public static final String JSON_CON_COUNT = "concept_count";
+
+	public static final String JSON_MAININST = "main_instance";
+	public static final String JSON_RELINSTS = "related_instances";
+	public static final String JSON_REFINSTS = "referring_instances";
 
 	public static final String TYPE_STORE = "store";
 

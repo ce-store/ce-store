@@ -29,20 +29,19 @@ public class CeNames {
 	//Concepts: Conversation
 	public static final String CON_CARD = "card";
 	public static final String CON_TELLCARD = "tell card";
-	public static final String CON_SERVICE = "service";
-	public static final String CON_USER = "user";
-	public static final String CON_CEUSER = "CE user";
-	public static final String CON_AUTHUSER = "authorised user";
-	public static final String CON_PERSON = "person";
 	public static final String CON_NLCARD = "NL card";
 	public static final String CON_CONFCARD = "confirm card";
 	public static final String CON_EXPANDCARD = "expand card";
 	public static final String CON_WHYCARD = "why card";
 	public static final String CON_GISTCARD = "gist card";
+	public static final String CON_GISTCONFCARD = "gist-confirm card";
+	public static final String CON_SERVICE = "service";
+	public static final String CON_CEUSER = "CE user";
+	public static final String CON_USER = "user";
+	public static final String CON_AUTHUSER = "authorised user";
 	public static final String CON_CONVTHING = "conv thing";
 	public static final String CON_INTERESTING = "interesting thing";
-	public static final String CON_GISTCONFCARD = "gist-confirm card";
-	public static final String PROP_IRT = "is in reply to";
+	public static final String CON_PERSON = "person";
 
 	//Concepts: Hudson
 	public static final String CON_QPHRASE = "question phrase";
@@ -50,15 +49,15 @@ public class CeNames {
 	public static final String CON_COMWORD = "common word";
 	public static final String CON_CONNWORD = "connector word";
 	public static final String CON_MODIFIER = "modifier";
+	public static final String CON_SRCHMOD = "search modifier";
+	public static final String CON_FILTMOD = "filter modifier";
+	public static final String CON_FUNCMOD = "function modifier";
+	public static final String CON_ENDMOD = "end modifier";
+	public static final String CON_CEMOD = "CE modifier";
 	public static final String CON_CC = "conversation config";
 	public static final String CON_SUPPCON = "suppressed concept";
 	public static final String CON_CONFCON = "configuration concept";
 	public static final String CON_UNINTCON = "uninteresting concept";
-	public static final String CON_ENDMOD = "end modifier";
-	public static final String CON_SRCHMOD = "search modifier";
-	public static final String CON_FILTMOD = "filter modifier";
-	public static final String CON_FUNCMOD = "function modifier";
-	public static final String CON_CEMOD = "CE modifier";
 	public static final String CON_SOURCE = "source";
 	public static final String CON_LOCATION = "location";
 	public static final String CON_MEDIA = "media";
@@ -183,7 +182,5 @@ public class CeNames {
 	public static final String SRC_HUDSON = "HUDSON";
 	public static final String SRC_INF = "conv_inf";
 	public static final String SRC_CONV_PREFIX = "conv_";
-
-	public static final String BROKER_NAME = "Moira";	//TODO: Should not be hardcoded
 
 }

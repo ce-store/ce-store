@@ -6,6 +6,8 @@ package com.ibm.ets.ita.ce.store.model;
  *******************************************************************************/
 
 import static com.ibm.ets.ita.ce.store.names.MiscNames.NL;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.PROPTYPE_OBJECT;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.PROPTYPE_DATATYPE;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_COUNT;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_SUM;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportWarning;
@@ -264,19 +266,19 @@ public class CeQuery extends CeModelEntity {
 	public void calculateAllVariableIds() {
 		for (CeClause thisClause : getDirectPremiseClauses()) {
 			if (thisClause.isSimpleClause()) {
-				addAllVariableId(thisClause.getTargetVariable(), "O");
+				addAllVariableId(thisClause.getTargetVariable(), PROPTYPE_OBJECT);
 			} else {
 				for (CePropertyInstance thisPi : thisClause.getAllProperties()) {
 					if (thisPi.getClauseVariableId() != null) {
-						addAllVariableId(thisPi.getClauseVariableId(), "O");
+						addAllVariableId(thisPi.getClauseVariableId(), PROPTYPE_OBJECT);
 					}
 
 					if (!thisPi.isSpecialOperatorPropertyInstance()) {
 						for (String thisVarId : thisPi.getValueList()) {
 							if (thisPi.getRelatedProperty().isObjectProperty()) {
-								addAllVariableId(thisVarId, "O");
+								addAllVariableId(thisVarId, PROPTYPE_OBJECT);
 							} else {
-								addAllVariableId(thisVarId, "D");
+								addAllVariableId(thisVarId, PROPTYPE_DATATYPE);
 							}
 						}
 					}

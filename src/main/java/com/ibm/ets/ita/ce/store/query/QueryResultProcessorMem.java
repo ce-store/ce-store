@@ -157,8 +157,10 @@ public class QueryResultProcessorMem {
 			for (String key2 : this.mcls.keySet()) {
 				MatchedClauseList mcl2 = this.mcls.get(key2);
 
-				if (mcl1.matches(mcl2)) {
-					mcl1.addLinkedMcl(mcl2);
+				if (!mcl1 .equals(mcl2)) {
+					if (mcl1.matches(mcl2)) {
+						mcl1.addLinkedMcl(mcl2);
+					}
 				}
 			}
 		}
@@ -277,7 +279,7 @@ public class QueryResultProcessorMem {
 	}
 
 	private boolean isSingleGraph() {
-		return this.calculateGraphHeaderList(true).size() == 1;
+		return calculateGraphHeaderList(true).size() == 1;
 	}
 
 	private void reportDebugStats(ArrayList<TreeMap<String, String>> pResult) {

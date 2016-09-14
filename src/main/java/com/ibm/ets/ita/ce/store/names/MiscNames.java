@@ -98,7 +98,9 @@ public class MiscNames {
 	public static final String ACT_EXPAND = "expand";
 	public static final String FORM_CONVINIT = "Conversation initialisation";
 	public static final String UNKNOWN_USER = "(unknown)";
-
+	public static final String PROPTYPE_OBJECT = "O";
+	public static final String PROPTYPE_DATATYPE = "D";
+	
 	//TO BE REMOVED
 	public static final String JNDI_CONTEXT_TOMCAT = "java:/comp/env";
 	public static final String JNDI_CONTEXT_LIBERTY = "cestore";

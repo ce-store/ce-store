@@ -151,10 +151,17 @@ public class MatchedClauseList {
 		if (this.equals(pMcl)) {
 			result = false;
 		} else {
-			result = (pMcl.getSrcVarId().equals(this.srcVarId)) ||
-					(pMcl.getSrcVarId().equals(this.tgtVarId)) ||
-					(pMcl.getTgtVarId().equals(this.srcVarId)) ||
-					(pMcl.getTgtVarId().equals(this.tgtVarId));
+			if (!pMcl.getSrcVarId().isEmpty()) {
+				result = (pMcl.getSrcVarId().equals(this.srcVarId)) ||
+						(pMcl.getSrcVarId().equals(this.tgtVarId));
+			}
+			
+			if (!result) {
+				if (!pMcl.getTgtVarId().isEmpty()) {
+					result = (pMcl.getTgtVarId().equals(this.srcVarId)) ||
+							(pMcl.getTgtVarId().equals(this.tgtVarId));
+				}
+			}
 		}
 
 		return result;

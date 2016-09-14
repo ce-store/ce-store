@@ -5,36 +5,37 @@ package com.ibm.ets.ita.ce.store.client.web.model;
  * All Rights Reserved
  *******************************************************************************/
 
-import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_ID;
-import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_A_QUERIES;
-import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_A_RULES;
-import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_S_CETEXT;
-import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_A_CONCEPTS;
+import static com.ibm.ets.ita.ce.store.names.CeNames.SPECIALNAME_EQUALS;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_A_ATTRIBUTES;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_A_CONCEPTS;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_A_QUERIES;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_A_RELATIONSHIPS;
-import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_S_CE;
-import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_S_QR_TYPE;
-import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_S_QUERY_NAME;
-import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_L_QUERY_TIME;
-import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_S_RULE_NAME;
-import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_L_RULE_TIME;
-import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_S_PROPNAME;
-import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_S_PROPFORMAT;
-import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_S_PREM_OR_CONC;
-import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_S_SRCVAR;
-import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_S_TGTVAR;
-import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_S_CONNAME;
-import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_S_VALUE;
-import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_S_OPERATOR;
-import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_S_VARID;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_A_RULES;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_B_INCLUDED;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_B_NEGATED_DOM;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_B_NEGATED_RNG;
-import static com.ibm.ets.ita.ce.store.names.JsonNames.QR_TYPE_RULE;
-import static com.ibm.ets.ita.ce.store.names.JsonNames.QR_TYPE_QUERY;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_ID;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_L_QUERY_TIME;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_L_RULE_TIME;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_S_CE;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_S_CETEXT;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_S_CONNAME;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_S_OPERATOR;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_S_PREM_OR_CONC;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_S_PROPFORMAT;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_S_PROPNAME;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_S_QR_TYPE;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_S_QUERY_NAME;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_S_RULE_NAME;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_S_SRCVAR;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_S_TGTVAR;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_S_VALUE;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_S_VARID;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.PREFIX_QUOTED_OPERATOR;
-
-import static com.ibm.ets.ita.ce.store.names.CeNames.SPECIALNAME_EQUALS;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.QR_TYPE_QUERY;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.QR_TYPE_RULE;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.ES;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_SQ;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -57,40 +58,34 @@ public class CeWebQueryOrRule extends CeWebObject {
 	}
 
 	public static CeStoreJsonArray generateQuerySummaryListFrom(Collection<CeQuery> pQueryList) {
-		//TODO: Decide what this should be
+		// TODO: Decide what this should be
 		return generateQueryListFrom(pQueryList);
 	}
 
 	public static CeStoreJsonArray generateQueryMinimalListFrom(Collection<CeQuery> pQueryList) {
-		//TODO: Decide what this should be
+		// TODO: Decide what this should be
 		return generateQueryListFrom(pQueryList);
 	}
 
 	public static CeStoreJsonArray generateQueryNormalisedListFrom(Collection<CeQuery> pQueryList) {
-		//TODO: Decide what this should be
+		// TODO: Decide what this should be
 		return generateQueryListFrom(pQueryList);
 	}
 
 	public static CeStoreJsonArray generateQueryFullListFrom(Collection<CeQuery> pQueryList) {
-		//TODO: Decide what this should be
+		// TODO: Decide what this should be
 		return generateQueryListFrom(pQueryList);
 	}
 
-	//Query List response structure:
-	//	[]
-	//	JSON_QR_TYPE
-	//	JSON_QUERY_NAME
-	//	JSON_QUERY_TIME
-	//	JSON_CE
 	public static CeStoreJsonArray generateQueryListFrom(Collection<CeQuery> pQueryList) {
 		CeStoreJsonArray jArr = new CeStoreJsonArray();
-		
+
 		if (pQueryList != null) {
 			Collections.sort(new ArrayList<CeQuery>(pQueryList));
-			
+
 			for (CeQuery thisQuery : pQueryList) {
 				CeStoreJsonObject jObj = new CeStoreJsonObject();
-				
+
 				putStringValueIn(jObj, JSON_S_QR_TYPE, QR_TYPE_QUERY);
 				putStringValueIn(jObj, JSON_S_QUERY_NAME, thisQuery.getQueryName());
 				putLongValueIn(jObj, JSON_L_QUERY_TIME, thisQuery.getCreationDate());
@@ -99,45 +94,39 @@ public class CeWebQueryOrRule extends CeWebObject {
 				jArr.add(jObj);
 			}
 		}
-		
+
 		return jArr;
 	}
 
 	public static CeStoreJsonArray generateRuleSummaryListFrom(Collection<CeRule> pRuleList) {
-		//TODO: Decide what this should be
+		// TODO: Decide what this should be
 		return generateRuleListFrom(pRuleList);
 	}
 
 	public static CeStoreJsonArray generateRuleMinimalListFrom(Collection<CeRule> pRuleList) {
-		//TODO: Decide what this should be
+		// TODO: Decide what this should be
 		return generateRuleListFrom(pRuleList);
 	}
 
 	public static CeStoreJsonArray generateRuleNormalisedListFrom(Collection<CeRule> pRuleList) {
-		//TODO: Decide what this should be
+		// TODO: Decide what this should be
 		return generateRuleListFrom(pRuleList);
 	}
 
 	public static CeStoreJsonArray generateRuleFullListFrom(Collection<CeRule> pRuleList) {
-		//TODO: Decide what this should be
+		// TODO: Decide what this should be
 		return generateRuleListFrom(pRuleList);
 	}
 
-	//Query List response structure:
-	//	[]
-	//	JSON_QR_TYPE
-	//	JSON_RULE_NAME
-	//	JSON_RULE_TIME
-	//	JSON_CE
 	public static CeStoreJsonArray generateRuleListFrom(Collection<CeRule> pRuleList) {
 		CeStoreJsonArray jArr = new CeStoreJsonArray();
-		
+
 		if (pRuleList != null) {
 			Collections.sort(new ArrayList<CeRule>(pRuleList));
-			
+
 			for (CeRule thisRule : pRuleList) {
 				CeStoreJsonObject jObj = new CeStoreJsonObject();
-				
+
 				putStringValueIn(jObj, JSON_S_QR_TYPE, QR_TYPE_RULE);
 				putStringValueIn(jObj, JSON_S_RULE_NAME, thisRule.getRuleName());
 				putLongValueIn(jObj, JSON_L_RULE_TIME, thisRule.getCreationDate());
@@ -146,86 +135,77 @@ public class CeWebQueryOrRule extends CeWebObject {
 				jArr.add(jObj);
 			}
 		}
-		
+
 		return jArr;
 	}
 
-	public static CeStoreJsonObject generatePatternSummaryListFrom(Collection<CeQuery> pQueryList, Collection<CeRule> pRuleList) {
-		//TODO: Decide what this should be
+	public static CeStoreJsonObject generatePatternSummaryListFrom(Collection<CeQuery> pQueryList,
+			Collection<CeRule> pRuleList) {
+		// TODO: Decide what this should be
 		return generateRuleAndQueryListFrom(pQueryList, pRuleList);
 	}
 
-	public static CeStoreJsonObject generatePatternMinimalListFrom(Collection<CeQuery> pQueryList, Collection<CeRule> pRuleList) {
-		//TODO: Decide what this should be
+	public static CeStoreJsonObject generatePatternMinimalListFrom(Collection<CeQuery> pQueryList,
+			Collection<CeRule> pRuleList) {
+		// TODO: Decide what this should be
 		return generateRuleAndQueryListFrom(pQueryList, pRuleList);
 	}
 
-	public static CeStoreJsonObject generatePatternNormalisedListFrom(Collection<CeQuery> pQueryList, Collection<CeRule> pRuleList) {
-		//TODO: Decide what this should be
+	public static CeStoreJsonObject generatePatternNormalisedListFrom(Collection<CeQuery> pQueryList,
+			Collection<CeRule> pRuleList) {
+		// TODO: Decide what this should be
 		return generateRuleAndQueryListFrom(pQueryList, pRuleList);
 	}
 
-	public static CeStoreJsonObject generatePatternFullListFrom(Collection<CeQuery> pQueryList, Collection<CeRule> pRuleList) {
-		//TODO: Decide what this should be
+	public static CeStoreJsonObject generatePatternFullListFrom(Collection<CeQuery> pQueryList,
+			Collection<CeRule> pRuleList) {
+		// TODO: Decide what this should be
 		return generateRuleAndQueryListFrom(pQueryList, pRuleList);
 	}
 
-	//Query List response structure:
-	//	JSON_QUERIES[]
-	//		See generateQueryListFrom()
-	//	JSON_RULES[]
-	//		See generateRuleListFrom()
-	public static CeStoreJsonObject generateRuleAndQueryListFrom(Collection<CeQuery> pQueryList, Collection<CeRule> pRuleList) {
+	public static CeStoreJsonObject generateRuleAndQueryListFrom(Collection<CeQuery> pQueryList,
+			Collection<CeRule> pRuleList) {
 		CeStoreJsonObject jObj = new CeStoreJsonObject();
-		
+
 		putArrayValueIn(jObj, JSON_A_QUERIES, generateQueryListFrom(pQueryList));
 		putArrayValueIn(jObj, JSON_A_RULES, generateRuleListFrom(pRuleList));
 
 		return jObj;
 	}
-	
+
 	public CeStoreJsonObject generateQueryFullDetailsFrom(CeQuery pQuery) {
-		//TODO: Decide what to do here
+		// TODO: Decide what to do here
 		return generateDetailsFrom(pQuery);
 	}
-	
+
 	public CeStoreJsonObject generateQuerySummaryDetailsFrom(CeQuery pQuery) {
-		//TODO: Decide what to do here
+		// TODO: Decide what to do here
 		return generateDetailsFrom(pQuery);
 	}
-	
+
 	public CeStoreJsonObject generateRuleFullDetailsFrom(CeRule pRule) {
-		//TODO: Decide what to do here
+		// TODO: Decide what to do here
 		return generateDetailsFrom(pRule);
 	}
-	
+
 	public CeStoreJsonObject generateRuleSummaryDetailsFrom(CeRule pRule) {
-		//TODO: Decide what to do here
+		// TODO: Decide what to do here
 		return generateDetailsFrom(pRule);
 	}
-	
+
 	public CeStoreJsonObject generatePatternFullDetailsFrom(CeQuery pPattern) {
-		//TODO: Decide what to do here
+		// TODO: Decide what to do here
 		return generateDetailsFrom(pPattern);
 	}
-	
+
 	public CeStoreJsonObject generatePatternSummaryDetailsFrom(CeQuery pPattern) {
-		//TODO: Decide what to do here
+		// TODO: Decide what to do here
 		return generateDetailsFrom(pPattern);
 	}
-	
-	//Query Details response structure:
-	//	JSON_NAME
-	//	JSON_CETEXT
-	//	JSON_CONCEPTS[]
-	//		See processConcepts()
-	//	JSON_ATTRIBUTES[]
-	//		See processAttributes()
-	//	JSON_RELATIONSHIPS[]
-	//		See processRelationships()
+
 	public CeStoreJsonObject generateDetailsFrom(CeQuery pQueryOrRule) {
 		CeStoreJsonObject jObj = new CeStoreJsonObject();
-		
+
 		putStringValueIn(jObj, JSON_ID, pQueryOrRule.getQueryName());
 		putStringValueIn(jObj, JSON_S_CETEXT, pQueryOrRule.getCeText());
 		putArrayValueIn(jObj, JSON_A_CONCEPTS, processConcepts(pQueryOrRule));
@@ -241,27 +221,29 @@ public class CeWebQueryOrRule extends CeWebObject {
 
 		for (CeClause outerClause : pQueryOrRule.getAllDirectClauses()) {
 			for (CeClause thisClause : outerClause.getChildClauses()) {
-				//Conclusion clauses are treated separately when listing concepts
+				// Conclusion clauses are treated separately when listing
+				// concepts
 				if (thisClause.isPremiseClause()) {
 					processConceptPremiseClause(pQueryOrRule, thisClause, allConcepts);
 				} else {
 					String varId = thisClause.getTargetVariable();
 					CeStoreJsonObject jObj = processConceptConclusionClause(pQueryOrRule, thisClause, varId);
-					
+
 					if (jObj != null) {
 						allConcepts.put(varId, jObj);
 					}
 				}
 			}
 		}
-		
+
 		return addAllValuesTo(jArr, allConcepts);
 	}
-	
-	private void processConceptPremiseClause(CeQuery pQueryOrRule, CeClause pClause, TreeMap<String, CeStoreJsonObject> pConMap) {
-		String varId = "";
+
+	private void processConceptPremiseClause(CeQuery pQueryOrRule, CeClause pClause,
+			TreeMap<String, CeStoreJsonObject> pConMap) {
+		String varId = ES;
 		CeStoreJsonObject jObj = null;
-		
+
 		if ((pClause.isSimpleClause()) || (pClause.hasNoRelationships())) {
 			varId = pClause.getTargetVariable();
 			jObj = processConceptSimplePremiseClause(pQueryOrRule, pClause, varId);
@@ -276,7 +258,7 @@ public class CeWebQueryOrRule extends CeWebObject {
 					if (jObj != null) {
 						pConMap.put(varId, jObj);
 					}
-					
+
 					varId = thisPi.getSingleOrFirstValue();
 					jObj = processConceptNormalPremiseClauseRangeVariable(pQueryOrRule, pClause, thisPi, varId);
 					if (jObj != null) {
@@ -287,7 +269,8 @@ public class CeWebQueryOrRule extends CeWebObject {
 		}
 	}
 
-	private static CeStoreJsonObject processConceptSimplePremiseClause(CeQuery pQueryOrRule, CeClause pClause, String pVarId) {
+	private static CeStoreJsonObject processConceptSimplePremiseClause(CeQuery pQueryOrRule, CeClause pClause,
+			String pVarId) {
 		CeStoreJsonObject jObj = null;
 
 		if (pClause.getTargetConcept() != null) {
@@ -301,16 +284,17 @@ public class CeWebQueryOrRule extends CeWebObject {
 		return jObj;
 	}
 
-	private static CeStoreJsonObject processConceptNormalPremiseClauseDomainVariable(CeQuery pQueryOrRule, CeClause pClause, CePropertyInstance pPi, String pVarId) {
+	private static CeStoreJsonObject processConceptNormalPremiseClauseDomainVariable(CeQuery pQueryOrRule,
+			CeClause pClause, CePropertyInstance pPi, String pVarId) {
 		CeStoreJsonObject jObj = null;
 
 		if (!pPi.getRelatedProperty().isDatatypeProperty()) {
 			String encVarId = pVarId;
 			if (pClause.targetVariableWasQuoted()) {
-				encVarId = "'" + pVarId + "'";
+				encVarId = TOKEN_SQ + pVarId + TOKEN_SQ;
 			}
-			
-			jObj = new CeStoreJsonObject();			
+
+			jObj = new CeStoreJsonObject();
 			putStringValueIn(jObj, JSON_S_VARID, encVarId);
 			putStringValueIn(jObj, JSON_S_CONNAME, pPi.getRelatedProperty().calculateDomainConceptName());
 			putBooleanValueIn(jObj, JSON_B_INCLUDED, pQueryOrRule.isIncludedVarId(pVarId));
@@ -320,13 +304,14 @@ public class CeWebQueryOrRule extends CeWebObject {
 		return jObj;
 	}
 
-	private CeStoreJsonObject processConceptNormalPremiseClauseRangeVariable(CeQuery pQueryOrRule, CeClause pClause, CePropertyInstance pPi, String pVarId) {
+	private CeStoreJsonObject processConceptNormalPremiseClauseRangeVariable(CeQuery pQueryOrRule, CeClause pClause,
+			CePropertyInstance pPi, String pVarId) {
 		CeStoreJsonObject jObj = null;
 
 		if (!pPi.getRelatedProperty().isDatatypeProperty()) {
 			String encVarId = pVarId;
 			if (pPi.hadQuotesOriginally(this.ac)) {
-				encVarId = "'" + pVarId + "'";
+				encVarId = TOKEN_SQ + pVarId + TOKEN_SQ;
 			}
 
 			jObj = new CeStoreJsonObject();
@@ -339,7 +324,8 @@ public class CeWebQueryOrRule extends CeWebObject {
 		return jObj;
 	}
 
-	private static CeStoreJsonObject processConceptConclusionClause(CeQuery pQueryOrRule, CeClause pClause, String pVarId) {
+	private static CeStoreJsonObject processConceptConclusionClause(CeQuery pQueryOrRule, CeClause pClause,
+			String pVarId) {
 		CeStoreJsonObject jObj = null;
 
 		if (pClause.isSimpleClause()) {
@@ -347,7 +333,7 @@ public class CeWebQueryOrRule extends CeWebObject {
 				jObj = new CeStoreJsonObject();
 				String encVarId = pVarId;
 				if (pClause.targetVariableWasQuoted()) {
-					encVarId = "'" + pVarId + "'";
+					encVarId = TOKEN_SQ + pVarId + TOKEN_SQ;
 				}
 
 				putStringValueIn(jObj, JSON_S_VARID, encVarId);
@@ -356,22 +342,22 @@ public class CeWebQueryOrRule extends CeWebObject {
 				putStringValueIn(jObj, JSON_S_PREM_OR_CONC, pClause.formattedClauseType());
 			}
 		}
-		
+
 		return jObj;
 	}
 
 	private CeStoreJsonArray processAttributes(CeQuery pQueryOrRule) {
 		CeStoreJsonArray jArr = new CeStoreJsonArray();
 		TreeMap<String, CeStoreJsonObject> allAttributes = new TreeMap<String, CeStoreJsonObject>();
-		int ctr = 1;  //A counter for incrementing variable names if needed
-		
-		//Attributes (datatype properties)
+		int ctr = 1; // A counter for incrementing variable names if needed
+
+		// Attributes (datatype properties)
 		for (CeClause outerClause : pQueryOrRule.getAllDirectClauses()) {
 			for (CeClause thisClause : outerClause.getChildClauses()) {
 				for (CePropertyInstance thisPi : thisClause.getDatatypeProperties()) {
-					String varId = "";
+					String varId = ES;
 					CeStoreJsonObject jObj = null;
-					
+
 					if (thisPi.isSpecialOperatorPropertyInstance()) {
 						if (thisPi.hadQuotesOriginally(this.ac)) {
 							varId = PREFIX_QUOTED_OPERATOR + Integer.toString(ctr++);
@@ -393,8 +379,9 @@ public class CeWebQueryOrRule extends CeWebObject {
 
 		return addAllValuesTo(jArr, allAttributes);
 	}
-	
-	private void processAttributeSpecialOperatorWithQuotes(CeStoreJsonObject pJsonObj, CeQuery pQueryOrRule, CeClause pClause, CePropertyInstance pPi, String pVarId) {
+
+	private void processAttributeSpecialOperatorWithQuotes(CeStoreJsonObject pJsonObj, CeQuery pQueryOrRule,
+			CeClause pClause, CePropertyInstance pPi, String pVarId) {
 		putStringValueIn(pJsonObj, JSON_S_VARID, pVarId);
 		putStringValueIn(pJsonObj, JSON_S_SRCVAR, pPi.getClauseVariableId());
 		putStringValueIn(pJsonObj, JSON_S_PROPNAME, pPi.getPropertyName());
@@ -406,16 +393,17 @@ public class CeWebQueryOrRule extends CeWebObject {
 		putBooleanValueIn(pJsonObj, JSON_B_NEGATED_DOM, pClause.isTargetConceptNegated());
 		putBooleanValueIn(pJsonObj, JSON_B_NEGATED_RNG, pPi.isNegated(this.ac));
 	}
-	
+
 	private static void processAttributeSpecialOperatorNoQuotes(CeStoreJsonObject pJsonObj, CePropertyInstance pPi) {
 		putStringValueIn(pJsonObj, JSON_S_OPERATOR, pPi.getPropertyName());
 		putStringValueIn(pJsonObj, JSON_S_VALUE, pPi.getSingleOrFirstValue());
 	}
 
-	private void processAttributeNormal(CeStoreJsonObject pJsonObj, CeQuery pQueryOrRule, CeClause pClause, CePropertyInstance pPi, String pVarId) {		
+	private void processAttributeNormal(CeStoreJsonObject pJsonObj, CeQuery pQueryOrRule, CeClause pClause,
+			CePropertyInstance pPi, String pVarId) {
 		String encVarId = pVarId;
 		if (pPi.hadQuotesOriginally(this.ac)) {
-			encVarId = "'" + pVarId + "'";
+			encVarId = TOKEN_SQ + pVarId + TOKEN_SQ;
 		}
 
 		putStringValueIn(pJsonObj, JSON_S_VARID, encVarId);
@@ -427,30 +415,23 @@ public class CeWebQueryOrRule extends CeWebObject {
 		putBooleanValueIn(pJsonObj, JSON_B_NEGATED_DOM, pClause.isTargetConceptNegated());
 		putBooleanValueIn(pJsonObj, JSON_B_NEGATED_RNG, pPi.isNegated(this.ac));
 	}
-	
-	//Relationship fragment response structure:
-	//	[]
-	//	JSON_PROPNAME
-	//	JSON_PROPFORMAT
-	//	JSON_PREM_OR_CONC
-	//	JSON_SRCVAR
-	//	JSON_TGTVAR
+
 	private CeStoreJsonArray processRelationships(CeQuery pQueryOrRule) {
 		CeStoreJsonArray jArr = new CeStoreJsonArray();
-		
+
 		for (CeClause outerClause : pQueryOrRule.getAllDirectClauses()) {
 			for (CeClause thisClause : outerClause.getChildClauses()) {
 				for (CePropertyInstance thisPi : thisClause.getObjectProperties()) {
 					CeStoreJsonObject jObj = new CeStoreJsonObject();
-					
+
 					String encSrcVarId = thisPi.getClauseVariableId();
 					if (thisClause.targetVariableWasQuoted()) {
-						encSrcVarId = "'" + thisPi.getClauseVariableId() + "'";
+						encSrcVarId = TOKEN_SQ + thisPi.getClauseVariableId() + TOKEN_SQ;
 					}
-					
+
 					String encTgtVarId = thisPi.getSingleOrFirstValue();
 					if (thisPi.hadQuotesOriginally(this.ac)) {
-						encTgtVarId = "'" + thisPi.getSingleOrFirstValue() + "'";
+						encTgtVarId = TOKEN_SQ + thisPi.getSingleOrFirstValue() + TOKEN_SQ;
 					}
 
 					putStringValueIn(jObj, JSON_S_SRCVAR, encSrcVarId);
@@ -479,12 +460,13 @@ public class CeWebQueryOrRule extends CeWebObject {
 		return result;
 	}
 
-	private static CeStoreJsonArray addAllValuesTo(CeStoreJsonArray pJsonArray, TreeMap<String, CeStoreJsonObject> pValueTree) {
-		//Now add all the attributes to the returned JSON array
+	private static CeStoreJsonArray addAllValuesTo(CeStoreJsonArray pJsonArray,
+			TreeMap<String, CeStoreJsonObject> pValueTree) {
+		// Now add all the attributes to the returned JSON array
 		for (CeStoreJsonObject thisJatt : pValueTree.values()) {
 			addObjectValueTo(pJsonArray, thisJatt);
 		}
-		
+
 		return pJsonArray;
 	}
 

@@ -291,58 +291,38 @@ public class CeWebSentence extends CeWebObject {
 						}
 
 						if (propType.equals("normal")) {
-//						if ((propType.equals("normal")) || (propType.equals("connector"))) {
 							if (!concatNormal.isEmpty()) {
-//								if (!thisFrag.equals(".")) {
-									concatNormal += " ";
-//								}
+								concatNormal += " ";
 							}
 							concatNormal += thisFrag;
 						} else {
-//							if (!concatNormal.isEmpty()) {
-								i = handleConcatenatedNormal(concatNormal, thisFrag, propType, i, result);
-								concatNormal = "";
-//							}
+							i = handleConcatenatedNormal(concatNormal, thisFrag, propType, i, result);
+							concatNormal = "";
 
-//							if ((!propType.equals("normal")) && (!propType.equals("connector"))) {
-//							if (!propType.equals("normal")) {
-								if (propType.equals("pattern_start")) {
-									//Output a separator before the next fragment
-									CeStoreJsonObject thisObj = new CeStoreJsonObject();
-									thisObj.put(JSON_FRAGTYPE, "separator_patternname");
-									thisObj.put(JSON_IDX, i++);
-									result.add(thisObj);
-									propType = "normal";
-									if (!concatNormal.isEmpty()) {
-										if (!thisFrag.equals(".")) {
-											concatNormal += " ";
-										}
-									}
-									concatNormal += thisFrag;
-								} else {
-									CeStoreJsonObject thisObj = new CeStoreJsonObject();
-
-//									if (propType.equals("connector")) {
-//										textKey = "text";
-//										thisObj.put(JSON_FRAGTYPE, "separator");
-//									} else {
-//										thisObj.put(JSON_FRAGTYPE, propType);
-//									}
-//									
-//									//Now output the required value
-//									thisObj.put(JSON_IDX, i++);
-//									thisObj.put(textKey, thisFrag);	
-//									result.add(thisObj);
-
-									if (!propType.equals("connector")) {
-										//Now output the required value
-										thisObj.put(JSON_FRAGTYPE, propType);
-										thisObj.put(JSON_IDX, i++);
-										thisObj.put(textKey, thisFrag);	
-										result.add(thisObj);
+							if (propType.equals("pattern_start")) {
+								//Output a separator before the next fragment
+								CeStoreJsonObject thisObj = new CeStoreJsonObject();
+								thisObj.put(JSON_FRAGTYPE, "separator_patternname");
+								thisObj.put(JSON_IDX, i++);
+								result.add(thisObj);
+								propType = "normal";
+								if (!concatNormal.isEmpty()) {
+									if (!thisFrag.equals(".")) {
+										concatNormal += " ";
 									}
 								}
-//							}
+								concatNormal += thisFrag;
+							} else {
+								CeStoreJsonObject thisObj = new CeStoreJsonObject();
+
+								if (!propType.equals("connector")) {
+									//Now output the required value
+									thisObj.put(JSON_FRAGTYPE, propType);
+									thisObj.put(JSON_IDX, i++);
+									thisObj.put(textKey, thisFrag);	
+									result.add(thisObj);
+								}
+							}
 						}
 					}
 					

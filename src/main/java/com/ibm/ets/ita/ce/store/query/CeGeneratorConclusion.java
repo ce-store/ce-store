@@ -578,24 +578,12 @@ public class CeGeneratorConclusion {
 			String tgtVar = cClause.getTargetVariable();
 			String trimmedTgtVar = getVariableStubFrom(tgtVar);
 			
-			insertUvKey(trimmedTgtVar, tgtVar);
-			insertUvKey(tgtVar, tgtVar);
-		}
-		
-//		if (this.uniqueTgtVars.size() > 1) {
-//			if (isReportDebug()) {
-//				reportDebug("More than one unique target variable " + this.uniqueTgtVars.toString() + " for rule conclusions, for: " + this.ceRule.getCeText(), this.ac);
-//			}
-//		}
-		
-//		reportDebug("Processing rule: " + this.ceRule.getRuleName());
-		
-//		for (String utvKey : this.uniqueTgtVars.keySet()) {
-//			reportDebug("Final Unique target variable: " + utvKey + " -> " + this.uniqueTgtVars.get(utvKey));
-//		}
+			insertUvKey(trimmedTgtVar, tgtVar, false);
+			insertUvKey(tgtVar, tgtVar, true);
+		}		
 	}
 	
-	private void insertUvKey(String pKey, String pVal) {
+	private void insertUvKey(String pKey, String pVal, boolean pCheckForMismatch) {
 		//First with the trimmed key
 		if (this.uniqueTgtVars.containsKey(pKey)) {
 			if (pKey.equals(pVal)) {
@@ -603,9 +591,11 @@ public class CeGeneratorConclusion {
 			} else {
 				String existingVal = this.uniqueTgtVars.get(pKey);
 				if (!existingVal.equals(pKey)) {
-					//There is an existing value which does not match the trimmed value
-					//...and that value is not the same as this so an error must be reported
-					reportError("Two conflicted values (" + pVal + " and " + existingVal + ") detected during rule execution for variable " + pKey + " in rule: " + this.ceRule.getRuleName(), this.ac);
+					if (pCheckForMismatch) {
+						//There is an existing value which does not match the trimmed value
+						//...and that value is not the same as this so an error must be reported
+						reportError("Two conflicted values (" + pVal + " and " + existingVal + ") detected during rule execution for variable " + pKey + " in rule: " + this.ceRule.getRuleName(), this.ac);
+					}
 				} else {
 					//There is no conflict so just overwite the value
 					this.uniqueTgtVars.put(pKey, pVal);

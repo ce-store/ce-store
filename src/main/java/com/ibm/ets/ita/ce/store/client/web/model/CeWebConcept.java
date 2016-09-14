@@ -1,5 +1,7 @@
 package com.ibm.ets.ita.ce.store.client.web.model;
 
+//ALL DONE (not messages)
+
 /*******************************************************************************
  * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
@@ -9,27 +11,27 @@ import static com.ibm.ets.ita.ce.store.names.JsonNames.JSONTYPE_CON;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_ALLCHILD_NAMES;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_ALLPARENT_NAMES;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_CHILD_NAMES;
-import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_INSTCOUNT;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_CONMODELS;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_CREATED;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_DIRPARENT_NAMES;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_DIR_CHILDREN;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_DIR_PARENTS;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_DIR_PROPERTIES;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_DIR_PROPERTY_NAMES;
-import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_DIRPARENT_NAMES;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_ICON;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_ID;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_INH_PROPERTIES;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_INH_PROPERTY_NAMES;
-import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_MODEL_NAMES;
-import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_CONMODELS;
-import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_PRI_SENS;
-import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_PRISEN_COUNT;
-import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SEC_SENS;
-import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SECSEN_COUNT;
-import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_TYPE;
-import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_STYLE;
-import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_ID;
-import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SHADOW;
-import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_CREATED;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_INSTCOUNT;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_META_INSTANCE;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_MODEL_NAMES;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_PRISEN_COUNT;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_PRI_SENS;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SECSEN_COUNT;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SEC_SENS;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SHADOW;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_STYLE;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_TYPE;
 import static com.ibm.ets.ita.ce.store.names.RestNames.STYLE_FULL;
 import static com.ibm.ets.ita.ce.store.names.RestNames.STYLE_SUMMARY;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportWarning;
@@ -54,18 +56,8 @@ public class CeWebConcept extends CeWebObject {
 		super(pAc);
 	}
 
-	//Concept full response structure:
-	//	JSON_CONCEPT_NAME (String)
-	//	JSON_CONCEPT_CRDATE (Long)
-	//	JSON_INSTCOUNT (Int)
-	//	JSON_ICON (String)
-	//	JSON_PRISEN_COUNT (Int)
-	//	JSON_SECSEN_COUNT (Int)
-	//	JSON_ANNOTATIONS (Array<String>)
-	//	JSON_PROPERTIES (Array) -> [CeWebProperty:generateEmbeddedJsonFor]
 	public CeStoreJsonObject generateFullDetailsJsonFor(CeConcept pConcept) {
 		CeStoreJsonObject jObj = null;
-//		CeWebProperty webProp = new CeWebProperty(this.ac);
 
 		jObj = new CeStoreJsonObject();
 
@@ -121,11 +113,11 @@ public class CeWebConcept extends CeWebObject {
 			putArrayValueIn(jObj, JSON_INH_PROPERTIES, iPropArray);
 		}
 
-        putArrayValueIn(jObj, JSON_CONMODELS, processConceptualModelsFor(pConcept));
+		putArrayValueIn(jObj, JSON_CONMODELS, processConceptualModelsFor(pConcept));
 
-        CeWebSentence webSen = new CeWebSentence(this.ac);
-        putArrayValueIn(jObj, JSON_PRI_SENS, webSen.generateSummaryListFrom(getPrimarySentenceList(pConcept)));
-        putArrayValueIn(jObj, JSON_SEC_SENS, webSen.generateSummaryListFrom(pConcept.listSecondarySentences()));
+		CeWebSentence webSen = new CeWebSentence(this.ac);
+		putArrayValueIn(jObj, JSON_PRI_SENS, webSen.generateSummaryListFrom(getPrimarySentenceList(pConcept)));
+		putArrayValueIn(jObj, JSON_SEC_SENS, webSen.generateSummaryListFrom(pConcept.listSecondarySentences()));
 
 		// add meta-model details
 		addMetamodelInstanceFor(pConcept, jObj);
@@ -133,14 +125,6 @@ public class CeWebConcept extends CeWebObject {
 		return jObj;
 	}
 
-	//Concept Summary response structure:
-	//	JSON_CONCEPT_NAME
-	//	JSON_CONCEPT_CRDATE
-	//	JSON_INSTCOUNT
-	//	JSON_ICON
-	//	JSON_CONMODELS[]
-	//	JSON_PARENT_NAMES[]
-	//	JSON_CHILD_NAMES[]
 	public CeStoreJsonObject generateSummaryDetailsJsonFor(CeConcept pConcept) {
 		CeStoreJsonObject jObj = new CeStoreJsonObject();
 
@@ -193,24 +177,26 @@ public class CeWebConcept extends CeWebObject {
 	}
 
 	public CeStoreJsonObject generateMinimalDetailsJsonFor(CeConcept pConcept) {
-		//TODO: Replace this with the actual minimal version
+		// TODO: Replace this with the actual minimal version
 		return generateSummaryDetailsJsonFor(pConcept);
 	}
 
 	public CeStoreJsonObject generateNormalisedDetailsJsonFor(CeConcept pConcept) {
-		//TODO: Replace this with the actual normalised version
+		// TODO: Replace this with the actual normalised version
 		return generateSummaryDetailsJsonFor(pConcept);
 	}
 
 	private void addMetamodelInstanceFor(CeConcept pCon, CeStoreJsonObject pJsonObj) {
 		CeInstance mmInst = pCon.retrieveMetaModelInstance(this.ac);
-		
+
 		if (mmInst != null) {
 			CeWebInstance webInst = new CeWebInstance(this.ac);
-			CeStoreJsonObject metaModelInstanceJSON = webInst.generateSummaryDetailsJsonFor(mmInst, null, 0, false, false, null, false);
+			CeStoreJsonObject metaModelInstanceJSON = webInst.generateSummaryDetailsJsonFor(mmInst, null, 0, false,
+					false, null, false);
 			putObjectValueIn(pJsonObj, JSON_META_INSTANCE, metaModelInstanceJSON);
 		} else {
-			reportWarning("No meta-model instance was found for concept named '" + pCon.getConceptName() + "' - this might be a shadow concept", this.ac);
+			reportWarning("No meta-model instance was found for concept named '" + pCon.getConceptName()
+					+ "' - this might be a shadow concept", this.ac);
 		}
 	}
 

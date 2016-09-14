@@ -8,7 +8,6 @@ package com.ibm.ets.ita.ce.store.conversation.agents;
 import static com.ibm.ets.ita.ce.store.messages.ConversationMessages.MSG_CANNOTSAVE;
 import static com.ibm.ets.ita.ce.store.messages.ConversationMessages.MSG_NOTRIGDETAILS;
 import static com.ibm.ets.ita.ce.store.messages.ConversationMessages.MSG_NOTRIGINST;
-import static com.ibm.ets.ita.ce.store.names.CeNames.BROKER_NAME;
 import static com.ibm.ets.ita.ce.store.names.CeNames.CON_SERVICE;
 import static com.ibm.ets.ita.ce.store.names.CeNames.PROP_AFFILIATION;
 import static com.ibm.ets.ita.ce.store.names.CeNames.PROP_CHECKAUTHORISEDUSERS;
@@ -135,10 +134,7 @@ public abstract class GeneralConversationHandler extends CeNotifyHandler {
 			this.fromInst = this.trigInst.getSingleInstanceFromPropertyNamed(this.ac, PROP_FROMINSTANCE);
 			if (this.fromInst != null) {
 				this.fromInstName = this.fromInst.getInstanceName();
-
 				this.fromAffiliation = this.fromInst.getSingleInstanceFromPropertyNamed(this.ac, PROP_AFFILIATION);
-			} else {
-				this.fromInstName = BROKER_NAME;
 			}
 
 			this.isCheckingNationalities = new Boolean(
