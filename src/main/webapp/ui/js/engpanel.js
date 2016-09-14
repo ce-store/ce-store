@@ -190,11 +190,12 @@ function EngineeringPanel() {
 			ui_20: { url:'./js/ui/panes/pane-timeline.js', loaded: false },
 			ui_21: { url:'./js/ui/panes/pane-warning.js', loaded: false },
 			ui_22: { url:'./js/ui/panes/pane-info.js', loaded: false },
+			ui_23: { url:'./js/ui/panes/pane-modelgraph.js', loaded: false },
 
-			ui_23: { url:'./js/ui/forms/form-choosefilter.js', loaded: false },
-			ui_24: { url:'./js/ui/forms/form-chooserel.js', loaded: false },
-			ui_25: { url:'./js/ui/forms/form-editce.js', loaded: false },
-			ui_26: { url:'./js/ui/forms/form-login.js', loaded: false }
+			ui_24: { url:'./js/ui/forms/form-choosefilter.js', loaded: false },
+			ui_25: { url:'./js/ui/forms/form-chooserel.js', loaded: false },
+			ui_26: { url:'./js/ui/forms/form-editce.js', loaded: false },
+			ui_27: { url:'./js/ui/forms/form-login.js', loaded: false }
 		};
 
 		//Now add in any extra libraries
