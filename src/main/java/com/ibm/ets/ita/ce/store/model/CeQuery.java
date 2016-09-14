@@ -30,8 +30,8 @@ public class CeQuery extends CeModelEntity {
 	private TreeMap<String, String> allVariableTypes = new TreeMap<String, String>();
 	private ArrayList<String> responseVariableIds = new ArrayList<String>();
 	private ArrayList<CeClause> directPremiseClauses = new ArrayList<CeClause>();
-	private ArrayList<String> orderTokens = new ArrayList<String>();	//DSB 01/05/2015 #1095
-	private boolean orderAscending = true;		//DSB 01/05/2015 #1095
+	private ArrayList<String> orderTokens = new ArrayList<String>();
+	private boolean orderAscending = true;
 	protected int lastSeqId = 0;
 	private boolean hasErrors = false;
 	private int rowLimit = -1;
@@ -160,27 +160,22 @@ public class CeQuery extends CeModelEntity {
 		return getDirectPremiseClauses();
 	}
 
-	//DSB 01/05/2015 #1095
 	public ArrayList<String> getOrderTokens() {
 		return this.orderTokens;
 	}
 
-	//DSB 01/05/2015 #1095
 	public void addOrderToken(String pToken) {
 		this.orderTokens.add(pToken);
 	}
 	
-	//DSB 01/05/2015 #1095
 	public boolean needsSorting() {
 		return !this.orderTokens.isEmpty();
 	}
 
-	//DSB 01/05/2015 #1095
 	public boolean isSortOrderAscending() {
 		return this.orderAscending;
 	}
 
-	//DSB 01/05/2015 #1095
 	public void setSortOrderDescending() {
 		this.orderAscending = false;
 	}

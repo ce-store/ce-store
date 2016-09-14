@@ -1,37 +1,44 @@
 package com.ibm.ets.ita.ce.store.client.rest;
 
+//ALL DONE (not messages)
+
 /*******************************************************************************
  * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
-import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_STEPS;
-import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_LIMRELS;
-import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_RELINSTS;
-import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_REFINSTS;
-import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_SINCE;
-import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_RETINSTS;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.ES;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.REGEX_KEYWORDLIST;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_COMMA;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_DQ;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_SPACE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_TRUE;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_CASESEN;
 import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_CONNAMES;
-import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_SPTS;
-import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_ONLYPROPS;
 import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_IGMETMOD;
-import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_SEARCHTERMS;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_LIMRELS;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_ONLYPROPS;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_REFINSTS;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_RELINSTS;
 import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_RESTRICTCONNAMES;
 import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_RESTRICTPROPNAMES;
-import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_CASESEN;
-import static com.ibm.ets.ita.ce.store.names.RestNames.REST_RATIONALE;
-import static com.ibm.ets.ita.ce.store.names.RestNames.REST_STATISTICS;
-import static com.ibm.ets.ita.ce.store.names.RestNames.REST_HUDSON;
-import static com.ibm.ets.ita.ce.store.names.RestNames.REST_PATTERN;
-import static com.ibm.ets.ita.ce.store.names.RestNames.REST_SHADINST;
-import static com.ibm.ets.ita.ce.store.names.RestNames.REST_SHADCON;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_RETINSTS;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_SEARCHTERMS;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_SINCE;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_SPTS;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_STEPS;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REST_CONFIG;
-import static com.ibm.ets.ita.ce.store.names.RestNames.REST_UID;
-import static com.ibm.ets.ita.ce.store.names.RestNames.REST_SEARCH;
-import static com.ibm.ets.ita.ce.store.names.RestNames.REST_UNREFINST;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REST_DIVCONINST;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_HUDSON;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REST_MULTINSTS;
-
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_PATTERN;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_RATIONALE;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_SEARCH;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_SHADCON;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_SHADINST;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_STATISTICS;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_UID;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_UNREFINST;
 import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.urlDecode;
 
 import java.util.ArrayList;
@@ -61,23 +68,14 @@ public class CeStoreRestApiSpecial extends CeStoreRestApi {
 	}
 
 	/*
-	 * Supported requests:
-	 * 		/special/statistics
-	 * 		/special/patterns
-	 * 		/special/rationale
-	 * 		/special/config
-	 * 		/special/config/{key}
-	 * 		/special/uid
-	 * 		/special/uid/batch
-	 * 		/special/uid/reset
-	 * 		/special/keyword-search
-	 * 		/special/shadow-concepts
-	 * 		/special/shadow-instances
-	 * 		/special/diverse-concept-instances
-	 * 		/special/data
-	 * 		/special/hudson
+	 * Supported requests: /special/statistics /special/patterns
+	 * /special/rationale /special/config /special/config/{key} /special/uid
+	 * /special/uid/batch /special/uid/reset /special/keyword-search
+	 * /special/shadow-concepts /special/shadow-instances
+	 * /special/diverse-concept-instances /special/data /special/hudson
 	 */
-	public static boolean processRequest(WebActionContext pWc, ArrayList<String> pRestParts, HttpServletRequest pRequest) {
+	public static boolean processRequest(WebActionContext pWc, ArrayList<String> pRestParts,
+			HttpServletRequest pRequest) {
 		boolean statsInResponse = false;
 		CeStoreRestApiSpecial handler = new CeStoreRestApiSpecial(pWc, pRestParts, pRequest);
 
@@ -110,7 +108,7 @@ public class CeStoreRestApiSpecial extends CeStoreRestApi {
 				String immParm = urlDecode(pWc, pRequest.getParameter(PARM_IGMETMOD));
 				boolean igMetaModel = false;
 
-				if (immParm.equals("true")) {
+				if (immParm.equals(TOKEN_TRUE)) {
 					igMetaModel = true;
 				}
 
@@ -130,7 +128,7 @@ public class CeStoreRestApiSpecial extends CeStoreRestApi {
 	}
 
 	private boolean processStatisticsRequest() {
-		//URL = /special/statistics
+		// URL = /special/statistics
 		if (isGet()) {
 			handleShowStatistics();
 		} else if (isPost()) {
@@ -143,7 +141,7 @@ public class CeStoreRestApiSpecial extends CeStoreRestApi {
 	}
 
 	private boolean processPatternRequest() {
-		//URL = /special/patterns
+		// URL = /special/patterns
 		if (isGet()) {
 			handleListPatterns();
 		} else {
@@ -154,7 +152,7 @@ public class CeStoreRestApiSpecial extends CeStoreRestApi {
 	}
 
 	private boolean processRationaleRequest() {
-		//URL = /special/rationale
+		// URL = /special/rationale
 		if (isGet()) {
 			handleListRationale();
 		} else {
@@ -165,7 +163,7 @@ public class CeStoreRestApiSpecial extends CeStoreRestApi {
 	}
 
 	private boolean processSearchRequest() {
-		//URL = /special/keyword-search
+		// URL = /special/keyword-search
 		if (isGet()) {
 			handleKeywordSearch();
 		} else {
@@ -176,9 +174,9 @@ public class CeStoreRestApiSpecial extends CeStoreRestApi {
 	}
 
 	private boolean processShadowConceptRequest() {
-		//URL = /special/shadow-concepts
+		// URL = /special/shadow-concepts
 		if (isGet()) {
-			//List shadow concepts
+			// List shadow concepts
 			handleListShadowConcepts();
 		} else {
 			reportUnsupportedMethodError();
@@ -188,9 +186,9 @@ public class CeStoreRestApiSpecial extends CeStoreRestApi {
 	}
 
 	private boolean processShadowInstanceRequest() {
-		//URL = /special/shadow-instances
+		// URL = /special/shadow-instances
 		if (isGet()) {
-			//List shadow instances
+			// List shadow instances
 			handleListShadowInstances();
 		} else {
 			reportUnsupportedMethodError();
@@ -200,9 +198,9 @@ public class CeStoreRestApiSpecial extends CeStoreRestApi {
 	}
 
 	private boolean processUnreferencedInstanceRequest(boolean pIgnoreMetaModel) {
-		//URL = /special/unreferenced-instances
+		// URL = /special/unreferenced-instances
 		if (isGet()) {
-			//List unreferenced instances
+			// List unreferenced instances
 			handleListUnreferencedInstances(pIgnoreMetaModel);
 		} else {
 			reportUnsupportedMethodError();
@@ -212,9 +210,9 @@ public class CeStoreRestApiSpecial extends CeStoreRestApi {
 	}
 
 	private boolean processDiverseConceptInstanceRequest() {
-		//URL = /special/diverse-concept-instances
+		// URL = /special/diverse-concept-instances
 		if (isGet()) {
-			//List diverse concept instances
+			// List diverse concept instances
 			handleListDiverseConceptInstances();
 		} else {
 			reportUnsupportedMethodError();
@@ -224,7 +222,7 @@ public class CeStoreRestApiSpecial extends CeStoreRestApi {
 	}
 
 	private boolean processListInstancesForMultipleConceptsRequest() {
-		//URL = /special/instances-for-multiple-concepts
+		// URL = /special/instances-for-multiple-concepts
 		if (isGet()) {
 			handleListInstancesForMultipleConcepts();
 		} else {
@@ -290,7 +288,7 @@ public class CeStoreRestApiSpecial extends CeStoreRestApi {
 	}
 
 	private void textListPatterns() {
-		//TODO: Complete this
+		// TODO: Complete this
 		reportNotYetImplementedError();
 	}
 
@@ -309,7 +307,7 @@ public class CeStoreRestApiSpecial extends CeStoreRestApi {
 	}
 
 	private void textListRationale() {
-		//TODO: Implement this
+		// TODO: Implement this
 		reportNotYetImplementedError();
 	}
 
@@ -333,7 +331,8 @@ public class CeStoreRestApiSpecial extends CeStoreRestApi {
 
 		if (!searchTerms.isEmpty()) {
 			if (isJsonRequest()) {
-				jsonKeywordSearch(searchTerms, conNames, propNames, retInsts, caseSen, onlyProps, numSteps, relInsts, refInsts, limRels, suppPropTypes);
+				jsonKeywordSearch(searchTerms, conNames, propNames, retInsts, caseSen, onlyProps, numSteps, relInsts,
+						refInsts, limRels, suppPropTypes);
 			} else if (isTextRequest()) {
 				textKeywordSearch(searchTerms, conNames, propNames, retInsts, caseSen);
 			} else {
@@ -344,14 +343,19 @@ public class CeStoreRestApiSpecial extends CeStoreRestApi {
 		}
 	}
 
-	private void jsonKeywordSearch(ArrayList<String> pSearchTerms, String[] pConNames, String[] pPropNames, boolean pRetInsts, boolean pCaseSensitive, String[] pOnlyProps, int pNumSteps, boolean pRelInsts, boolean pRefInsts, String[] pLimRels, boolean pSuppPropTypes) {
+	private void jsonKeywordSearch(ArrayList<String> pSearchTerms, String[] pConNames, String[] pPropNames,
+			boolean pRetInsts, boolean pCaseSensitive, String[] pOnlyProps, int pNumSteps, boolean pRelInsts,
+			boolean pRefInsts, String[] pLimRels, boolean pSuppPropTypes) {
 		StoreActions sa = StoreActions.createUsingDefaultConfig(this.wc);
-		ArrayList<ContainerSearchResult> resList = sa.keywordSearch(pSearchTerms, pConNames, pPropNames, pCaseSensitive);
-		setSearchListAsStructuredResult(resList, pSearchTerms, pConNames, pPropNames, pRetInsts, pOnlyProps, pNumSteps, pRelInsts, pRefInsts, pLimRels, pSuppPropTypes);
+		ArrayList<ContainerSearchResult> resList = sa.keywordSearch(pSearchTerms, pConNames, pPropNames,
+				pCaseSensitive);
+		setSearchListAsStructuredResult(resList, pSearchTerms, pConNames, pPropNames, pRetInsts, pOnlyProps, pNumSteps,
+				pRelInsts, pRefInsts, pLimRels, pSuppPropTypes);
 	}
 
-	private void textKeywordSearch(ArrayList<String> pSearchTerms, String[] pConNames, String[] pPropNames, boolean pRetInsts, boolean pCaseSen) {
-		//TODO: Implement this
+	private void textKeywordSearch(ArrayList<String> pSearchTerms, String[] pConNames, String[] pPropNames,
+			boolean pRetInsts, boolean pCaseSen) {
+		// TODO: Implement this
 		String searchTermSummary = generateSearchTermSummaryFrom(pSearchTerms);
 		reportNotYetImplementedError("keyword search using '" + searchTermSummary + "'");
 	}
@@ -359,27 +363,27 @@ public class CeStoreRestApiSpecial extends CeStoreRestApi {
 	private ArrayList<String> extractKeywordListFrom(String pSearchTerms) {
 		ArrayList<String> result = new ArrayList<String>();
 
-		Matcher m = Pattern.compile("([^\"]\\S*|\".+?\")\\s*").matcher(pSearchTerms);
-//		Matcher m = Pattern.compile("([\\|-]?\".+?\"|[\\|-]?[^\"]+?\\s|[\\|-]?[^\"]+?$)").matcher(pSearchTerms);
+		Matcher m = Pattern.compile(REGEX_KEYWORDLIST).matcher(pSearchTerms);
+
 		while (m.find()) {
-			result.add(m.group(1).replace("\"", "").trim());
+			result.add(m.group(1).replace(TOKEN_DQ, ES).trim());
 		}
 
 		return result;
 	}
 
 	public static String generateSearchTermSummaryFrom(ArrayList<String> pSearchTerms) {
-		String result = "";
-		String sep = "";
+		String result = ES;
+		String sep = ES;
 
 		for (String thisTerm : pSearchTerms) {
-			if (thisTerm.contains(" ")) {
-				result += sep + "\"" + thisTerm + "\"";
+			if (thisTerm.contains(TOKEN_SPACE)) {
+				result += sep + TOKEN_DQ + thisTerm + TOKEN_DQ;
 			} else {
 				result += sep + thisTerm;
 			}
 
-			sep = ", ";
+			sep = TOKEN_COMMA + TOKEN_SPACE;
 		}
 		return result;
 	}
@@ -405,7 +409,7 @@ public class CeStoreRestApiSpecial extends CeStoreRestApi {
 		reportNotYetImplementedError();
 	}
 
-	private void handleListShadowInstances() {	
+	private void handleListShadowInstances() {
 		if (isJsonRequest()) {
 			jsonListShadowInstances();
 		} else if (isTextRequest()) {
@@ -485,9 +489,10 @@ public class CeStoreRestApiSpecial extends CeStoreRestApi {
 		reportNotYetImplementedError();
 	}
 
-	private void jsonListInstancesForMultipleConcepts(String pConNameList, String pSince, int pNumSteps, boolean pRelInsts, boolean pRefInsts, String[] pLimRels) {
+	private void jsonListInstancesForMultipleConcepts(String pConNameList, String pSince, int pNumSteps,
+			boolean pRelInsts, boolean pRefInsts, String[] pLimRels) {
 		TreeMap<String, ArrayList<CeInstance>> result = new TreeMap<String, ArrayList<CeInstance>>();
-		String[] conNames = pConNameList.split(",");
+		String[] conNames = pConNameList.split(TOKEN_COMMA);
 
 		for (String thisConName : conNames) {
 			CeConcept tgtCon = this.wc.getModelBuilder().getConceptNamed(this.wc, thisConName);
@@ -503,39 +508,54 @@ public class CeStoreRestApiSpecial extends CeStoreRestApi {
 		setMultipleConceptInstanceListAsStructuredResult(result, pNumSteps, pRelInsts, pRefInsts, pLimRels);
 	}
 
-	private void textListInstancesForMultipleConcepts(String pConNameList, String pSince, int pNumSteps, boolean pRelInsts, boolean pRefInsts, String[] pLimRels) {
-		reportNotYetImplementedError("list instances for multiple concepts '" + pConNameList + "' (since=" + pSince + ",numSteps=" + pNumSteps + "");
+	private void textListInstancesForMultipleConcepts(String pConNameList, String pSince, int pNumSteps,
+			boolean pRelInsts, boolean pRefInsts, String[] pLimRels) {
+		reportNotYetImplementedError("list instances for multiple concepts '" + pConNameList + "' (since=" + pSince
+				+ ",numSteps=" + pNumSteps + ")");
 	}
 
 	private void setPatternListAsStructuredResult(Collection<CeQuery> pQueryList, Collection<CeRule> pRuleList) {
 		if (isDefaultStyle() || isSummaryStyle()) {
-			getWebActionResponse().setStructuredResult(CeWebQueryOrRule.generatePatternSummaryListFrom(pQueryList, pRuleList));
+			getWebActionResponse()
+					.setStructuredResult(CeWebQueryOrRule.generatePatternSummaryListFrom(pQueryList, pRuleList));
 		} else if (isMinimalStyle()) {
-			getWebActionResponse().setStructuredResult(CeWebQueryOrRule.generatePatternMinimalListFrom(pQueryList, pRuleList));
+			getWebActionResponse()
+					.setStructuredResult(CeWebQueryOrRule.generatePatternMinimalListFrom(pQueryList, pRuleList));
 		} else if (isNormalisedStyle()) {
-			getWebActionResponse().setStructuredResult(CeWebQueryOrRule.generatePatternNormalisedListFrom(pQueryList, pRuleList));
+			getWebActionResponse()
+					.setStructuredResult(CeWebQueryOrRule.generatePatternNormalisedListFrom(pQueryList, pRuleList));
 		} else {
-			getWebActionResponse().setStructuredResult(CeWebQueryOrRule.generatePatternFullListFrom(pQueryList, pRuleList));
+			getWebActionResponse()
+					.setStructuredResult(CeWebQueryOrRule.generatePatternFullListFrom(pQueryList, pRuleList));
 		}
 	}
 
-	private void setSearchListAsStructuredResult(ArrayList<ContainerSearchResult> pResults, ArrayList<String> pSearchTerms, String[] pConceptNames, String[] pPropertyNames, boolean pRetInsts, String[] pOnlyProps, int pNumSteps, boolean pRelInsts, boolean pRefInsts, String []pLimRels, boolean pSuppPropTypes) {
+	private void setSearchListAsStructuredResult(ArrayList<ContainerSearchResult> pResults,
+			ArrayList<String> pSearchTerms, String[] pConceptNames, String[] pPropertyNames, boolean pRetInsts,
+			String[] pOnlyProps, int pNumSteps, boolean pRelInsts, boolean pRefInsts, String[] pLimRels,
+			boolean pSuppPropTypes) {
 		if (isDefaultStyle() || isSummaryStyle()) {
-			getWebActionResponse().setStructuredResult(CeWebContainerResult.generateKeywordSearchSummaryResultFrom(this.wc, pResults, pSearchTerms, pConceptNames, pPropertyNames, pRetInsts, pOnlyProps, pNumSteps, pRelInsts, pRefInsts, pLimRels, pSuppPropTypes));
+			getWebActionResponse().setStructuredResult(CeWebContainerResult.generateKeywordSearchSummaryResultFrom(
+					this.wc, pResults, pSearchTerms, pConceptNames, pPropertyNames, pRetInsts, pOnlyProps, pNumSteps,
+					pRelInsts, pRefInsts, pLimRels, pSuppPropTypes));
 		} else {
-			getWebActionResponse().setStructuredResult(CeWebContainerResult.generateKeywordSearchMinimalResultFrom(this.wc, pResults, pSearchTerms, pConceptNames, pPropertyNames, pRetInsts, pOnlyProps, pNumSteps, pRelInsts, pRefInsts, pLimRels, pSuppPropTypes));
+			getWebActionResponse().setStructuredResult(CeWebContainerResult.generateKeywordSearchMinimalResultFrom(
+					this.wc, pResults, pSearchTerms, pConceptNames, pPropertyNames, pRetInsts, pOnlyProps, pNumSteps,
+					pRelInsts, pRefInsts, pLimRels, pSuppPropTypes));
 		}
 	}
 
-	private void setMultipleConceptInstanceListAsStructuredResult(TreeMap<String, ArrayList<CeInstance>> pList, int pNumSteps, boolean pRelInsts, boolean pRefInsts, String[] pLimRels) {
+	private void setMultipleConceptInstanceListAsStructuredResult(TreeMap<String, ArrayList<CeInstance>> pList,
+			int pNumSteps, boolean pRelInsts, boolean pRefInsts, String[] pLimRels) {
 		boolean suppPropTypes = getBooleanParameterNamed(PARM_SPTS, false);
 		String[] onlyProps = getListParameterNamed(PARM_ONLYPROPS);
 
-		getWebActionResponse().setStructuredResult(CeWebSpecial.generateMultipleConceptInstanceListFrom(this.wc, this, pList, onlyProps, pNumSteps, pRelInsts, pRefInsts, pLimRels, suppPropTypes));
+		getWebActionResponse().setStructuredResult(CeWebSpecial.generateMultipleConceptInstanceListFrom(this.wc, this,
+				pList, onlyProps, pNumSteps, pRelInsts, pRefInsts, pLimRels, suppPropTypes));
 	}
 
 	private void setDiverseConceptInstanceListAsStructuredResult(TreeMap<CeInstance, ArrayList<CeConcept>> pInstList) {
 		getWebActionResponse().setStructuredResult(CeWebSpecial.generateDiverseConceptInstanceListFrom(pInstList));
 	}
-	
+
 }

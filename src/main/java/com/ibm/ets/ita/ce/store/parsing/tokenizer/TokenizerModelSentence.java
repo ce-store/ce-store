@@ -5,31 +5,37 @@ package com.ibm.ets.ita.ce.store.parsing.tokenizer;
  * All Rights Reserved
  *******************************************************************************/
 
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_A;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_AN;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_VALUE;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_IS;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_HAS;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_AS;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_AND;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_THAT;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_THE;
 import static com.ibm.ets.ita.ce.store.names.CeNames.CON_SEQUENCE;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.ES;
 import static com.ibm.ets.ita.ce.store.names.MiscNames.PROPDEF_PREFIX;
 import static com.ibm.ets.ita.ce.store.names.MiscNames.PROPDEF_SUFFIX;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_1;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_AT;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_CONCEPTUALISE;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_CONCEPTUALIZE;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_DEFINE;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_EXACTLY;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_MOST;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_ONE;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_TILDE;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.SCELABEL_CONCEPT;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.SCELABEL_CONNECTOR;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.SCELABEL_NORMAL;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.SCELABEL_PROP;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_1;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_A;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_AN;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_AND;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_AS;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_AT;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_CLOSEPAR;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_COMMA;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_CONCEPTUALISE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_CONCEPTUALIZE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_DEFINE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_EXACTLY;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_HAS;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_IDENTIFIER;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_IS;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_MOST;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_ONE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_OPENPAR;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_SPACE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_THAT;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_THE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_TILDE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_VALUE;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
 
 import java.util.ArrayList;
@@ -65,26 +71,26 @@ public class TokenizerModelSentence extends TokenizerSentence {
 	private static final int TEST_IDENTIFIERHACK = -40;
 	private static final int TEST_END = -100;
 
-	private static final String MARKER_BLANK_PROPVAR = "(none)";
+	private static final String MARKER_BLANK_PROPVAR = "(none)";	//TODO: Abstract this
 
 	private static final int MODE_UNKNOWN = 0;
 	private static final int MODE_FN = 1;
 	private static final int MODE_VS = 2;
 
 	private int sentenceMode = MODE_UNKNOWN;
-	private String lastToken = "";
-	private String phraseToken = "";
-	private String conceptToken = "";
-	private String propertyToken = "";
-	private String rangeToken = "";
-	private String propertyCeName = "";
-	private String propertyVarName = "";		//No longer used
-	private String propertyRangeName = "";
+	private String lastToken = ES;
+	private String phraseToken = ES;
+	private String conceptToken = ES;
+	private String propertyToken = ES;
+	private String rangeToken = ES;
+	private String propertyCeName = ES;
+	private String propertyVarName = ES;		//No longer used
+	private String propertyRangeName = ES;
 	private boolean insideTilde = false;
 	private boolean singleCardinality = false;
 	private boolean exactCardinality = false;
 	private boolean secondaryConceptStored = false;
-	private String potentialSecondaryConcept = "";
+	private String potentialSecondaryConcept = ES;
 	private boolean lastConNameSequence = false;
 	private boolean inSequence = false;
 
@@ -113,18 +119,18 @@ public class TokenizerModelSentence extends TokenizerSentence {
 
 	private void initialiseBuffers() {
 		this.sentenceMode = MODE_UNKNOWN;
-		this.lastToken = "";
-		this.phraseToken = "";
-		this.conceptToken = "";
-		this.propertyToken = "";
-		this.rangeToken = "";
-		this.propertyCeName = "";
-		this.propertyVarName = "";
-		this.propertyRangeName = "";
-		this.potentialSecondaryConcept = "";
+		this.lastToken = ES;
+		this.phraseToken = ES;
+		this.conceptToken = ES;
+		this.propertyToken = ES;
+		this.rangeToken = ES;
+		this.propertyCeName = ES;
+		this.propertyVarName = ES;
+		this.propertyRangeName = ES;
+		this.potentialSecondaryConcept = ES;
 		this.lastConNameSequence = false;
 		this.inSequence = false;
-		this.conQualifier = "";
+		this.conQualifier = ES;
 	}
 
 	private void createFinalTokensForModelSentence() {
@@ -154,57 +160,56 @@ public class TokenizerModelSentence extends TokenizerSentence {
 				testResult = processIdentifierHack(thisRawToken, testResult);
 			}
 
-			// Test 1: Look for phrase 1 ("conceptualise a|an")
+			// Test 1: Look for phrase 1 ('conceptualise a|an')
 			if ((testResult == TEST_SEEKPHRASE1_A) || (testResult == TEST_SEEKPHRASE1_B)) {
 				testResult = doTest1(thisRawToken, testResult);
 			}
-			// Test 2a: Look for phrase 2a ("that|and has the|at most one|1")
+			// Test 2a: Look for phrase 2a ('that|and has the|at most one|1')
 			if ((testResult == TEST_RETRY) || (testResult == TEST_SEEKPHRASE2) || (testResult == TEST_SEEKPHRASE2A_A) || (testResult == TEST_SEEKPHRASE2A_B) || (testResult == TEST_SEEKPHRASE2A_C)  || (testResult == TEST_SEEKPHRASE2A_D)) {
 				testResult = doTest2a(thisRawToken, testResult);
 			}
-			// Test 2b: Look for phrase 2b ("that|and is a")
+			// Test 2b: Look for phrase 2b ('that|and is a')
 			if ((testResult == TEST_RETRY) || (testResult == TEST_SEEKPHRASE2) || (testResult == TEST_SEEKPHRASE2B_A) || (testResult == TEST_SEEKPHRASE2B_B)) {
 				testResult = doTest2b(thisRawToken, testResult);
 			}
-			// Test 3: Look for phrase 3 ("as")
+			// Test 3: Look for phrase 3 ('as')
 			if ((testResult == TEST_RETRY) || (testResult == TEST_SEEKPHRASE3)) {
 				testResult = doTest3(thisRawToken, testResult);
 			}
-			// Test 4: Look for phrase 4 ("and ~")
+			// Test 4: Look for phrase 4 ('and ~')
 			if (testResult == TEST_RETRY) {
 				testResult = doTest4(thisRawToken, testResult);
 			}
 
 			if (testResult == TEST_RETRY) {
 				if (!this.potentialSecondaryConcept.isEmpty()) {
-					//DSB 01/05/2015 (#1097)
 					if ((thisRawToken.equals(TOKEN_IS)) || (thisRawToken.equals(TOKEN_HAS)) || (thisRawToken.equals(TOKEN_TILDE))) {
 						this.conceptToken = this.potentialSecondaryConcept;
-						this.potentialSecondaryConcept = "";
+						this.potentialSecondaryConcept = ES;
 						storeSecondaryConcept();
 						addToPhraseToken(TOKEN_AND);
-						getTargetSentence().addFinalToken(SCELABEL_CONNECTOR, "", TOKEN_AND);
+						getTargetSentence().addFinalToken(SCELABEL_CONNECTOR, ES, TOKEN_AND);
 						if (thisRawToken.equals(TOKEN_IS)) {
 							addToPhraseToken(thisRawToken);
-							getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_IS);
+							getTargetSentence().addFinalToken(SCELABEL_NORMAL, ES, TOKEN_IS);
 							testResult = TEST_SEEKPHRASE2B_B;
 						} else if (thisRawToken.equals(TOKEN_HAS)) {
 							addToPhraseToken(thisRawToken);
-							getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_HAS);
+							getTargetSentence().addFinalToken(SCELABEL_NORMAL, ES, TOKEN_HAS);
 							testResult = TEST_SEEKPHRASE2A_B;
 						} else if (thisRawToken.equals(TOKEN_TILDE)) {
-							this.phraseToken = "";
+							this.phraseToken = ES;
 							this.sentenceMode = MODE_VS;
 							testResult = TEST_SEEKPROPERTY;
-							getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_TILDE);
+							getTargetSentence().addFinalToken(SCELABEL_NORMAL, ES, TOKEN_TILDE);
 						} else {
 							//Not possible
 						}
 					} else {
-						//An unexpected token was encountered, so if the secondary concept is incomplete try adding in with an "and"
-						//Hack to handle "and" in concept names
-						this.conceptToken = this.potentialSecondaryConcept + " " + TOKEN_AND + " " + thisRawToken;
-						this.potentialSecondaryConcept = "";
+						//An unexpected token was encountered, so if the secondary concept is incomplete try adding in with an 'and'
+						//Hack to handle 'and' in concept names
+						this.conceptToken = this.potentialSecondaryConcept + TOKEN_SPACE + TOKEN_AND + TOKEN_SPACE + thisRawToken;
+						this.potentialSecondaryConcept = ES;
 						testResult = TEST_SEEKCONCEPT;
 					}
 				} else {
@@ -216,7 +221,7 @@ public class TokenizerModelSentence extends TokenizerSentence {
 		}
 
 		if (!this.conceptToken.isEmpty()) {
-			processConcept("", TEST_END);
+			processConcept(ES, TEST_END);
 		}
 
 		if (!this.propertyToken.isEmpty()) {
@@ -224,7 +229,7 @@ public class TokenizerModelSentence extends TokenizerSentence {
 		}
 
 		if (!this.rangeToken.isEmpty()) {
-			processRange("", TEST_END, -1);
+			processRange(ES, TEST_END, -1);
 		}
 
 		if (!this.phraseToken.isEmpty()) {
@@ -268,7 +273,7 @@ public class TokenizerModelSentence extends TokenizerSentence {
 		if (pMarker == TEST_SEEKCONCEPTSTART) {
 			//Looking for a starting delimiter
 			if (pRawToken.equals(TOKEN_TILDE)) {
-				getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_TILDE);
+				getTargetSentence().addFinalToken(SCELABEL_NORMAL, ES, TOKEN_TILDE);
 				this.insideTilde = true;
 				result = TEST_SEEKCONCEPT;
 			} else {
@@ -285,11 +290,11 @@ public class TokenizerModelSentence extends TokenizerSentence {
 				} else {
 					storeTargetConcept();		//Store the target concept
 				}
-				getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_TILDE);
+				getTargetSentence().addFinalToken(SCELABEL_NORMAL, ES, TOKEN_TILDE);
 			} else if (pRawToken.equals(TOKEN_AND)) {
 				if (!this.insideTilde) {
 					this.potentialSecondaryConcept = this.conceptToken;		//Store the secondary concept
-					this.conceptToken = "";
+					this.conceptToken = ES;
 					result = TEST_SKIP;
 				} else {
 					result = TEST_SEEKCONCEPT;
@@ -340,7 +345,7 @@ public class TokenizerModelSentence extends TokenizerSentence {
 				result = TEST_SKIP;
 			} else {
 				result = TEST_SEEKPROPERTYSTART;
-				getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_TILDE);
+				getTargetSentence().addFinalToken(SCELABEL_NORMAL, ES, TOKEN_TILDE);
 			}
 		} else if (pMarker == TEST_SEEKVARNAME_PROPERTY) {
 			storePropertyVariableName(pRawToken);		//Store the property variable name
@@ -373,7 +378,7 @@ public class TokenizerModelSentence extends TokenizerSentence {
 		if (pMarker == TEST_SEEKPROPERTYSTART) {
 			//Looking for a starting delimiter
 			if(pRawToken.equals(TOKEN_TILDE)) {
-				getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_TILDE);
+				getTargetSentence().addFinalToken(SCELABEL_NORMAL, ES, TOKEN_TILDE);
 				result = TEST_SEEKPROPERTY;
 			} else {
 				result = TEST_RETRY;
@@ -384,7 +389,7 @@ public class TokenizerModelSentence extends TokenizerSentence {
 				storeProperty();		//Store the property
 				doPropertyProcessing();
 				result = TEST_SKIP;
-				getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_TILDE);
+				getTargetSentence().addFinalToken(SCELABEL_NORMAL, ES, TOKEN_TILDE);
 			} else {
 				result = TEST_SEEKPROPERTY;
 				addToPropertyToken(pRawToken);
@@ -402,7 +407,7 @@ public class TokenizerModelSentence extends TokenizerSentence {
 		if (pRawToken.equals(TOKEN_TILDE)) {
 			//end of property
 			storeProperty();
-			getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_TILDE);
+			getTargetSentence().addFinalToken(SCELABEL_NORMAL, ES, TOKEN_TILDE);
 			result = TEST_SKIP_TORANGE;
 		} else {
 			addToPropertyToken(pRawToken);
@@ -416,16 +421,16 @@ public class TokenizerModelSentence extends TokenizerSentence {
 		int result = pMarker;
 
 		if (this.inSequence) {
-			if (pRawToken.equals(")")) {
+			if (pRawToken.equals(TOKEN_CLOSEPAR)) {
 				this.inSequence = false;
 				storePropertyVariableName(MARKER_BLANK_PROPVAR);
 				result = TEST_IDENTIFIERHACK;
 			}
-			getTargetSentence().addFinalToken(SCELABEL_CONCEPT, "", this.ac.getModelBuilder().getCachedStringValueLevel1(pRawToken));
+			getTargetSentence().addFinalToken(SCELABEL_CONCEPT, ES, this.ac.getModelBuilder().getCachedStringValueLevel1(pRawToken));
 		} else {
 			if (this.lastConNameSequence) {
-				if (pRawToken.equals("(")) {
-					getTargetSentence().addFinalToken(SCELABEL_CONCEPT, "", CON_SEQUENCE);
+				if (pRawToken.equals(TOKEN_OPENPAR)) {
+					getTargetSentence().addFinalToken(SCELABEL_CONCEPT, ES, CON_SEQUENCE);
 					this.propertyRangeName = CON_SEQUENCE;
 					this.inSequence = true;
 				}
@@ -435,7 +440,7 @@ public class TokenizerModelSentence extends TokenizerSentence {
 			if (this.inSequence) {
 				//In a sequence, so ignore everything until out of it
 				//TODO: Implement sequence processing properly
-				getTargetSentence().addFinalToken(SCELABEL_CONCEPT, "", this.ac.getModelBuilder().getCachedStringValueLevel1(pRawToken));
+				getTargetSentence().addFinalToken(SCELABEL_CONCEPT, ES, this.ac.getModelBuilder().getCachedStringValueLevel1(pRawToken));
 			} else {
 				//Normal processing
 				if (isInFnMode()) {
@@ -473,7 +478,7 @@ public class TokenizerModelSentence extends TokenizerSentence {
 				result = TEST_SEEKRANGE;
 			} else {
 				storeRangeConcept();		//Store the range concept
-				getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_AS);
+				getTargetSentence().addFinalToken(SCELABEL_NORMAL, ES, TOKEN_AS);
 				result = TEST_SEEKPROPERTYSTART;		
 			}
 		}
@@ -486,34 +491,34 @@ public class TokenizerModelSentence extends TokenizerSentence {
 
 		if ((pRawToken.equals(TOKEN_THE)) || (pRawToken.equals(TOKEN_AT)) || (pRawToken.equals(TOKEN_EXACTLY))) {
 			if (pRawToken.equals(TOKEN_THE)) {
-				getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_THE);
+				getTargetSentence().addFinalToken(SCELABEL_NORMAL, ES, TOKEN_THE);
 			} else if (pRawToken.equals(TOKEN_AT)) {
-				getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_AT);
+				getTargetSentence().addFinalToken(SCELABEL_NORMAL, ES, TOKEN_AT);
 			} else if (pRawToken.equals(TOKEN_EXACTLY)) {
-				getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_EXACTLY);
+				getTargetSentence().addFinalToken(SCELABEL_NORMAL, ES, TOKEN_EXACTLY);
 			}
 			this.exactCardinality = false;
 			this.singleCardinality = false;
 			result = TEST_SEEKRANGE;
 		} else if ((pRawToken.equals(TOKEN_MOST)) && (this.lastToken.equals(TOKEN_AT))) {
-			getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_MOST);
+			getTargetSentence().addFinalToken(SCELABEL_NORMAL, ES, TOKEN_MOST);
 			this.exactCardinality = false;
 			this.singleCardinality = false;
 			result = TEST_SEEKRANGE;
 		} else if (((pRawToken.equals(TOKEN_ONE)) || (pRawToken.equals(TOKEN_1))) && (this.lastToken.equals(TOKEN_MOST))) {
 			if (pRawToken.equals(TOKEN_ONE)) {
-				getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_ONE);
+				getTargetSentence().addFinalToken(SCELABEL_NORMAL, ES, TOKEN_ONE);
 			} else {
-				getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_1);
+				getTargetSentence().addFinalToken(SCELABEL_NORMAL, ES, TOKEN_1);
 			}
 			this.exactCardinality = false;
 			this.singleCardinality = true;
 			result = TEST_SEEKRANGE;
 		} else if (((pRawToken.equals(TOKEN_ONE)) || (pRawToken.equals(TOKEN_1))) && (this.lastToken.equals(TOKEN_EXACTLY))) {
 			if (pRawToken.equals(TOKEN_ONE)) {
-				getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_ONE);
+				getTargetSentence().addFinalToken(SCELABEL_NORMAL, ES, TOKEN_ONE);
 			} else {
-				getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_1);
+				getTargetSentence().addFinalToken(SCELABEL_NORMAL, ES, TOKEN_1);
 			}
 			this.exactCardinality = true;
 			this.singleCardinality = true;
@@ -547,16 +552,16 @@ public class TokenizerModelSentence extends TokenizerSentence {
 
 	private int processIdentifierHack(String pRawToken, int pMarker) {
 		//TODO: Can this be removed at some point?
-		//There is a special case when using "sequence" definitions in conceptualise sentences:
-		//They will always be followed by the special property name "identifier", and since this is a pre-existing
+		//There is a special case when using 'sequence' definitions in conceptualise sentences:
+		//They will always be followed by the special property name 'identifier', and since this is a pre-existing
 		//property the name is not enclosed in tilde characters.
 		//This syntax is required for the prolog parser, but not by the CE store
 		int result = pMarker;
 
 		if (pRawToken.equals(TOKEN_AS)) {
-			//Store the "as" and continue
-			getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_AS);
-		} else if (pRawToken.equals("identifier")) {
+			//Store the 'as' and continue
+			getTargetSentence().addFinalToken(SCELABEL_NORMAL, ES, TOKEN_AS);
+		} else if (pRawToken.equals(TOKEN_IDENTIFIER)) {
 			this.propertyToken = pRawToken;
 			storeProperty();
 			doPropertyProcessing();
@@ -569,24 +574,24 @@ public class TokenizerModelSentence extends TokenizerSentence {
 	}
 
 	private int doTest1(String pRawToken, int pMarker) {		
-		//Seeking phrase "conceptualise {a|an}|the"
+		//Seeking phrase 'conceptualise {a|an}|the'
 		int result = pMarker;
 
 		if (pMarker == TEST_SEEKPHRASE1_A) {
 			if (pRawToken.equals(TOKEN_CONCEPTUALISE) || pRawToken.equals(TOKEN_CONCEPTUALIZE) || pRawToken.equals(TOKEN_DEFINE)) {
 				this.phraseToken = pRawToken;
 				if (pRawToken.equals(TOKEN_CONCEPTUALISE)) {
-					getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_CONCEPTUALISE);
+					getTargetSentence().addFinalToken(SCELABEL_NORMAL, ES, TOKEN_CONCEPTUALISE);
 				} else if (pRawToken.equals(TOKEN_CONCEPTUALIZE)) {
-					getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_CONCEPTUALIZE);
+					getTargetSentence().addFinalToken(SCELABEL_NORMAL, ES, TOKEN_CONCEPTUALIZE);
 				} else {
-					getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_DEFINE);
+					getTargetSentence().addFinalToken(SCELABEL_NORMAL, ES, TOKEN_DEFINE);
 				}
 				result = TEST_SEEKPHRASE1_B;		// Continue the test (looking for a|an)
 			} else {
 				getTargetSentence().hasError(this.ac, "113: Failed to process model sentence - first word not conceptualise");
 				result = TEST_RETRY;	// Fail the test)
-				this.phraseToken = "";
+				this.phraseToken = ES;
 			}
 		} else if (pMarker == TEST_SEEKPHRASE1_B) { 
 			if ((pRawToken.equals(TOKEN_A) || pRawToken.equals(TOKEN_AN))) {
@@ -594,42 +599,42 @@ public class TokenizerModelSentence extends TokenizerSentence {
 				this.sentenceMode = MODE_FN;
 				addToPhraseToken(pRawToken);
 				if (pRawToken.equals(TOKEN_A)) {
-					getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_A);
+					getTargetSentence().addFinalToken(SCELABEL_NORMAL, ES, TOKEN_A);
 				} else {
-					getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_AN);
+					getTargetSentence().addFinalToken(SCELABEL_NORMAL, ES, TOKEN_AN);
 				}
 				result = TEST_SEEKCONCEPTSTART;	// Complete the test (looking for a functional noun style concept)
-				this.phraseToken = "";
+				this.phraseToken = ES;
 			} else if (pRawToken.equals(TOKEN_THE)) {
 				this.sentenceMode = MODE_VS;
 				addToPhraseToken(pRawToken);
-				getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_THE);
+				getTargetSentence().addFinalToken(SCELABEL_NORMAL, ES, TOKEN_THE);
 				result = TEST_SEEKCONCEPTSTART;	// Complete the test (looking for a verb singular style concept)
-				this.phraseToken = "";
+				this.phraseToken = ES;
 			} else {
 				getTargetSentence().hasError(this.ac, "114: Failed tokenizing multi-part token (conceptualise a|an) with '" + this.phraseToken + "'");
 				result = TEST_RETRY;	// Fail the test)
-				this.phraseToken = "";
+				this.phraseToken = ES;
 			}
 		} else {
 			getTargetSentence().hasError(this.ac, "115: Failed tokenizing multi-part token (conceptualise a|an) with '" + this.phraseToken + "'");
 			result = TEST_RETRY;	// Fail the test)
-			this.phraseToken = "";
+			this.phraseToken = ES;
 		}
  
 		return result;
 	}
 
 	private int doTest2a(String pRawToken, int pMarker) {
-		//Seeking phrase "that | and has the | at most one | exactly one"
+		//Seeking phrase 'that | and has the | at most one | exactly one'
 		int result = pMarker;
 		if ((pMarker == TEST_RETRY) || (pMarker == TEST_SEEKPHRASE2)) {
 			if ((pRawToken.equals(TOKEN_THAT)) || (pRawToken.equals(TOKEN_AND))) {
 				addToPhraseToken(pRawToken);
 				if (pRawToken.equals(TOKEN_THAT)) {
-					getTargetSentence().addFinalToken(SCELABEL_CONNECTOR, "", TOKEN_THAT);
+					getTargetSentence().addFinalToken(SCELABEL_CONNECTOR, ES, TOKEN_THAT);
 				} else {
-					getTargetSentence().addFinalToken(SCELABEL_CONNECTOR, "", TOKEN_AND);
+					getTargetSentence().addFinalToken(SCELABEL_CONNECTOR, ES, TOKEN_AND);
 				}
 				result = TEST_SEEKPHRASE2A_A;
 			} else {
@@ -639,33 +644,33 @@ public class TokenizerModelSentence extends TokenizerSentence {
 		} else if (pMarker == TEST_SEEKPHRASE2A_A) {
 			if (pRawToken.equals(TOKEN_HAS)) {
 				addToPhraseToken(pRawToken);
-				getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_HAS);
+				getTargetSentence().addFinalToken(SCELABEL_NORMAL, ES, TOKEN_HAS);
 				result = TEST_SEEKPHRASE2A_B;
 			} else if (pRawToken.equals(TOKEN_TILDE)) {
-				this.phraseToken = "";
+				this.phraseToken = ES;
 				this.sentenceMode = MODE_VS;
 				result = TEST_SEEKPROPERTY;
-				getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_TILDE);
+				getTargetSentence().addFinalToken(SCELABEL_NORMAL, ES, TOKEN_TILDE);
 			} else {
-				//No error to report (yet) - there are two fragments that begin with "that"
+				//No error to report (yet) - there are two fragments that begin with 'that'
 				result = TEST_SEEKPHRASE2B_A;
 			}
 		} else if (pMarker == TEST_SEEKPHRASE2A_B) {
 			if (pRawToken.equals(TOKEN_THE)) {
 				addToPhraseToken(pRawToken);
-				getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_THE);
-				this.phraseToken = "";
+				getTargetSentence().addFinalToken(SCELABEL_NORMAL, ES, TOKEN_THE);
+				this.phraseToken = ES;
 				this.exactCardinality = false;
 				this.singleCardinality = false;
 				result = TEST_SEEKRANGE;
 			} else if (pRawToken.equals(TOKEN_AT)) {
 				addToPhraseToken(pRawToken);
-				getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_AT);
+				getTargetSentence().addFinalToken(SCELABEL_NORMAL, ES, TOKEN_AT);
 				result = TEST_SEEKPHRASE2A_C;
 			} else if (pRawToken.equals(TOKEN_EXACTLY)) {
 				this.exactCardinality = true;
 				addToPhraseToken(pRawToken);
-				getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_EXACTLY);
+				getTargetSentence().addFinalToken(SCELABEL_NORMAL, ES, TOKEN_EXACTLY);
 				result = TEST_SEEKPHRASE2A_D;
 			} else {
 				getTargetSentence().hasError(this.ac, "116: Failed tokenizing multi-part token (that | and has the | at most one | exactly one) with '" + this.phraseToken + "'");
@@ -674,7 +679,7 @@ public class TokenizerModelSentence extends TokenizerSentence {
 		} else if (pMarker == TEST_SEEKPHRASE2A_C) {
 			if (pRawToken.equals(TOKEN_MOST)) {
 				addToPhraseToken(pRawToken);
-				getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_MOST);
+				getTargetSentence().addFinalToken(SCELABEL_NORMAL, ES, TOKEN_MOST);
 				result = TEST_SEEKPHRASE2A_D;
 			} else {
 				getTargetSentence().hasError(this.ac, "116: Failed tokenizing multi-part token (that | and has the | at most one | exactly one) with '" + this.phraseToken + "'");
@@ -684,11 +689,11 @@ public class TokenizerModelSentence extends TokenizerSentence {
 			if ((pRawToken.equals(TOKEN_ONE)) || (pRawToken.equals(TOKEN_1))) {
 				addToPhraseToken(pRawToken);
 				if (pRawToken.equals(TOKEN_ONE)) {
-					getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_ONE);
+					getTargetSentence().addFinalToken(SCELABEL_NORMAL, ES, TOKEN_ONE);
 				} else {
-					getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_1);
+					getTargetSentence().addFinalToken(SCELABEL_NORMAL, ES, TOKEN_1);
 				}
-				this.phraseToken = "";
+				this.phraseToken = ES;
 				this.singleCardinality = true;
 				result = TEST_SEEKRANGE;
 			} else {
@@ -704,15 +709,15 @@ public class TokenizerModelSentence extends TokenizerSentence {
 	}
 
 	private int doTest2b(String pRawToken, int pMarker) {
-		//Seeking phrase "that|and is a|an"
+		//Seeking phrase 'that|and is a|an'
 		int result = pMarker;
 		if ((pMarker == TEST_RETRY) || (pMarker == TEST_SEEKPHRASE2)) {
 			if ((pRawToken.equals(TOKEN_THAT)) || (pRawToken.equals(TOKEN_AND))) {
 				addToPhraseToken(pRawToken);
 				if (pRawToken.equals(TOKEN_THAT)) {
-					getTargetSentence().addFinalToken(SCELABEL_CONNECTOR, "", TOKEN_THAT);
+					getTargetSentence().addFinalToken(SCELABEL_CONNECTOR, ES, TOKEN_THAT);
 				} else {
-					getTargetSentence().addFinalToken(SCELABEL_CONNECTOR, "", TOKEN_AND);
+					getTargetSentence().addFinalToken(SCELABEL_CONNECTOR, ES, TOKEN_AND);
 				}
 				result = TEST_SEEKPHRASE2B_A;
 			} else {
@@ -722,7 +727,7 @@ public class TokenizerModelSentence extends TokenizerSentence {
 		} else if (pMarker == TEST_SEEKPHRASE2B_A) {
 			if (pRawToken.equals(TOKEN_IS)) {
 				addToPhraseToken(pRawToken);
-				getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_IS);
+				getTargetSentence().addFinalToken(SCELABEL_NORMAL, ES, TOKEN_IS);
 				result = TEST_SEEKPHRASE2B_B;
 			} else {
 				//No error to report here
@@ -733,11 +738,11 @@ public class TokenizerModelSentence extends TokenizerSentence {
 				this.conQualifier = pRawToken;
 				addToPhraseToken(pRawToken);
 				if (pRawToken.equals(TOKEN_A)) {
-					getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_A);
+					getTargetSentence().addFinalToken(SCELABEL_NORMAL, ES, TOKEN_A);
 				} else {
-					getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_AN);
+					getTargetSentence().addFinalToken(SCELABEL_NORMAL, ES, TOKEN_AN);
 				}
-				this.phraseToken = "";
+				this.phraseToken = ES;
 				result = TEST_SEEKCONCEPT;
 			} else {
 				getTargetSentence().hasError(this.ac, "118: Failed tokenizing multi-part token (that|and is a) with '" + this.phraseToken + "'");
@@ -752,11 +757,11 @@ public class TokenizerModelSentence extends TokenizerSentence {
 	}
 
 	private int doTest3(String pRawToken, int pMarker) {
-		//Seeking phrase "as"
+		//Seeking phrase 'as'
 		int result = pMarker;
 
 		if (pRawToken.equals(TOKEN_AS)) {
-			getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_AS);
+			getTargetSentence().addFinalToken(SCELABEL_NORMAL, ES, TOKEN_AS);
 			this.sentenceMode = MODE_FN;
 			result = TEST_SEEKPROPERTYSTART;
 		} else {
@@ -768,15 +773,15 @@ public class TokenizerModelSentence extends TokenizerSentence {
 	}
 
 	private int doTest4(String pRawToken, int pMarker) {
-		//Seeking phrase "that|and is a|an"
+		//Seeking phrase 'that|and is a|an'
 		int result = pMarker;
 		if (isInVsMode()) {
 			if (this.lastToken.equals(TOKEN_AND)) {
 				if (pRawToken.equals(TOKEN_TILDE)) {
-					this.phraseToken = "";
+					this.phraseToken = ES;
 					result = TEST_SEEKPROPERTY;
 					this.sentenceMode = MODE_VS;
-					getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_TILDE);
+					getTargetSentence().addFinalToken(SCELABEL_NORMAL, ES, TOKEN_TILDE);
 				}
 			}
 		}
@@ -786,8 +791,8 @@ public class TokenizerModelSentence extends TokenizerSentence {
 
 	private String storeConceptToken() {
 		String result = this.conceptToken;
-		getTargetSentence().addFinalToken(SCELABEL_CONCEPT, "", this.ac.getModelBuilder().getCachedStringValueLevel1(this.conceptToken));
-		this.conceptToken = "";
+		getTargetSentence().addFinalToken(SCELABEL_CONCEPT, ES, this.ac.getModelBuilder().getCachedStringValueLevel1(this.conceptToken));
+		this.conceptToken = ES;
 
 		return result;
 	}
@@ -813,7 +818,7 @@ public class TokenizerModelSentence extends TokenizerSentence {
 			getTargetSentence().setTargetConceptNormal(thisConcept);
 
 			if (!conceptExistsAlready) {
-				//Only store the concept in the "new" concept property if it did not exist already
+				//Only store the concept in the 'new' concept property if it did not exist already
 				getTargetSentence().setNewConcept(thisConcept);
 			}
 		}
@@ -826,7 +831,7 @@ public class TokenizerModelSentence extends TokenizerSentence {
 
 		CeConcept tgtCon = CeConcept.createOrRetrieveConceptNamed(this.ac, conceptName);
 
-		checkForConceptQualifierMismatch(tgtCon, "secondary concept");
+		checkForConceptQualifierMismatch(tgtCon, "secondary concept");	//TODO: Abstract this
 
 		//Store the target concept on the sentence
 		createParentRelationship(tgtCon);
@@ -850,9 +855,9 @@ public class TokenizerModelSentence extends TokenizerSentence {
 		} else {
 			//Store the token (not actually used any more)
 			if (isInFnMode()) {
-				getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", this.ac.getModelBuilder().getCachedStringValueLevel1(pRawToken));
+				getTargetSentence().addFinalToken(SCELABEL_NORMAL, ES, this.ac.getModelBuilder().getCachedStringValueLevel1(pRawToken));
 			} else {
-				getTargetSentence().addFinalToken(SCELABEL_CONNECTOR, "", this.ac.getModelBuilder().getCachedStringValueLevel1(pRawToken));
+				getTargetSentence().addFinalToken(SCELABEL_CONNECTOR, ES, this.ac.getModelBuilder().getCachedStringValueLevel1(pRawToken));
 			}
 		}
 	}
@@ -862,7 +867,7 @@ public class TokenizerModelSentence extends TokenizerSentence {
 		this.propertyVarName = pRawToken;
 
 		if (!this.propertyVarName.equals(MARKER_BLANK_PROPVAR)) {
-			getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", this.ac.getModelBuilder().getCachedStringValueLevel1(this.propertyVarName));		
+			getTargetSentence().addFinalToken(SCELABEL_NORMAL, ES, this.ac.getModelBuilder().getCachedStringValueLevel1(this.propertyVarName));		
 		}
 	}
 
@@ -874,7 +879,7 @@ public class TokenizerModelSentence extends TokenizerSentence {
 			storeTemporaryPropertyLabel();	//This will be updated later when all the required info is available (in doPropertyProcessing())
 		}
 
-		this.propertyToken = "";
+		this.propertyToken = ES;
 	}
 
 	private void doPropertyProcessing() {
@@ -952,7 +957,7 @@ public class TokenizerModelSentence extends TokenizerSentence {
 
 	private String calcPropLabel() {
 		StringBuilder sb = new StringBuilder();
-		String domConName = "";
+		String domConName = ES;
 
 		if (getTargetSentence() != null) {
 			CeConcept domCon = getTargetSentence().getTargetConcept();
@@ -964,7 +969,7 @@ public class TokenizerModelSentence extends TokenizerSentence {
 
 		sb.append(PROPDEF_PREFIX);
 		sb.append(domConName);
-		sb.append(",");
+		sb.append(TOKEN_COMMA);
 		sb.append(this.propertyRangeName);
 		sb.append(PROPDEF_SUFFIX);
 
@@ -982,7 +987,7 @@ public class TokenizerModelSentence extends TokenizerSentence {
 	private void storeRangeValue(String pRawToken) {
 		//Store the token
 		this.propertyRangeName = pRawToken;
-		getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", this.ac.getModelBuilder().getCachedStringValueLevel1(this.propertyRangeName));		
+		getTargetSentence().addFinalToken(SCELABEL_NORMAL, ES, this.ac.getModelBuilder().getCachedStringValueLevel1(this.propertyRangeName));		
 	}
 
 	private void storeRangeConcept() {
@@ -990,11 +995,11 @@ public class TokenizerModelSentence extends TokenizerSentence {
 		this.propertyRangeName = this.rangeToken;
 
 		if (this.propertyRangeName.equals(TOKEN_VALUE)) {
-			getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_VALUE);
+			getTargetSentence().addFinalToken(SCELABEL_NORMAL, ES, TOKEN_VALUE);
 		} else {
-			getTargetSentence().addFinalToken(SCELABEL_CONCEPT, "", this.ac.getModelBuilder().getCachedStringValueLevel1(this.propertyRangeName));
+			getTargetSentence().addFinalToken(SCELABEL_CONCEPT, ES, this.ac.getModelBuilder().getCachedStringValueLevel1(this.propertyRangeName));
 		}
-		this.rangeToken = "";
+		this.rangeToken = ES;
 
 		storePropertyVariableName(this.lastToken);
 	}
@@ -1003,7 +1008,7 @@ public class TokenizerModelSentence extends TokenizerSentence {
 		if (this.phraseToken.isEmpty()) {
 			this.phraseToken = pRawToken;
 		} else {
-			this.phraseToken += " " + pRawToken;
+			this.phraseToken += TOKEN_SPACE + pRawToken;
 		}
 	}
 
@@ -1011,7 +1016,7 @@ public class TokenizerModelSentence extends TokenizerSentence {
 		if (this.conceptToken.isEmpty()) {
 			this.conceptToken = pRawToken;
 		} else {
-			this.conceptToken += " " + pRawToken;
+			this.conceptToken += TOKEN_SPACE + pRawToken;
 		}
 	}
 
@@ -1019,7 +1024,7 @@ public class TokenizerModelSentence extends TokenizerSentence {
 		if (this.propertyToken.isEmpty()) {
 			this.propertyToken = pRawToken;	
 		} else {
-			this.propertyToken += " " + pRawToken;	
+			this.propertyToken += TOKEN_SPACE + pRawToken;	
 		}
 	}
 
@@ -1027,7 +1032,7 @@ public class TokenizerModelSentence extends TokenizerSentence {
 		if (this.rangeToken.isEmpty()) {
 			this.rangeToken = pRawToken;
 		} else {
-			this.rangeToken += " " + pRawToken;	
+			this.rangeToken += TOKEN_SPACE + pRawToken;	
 		}
 	}
 

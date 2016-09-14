@@ -5,6 +5,7 @@ package com.ibm.ets.ita.ce.store.query;
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.CeNames.RANGE_VALUE;
 import static com.ibm.ets.ita.ce.store.names.CeNames.SPECIALNAME_CONTAINS;
 import static com.ibm.ets.ita.ce.store.names.CeNames.SPECIALNAME_ENDSWITH;
 import static com.ibm.ets.ita.ce.store.names.CeNames.SPECIALNAME_EQUALS;
@@ -17,11 +18,17 @@ import static com.ibm.ets.ita.ce.store.names.CeNames.SPECIALNAME_NOTCONTAINS;
 import static com.ibm.ets.ita.ce.store.names.CeNames.SPECIALNAME_NOTEQUALS;
 import static com.ibm.ets.ita.ce.store.names.CeNames.SPECIALNAME_NOTSTARTSWITH;
 import static com.ibm.ets.ita.ce.store.names.CeNames.SPECIALNAME_STARTSWITH;
-import static com.ibm.ets.ita.ce.store.names.CeNames.RANGE_VALUE;
-import static com.ibm.ets.ita.ce.store.names.MiscNames.HDR_CE;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.ES;
 import static com.ibm.ets.ita.ce.store.names.MiscNames.FILENAME_QUERYLOG_CE;
-import static com.ibm.ets.ita.ce.store.names.MiscNames.NO_TS;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.HDR_CE;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.HDR_COUNT;
 import static com.ibm.ets.ita.ce.store.names.MiscNames.NL;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.NO_TS;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_AND;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_DOT;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_PERCENT;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_SPACE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_ZERO;
 import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.joinFolderAndFilename;
 import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.writeToFile;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.reportExecutionTiming;
@@ -78,12 +85,12 @@ public abstract class QueryExecutionManager {
 	}
 
 	protected static boolean clauseTestOnDirectMatch(ActionContext pAc, CePropertyInstance pPi) {
-		//A direct match is either explicitly expressed with "=", or via the shorthand syntax of "has 'x' as blah..." 
+		//A direct match is either explicitly expressed with '=', or via the shorthand syntax of 'has x as blah...' 
 		return pPi.getPropertyName().equals(SPECIALNAME_EQUALS) || clauseTestOnDirectMatchWithoutSpecialOperator(pAc, pPi);
 	}
 
 	private static boolean clauseTestOnDirectMatchWithoutSpecialOperator(ActionContext pAc, CePropertyInstance pPi) {
-		//A direct match is either explicitly expressed with "=", or via the shorthand syntax of "has 'x' as blah..." 
+		//A direct match is either explicitly expressed with '=', or via the shorthand syntax of 'has x as blah...'
 		//So the test here is also whether the original value had quotes (which indicates the shorthand)
 		return (!CeSpecialProperty.isSpecialValueOperator(pPi.getPropertyName())) && pPi.hadQuotesOriginally(pAc);
 	}
@@ -143,7 +150,7 @@ public abstract class QueryExecutionManager {
 	}
 	
 	protected static String encodeVariable(String pVariable) {
-		return "%" + pVariable + "%";
+		return TOKEN_PERCENT + pVariable + TOKEN_PERCENT;
 	}
 
 	private static long extractTimestampFrom(ActionContext pAc, String pTsText) {
@@ -274,10 +281,10 @@ public abstract class QueryExecutionManager {
 				}
 			} else {
 				//If the result is empty then there were no matches so put in an empty count row
-				if (!result.getHeaders().contains("count")) {	//TODO: Abstract these
-					result.addHeader("count", "count");
+				if (!result.getHeaders().contains(HDR_COUNT)) {
+					result.addHeader(HDR_COUNT, HDR_COUNT);
 					ArrayList<String> zeroRow = new ArrayList<String>();
-					zeroRow.add("0");
+					zeroRow.add(TOKEN_ZERO);
 					result.addResultRow(zeroRow);
 				}
 			}
@@ -323,7 +330,7 @@ public abstract class QueryExecutionManager {
 	}
 
 	protected void addToCeTemplateNormalFn(String pSrcConceptName, String pPropName, String pTgtConceptName, String pSrcVarId, String pTgtVarId, boolean pIsRangeNegated, boolean pIsDomainNegated) {
-		String thisTemplate = "";
+		String thisTemplate = ES;
 		String prefix = cePrefix();
 		String postfix = cePostfix();
 		
@@ -376,9 +383,9 @@ public abstract class QueryExecutionManager {
 	}
 
 	protected void addToCeTemplateNormalVs(String pSrcConceptName, String pPropName, String pTgtConceptName, String pSrcVarId, String pTgtVarId, boolean pIsRangeNegated, boolean pIsDomainNegated) {
-		String thisTemplate = "";
-		String encSrcVar = "";
-		String encTgtVar = "";
+		String thisTemplate = ES;
+		String encSrcVar = ES;
+		String encTgtVar = ES;
 		
 		String prefix = cePrefix();
 		String postfix = cePostfix();
@@ -389,7 +396,6 @@ public abstract class QueryExecutionManager {
 					thisTemplate = prefix + "the %01 '%03' %02 '%04'" + postfix;
 				} else {
 					if (pIsRangeNegated) {
-						//DSB 27/10/2015 - Added %02 as the property name was not being correctly added
 						thisTemplate = prefix + "the %01 '%03' %02 no value" + postfix;
 					} else {
 						if (pIsDomainNegated) {
@@ -436,34 +442,34 @@ public abstract class QueryExecutionManager {
 	}
 	
 	private String cePrefix() {
-		String result = "";
+		String result = null;
 		
 		if (this.targetQuery.isRule()) {
-			result = "  ";
+			result = TOKEN_SPACE + TOKEN_SPACE;
 		} else {
-			result = "";
+			result = ES;
 		}
 		
 		return result;
 	}
 	
 	private String cePostfix() {
-		String result = "";
+		String result = null;
 		
 		if (this.targetQuery.isRule()) {
-			result = "";
+			result = ES;
 		} else {
-			result = ".";
+			result = TOKEN_DOT;
 		}
 		
 		return result;
 	}
 
 	private String ceConcatenator() {
-		String result = "";
+		String result = ES;
 		
 		if (this.targetQuery.isRule()) {
-			result = " and" + NL;
+			result = TOKEN_SPACE + TOKEN_AND + NL;
 		} else {
 			result = NL;
 		}
@@ -488,7 +494,7 @@ public abstract class QueryExecutionManager {
 			TreeMap<String, String> resRow = new TreeMap<String, String>();
 			int posCtr = 0;
 
-			//Iterate through the corresponding "all" row, rather than just the res row (which contains only the filtered results)
+			//Iterate through the corresponding 'all' row, rather than just the res row (which contains only the filtered results)
 			//This is because the CE generation requires all the values
 			for (String thisVal : allRow) {
 				//Get the header from the list of query variable ids, and only add it to the result if it is required in the result
@@ -501,8 +507,8 @@ public abstract class QueryExecutionManager {
 	}
 
 	private String generateCeTextFor(TreeMap<String, String> pRows) {
-		String result = "";
-		String sep = "";
+		String result = ES;
+		String sep = ES;
 		String concat = ceConcatenator();
 		
 		if (this.ceTemplateList.size() == 1) {

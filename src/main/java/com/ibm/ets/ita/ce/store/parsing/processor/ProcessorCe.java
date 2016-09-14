@@ -1,16 +1,10 @@
 package com.ibm.ets.ita.ce.store.parsing.processor;
 
-import static com.ibm.ets.ita.ce.store.names.CeNames.CON_CTE;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_AND;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.SCELABEL_RQSTART;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.SCELABEL_RQNAME;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.SCELABEL_CONNECTOR;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_OPENSQBR;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_CLOSESQBR;
-import static com.ibm.ets.ita.ce.store.names.MiscNames.SENMODE_NORMAL;
-import static com.ibm.ets.ita.ce.store.names.MiscNames.SENMODE_VALIDATE;
-import static com.ibm.ets.ita.ce.store.names.MiscNames.SRCID_POPMODEL;
-import static com.ibm.ets.ita.ce.store.names.MiscNames.STEPNAME_POPMODEL;
+/*******************************************************************************
+ * (C) Copyright IBM Corporation  2011, 2016
+ * All Rights Reserved
+ *******************************************************************************/
+
 import static com.ibm.ets.ita.ce.store.core.StaticCeRepository.ceMetamodelConceptualModel;
 import static com.ibm.ets.ita.ce.store.core.StaticCeRepository.ceMetamodelConceptualModelDefinesConcept;
 import static com.ibm.ets.ita.ce.store.core.StaticCeRepository.ceMetamodelEntityConceptAnnotation;
@@ -18,19 +12,31 @@ import static com.ibm.ets.ita.ce.store.core.StaticCeRepository.ceMetamodelEntity
 import static com.ibm.ets.ita.ce.store.core.StaticCeRepository.ceMetamodelEntityConceptMain;
 import static com.ibm.ets.ita.ce.store.core.StaticCeRepository.ceMetamodelProperty;
 import static com.ibm.ets.ita.ce.store.names.CeNames.CON_ATTCON;
+import static com.ibm.ets.ita.ce.store.names.CeNames.CON_CTE;
 import static com.ibm.ets.ita.ce.store.names.CeNames.CON_DTPROP;
 import static com.ibm.ets.ita.ce.store.names.CeNames.CON_OBPROP;
 import static com.ibm.ets.ita.ce.store.names.CeNames.CON_RELCON;
 import static com.ibm.ets.ita.ce.store.names.CeNames.PROP_PROPNAME;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.SENMODE_NORMAL;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.SENMODE_VALIDATE;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.SRCID_POPMODEL;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.STEPNAME_POPMODEL;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.SCELABEL_CONNECTOR;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.SCELABEL_RQNAME;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.SCELABEL_RQSTART;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_AND;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_CLOSESQBR;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_DOT;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_OPENSQBR;
 import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.appendToFileWithNewlines;
 import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.bufferedReaderFromString;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.formattedDuration;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.reportExecutionTiming;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.substituteNormalParameters;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.isReportMicroDebug;
-import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportMicroDebug;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportException;
+import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportMicroDebug;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportWarning;
 
 import java.io.BufferedReader;
@@ -253,7 +259,7 @@ public class ProcessorCe {
 		closingTokens.add(SCELABEL_RQNAME);
 		closingTokens.add(ratRs.getRuleName());
 		closingTokens.add(TOKEN_CLOSESQBR);
-		closingTokens.add(".");
+		closingTokens.add(TOKEN_DOT);
 
 		actualSen.addStructuredRationaleTokens(closingTokens);
 		actualSen.setRationaleReasoningStep(ratRs);
@@ -689,7 +695,6 @@ public class ProcessorCe {
 		linkSourceToConcepts(pSource, sb);
 		linkSourceToProperties(pSource, sb);
 
-		//DSB 14/09/12 - Added this to ensure that the behaviour is consistent when conceptualising after build store schema
 		giveParentsToFloatingConcepts();
 
 		//Only generate the meta-model sentences if not in cached CE loading mode
@@ -700,7 +705,7 @@ public class ProcessorCe {
 		//Send any notifications (by executing triggers)
 		sendNotifications(pSource);
 
-		//DSB 30/07/2014 - This is required, otherwise entities created by triggers don't get saved
+		//This is required, otherwise entities created by triggers don't get saved
 		this.ac.getModelBuilder().updateCreatedThingsFrom(this.ac);
 		
 		logger.exiting(CLASS_NAME, METHOD_NAME);
@@ -887,7 +892,6 @@ public class ProcessorCe {
 	}
 
 	private void checkForConceptTriggerMatch(CeConcept pTargetConcept, CeInstance pTrigInst, CeSource pSource, String pExtraType, String pExtraName) {
-		//DSB 01/11/2013 - Created copy to avoid concurrentModification issues
 		ArrayList<CeConcept> copyCons = new ArrayList<CeConcept>(pSource.getAffectedConceptsPlusParents());
 
 		for (CeConcept candidateCon : copyCons) {
@@ -947,7 +951,7 @@ public class ProcessorCe {
 		for (CeConcept thisCon : this.ac.getModelBuilder().listAllConcepts()) {
 			for (CeSentence thisSen : thisCon.getPrimarySentences()) {
 				if (pSource.equals(thisSen.getSource())) {
-					//DSB 19/06/2014 - If the source defines a concept but has
+					//If the source defines a concept but has
 					//no conceptual model then add the default one
 					if (!pSource.hasAnyDefinedModel()) {
 						CeConceptualModel defCm = pSource.addDefaultConceptualModel(this.ac);
@@ -1020,10 +1024,9 @@ public class ProcessorCe {
 			
 			CeSource otherSource = this.ac.getCurrentSource();
 
-			//DSB 07/03/2016 - To prevent issues with the source being overwritten and the various
-			//affected properties and concepts being lost this saving of meta-model CE is not done in
-			//the same way as trigger notifications, but creating a new separate instance of ActionContext
-			//to perform the updates.
+			//To prevent issues with the source being overwritten and the various affected properties and
+			//concepts being lost this saving of meta-model CE is not done in the same way as trigger
+			//notifications, but creating a new separate instance of ActionContext to perform the updates.
 			NotifyActionContext nAc = new NotifyActionContext(this.ac, "(Notify Trigger)");
 
 			nAc.setCurrentSource(mmSrc);

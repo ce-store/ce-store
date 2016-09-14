@@ -106,7 +106,6 @@ public class ModelDirectoryHandler extends GenericHandler {
 		//For this application the CE Store is always case-insenstive
 		pAc.getCeConfig().setCaseInsensitive();
 
-		//DSB 13/10/2015 - See whether rules should be auto executed
 		ConvConfig cc = pHm.getConvConfig(pAc);
 
 		if (cc != null) {

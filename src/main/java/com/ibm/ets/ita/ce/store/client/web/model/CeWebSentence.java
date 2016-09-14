@@ -6,23 +6,25 @@ package com.ibm.ets.ita.ce.store.client.web.model;
  *******************************************************************************/
 
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSONTYPE_SEN;
-import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_TYPE;
-import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_STYLE;
-import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_ID;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_CREATED;
-import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SEN_TEXT;
-import static com.ibm.ets.ita.ce.store.names.RestNames.STYLE_FULL;
-import static com.ibm.ets.ita.ce.store.names.RestNames.STYLE_SUMMARY;
-import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SEN_TYPE;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_FRAGTYPE;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_ID;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_IDX;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SEN_PRIORSEC;
-import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SEN_VAL;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SEN_RATSTEPS;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SEN_SRC;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SEN_SRC_ID;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SEN_STRUCTUREDTEXT;
-import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SEN_RATSTEPS;
-import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_IDX;
-import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_FRAGTYPE;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SEN_TEXT;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SEN_TYPE;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SEN_VAL;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_STYLE;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_TYPE;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.ANNO_TOKEN_MODEL;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_DOT;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_SPACE;
+import static com.ibm.ets.ita.ce.store.names.RestNames.STYLE_FULL;
+import static com.ibm.ets.ita.ce.store.names.RestNames.STYLE_SUMMARY;
 
 import java.util.Collection;
 
@@ -285,8 +287,8 @@ public class CeWebSentence extends CeWebObject {
 							textKey = "text";
 						}
 
-						//Special case for "." (terminator)
-						if ((propType.equals("normal")) && (thisFrag.equals("."))) {
+						//Special case for '.' (terminator)
+						if ((propType.equals("normal")) && (thisFrag.equals(TOKEN_DOT))) {
 							propType = "terminator";
 						}
 
@@ -307,8 +309,8 @@ public class CeWebSentence extends CeWebObject {
 								result.add(thisObj);
 								propType = "normal";
 								if (!concatNormal.isEmpty()) {
-									if (!thisFrag.equals(".")) {
-										concatNormal += " ";
+									if (!thisFrag.equals(TOKEN_DOT)) {
+										concatNormal += TOKEN_SPACE;
 									}
 								}
 								concatNormal += thisFrag;
@@ -415,7 +417,7 @@ public class CeWebSentence extends CeWebObject {
 		if (pPropType.equals("connector")) {
 			//This is a connector so concatenate to the previous value
 			if (!tgtVal.isEmpty()) {
-				if (!pThisText.equals(".")) {
+				if (!pThisText.equals(TOKEN_DOT)) {
 					tgtVal += " ";
 				}
 			}

@@ -6,7 +6,10 @@ package com.ibm.ets.ita.ce.store.parsing.builder;
  *******************************************************************************/
 
 import static com.ibm.ets.ita.ce.store.names.CeNames.RANGE_VALUE;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.ES;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_AND;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_DOT;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_SPACE;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.decodeForCe;
 
 import java.util.ArrayList;
@@ -24,7 +27,7 @@ import com.ibm.ets.ita.ce.store.model.CeSpecialProperty;
 public class BuilderSentenceFact extends BuilderSentence {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
-	//TODO: Complete sequence implementation
+	// TODO: Complete sequence implementation
 	private String instanceName = null;
 	private ArrayList<CeConcept> secondaryConceptsNormal = null;
 	private ArrayList<CeConcept> secondaryConceptsNegated = null;
@@ -60,8 +63,9 @@ public class BuilderSentenceFact extends BuilderSentence {
 	public void addRationaleToken(String pToken) {
 		this.rationaleTokens.add(pToken);
 
-		//TODO: The various tokens that need to be prepended should be added here
-		//this.structuredCeTokens.add(pToken);
+		// TODO: The various tokens that need to be prepended should be added
+		// here
+		// this.structuredCeTokens.add(pToken);
 	}
 
 	public boolean isClause() {
@@ -140,23 +144,29 @@ public class BuilderSentenceFact extends BuilderSentence {
 		return this.datatypeProperties;
 	}
 
-	public void addDatatypeProperty(ActionContext pAc, String pName, String pValue, CeProperty pProp, boolean pHadQuotes, boolean pIsNegated) {
+	public void addDatatypeProperty(ActionContext pAc, String pName, String pValue, CeProperty pProp,
+			boolean pHadQuotes, boolean pIsNegated) {
 		String decValue = decodeForCe(pValue);
 
-		//If this is a special operator property just save it, otherwise do the normal processing
+		// If this is a special operator property just save it, otherwise do the
+		// normal processing
 		if ((pProp != null) && (pProp.isSpecialOperatorProperty())) {
-			CePropertyInstance propInst = CePropertyInstance.createDatatypeProperty(pAc, pProp, decValue, null, null, pHadQuotes, pIsNegated);
+			CePropertyInstance propInst = CePropertyInstance.createDatatypeProperty(pAc, pProp, decValue, null, null,
+					pHadQuotes, pIsNegated);
 			this.datatypeProperties.add(propInst);
 		} else {
 			if (hasTargetConcept()) {
-				String fullPropName = CeProperty.calculateFullPropertyNameFor(getTargetConcept().getConceptName(), pName, RANGE_VALUE);			
+				String fullPropName = CeProperty.calculateFullPropertyNameFor(getTargetConcept().getConceptName(),
+						pName, RANGE_VALUE);
 				CeProperty targetProperty = getTargetConcept().retrievePropertyFullyNamed(fullPropName);
 
 				if (targetProperty != null) {
-					CePropertyInstance propInst = CePropertyInstance.createDatatypeProperty(pAc, targetProperty, decValue, null, null, pHadQuotes, pIsNegated);
+					CePropertyInstance propInst = CePropertyInstance.createDatatypeProperty(pAc, targetProperty,
+							decValue, null, null, pHadQuotes, pIsNegated);
 					this.datatypeProperties.add(propInst);
 				} else {
-					hasError(pAc, "Unable to find property named '" + pName + "' and concept named '" + getTargetConcept().getConceptName() + "' when adding datatype property");
+					hasError(pAc, "Unable to find property named '" + pName + "' and concept named '"
+							+ getTargetConcept().getConceptName() + "' when adding datatype property");
 				}
 			} else {
 				hasError(pAc, "No target concept for sentence: " + getSentenceText());
@@ -186,10 +196,12 @@ public class BuilderSentenceFact extends BuilderSentence {
 		this.rationaleProcessing = true;
 	}
 
-	public void addObjectProperty(ActionContext pAc, String pName, String pRange, String pValue, boolean pHadQuotes, boolean pIsNegated) {
+	public void addObjectProperty(ActionContext pAc, String pName, String pRange, String pValue, boolean pHadQuotes,
+			boolean pIsNegated) {
 		if (hasTargetConcept()) {
 			String decValue = decodeForCe(pValue);
-			String fullPropName = CeProperty.calculateFullPropertyNameFor(getTargetConcept().getConceptName(), pName, pRange);
+			String fullPropName = CeProperty.calculateFullPropertyNameFor(getTargetConcept().getConceptName(), pName,
+					pRange);
 			CeProperty targetProperty = null;
 
 			if (CeProperty.isSpecialPropertyName(pName, getTargetConcept().getConceptName())) {
@@ -203,7 +215,8 @@ public class BuilderSentenceFact extends BuilderSentence {
 			}
 
 			if (targetProperty != null) {
-				CePropertyInstance propInst = CePropertyInstance.createObjectProperty(pAc, targetProperty, pRange, decValue, getSentenceText(), null, null, pHadQuotes, pIsNegated);
+				CePropertyInstance propInst = CePropertyInstance.createObjectProperty(pAc, targetProperty, pRange,
+						decValue, getSentenceText(), null, null, pHadQuotes, pIsNegated);
 				this.objectProperties.add(propInst);
 			} else {
 				hasError(pAc, "Unable to find property named '" + fullPropName + "' when adding object property");
@@ -263,7 +276,7 @@ public class BuilderSentenceFact extends BuilderSentence {
 		ArrayList<CeProperty> result = null;
 
 		if (hasTargetConcept()) {
-			//TODO: Need to work out how the range can be passed here
+			// TODO: Need to work out how the range can be passed here
 			result = getTargetConcept().calculatePropertiesNamed(pName);
 		} else {
 			result = new ArrayList<CeProperty>();
@@ -276,7 +289,7 @@ public class BuilderSentenceFact extends BuilderSentence {
 		ArrayList<CeProperty> result = null;
 
 		if (hasTargetConcept()) {
-			//TODO: Need to work out how the range can be passed here
+			// TODO: Need to work out how the range can be passed here
 			result = getTargetConcept().calculatePropertiesStartingWith(pName);
 		} else {
 			result = new ArrayList<CeProperty>();
@@ -294,7 +307,8 @@ public class BuilderSentenceFact extends BuilderSentence {
 				if (thisProp.isSingleCardinality()) {
 					String propName = thisProp.getPropertyName();
 					if (tempProps.contains(propName)) {
-						hasError(pAc, "More than one occurrence of the single cardinality datatype property '" + propName + "' is specified in sentence: " + getSentenceText());
+						hasError(pAc, "More than one occurrence of the single cardinality datatype property '"
+								+ propName + "' is specified in sentence: " + getSentenceText());
 					}
 					tempProps.add(propName);
 				}
@@ -307,7 +321,8 @@ public class BuilderSentenceFact extends BuilderSentence {
 				if (thisProp.isSingleCardinality()) {
 					String propName = thisProp.getPropertyName();
 					if (tempProps.contains(propName)) {
-						hasError(pAc, "More than one occurrence of the single cardinality object property '" + propName + "' is specified in sentence: " + getSentenceText());
+						hasError(pAc, "More than one occurrence of the single cardinality object property '" + propName
+								+ "' is specified in sentence: " + getSentenceText());
 					}
 					tempProps.add(propName);
 				}
@@ -317,17 +332,17 @@ public class BuilderSentenceFact extends BuilderSentence {
 
 	public ArrayList<String> rationaleFragments() {
 		ArrayList<String> result = new ArrayList<String>();
-		String thisFrag = "";
+		String thisFrag = ES;
 
 		for (String thisToken : this.rationaleTokens) {
-			if (thisToken.equals("and")) {
+			if (thisToken.equals(TOKEN_AND)) {
 				if (!thisFrag.isEmpty()) {
 					result.add(thisFrag + TOKEN_DOT);
-					thisFrag = "";
+					thisFrag = ES;
 				}
 			} else {
-				//A normal token
-				thisFrag += " " + thisToken;
+				// A normal token
+				thisFrag += TOKEN_SPACE + thisToken;
 			}
 		}
 

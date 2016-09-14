@@ -42,7 +42,17 @@ public class ParseNames {
 	public static final String TOKEN_CONCAT = "<>";
 	public static final String TOKEN_COUNT = "#";
 	public static final String TOKEN_SUM = "@";
+	public static final String TOKEN_NEWUID = "{uid}";
+	public static final String TOKEN_NOW = "{now}";
+	public static final String TOKEN_LOGGEDINUSER = "{logged in user}";
 
+	public static final String REGEX_NEWUID = "\\{uid\\}";
+	public static final String REGEX_NOW = "\\{now\\}";
+	public static final String REGEX_LOGGEDINUSER = "\\{logged in user\\}";
+
+
+	public static final String TOKEN_FS = "/";
+	public static final String TOKEN_BS = "\\";
 	public static final String TOKEN_BLANK = "";
 	public static final String TOKEN_DOT = ".";
 	public static final String TOKEN_TILDE = "~";
@@ -55,8 +65,16 @@ public class ParseNames {
 	public static final String TOKEN_CLOSEBRA = "}";
 	public static final String TOKEN_COMMA = ",";
 	public static final String TOKEN_SPACE = " ";
+	public static final String TOKEN_UNDERSCORE = "_";
+	public static final String TOKEN_BAR = "|";
+	public static final String TOKEN_PERCENT = "%";
+	public static final String TOKEN_ZERO = "0";
 	public static final String TOKEN_SQ = "'";
 	public static final String TOKEN_DQ = "\"";
+	public static final String TOKEN_SQ1 = "‘";
+	public static final String TOKEN_SQ2 = "’";
+	public static final String TOKEN_DQ1 = "“";
+	public static final String TOKEN_DQ2 = "”";
 
 	public static final String TOKEN_BECAUSE = "because";
 	public static final String TOKEN_NULL = "null";
@@ -103,6 +121,7 @@ public class ParseNames {
 	public static final String TOKEN_IF = "if";
 	public static final String TOKEN_THEN = "then";
 
+	public static final String TOKEN_IDENTIFIER = "identifier";
 	public static final String TOKEN_RESET = "reset";
 	public static final String TOKEN_RELOAD = "reload";
 	public static final String TOKEN_STORE = "store";
@@ -147,13 +166,25 @@ public class ParseNames {
 
 	public static final String VARNAME_ARR = "autorun rules";
 	public static final String VARNAME_MDU = "model directory url";
-	public static final String VARVAL_TRUE = "true";
 
 	public static final String UID_NEXTAVAIL = "(next available)";
 
 	public static final String SEARCH_AND = "AND";
 	public static final String SEARCH_OR = "OR";
 	public static final String SEARCH_NOT = "NOT";
+
+	public static final String ESC_BS = "\\\\";
+	public static final String ESC_SQ = "\\'";
+	public static final String ESC_DQ = "\\\"";
+	public static final String ESC_SQ1 = "\\‘";
+	public static final String ESC_SQ2 = "\\’";
+	public static final String ESC_DQ1 = "\\“";
+	public static final String ESC_DQ2 = "\\”";
+
+	public static final String TOKEN_CECOMMENT = "-- ";
+	public static final String TOKEN_PROTOCOL_HTTP = "http://";
+	public static final String TOKEN_PROTOCOL_HTTPS = "https://";
+	public static final String TOKEN_PROTOCOL_FILE = "file://";
 
 	//TODO: Replace this nasty approach with a proper JSON structure
 	public static final String SCELABEL_NORMAL = "";

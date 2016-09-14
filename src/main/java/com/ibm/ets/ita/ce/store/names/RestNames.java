@@ -25,6 +25,12 @@ public class RestNames {
 	public static final String HDR_ACCEPT = "Accept";
 	public static final String HDR_CEUSER = "CE_User";
 	public static final String HDR_AUTH = "Authorization";
+	public static final String HDR_ORIGIN = "Origin";
+	public static final String HDR_AC_AO = "Access-Control-Allow-Origin";
+	public static final String HDR_AC_AC = "Access-Control-Allow-Credentials";
+	public static final String HDR_AC_AM = "Access-Control-Allow-Methods";
+	public static final String HDR_AC_AH = "Access-Control-Allow-Headers";
+	public static final String HDR_AC_RH = "Access-Control-Request-Headers";
 
 	public static final String CONTENT_TYPE_MULTIPART_FORM = "multipart/form-data";
 

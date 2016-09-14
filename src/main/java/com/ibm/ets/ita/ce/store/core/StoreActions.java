@@ -336,7 +336,6 @@ public class StoreActions {
 			reportError("Unable to validate CE sentence (null)", this.ac);
 		}
 
-		//DSB 04/03/2016
 		//Important to reset the validate flag on the action context otherwise
 		//it is still set when saving the sentence so nothing is saved
 		this.ac.markAsNotValidating();

@@ -1,5 +1,7 @@
 package com.ibm.ets.ita.ce.store.client.rest;
 
+//ALL DONE (not messages)
+
 /*******************************************************************************
  * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
@@ -8,7 +10,11 @@ package com.ibm.ets.ita.ce.store.client.rest;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.SENSOURCE_PRIMARY;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.SENSOURCE_SECONDARY;
 import static com.ibm.ets.ita.ce.store.names.MiscNames.CESTORENAME_DEFAULT;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.ES;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_CECOMMENT;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_COMMA;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_FS;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_TRUE;
 import static com.ibm.ets.ita.ce.store.names.RestNames.CONTENT_TYPE_MULTIPART_FORM;
 import static com.ibm.ets.ita.ce.store.names.RestNames.HDR_ACCEPT;
 import static com.ibm.ets.ita.ce.store.names.RestNames.METHOD_DELETE;
@@ -117,12 +123,13 @@ public abstract class CeStoreRestApi extends ApiHandler {
 
 		this.parmStyle = pRequest.getParameter(PARM_STYLE);
 	}
-	
+
 	public static String getCeStoreNameFrom(ArrayList<String> pRestParts) {
 		String result = null;
 
-		//The CE store name is found in the second element only if the first element
-		//is the "store" indicator, otherwise the default store name is used.
+		// The CE store name is found in the second element only if the first
+		// element
+		// is the 'store' indicator, otherwise the default store name is used.
 		if ((pRestParts == null) || (pRestParts.size() <= 1)) {
 			result = CESTORENAME_DEFAULT;
 		} else {
@@ -135,80 +142,85 @@ public abstract class CeStoreRestApi extends ApiHandler {
 	}
 
 	protected static void appendCeMainHeader(StringBuilder pSb, String pHdrText) {
-		appendToSb(pSb, "-- " + pHdrText);
-		appendToSb(pSb, "");
+		appendToSb(pSb, TOKEN_CECOMMENT + pHdrText);
+		appendToSb(pSb, ES);
 	}
 
 	protected static void appendCeSubHeader(StringBuilder pSb, String pHdrText) {
-		appendToSb(pSb, "-- " + pHdrText);
+		appendToSb(pSb, TOKEN_CECOMMENT + pHdrText);
 	}
 
 	public static boolean processRestRequest(WebActionContext pWc, HttpServletRequest pRequest) {
 		ArrayList<String> pRestParts = extractRestParts(pWc, pRequest);
-		
+
 		return doRestRequestProcessing(pWc, pRequest, pRestParts);
 	}
-	
-	public static boolean processModifiedRestRequest(WebActionContext pWc, HttpServletRequest pRequest, ArrayList<String> ppRestParts) {
+
+	public static boolean processModifiedRestRequest(WebActionContext pWc, HttpServletRequest pRequest,
+			ArrayList<String> ppRestParts) {
 		return doRestRequestProcessing(pWc, pRequest, ppRestParts);
 	}
 
-	private static boolean doRestRequestProcessing(WebActionContext pWc, HttpServletRequest pRequest, ArrayList<String> pRestParts) {
+	private static boolean doRestRequestProcessing(WebActionContext pWc, HttpServletRequest pRequest,
+			ArrayList<String> pRestParts) {
 		boolean statsInResponse = false;
 
 		if (!pRestParts.isEmpty()) {
 			String firstPart = pRestParts.get(0);
 
 			if (firstPart.equals(REST_STORE)) {
-				//Process the request, and if it is "/stores/<storename>/...",
-				//the correct ModelBuilder will be set-up and this method called
-				//again with the "/stores/<storename>" removed to process the 
-				//remaining parts request using the ModelBuilder. 
+				// Process the request, and if it is '/stores/<storename>/...',
+				// the correct ModelBuilder will be set-up and this method
+				// called
+				// again with the '/stores/<storename>' removed to process the
+				// remaining parts request using the ModelBuilder.
 				CeStoreRestApiStore restHandler = new CeStoreRestApiStore(pWc, pRestParts, pRequest);
 				statsInResponse = restHandler.processRequest();
 			} else {
-				if (pWc.getModelBuilder()==null) {
+				if (pWc.getModelBuilder() == null) {
 					ModelBuilder tgtMb = getNamedModelBuilder(pWc, CESTORENAME_DEFAULT);
 					pWc.setModelBuilderAndCeStoreName(tgtMb);
 				}
-				
-				if(firstPart.equals(REST_SOURCE)) {
+
+				if (firstPart.equals(REST_SOURCE)) {
 					CeStoreRestApiSource restHandler = new CeStoreRestApiSource(pWc, pRestParts, pRequest);
 					statsInResponse = restHandler.processRequest();
-				} else if(firstPart.equals(REST_SENTENCE)) {
+				} else if (firstPart.equals(REST_SENTENCE)) {
 					CeStoreRestApiSentence restHandler = new CeStoreRestApiSentence(pWc, pRestParts, pRequest);
 					statsInResponse = restHandler.processRequest();
-				} else if(firstPart.equals(REST_CONMODEL)) {
-					CeStoreRestApiConceptualModel restHandler = new CeStoreRestApiConceptualModel(pWc, pRestParts, pRequest);
+				} else if (firstPart.equals(REST_CONMODEL)) {
+					CeStoreRestApiConceptualModel restHandler = new CeStoreRestApiConceptualModel(pWc, pRestParts,
+							pRequest);
 					statsInResponse = restHandler.processRequest();
 				} else if (firstPart.equals(REST_CONCEPT)) {
 					CeStoreRestApiConcept restHandler = new CeStoreRestApiConcept(pWc, pRestParts, pRequest);
 					statsInResponse = restHandler.processRequest();
-				} else if(firstPart.equals(REST_PROPERTY)) {
+				} else if (firstPart.equals(REST_PROPERTY)) {
 					CeStoreRestApiProperty restHandler = new CeStoreRestApiProperty(pWc, pRestParts, pRequest);
 					statsInResponse = restHandler.processRequest();
-				} else if(firstPart.equals(REST_INSTANCE)) {
+				} else if (firstPart.equals(REST_INSTANCE)) {
 					CeStoreRestApiInstance restHandler = new CeStoreRestApiInstance(pWc, pRestParts, pRequest);
 					statsInResponse = restHandler.processRequest();
-				} else if(firstPart.equals(REST_QUERY)) {
+				} else if (firstPart.equals(REST_QUERY)) {
 					CeStoreRestApiQuery restHandler = new CeStoreRestApiQuery(pWc, pRestParts, pRequest);
 					statsInResponse = restHandler.processRequest();
-				} else if(firstPart.equals(REST_RULE)) {
+				} else if (firstPart.equals(REST_RULE)) {
 					CeStoreRestApiRule restHandler = new CeStoreRestApiRule(pWc, pRestParts, pRequest);
 					statsInResponse = restHandler.processRequest();
-				} else if(firstPart.equals(REST_SPECIAL)) {
+				} else if (firstPart.equals(REST_SPECIAL)) {
 					statsInResponse = CeStoreRestApiSpecial.processRequest(pWc, pRestParts, pRequest);
 				} else {
 					reportUnsupportedPrimaryError(pWc, firstPart);
 				}
 			}
 		} else {
-			reportUnsupportedPrimaryError(pWc, "");
+			reportUnsupportedPrimaryError(pWc, ES);
 		}
 
-		//If the user has specified showStats=true as a HTTP parameter then this will override the statsInResponse value
+		// If the user has specified showStats=true as a HTTP parameter then
+		// this will override the statsInResponse value
 		String overrideStats = urlDecode(pWc, pRequest.getParameter(PARM_SHOWSTATS));
-		if (overrideStats.equals("true")) {
+		if (overrideStats.equals(TOKEN_TRUE)) {
 			statsInResponse = true;
 		}
 
@@ -220,10 +232,10 @@ public abstract class CeStoreRestApi extends ApiHandler {
 
 		String urlRoot = pRequest.getContextPath();
 		String fullUrl = pRequest.getRequestURI();
-		String restUrl = fullUrl.replace(urlRoot, "");
-		String[] rawpRestParts = restUrl.split("/");	//TODO: Abstract this
+		String restUrl = fullUrl.replace(urlRoot, ES);
+		String[] rawpRestParts = restUrl.split(TOKEN_FS);
 
-		//Remove any empty parts (typically the first if the url starts with \)
+		// Remove any empty parts (typically the first if the url starts with \)
 		for (String thisRawPart : rawpRestParts) {
 			if (!thisRawPart.isEmpty()) {
 				result.add(urlDecode(pWc, thisRawPart));
@@ -240,14 +252,14 @@ public abstract class CeStoreRestApi extends ApiHandler {
 	protected ModelBuilder getModelBuilder() {
 		return this.mb;
 	}
-	
+
 	protected static synchronized ModelBuilder getNamedModelBuilder(WebActionContext pWc, String pMbName) {
 		ModelBuilder result = ServletStateManager.getServletStateManager().getModelBuilder(pMbName);
-		
+
 		if (result == null && pMbName.toUpperCase().trim().equals(CESTORENAME_DEFAULT)) {
 			result = ServletStateManager.getServletStateManager().createModelBuilder(pWc, pMbName);
 		}
-		
+
 		return result;
 	}
 
@@ -256,7 +268,7 @@ public abstract class CeStoreRestApi extends ApiHandler {
 	}
 
 	protected boolean isJsonRequest() {
-		//The default is to return json (hence the null and "any" tests)
+		// The default is to return json (hence the null and 'any' tests)
 		return (this.reqType == null) || (this.reqType.contains(REQTYPE_ANY)) || (this.reqType.contains(REQTYPE_JSON));
 	}
 
@@ -264,7 +276,8 @@ public abstract class CeStoreRestApi extends ApiHandler {
 		boolean result = (this.reqType != null) && (this.reqType.contains(REQTYPE_TEXT));
 
 		if (!result) {
-			//Try the "weak" text test as some browsers and agents use different forms
+			// Try the 'weak' text test as some browsers and agents use
+			// different forms
 			result = (this.reqType != null) && (this.reqType.contains(REQTYPE_WEAKTEXT));
 		}
 
@@ -289,7 +302,9 @@ public abstract class CeStoreRestApi extends ApiHandler {
 
 	@Override
 	public boolean isDefaultStyle() {
-		return (this.parmStyle == null) || ((!this.parmStyle.equals(STYLE_FULL)) && (!this.parmStyle.equals(STYLE_SUMMARY)) && (!this.parmStyle.equals(STYLE_MINIMAL)) && (!this.parmStyle.equals(STYLE_NORMALISED)));
+		return (this.parmStyle == null)
+				|| ((!this.parmStyle.equals(STYLE_FULL)) && (!this.parmStyle.equals(STYLE_SUMMARY))
+						&& (!this.parmStyle.equals(STYLE_MINIMAL)) && (!this.parmStyle.equals(STYLE_NORMALISED)));
 	}
 
 	@Override
@@ -313,9 +328,10 @@ public abstract class CeStoreRestApi extends ApiHandler {
 	}
 
 	protected String getParameterNamed(String pParmName) {
-		//The parameter may be passed as a url parameter or a http request header
-		//Both alternatives have the same name
-		//The http url takes precedence in cases where both are specified
+		// The parameter may be passed as a url parameter or a http request
+		// header
+		// Both alternatives have the same name
+		// The http url takes precedence in cases where both are specified
 		String result = getUrlParameterValueNamed(pParmName);
 
 		if ((result == null) || (result.isEmpty())) {
@@ -365,7 +381,7 @@ public abstract class CeStoreRestApi extends ApiHandler {
 		String[] valueArray = this.request.getParameterValues(pKeyName);
 		if (valueArray != null) {
 			valueSet = new HashSet<String>(valueArray.length);
-			for(String value : valueArray) {
+			for (String value : valueArray) {
 				valueSet.add(urlDecode(this.wc, value));
 			}
 		} else {
@@ -401,17 +417,18 @@ public abstract class CeStoreRestApi extends ApiHandler {
 
 		String result = null;
 		BufferedReader reader = null;
-		
+
 		try {
 			if (this.request.getContentType() != null) {
 				if (this.request.getContentType().startsWith(CONTENT_TYPE_MULTIPART_FORM)) {
-					// multipart form, i.e. file upload request, currently single file only.
+					// multipart form, i.e. file upload request, currently
+					// single file only.
 					Collection<Part> parts = this.request.getParts();
 					Iterator<Part> partsIterator = parts.iterator();
 					if (partsIterator.hasNext()) {
 						Part part = partsIterator.next();
 						InputStream partInputStream = part.getInputStream();
-						InputStreamReader partInputStreamReader = new InputStreamReader(partInputStream); 
+						InputStreamReader partInputStreamReader = new InputStreamReader(partInputStream);
 						reader = new BufferedReader(partInputStreamReader);
 					}
 				} else {
@@ -423,32 +440,34 @@ public abstract class CeStoreRestApi extends ApiHandler {
 				reader = this.request.getReader();
 			}
 
-			if (reader!=null) {
+			if (reader != null) {
 				result = convertToString(this.wc, reader);
 
 				try {
 					result = urlDecode(this.wc, result);
 				} catch (IllegalArgumentException e) {
-					reportWarning("Error encountered url decoding CE text. Continuing on the assumption it was not url encoded", this.wc);
+					reportWarning(
+							"Error encountered url decoding CE text. Continuing on the assumption it was not url encoded",
+							this.wc);
 				}
 			}
 		} catch (IOException e) {
 			reportException(e, this.wc, logger, CLASS_NAME, METHOD_NAME);
 		} catch (ServletException e) {
-			reportException(e, this.wc, logger, CLASS_NAME, METHOD_NAME);		  
+			reportException(e, this.wc, logger, CLASS_NAME, METHOD_NAME);
 		}
-		
+
 		return result;
 	}
-	
+
 	protected String getCeTextFromRequest() {
 		String result = null;
 
-		//First try the named parameter
+		// First try the named parameter
 		result = getUrlParameterValueNamed(PARM_CETEXT);
 
 		if ((result == null) || (result.isEmpty())) {
-			//If that is not specified try the post body
+			// If that is not specified try the post body
 			result = getTextFromRequest();
 		}
 
@@ -474,7 +493,7 @@ public abstract class CeStoreRestApi extends ApiHandler {
 	}
 
 	protected void reportNotYetImplementedError() {
-		reportNotYetImplementedError("");
+		reportNotYetImplementedError(ES);
 	}
 
 	protected void reportNotYetImplementedError(String pText) {
@@ -484,7 +503,8 @@ public abstract class CeStoreRestApi extends ApiHandler {
 
 	protected void reportUnhandledUrl() {
 		getWebActionResponse().setHttpErrorCode(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-		getWebActionResponse().setHttpErrorMessage("Unhandled URL fragment in '" + rebuildUrlFrom(this.restParts) + "'");
+		getWebActionResponse()
+				.setHttpErrorMessage("Unhandled URL fragment in '" + rebuildUrlFrom(this.restParts) + "'");
 	}
 
 	protected void reportUnhandledUrl(ArrayList<String> pRestParts) {
@@ -503,22 +523,22 @@ public abstract class CeStoreRestApi extends ApiHandler {
 	}
 
 	private static String rebuildUrlFrom(ArrayList<String> pRestParts) {
-		String result = "";
+		String result = ES;
 
 		for (String thisPart : pRestParts) {
-			result += "/" + thisPart;		//TODO: Abstract this
+			result += TOKEN_FS + thisPart;
 		}
 
 		return result;
 	}
-	
+
 	protected void setActionOutcomeAsStructuredResult(String pHeadline) {
 		CeStoreJsonObject jsonHeadline = new CeStoreJsonObject();
 		jsonHeadline.put(REST_HEADLINE, pHeadline);
 
 		getWebActionResponse().setStructuredResult(jsonHeadline);
-		
-		//Also add this as a standard message
+
+		// Also add this as a standard message
 		getWebActionResponse().addLineToMessage(pHeadline);
 	}
 
@@ -556,7 +576,7 @@ public abstract class CeStoreRestApi extends ApiHandler {
 		CeStoreJsonArray jArr = new CeStoreJsonArray();
 		CeWebSentence senWeb = new CeWebSentence(this.wc);
 
-		//Add each set of sentences with a different primary/secondary flag
+		// Add each set of sentences with a different primary/secondary flag
 		if (isDefaultStyle() || isSummaryStyle()) {
 			senWeb.generateSummaryListUsing(pSentencesPair.get(0), SENSOURCE_PRIMARY, jArr);
 			senWeb.generateSummaryListUsing(pSentencesPair.get(1), SENSOURCE_SECONDARY, jArr);
@@ -608,13 +628,15 @@ public abstract class CeStoreRestApi extends ApiHandler {
 		String[] onlyProps = getListParameterNamed(PARM_ONLYPROPS);
 
 		if (isDefaultStyle() || isSummaryStyle()) {
-			getWebActionResponse().setStructuredResult(instWeb.generateSummaryListJsonFor(pInstList, onlyProps, suppPropTypes));
+			getWebActionResponse()
+					.setStructuredResult(instWeb.generateSummaryListJsonFor(pInstList, onlyProps, suppPropTypes));
 		} else if (isMinimalStyle()) {
 			getWebActionResponse().setStructuredResult(instWeb.generateMinimalListJsonFor(pInstList, onlyProps));
 		} else if (isNormalisedStyle()) {
 			getWebActionResponse().setStructuredResult(instWeb.generateNormalisedListJsonFor(pInstList, onlyProps));
 		} else {
-			getWebActionResponse().setStructuredResult(instWeb.generateFullListJsonFor(pInstList, onlyProps, suppPropTypes));
+			getWebActionResponse()
+					.setStructuredResult(instWeb.generateFullListJsonFor(pInstList, onlyProps, suppPropTypes));
 		}
 	}
 
@@ -628,10 +650,12 @@ public abstract class CeStoreRestApi extends ApiHandler {
 		String[] onlyProps = getListParameterNamed(PARM_ONLYPROPS);
 
 		CeWebSpecial webSpec = new CeWebSpecial(this.wc);
-		getWebActionResponse().setStructuredResult(webSpec.generateSentenceLoadResultsFrom(pSenStats, onlyProps, suppPropTypes));
+		getWebActionResponse()
+				.setStructuredResult(webSpec.generateSentenceLoadResultsFrom(pSenStats, onlyProps, suppPropTypes));
 	}
 
-	protected void setCeResultAsStructuredResult(ContainerCeResult pCeResult, boolean pSuppressResult, boolean pReturnInstances) {
+	protected void setCeResultAsStructuredResult(ContainerCeResult pCeResult, boolean pSuppressResult,
+			boolean pReturnInstances) {
 		int numSteps = getNumericUrlParameterValueNamed(PARM_STEPS, -1);
 		boolean relInsts = getBooleanParameterNamed(PARM_RELINSTS, true);
 		boolean refInsts = getBooleanParameterNamed(PARM_REFINSTS, true);
@@ -644,11 +668,14 @@ public abstract class CeStoreRestApi extends ApiHandler {
 		CeStoreJsonObject jRes = null;
 
 		if (isMinimalStyle()) {
-			jRes = CeWebContainerResult.generateMinimalCeQueryResultFrom(this.wc, pCeResult, pSuppressResult, pReturnInstances, onlyProps, numSteps, relInsts, refInsts, limRels, suppPropTypes);
+			jRes = CeWebContainerResult.generateMinimalCeQueryResultFrom(this.wc, pCeResult, pSuppressResult,
+					pReturnInstances, onlyProps, numSteps, relInsts, refInsts, limRels, suppPropTypes);
 		} else if (isNormalisedStyle()) {
-			jRes = CeWebContainerResult.generateNormalisedCeQueryResultFrom(this.wc, pCeResult, pSuppressResult, pReturnInstances, onlyProps, numSteps, relInsts, refInsts, limRels, suppPropTypes);
+			jRes = CeWebContainerResult.generateNormalisedCeQueryResultFrom(this.wc, pCeResult, pSuppressResult,
+					pReturnInstances, onlyProps, numSteps, relInsts, refInsts, limRels, suppPropTypes);
 		} else {
-			jRes = CeWebContainerResult.generateNormalCeQueryResultFrom(this.wc, pCeResult, pSuppressResult, pReturnInstances, onlyProps, numSteps, relInsts, refInsts, limRels, suppPropTypes);
+			jRes = CeWebContainerResult.generateNormalCeQueryResultFrom(this.wc, pCeResult, pSuppressResult,
+					pReturnInstances, onlyProps, numSteps, relInsts, refInsts, limRels, suppPropTypes);
 		}
 
 		getWebActionResponse().setStructuredResult(jRes);

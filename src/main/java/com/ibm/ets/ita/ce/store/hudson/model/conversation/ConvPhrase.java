@@ -16,9 +16,6 @@ public class ConvPhrase extends ConvItem {
 	private ArrayList<ConvWord> allWords = null;
 	private ArrayList<ConvSentence> childSentences = new ArrayList<ConvSentence>();
 	
-	private String[] qsmList = null;	//Question start markers
-	private String[] qemList = null;	//Question end markers
-
 	public static ConvPhrase createNewPhrase(ActionContext pAc, String pPhraseText) {
 		ConvPhrase result = new ConvPhrase(pAc, pPhraseText);
 		result.initialise();
@@ -66,8 +63,6 @@ public class ConvPhrase extends ConvItem {
 		this.allWords = new ArrayList<ConvWord>();
 		
 		initialiseDelimiterList();
-		initialiseQuestionStartMarkers();
-		initialiseQuestionEndMarkers();
 	}
 
 	private void initialiseDelimiterList() {
@@ -76,27 +71,6 @@ public class ConvPhrase extends ConvItem {
 		this.delimiterList[0] = "\\.";
 		this.delimiterList[1] = "\\!";
 		this.delimiterList[2] = "\\?";
-	}
-
-	private void initialiseQuestionStartMarkers() {
-		//TODO: Make this more dynamic
-		this.qsmList = new String[10];
-		this.qsmList[0] = "what";
-		this.qsmList[1] = "who";
-		this.qsmList[2] = "why";
-		this.qsmList[3] = "where";
-		this.qsmList[4] = "which";
-		this.qsmList[5] = "count";
-		this.qsmList[6] = "list";
-		this.qsmList[7] = "is";
-		this.qsmList[8] = "summarise";
-		this.qsmList[9] = "summarize";
-	}
-
-	private void initialiseQuestionEndMarkers() {
-		//TODO: Make this more dynamic
-		this.qemList = new String[1];
-		this.qemList[0] = "?";
 	}
 
 	public ProcessedWord getFirstProcessedWord() {

@@ -563,9 +563,9 @@ public abstract class FileUtilities {
 	}
 
 	public static String getFolderValueFor(ActionContext pAc, String pFolderName) {
-		//DSB 22/11/2012 - Removed this an replaced with a hardcoded "/" instead since this is overall
-		//consistent and works in all three operating systems that we are targeting
-		//		String fs = File.separator;
+		//Using a hardcoded '/' character instead of File.Separator since this is
+		//overall consistent and works in all three operating systems that we are
+		//targeting
 		String result = calculateFullFilenameFrom(pAc, pFolderName);
 
 		if ((result != null) && (!result.isEmpty())) {

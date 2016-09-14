@@ -46,7 +46,7 @@ import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_VALUE;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_WITH;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.VARNAME_ARR;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.VARNAME_MDU;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.VARVAL_TRUE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_TRUE;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.UID_NEXTAVAIL;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.decodeForCe;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.stripDelimitingQuotesFrom;
@@ -624,7 +624,7 @@ public class BuilderSentenceCommand extends BuilderSentence {
 		String varVal = stripDelimitingQuotesFrom(this.rawTokens.get(4)).toLowerCase().trim();
 
 		if (varName.equals(VARNAME_ARR)) {
-			if (varVal.equals(VARVAL_TRUE)) {
+			if (varVal.equals(TOKEN_TRUE)) {
 				pAc.getCeConfig().setAutoRunRules(true);
 				pAc.markAsAutoExecuteRules(true);
 			} else {

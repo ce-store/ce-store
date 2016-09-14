@@ -9,9 +9,13 @@ import static com.ibm.ets.ita.ce.store.names.CeNames.RANGE_VALUE;
 import static com.ibm.ets.ita.ce.store.names.MiscNames.ES;
 import static com.ibm.ets.ita.ce.store.names.MiscNames.NL;
 import static com.ibm.ets.ita.ce.store.names.MiscNames.PREFIX_CLAUSE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_AND;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_DOT;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_NEW;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_NO;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_SPACE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_SQ;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_THE;
 
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicLong;
@@ -25,7 +29,7 @@ public class CeClause {
 	private static AtomicLong clauseIdVal = new AtomicLong(0);
 
 	private String id = null;
-	private String seqId = "";
+	private String seqId = null;
 	private int clauseMode = 0; // Whether this is a premise or conclusion
 	private ArrayList<String> rawTokens = new ArrayList<String>();
 	private CeConcept targetConcept = null;
@@ -117,7 +121,7 @@ public class CeClause {
 
 	public boolean isSimpleClause() {
 		// A clause that is just a statement of being (with no properties)
-		// e.g. "there is a person V1"
+		// e.g. 'there is a person V1'
 		return (getObjectProperties().isEmpty()) && (getDatatypeProperties().isEmpty());
 	}
 
@@ -291,52 +295,55 @@ public class CeClause {
 		String result = ES;
 		String sepWord = ES;
 
-		result += formattedClauseType() + " ";
+		result += formattedClauseType() + TOKEN_SPACE;
 		result += " direct (" + getSeqId() + ") - ";
 		result += this.rawTokens.toString() + NL;
 		result += formattedTargetConcept() + " " + formattedTargetVariable();
 
 		for (CeConcept secCon : getSecondaryConceptsNormal()) {
 			result += sepWord;
-			result += " is a " + secCon.getConceptName() + " ";
-			sepWord = "and";
+			result += " is a " + secCon.getConceptName() + TOKEN_SPACE;
+			sepWord = TOKEN_AND;
 		}
 
 		for (CeConcept secCon : getSecondaryConceptsNegated()) {
 			result += sepWord;
-			result += " is not a " + secCon.getConceptName() + " ";
-			sepWord = "and";
+			result += " is not a " + secCon.getConceptName() + TOKEN_SPACE;
+			sepWord = TOKEN_AND;
 		}
 
 		for (CePropertyInstance thisProp : this.datatypeProperties) {
 			result += sepWord;
 			if (thisProp.getRelatedProperty().isVerbSingular()) {
 				// The verb singular form for datatype properties is rarely used
-				result += " " + thisProp.getRelatedProperty().getPropertyName() + " the value '"
+				result += TOKEN_SPACE + thisProp.getRelatedProperty().getPropertyName() + " the value '"
 						+ thisProp.getSingleOrFirstValue() + "' ";
 			} else {
 				CePropertyValue thisPv = thisProp.getFirstPropertyValue();
-				String qs = "";
+				String qs = null;
 				if (thisPv.hadQuotesOriginally()) {
-					qs = "'";
+					qs = TOKEN_SQ;
+				} else {
+					qs = ES;
 				}
 
 				result += " has the [value] " + qs + thisPv.getValue() + qs + " as "
-						+ thisProp.getRelatedProperty().getPropertyName() + " ";
+						+ thisProp.getRelatedProperty().getPropertyName() + TOKEN_SPACE;
 			}
-			sepWord = "and";
+			sepWord = TOKEN_AND;
 		}
 
 		for (CePropertyInstance thisProp : this.objectProperties) {
 			result += sepWord;
 			if (thisProp.getRelatedProperty().isVerbSingular()) {
 				result += " " + thisProp.getRelatedProperty().getPropertyName() + " the "
-						+ thisProp.getSingleOrFirstRangeName() + " " + thisProp.getSingleOrFirstValue() + " ";
+						+ thisProp.getSingleOrFirstRangeName() + TOKEN_SPACE + thisProp.getSingleOrFirstValue() + " ";
 			} else {
-				result += " has the " + thisProp.getSingleOrFirstRangeName() + " " + thisProp.getSingleOrFirstValue()
-						+ " as " + thisProp.getRelatedProperty().getPropertyName() + " ";
+				result += " has the " + thisProp.getSingleOrFirstRangeName() + TOKEN_SPACE
+						+ thisProp.getSingleOrFirstValue() + " as " + thisProp.getRelatedProperty().getPropertyName()
+						+ " ";
 			}
-			sepWord = "and";
+			sepWord = TOKEN_AND;
 		}
 
 		result += NL + "(with " + Integer.toString(this.childClauses.size()) + " child clauses)";
@@ -345,54 +352,59 @@ public class CeClause {
 	}
 
 	public String formattedChildClauseString() {
-		String result = "";
-		String sepWord = "";
+		String result = ES;
+		String sepWord = ES;
 
-		result += formattedClauseType() + " ";
+		result += formattedClauseType() + TOKEN_SPACE;
 		result += " child (" + getSeqId() + ") - ";
-		result += formattedTargetConcept() + " " + formattedTargetVariable();
+		result += formattedTargetConcept() + TOKEN_SPACE + formattedTargetVariable();
 
 		for (CeConcept secCon : getSecondaryConceptsNormal()) {
 			result += sepWord;
-			result += " is a " + secCon.getConceptName() + " ";
-			sepWord = "and";
+			result += " is a " + secCon.getConceptName() + TOKEN_SPACE;
+			sepWord = TOKEN_AND;
 		}
 
 		for (CeConcept secCon : getSecondaryConceptsNegated()) {
 			result += sepWord;
-			result += " is-not-a " + secCon.getConceptName() + " ";
-			sepWord = "and";
+			result += " is-not-a " + secCon.getConceptName() + TOKEN_SPACE;
+			sepWord = TOKEN_AND;
 		}
 
 		for (CePropertyInstance thisProp : this.datatypeProperties) {
 			result += sepWord;
 			if (thisProp.getRelatedProperty().isVerbSingular()) {
 				// The verb singular form for datatype properties is rarely used
-				result += " " + thisProp.getRelatedProperty().getPropertyName() + " the value '"
+				result += TOKEN_SPACE + thisProp.getRelatedProperty().getPropertyName() + " the value '"
 						+ thisProp.getSingleOrFirstValue() + "' ";
 			} else {
-				String qs = "";
 				CePropertyValue thisPv = thisProp.getFirstPropertyValue();
+				String qs = null;
 
 				if (thisPv.hadQuotesOriginally()) {
-					qs = "'";
+					qs = TOKEN_SQ;
+				} else {
+					qs = ES;
 				}
+
 				result += " has the [value] " + qs + thisPv.getValue() + qs + " as "
-						+ thisProp.getRelatedProperty().getPropertyName() + " ";
+						+ thisProp.getRelatedProperty().getPropertyName() + TOKEN_SPACE;
 			}
-			sepWord = "and";
+			sepWord = TOKEN_AND;
 		}
 
 		for (CePropertyInstance thisProp : this.objectProperties) {
 			result += sepWord;
 			if (thisProp.getRelatedProperty().isVerbSingular()) {
-				result += " " + thisProp.getRelatedProperty().getPropertyName() + " the "
-						+ thisProp.getSingleOrFirstRangeName() + " " + thisProp.getSingleOrFirstValue() + " ";
+				result += TOKEN_SPACE + thisProp.getRelatedProperty().getPropertyName() + " the "
+						+ thisProp.getSingleOrFirstRangeName() + TOKEN_SPACE + thisProp.getSingleOrFirstValue()
+						+ TOKEN_SPACE;
 			} else {
-				result += " has the " + thisProp.getSingleOrFirstRangeName() + " " + thisProp.getSingleOrFirstValue()
-						+ " as " + thisProp.getRelatedProperty().getPropertyName() + " ";
+				result += " has the " + thisProp.getSingleOrFirstRangeName() + TOKEN_SPACE
+						+ thisProp.getSingleOrFirstValue() + " as " + thisProp.getRelatedProperty().getPropertyName()
+						+ TOKEN_SPACE;
 			}
-			sepWord = "and";
+			sepWord = TOKEN_AND;
 		}
 
 		// TODO: Add concatenated values here
@@ -404,9 +416,9 @@ public class CeClause {
 		String result = null;
 
 		if (isTargetConceptNegated()) {
-			result = "no ";
+			result = TOKEN_NO + TOKEN_SPACE;
 		} else {
-			result = "the ";
+			result = TOKEN_THE + TOKEN_SPACE;
 		}
 
 		if (getTargetConcept() == null) {
@@ -419,7 +431,7 @@ public class CeClause {
 	}
 
 	private String formattedTargetVariable() {
-		String result = "";
+		String result = null;
 
 		if (getTargetVariable().isEmpty()) {
 			result = "(null targetVariable)";
@@ -428,7 +440,7 @@ public class CeClause {
 		}
 
 		if (targetVariableWasQuoted()) {
-			result = "'" + result + "'";
+			result = TOKEN_SQ + result + TOKEN_SQ;
 		}
 
 		return result;
@@ -436,7 +448,7 @@ public class CeClause {
 
 	@Override
 	public String toString() {
-		String result = "";
+		String result = null;
 
 		if (isDirectClause()) {
 			result = formattedDirectClauseString();
@@ -454,7 +466,7 @@ public class CeClause {
 			if (result == null) {
 				result = thisToken;
 			} else {
-				result += " " + thisToken;
+				result += TOKEN_SPACE + thisToken;
 			}
 		}
 

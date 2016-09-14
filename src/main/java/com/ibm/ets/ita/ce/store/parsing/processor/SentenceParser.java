@@ -153,12 +153,8 @@ public abstract class SentenceParser {
 			handleDot();
 		} else if (this.currentChar == CHAR_TAB) {
 			handleTab();
-//DSB 30/07/2014 - Added handling for special quote characters
-//		} else if ((this.currentChar == CHAR_SQ)) {
 		} else if ((this.currentChar == CHAR_SQ) || (this.currentChar == CHAR_SQ1) || (this.currentChar == CHAR_SQ2)) {
 			handleSingleQuote();
-//DSB 30/07/2014 - Added handling for special quote characters
-//		} else if ((this.currentChar == CHAR_DQ)) {
 		} else if ((this.currentChar == CHAR_DQ) || (this.currentChar == CHAR_DQ1) || (this.currentChar == CHAR_DQ2)) {
 			handleDoubleQuote();
 		} else if (this.currentChar == CHAR_OPBR) {

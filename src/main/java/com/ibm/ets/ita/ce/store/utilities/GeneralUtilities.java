@@ -5,20 +5,38 @@ package com.ibm.ets.ita.ce.store.utilities;
  * All Rights Reserved
  *******************************************************************************/
 
-import static com.ibm.ets.ita.ce.store.names.MiscNames.BR;
-import static com.ibm.ets.ita.ce.store.names.MiscNames.NL;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.ES;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.ESC_BS;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.ESC_DQ;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.ESC_DQ1;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.ESC_DQ2;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.ESC_SQ;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.ESC_SQ1;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.ESC_SQ2;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_BS;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_DOT;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_DQ;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_DQ1;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_DQ2;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_FS;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_SQ;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_SQ1;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_SQ2;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_NEWUID;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_LOGGEDINUSER;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_NOW;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_PROTOCOL_FILE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_PROTOCOL_HTTP;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_PROTOCOL_HTTPS;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.REGEX_NEWUID;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.REGEX_LOGGEDINUSER;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.REGEX_NOW;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.isReportTiming;
-import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportException;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportInfo;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportTiming;
 
 import java.text.DecimalFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 
@@ -33,39 +51,6 @@ public abstract class GeneralUtilities {
 	private static final String CLASS_NAME = GeneralUtilities.class.getName();
 	private static final String PACKAGE_NAME = GeneralUtilities.class.getPackage().getName();
 	private static final Logger logger = Logger.getLogger(PACKAGE_NAME);
-
-	private static final String RAW_DOT = ".";
-	private static final String RAW_BS = "\\";
-	private static final String RAW_FS = "/";
-	private static final String RAW_SQ = "'";
-	private static final String RAW_DQ = "\"";
-
-	private static final String ESC_BS = "\\\\";
-	private static final String ESC_SQ = "\\'";
-	private static final String ESC_DQ = "\\\"";
-
-	//DSB 30/07/2014 - Added handling for special quote characters
-	private static final String RAW_SQ1 = "‘";
-	private static final String RAW_SQ2 = "’";
-	private static final String RAW_DQ1 = "“";
-	private static final String RAW_DQ2 = "”";
-	private static final String ESC_SQ1 = "\\‘";
-	private static final String ESC_SQ2 = "\\’";
-	private static final String ESC_DQ1 = "\\“";
-	private static final String ESC_DQ2 = "\\”";
-
-	private static final String TOKEN_HTTP = "http://";
-	private static final String TOKEN_HTTPS = "https://";
-	private static final String TOKEN_FILE = "file://";
-
-	private static final String MARKER_UID = "{uid}";
-	private static final String REGEX_UID = "\\{uid\\}";
-	private static final String MARKER_NOW = "{now}";
-	private static final String REGEX_NOW = "\\{now\\}";
-	private static final String MARKER_LOGGEDINUSER = "{logged in user}";
-	private static final String REGEX_LOGGEDINUSER = "\\{logged in user\\}";
-
-	private static ArrayList<String> dateFormatList = null;
 
 	public static String handleSpecialMarkersAndDecode(ActionContext pAc, String pVal) {
 		String result = pVal;
@@ -82,7 +67,7 @@ public abstract class GeneralUtilities {
 	private static String handleNowMarker(String pVal) {
 		String result = null;
 
-		if (pVal.contains(MARKER_NOW)) {
+		if (pVal.contains(TOKEN_NOW)) {
 			result = pVal.replaceAll(REGEX_NOW, new Long(timestampNow()).toString());
 		} else {
 			result = pVal;
@@ -94,8 +79,8 @@ public abstract class GeneralUtilities {
 	private static String handleUidMarker(ActionContext pAc, String pVal) {
 		String result = null;
 
-		if (pVal.contains(MARKER_UID)) {
-			result = pVal.replaceAll(REGEX_UID, pAc.getModelBuilder().getNextUid(pAc, null));
+		if (pVal.contains(TOKEN_NEWUID)) {
+			result = pVal.replaceAll(REGEX_NEWUID, pAc.getModelBuilder().getNextUid(pAc, null));
 		} else {
 			result = pVal;
 		}
@@ -107,12 +92,12 @@ public abstract class GeneralUtilities {
 		String userName = pAc.getUserName();
 
 		if ((userName == null) || (userName.isEmpty())) {
-			userName = "no one";
+			userName = "no one";	//TODO: Abstract this
 		}
 
 		String result = null;
 
-		if (pVal.contains(MARKER_LOGGEDINUSER)) {
+		if (pVal.contains(TOKEN_LOGGEDINUSER)) {
 			result = pVal.replaceAll(REGEX_LOGGEDINUSER, userName);
 		} else {
 			result = pVal;
@@ -121,87 +106,10 @@ public abstract class GeneralUtilities {
 		return result;
 	}
 
-	public static String formatToEightPlaces(double pValue) {
-		DecimalFormat df = new DecimalFormat("#,###,###,##0.00000000");
-
-		return df.format(pValue);
-	}
-
-	public static String formattedUnixTime() {
-		return Long.toString(System.currentTimeMillis());
-	}
-
 	public static String formattedDuration(long pStartTime) {
 		DecimalFormat df = new DecimalFormat("#,###,###,##0.000");
 
 		return df.format((System.currentTimeMillis() - pStartTime) / 1000.00);
-	}
-
-	public static String formattedTimeForFilenames() {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
-
-		return sdf.format(new Date());
-	}
-
-	public static String formattedSimpleDatetime(Date pDate) {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy MM dd HH:mm:ss");
-
-		return sdf.format(pDate);
-	}
-
-	public static String formattedIso8601DateString(Calendar pCal) {
-		Date date = pCal.getTime();
-		String result = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(date);
-
-		return result + "Z";
-	}
-
-	private static ArrayList<String> getDateFormatList() {
-		if (dateFormatList == null) {
-			dateFormatList = new ArrayList<String>();
-			dateFormatList.add("yyyy-MM-dd'T'HH:mm:ssZ");
-			dateFormatList.add("yyyy-MM-dd'T'HH:mmZ");
-			dateFormatList.add("yyyy-MM-dd'T'HHZ");
-			dateFormatList.add("yyyy-MM-ddZ");
-			dateFormatList.add("yyyy-MMZ");
-			dateFormatList.add("yyyyZ");
-			dateFormatList.add("yyyyMMdd'T'HHmmssZ");
-			dateFormatList.add("yyyyMMdd'T'HHmmZ");
-			dateFormatList.add("yyyyMMdd'T'HHZ");
-			dateFormatList.add("yyyyMMddZ");
-			dateFormatList.add("yyyyMMZ");
-			dateFormatList.add("yyyyMMddHHmmssZ");
-			dateFormatList.add("yyyyMMddHHmmZ");
-			dateFormatList.add("yyyyMMddHHZ");
-		}
-
-		return dateFormatList;
-	}
-
-	public static Calendar extractTimestampFrom(String pValue, ActionContext pAc) {
-		Calendar calendar = Calendar.getInstance();
-		String targetString = pValue.replace("Z", "GMT-00:00");
-		Date date = null;
-
-		boolean success = false;
-		for (String thisFormat : getDateFormatList()) {
-			if (!success) {
-				try {
-					date = new SimpleDateFormat(thisFormat).parse(targetString);
-					success = true;
-				} catch (ParseException e) {
-					//Nothing to do here
-				}
-			}
-		}
-
-		if (success) {
-			calendar.setTime(date);
-		} else {
-			reportError("No valid parses found for timestamp '" + pValue + "'", pAc);
-		}
-
-		return calendar;
 	}
 
 	public static void reportExecutionTiming(ActionContext pAc, long pStartTime, String pLabel, String className, String methodName) {
@@ -225,15 +133,13 @@ public abstract class GeneralUtilities {
 
 		if (pValue != null) {
 			//Escape backslashes as double backslashes and escape single/double quotes with a preceding backslash
-			result = result.replace(RAW_BS, ESC_BS);
-			result = result.replace(RAW_SQ, ESC_SQ);
-			result = result.replace(RAW_DQ, ESC_DQ);
-
-			//DSB 30/07/2014 - Added handling for special quote characters
-			result = result.replace(RAW_SQ1, ESC_SQ1);
-			result = result.replace(RAW_SQ2, ESC_SQ2);
-			result = result.replace(RAW_DQ1, ESC_DQ1);
-			result = result.replace(RAW_DQ2, ESC_DQ2);
+			result = result.replace(TOKEN_BS, ESC_BS);
+			result = result.replace(TOKEN_SQ, ESC_SQ);
+			result = result.replace(TOKEN_DQ, ESC_DQ);
+			result = result.replace(TOKEN_SQ1, ESC_SQ1);
+			result = result.replace(TOKEN_SQ2, ESC_SQ2);
+			result = result.replace(TOKEN_DQ1, ESC_DQ1);
+			result = result.replace(TOKEN_DQ2, ESC_DQ2);
 		}
 
 		return result;
@@ -244,16 +150,16 @@ public abstract class GeneralUtilities {
 
 		if (pValue != null) {
 			//Replace escaped quotes and escaped backslashes
-			result = result.replace(ESC_SQ, RAW_SQ);
-			result = result.replace(ESC_DQ, RAW_DQ);
-			result = result.replace(ESC_BS, RAW_BS);
+			result = result.replace(ESC_SQ, TOKEN_SQ);
+			result = result.replace(ESC_DQ, TOKEN_DQ);
+			result = result.replace(ESC_SQ1, TOKEN_SQ1);
+			result = result.replace(ESC_SQ2, TOKEN_SQ2);
+			result = result.replace(ESC_DQ1, TOKEN_DQ1);
+			result = result.replace(ESC_DQ2, TOKEN_DQ2);
+			result = result.replace(ESC_BS, TOKEN_BS);
 		}
 
 		return result;
-	}
-
-	public static String encodeForHtml(String pValue) {
-		return pValue.replace(NL, BR);
 	}
 
 	public static String stripDelimitingQuotesFrom(String pValue) {
@@ -261,7 +167,7 @@ public abstract class GeneralUtilities {
 
 		if (isQuoteDelimited(pValue)) {
 			if (pValue.length() <= 2) {
-				result = "";
+				result = ES;
 			} else {
 				result = result.substring(1, pValue.length() - 1);
 			}
@@ -280,7 +186,7 @@ public abstract class GeneralUtilities {
 		for (String thisKey : pValues.keySet()) {
 			String thisVal = pValues.get(thisKey);
 			if (thisVal == null) {
-				thisVal = "";
+				thisVal = ES;
 			}
 
 			result = result.replace(thisKey, GeneralUtilities.encodeForCe(thisVal));
@@ -316,20 +222,14 @@ public abstract class GeneralUtilities {
 		boolean result = false;
 
 		if (pString != null) {
-			//DSB 30/07/2014 - Added handling for special quote characters
-//			result = (pString.startsWith(RAW_SQ)) || (pString.startsWith(RAW_DQ));
-			result = (pString.startsWith(RAW_SQ)) || (pString.startsWith(RAW_DQ)) || (pString.startsWith(RAW_SQ1)) || (pString.startsWith(RAW_SQ2)) || (pString.startsWith(RAW_DQ1)) || (pString.startsWith(RAW_DQ2));
+			result = (pString.startsWith(TOKEN_SQ)) || (pString.startsWith(TOKEN_DQ)) || (pString.startsWith(TOKEN_SQ1)) || (pString.startsWith(TOKEN_SQ2)) || (pString.startsWith(TOKEN_DQ1)) || (pString.startsWith(TOKEN_DQ2));
 		}
 
 		return result;
 	}
 
 	public static String formattedStats(String pExecTime, int pTxns) {
-		String result = "";
-
-		result = Integer.toString(pTxns) + " txns, in " + pExecTime + " secs.";
-
-		return result;
+		return Integer.toString(pTxns) + " txns, in " + pExecTime + " secs.";
 	}
 
 	public static void reportLatestUidValue(ActionContext pAc) {
@@ -474,44 +374,19 @@ public abstract class GeneralUtilities {
 	}
 
 	public static boolean isRelativePath(String pUrl) {
-		return !(pUrl.startsWith(TOKEN_HTTP) || pUrl.startsWith(TOKEN_HTTPS) || pUrl.startsWith(TOKEN_FILE));
+		return !(pUrl.startsWith(TOKEN_PROTOCOL_HTTP) || pUrl.startsWith(TOKEN_PROTOCOL_HTTPS) || pUrl.startsWith(TOKEN_PROTOCOL_FILE));
 	}
 
 	public static String createFullUrlForRelativePath(ActionContext pAc, String pUrlPath) {
 		String result = pUrlPath;
 
 		//Remove the first slash if there is one
-		if (result.startsWith(RAW_FS)) {
+		if (result.startsWith(TOKEN_FS)) {
 			result = result.substring(1, result.length());
 			result = pAc.getCeConfig().getDefaultCeRootUrl() + result;
-		} else if (result.startsWith(RAW_DOT)) {
+		} else if (result.startsWith(TOKEN_DOT)) {
 			result = result.substring(2, result.length());
 			result = pAc.getCeConfig().getDefaultCeCurrentUrl() + result;
-		}
-
-		return result;
-	}
-
-	public static String removeCrs(String pText) {
-		return pText.replaceAll(NL, "");
-	}
-
-	public static String encodeAndEncloseInQuotesIfNeeded(String pVal) {
-		String result = encodeForCe(pVal);
-
-		if ((pVal.indexOf(" ") == -1) && (result.length() == pVal.length())) {
-			//No spaces and no change in length (so no special characters)
-			String lcVal = pVal.toLowerCase();
-
-			//TODO: This should not be a hardcoded list (and I should fix the parser so that these don't break it)
-			if (lcVal.equals("the") || lcVal.equals("and") || lcVal.equals("that")) {
-				//A word that currently breaks the parser if not quoted, so quote
-				result = "'" + result + "'";
-			} else {
-				//No special words - No quotes needed
-			}
-		} else {
-			result = "'" + result + "'";
 		}
 
 		return result;

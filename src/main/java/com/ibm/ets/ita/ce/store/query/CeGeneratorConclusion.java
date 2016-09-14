@@ -7,12 +7,20 @@ package com.ibm.ets.ita.ce.store.query;
 
 import static com.ibm.ets.ita.ce.store.names.CeNames.RANGE_VALUE;
 import static com.ibm.ets.ita.ce.store.names.MiscNames.CESEN_SEPARATOR;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_COUNT;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_SUM;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.ES;
 import static com.ibm.ets.ita.ce.store.names.MiscNames.HDR_CE;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_CONSTANT;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_VARIABLE;
 import static com.ibm.ets.ita.ce.store.names.MiscNames.NL;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_AND;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_BAR;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_BECAUSE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_CONSTANT;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_COUNT;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_DOT;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_SPACE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_SUM;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_THAT;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_UNDERSCORE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_VARIABLE;
 import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.appendToSb;
 import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.appendToSbNoNl;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.substituteCeParameters;
@@ -32,9 +40,6 @@ import com.ibm.ets.ita.ce.store.model.container.ContainerCeResult;
 
 public class CeGeneratorConclusion {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
-
-	private static final String CONNECTOR_THAT = "that";
-	private static final String CONNECTOR_AND = "and";
 
 	private ActionContext ac = null;
 	private ContainerCeResult ceResult = null;
@@ -87,7 +92,7 @@ public class CeGeneratorConclusion {
 	}
 
 	private static String ceFnProperty(String pRange, String pValue, String pPropName) {
-		String ceTemplate = "";
+		String ceTemplate = null;
 
 		TreeMap<String, String> ceParms = new TreeMap<String, String>();
 		ceParms.put("%VAL%", pValue);
@@ -115,7 +120,7 @@ public class CeGeneratorConclusion {
 	}
 
 	private static String calculateFormattedRange(CePropertyInstance pPi) {
-		String formattedRange = "";
+		String formattedRange = ES;
 		String rName = pPi.getSingleOrFirstRangeName();
 		
 		if (rName != null) {
@@ -141,7 +146,7 @@ public class CeGeneratorConclusion {
 		//Calculate the correct CE results for the rule - based on the conclusion clauses
 		for (ArrayList<String> queryRow : this.ceResult.getResultRows()) {
 			CeConclusionRow thisRow = new CeConclusionRow(this, queryRow);
-			String conclusionCe = "";
+			String conclusionCe = ES;
 
 			for (String tgtVar : this.uniqueTgtVars.keySet()) {
 				String newCe = generateRuleOutputCeForResultRow(tgtVar, thisRow);
@@ -202,7 +207,7 @@ public class CeGeneratorConclusion {
 	private void collapseRowsForCounting() {
 		TreeMap<String, ArrayList<String>> newRowMap = new TreeMap<String, ArrayList<String>>();
 		TreeMap<String, Integer> countMap = new TreeMap<String, Integer>();
-		int ceIndex = this.ceResult.getIndexForHeader("CE");
+		int ceIndex = this.ceResult.getIndexForHeader(HDR_CE);
 		int countIndex = -1;
 
 		for (ArrayList<String> thisRow : this.ceResult.getResultRows()) {
@@ -220,7 +225,7 @@ public class CeGeneratorConclusion {
 							String thisVal = thisRow.get(hdrIndex);
 
 							if (sbMain.length() > 0) {
-								sbMain.append("|");
+								sbMain.append(TOKEN_BAR);
 							}
 
 							sbMain.append(thisVal);
@@ -243,7 +248,9 @@ public class CeGeneratorConclusion {
 
 			if (!newRowCreated) {
 				sbRat.append(newRow.get(ceIndex));
-				sbRat.append(" and\n");
+				sbRat.append(TOKEN_SPACE);
+				sbRat.append(TOKEN_AND);
+				sbRat.append(NL);
 			}
 
 			sbRat.append(thisRow.get(ceIndex));
@@ -269,7 +276,7 @@ public class CeGeneratorConclusion {
 	private void collapseRowsForSumming() {
 		TreeMap<String, ArrayList<String>> newRowMap = new TreeMap<String, ArrayList<String>>();
 		TreeMap<String, Long> sumMap = new TreeMap<String, Long>();
-		int ceIndex = this.ceResult.getIndexForHeader("CE");
+		int ceIndex = this.ceResult.getIndexForHeader(HDR_CE);
 		int sumIndex = -1;
 		String sumText = null;
 		long sumVal = 0;
@@ -296,7 +303,7 @@ public class CeGeneratorConclusion {
 							String thisVal = thisRow.get(hdrIndex);
 
 							if (sbMain.length() > 0) {
-								sbMain.append("|");
+								sbMain.append(TOKEN_BAR);
 							}
 
 							sbMain.append(thisVal);
@@ -319,7 +326,9 @@ public class CeGeneratorConclusion {
 
 			if (!newRowCreated) {
 				sbRat.append(newRow.get(ceIndex));
-				sbRat.append(" and\n");
+				sbRat.append(TOKEN_SPACE);
+				sbRat.append(TOKEN_AND);
+				sbRat.append(NL);
 			}
 
 			sbRat.append(thisRow.get(ceIndex));
@@ -363,7 +372,7 @@ public class CeGeneratorConclusion {
 	
 	private void processClauses(StringBuilder pSb, String pTgtVar, CeConclusionRow pRow) {
 		StringBuilder sb = new StringBuilder();
-		String connectorText = "";
+		String connectorText = ES;
 		boolean generatedStart = false;
 		boolean splitSentence = false;
 		CeConcept lastTgtCon = null;
@@ -377,7 +386,7 @@ public class CeGeneratorConclusion {
 					//The concept is not compatible with the previous so a new sentence must be started
 					generateRationaleAndCloseSentence(sb, pRow);
 					sb.append(CESEN_SEPARATOR);
-					connectorText = "";
+					connectorText = ES;
 					generatedStart = false;
 					splitSentence = true;
 				}
@@ -413,7 +422,7 @@ public class CeGeneratorConclusion {
 			if (pClause.getSecondaryConceptsNormal().isEmpty()) {
 				if (pClause.getConceptVariableTokens().isEmpty()) {
 					if (pClause.getConcatenatedValues().isEmpty()) {
-						String thisNewInstId = "";
+						String thisNewInstId = null;
 						String tgtVar = pClause.getTargetVariable();
 						if (pClause.targetVariableWasQuoted()) {
 							thisNewInstId = tgtVar;
@@ -422,12 +431,12 @@ public class CeGeneratorConclusion {
 						}
 						String ceText = ceNormalDefinition(tgtCon, thisNewInstId);
 						appendToSbNoNl(pSb, ceText);
-						connectorText = " " + CONNECTOR_THAT;
+						connectorText = TOKEN_SPACE + TOKEN_THAT;
 					} else {
 						String ceText = null;
 
 						for (CeConcatenatedValue thisCv : pClause.getConcatenatedValues()) {
-							String thisNewInstId = "";
+							String thisNewInstId = null;
 							String tgtVar = pClause.getTargetVariable();
 							if (pClause.targetVariableWasQuoted()) {
 								thisNewInstId = tgtVar;
@@ -442,7 +451,7 @@ public class CeGeneratorConclusion {
 							ceText = ceFnProperty("the value", concatVal, thisCv.getName());
 						}
 						appendToSbNoNl(pSb, ceText);
-						connectorText = " " + CONNECTOR_THAT;
+						connectorText = TOKEN_SPACE + TOKEN_THAT;
 					}
 				} else {
 					for (String thisCvt : pClause.getConceptVariableTokens()) {
@@ -452,7 +461,7 @@ public class CeGeneratorConclusion {
 						String ceText = ceSecondaryDefinition(tgtCon.getConceptName(), tgtSecCon, tgtInstId);
 						appendToSbNoNl(pSb, ceText);
 					}
-					connectorText = " " + CONNECTOR_AND;
+					connectorText = TOKEN_SPACE + TOKEN_AND;
 				}
 			} else {
 				for (CeConcept thisSecCon : pClause.getSecondaryConceptsNormal()) {
@@ -460,7 +469,7 @@ public class CeGeneratorConclusion {
 					String ceText = ceSecondaryDefinition(tgtCon.getConceptName(), thisSecCon.getConceptName(), tgtInstId);
 					appendToSbNoNl(pSb, ceText);
 				}
-				connectorText = " " + CONNECTOR_AND;
+				connectorText = TOKEN_SPACE + TOKEN_AND;
 			}
 		} else {
 			reportError("Unexpected null target concept in generateCeConclusionForSimpleClause()", this.ac);
@@ -479,7 +488,7 @@ public class CeGeneratorConclusion {
 				String tgtConName = thisPi.getRelatedProperty().getDomainConcept().getConceptName();
 				String instId = null;
 
-				//DSB 25/02/2015 - Added extra test to handle quoted target variables (i.e. constant values) in conclusions
+				//Handle quoted target variables (i.e. constant values) in conclusions
 				if (pClause.targetVariableWasQuoted()) {
 					instId = pClause.getTargetVariable();
 				} else {
@@ -492,7 +501,7 @@ public class CeGeneratorConclusion {
 			
 			//Output (and set) the connector
 			appendToSb(pSb, connectorText);
-			connectorText = " " + CONNECTOR_AND;
+			connectorText = TOKEN_SPACE + TOKEN_AND;
 
 			//Process the property
 			appendToSbNoNl(pSb, generatePropertyCe(thisPi, pRow));
@@ -502,7 +511,7 @@ public class CeGeneratorConclusion {
 	}
 	
 	private String generatePropertyCe(CePropertyInstance pPi, CeConclusionRow pRow) {
-		String ceText = "";
+		String ceText = null;
 		String piVal = calculatePiVal(pPi, pRow);
 		String propName = pPi.getRelatedProperty().getPropertyName();
 		String formattedRange = calculateFormattedRange(pPi);
@@ -522,13 +531,13 @@ public class CeGeneratorConclusion {
 				
 				//If rationale is being doubled insert a copy of the sentence so far at the beginning of the text
 				if (this.doubleRationale) {
-					pSb.insert(0, pSb.toString() + ".");
+					pSb.insert(0, pSb.toString() + TOKEN_DOT);
 				}
 				
 				appendToSbNoNl(pSb, generateRationaleFor(pRow));
 			} else {
 				//Finish the CE sentence if no rationale is being generated
-				appendToSb(pSb, ".");
+				appendToSb(pSb, TOKEN_DOT);
 			}
 		}
 	}
@@ -544,7 +553,7 @@ public class CeGeneratorConclusion {
 	}
 	
 	public String getValueForHeader(String pTgtVar, CeConclusionRow pRow) {
-		String targetName = "";
+		String targetName = null;
 		Integer tgtIdx = this.hdrIndexes.get(pTgtVar);
 
 		if (tgtIdx != null) {
@@ -558,13 +567,14 @@ public class CeGeneratorConclusion {
 	}
 	
 	private String getNewInstanceIdFor(String pTgtVar, CeConclusionRow pRow) {
-		String result = "";
+		String result = null;
 		String newIdxTemplate = this.uniqueTgtVars.get(pTgtVar);
 		
 		if (newIdxTemplate != null) {
 			result = pRow.getNewValueFor(this.ac, newIdxTemplate);
 		} else {
 			reportError("Unable to locate new index template for variable '" + pTgtVar + "' in rule: " + this.ceRule.getRuleName(), this.ac);
+			result = ES;
 		}
 		
 		//TODO: Complete this
@@ -608,13 +618,13 @@ public class CeGeneratorConclusion {
 	}
 
 	private static String getVariableStubFrom(String pTgtVar) {
-		String result = "";
-		String parts[] = pTgtVar.split("_");
+		String result = ES;
+		String parts[] = pTgtVar.split(TOKEN_UNDERSCORE);
 		
 		for (String thisPart : parts) {
 			if (!thisPart.startsWith(TOKEN_VARIABLE) && !thisPart.startsWith(TOKEN_CONSTANT)) {
 				if (!result.isEmpty()) {
-					result += "_";
+					result += TOKEN_UNDERSCORE;
 				}
 				result += thisPart;
 			}
@@ -624,11 +634,11 @@ public class CeGeneratorConclusion {
 	}
 
 	private static String trimHashFrom(String pCvt) {
-		return pCvt.replaceFirst(TOKEN_CONSTANT, "");
+		return pCvt.replaceFirst(TOKEN_CONSTANT, ES);
 	}
 
 	private String calculatePiVal(CePropertyInstance pPi, CeConclusionRow pRow) {
-		String piVal = "";
+		String piVal = ES;
 		
 		if (!pPi.hadQuotesOriginally(this.ac)) {
 			//This is a variable, so needs to be substituted
@@ -661,9 +671,8 @@ public class CeGeneratorConclusion {
 		int lastIndex = pRow.getQueryRowSize() - 1;
 		
 		String existingCe = pRow.getQueryRow(lastIndex);
-		
-//		return NL + "because" + NL + existingCe + NL + "[ " + this.ceRule.getRuleName() + " ]." + NL + NL;
-		return NL + "because" + NL + existingCe + NL + "[ " + this.ceRule.getRuleName() + " ].";
+		//TODO: Abstract these
+		return NL + TOKEN_BECAUSE + NL + existingCe + NL + "[ " + this.ceRule.getRuleName() + " ].";
 	}
 
 }

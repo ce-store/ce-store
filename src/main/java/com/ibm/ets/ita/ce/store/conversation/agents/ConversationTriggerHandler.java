@@ -80,9 +80,9 @@ public class ConversationTriggerHandler extends GeneralConversationHandler {
 	private boolean isCardAlreadyProcessed(CeInstance pCardInst) {
 		// The passed card instance is already processed if it has another card
 		// linked via
-		// the "is in reply to" property, and that card has the user name of
+		// the 'is in reply to' property, and that card has the user name of
 		// this agent
-		// in the "is from" property.
+		// in the 'is from' property.
 
 		// More succinctly:
 		// This card has already been processed if any other card from this
@@ -104,8 +104,8 @@ public class ConversationTriggerHandler extends GeneralConversationHandler {
 	}
 
 	private boolean isThisCardForMe(CeInstance pCardInst) {
-		// This card is for "me" (this agent) if the card has the name of this
-		// agent in the "is to" property.
+		// This card is for 'me' (this agent) if the card has the name of this
+		// agent in the 'is to' property.
 		CePropertyInstance tgtPi = pCardInst.getPropertyInstanceNamed(PROP_ISTO);
 		boolean result = false;
 

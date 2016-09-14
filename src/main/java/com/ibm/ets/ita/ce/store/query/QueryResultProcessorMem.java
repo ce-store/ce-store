@@ -5,9 +5,13 @@ package com.ibm.ets.ita.ce.store.query;
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.CeNames.SPECIALNAME_EQUALS;
+import static com.ibm.ets.ita.ce.store.names.CeNames.SPECIALNAME_NOTEQUALS;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.ES;
 import static com.ibm.ets.ita.ce.store.names.MiscNames.HDR_COUNT;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_COUNT;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_SUM;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_UNDERSCORE;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.reportExecutionTiming;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.isReportMicroDebug;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportDebug;
@@ -416,7 +420,7 @@ public class QueryResultProcessorMem {
 	private void computeRows(MatchedClauseList pMcl, ArrayList<MatchedClauseList> pDoneMcls, ResultSetWrapper pRsw) {
 		ArrayList<MatchedClauseList> doneMcls = doDoneMclProcessing(pDoneMcls, pMcl);
 		
-		if (pMcl.getPropertyName().equals("!=")) {
+		if (pMcl.getPropertyName().equals(SPECIALNAME_NOTEQUALS)) {
 			//Ignore not-equals operators - they are processed later
 			reportDebug("Ignoring '!=' MCL for '" + pMcl.toString() + "'", this.ac);
 		} else {
@@ -558,17 +562,17 @@ public class QueryResultProcessorMem {
 				if (thisPi.hadQuotesOriginally(this.ac)) {
 					//This is a fixed value
 					String tgtVal = thisPi.getSingleOrFirstValue();
-					if (thisPi.getRelatedProperty().getPropertyName().equals("!=")) {
+					if (thisPi.getRelatedProperty().getPropertyName().equals(SPECIALNAME_NOTEQUALS)) {
 						deleteMatchingRowsForValueFrom(pResult, srcVarId, tgtVal);
-					} else if (thisPi.getRelatedProperty().getPropertyName().equals("=")) {
+					} else if (thisPi.getRelatedProperty().getPropertyName().equals(SPECIALNAME_EQUALS)) {
 						deleteUnmatchingRowsForValueFrom(pResult, srcVarId, tgtVal);
 					}
 				} else {
 					//This is a variable
 					String tgtVarId = thisPi.getSingleOrFirstValue();
-					if (thisPi.getRelatedProperty().getPropertyName().equals("!=")) {
+					if (thisPi.getRelatedProperty().getPropertyName().equals(SPECIALNAME_NOTEQUALS)) {
 						deleteMatchingRowsForVariableIdFrom(pResult, srcVarId, tgtVarId);
-					} else if (thisPi.getRelatedProperty().getPropertyName().equals("=")) {
+					} else if (thisPi.getRelatedProperty().getPropertyName().equals(SPECIALNAME_EQUALS)) {
 						deleteUnmatchingRowsForVariableIdFrom(pResult, srcVarId, tgtVarId);
 					}
 				}
@@ -698,7 +702,7 @@ public class QueryResultProcessorMem {
 		
 		for (String thisHdr : pResult.getHeaders()) {
 			if (CeQuery.isCountHeader(thisHdr)) {
-				String rawHdr = thisHdr.replace(TOKEN_COUNT, "");
+				String rawHdr = thisHdr.replace(TOKEN_COUNT, ES);
 
 				if (!doneCountVariable) {
 					TreeMap<String, TreeMap<String, String>> tempMap = new TreeMap<String, TreeMap<String,String>>();
@@ -706,7 +710,7 @@ public class QueryResultProcessorMem {
 
 					for (TreeMap<String, String> thisRow : pRows) {
 						TreeMap<String, String> newRow = new TreeMap<String, String>();
-						String newKey = "";
+						String newKey = ES;
 						TreeMap<String, String> existingRow = tempMap.get(newKey);
 
 						for (String rowHdr : thisRow.keySet()) {
@@ -726,7 +730,7 @@ public class QueryResultProcessorMem {
 						existingRow = tempMap.get(newKey);
 
 						if (existingRow == null) {
-							newRow.put(thisHdr, "1");
+							newRow.put(thisHdr, "1");	//TODO: Abstract this
 							tempMap.put(newKey, newRow);
 						} else {
 							int currCount = new Integer(existingRow.get(thisHdr)).intValue();
@@ -753,7 +757,7 @@ public class QueryResultProcessorMem {
 
 		for (String thisHdr : pResult.getHeaders()) {
 			if (CeQuery.isSumHeader(thisHdr)) {
-				String rawHdr = thisHdr.replace(TOKEN_SUM, "");
+				String rawHdr = thisHdr.replace(TOKEN_SUM, ES);
 
 				if (!doneSumVariable) {
 					TreeMap<String, TreeMap<String, String>> tempMap = new TreeMap<String, TreeMap<String,String>>();
@@ -761,7 +765,7 @@ public class QueryResultProcessorMem {
 
 					for (TreeMap<String, String> thisRow : pRows) {
 						TreeMap<String, String> newRow = new TreeMap<String, String>();
-						String newKey = "";
+						String newKey = ES;
 						TreeMap<String, String> existingRow = tempMap.get(newKey);
 
 						for (String rowHdr : thisRow.keySet()) {
@@ -819,11 +823,11 @@ public class QueryResultProcessorMem {
 
 		int ctr = 0;
 		for (TreeMap<String, String> thisRow : pRows) {
-			String sortedKey = "";
+			String sortedKey = ES;
 			for (String sortHdr : pQuery.getOrderTokens()) {
 				try {
 					Integer countNum = new Integer(thisRow.get(sortHdr));
-					sortedKey += String.format("%12d", countNum);
+					sortedKey += String.format("%12d", countNum);	//TODO: Abstract this
 					//TODO: Improve this to handle numbers larger than 999999999999
 				} catch (NumberFormatException e) {
 					sortedKey += thisRow.get(sortHdr);
@@ -831,7 +835,7 @@ public class QueryResultProcessorMem {
 			}
 
 			//Add a counter to the end to ensure keys are unique
-			sortedKey += "_" + ctr++;
+			sortedKey += TOKEN_UNDERSCORE + ctr++;
 
 			tempRows.put(sortedKey, thisRow);
 		}

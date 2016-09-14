@@ -29,6 +29,8 @@ public class MiscNames {
 	public static final String CELOG_FILENAME = "all_ce_sentences.ce";
 	public static final String FILENAME_QUERYLOG_CE = "queries_ce.log";
 	public static final String SUFFIX_CE = ".ce";
+	public static final String SUFFIX_DEFAULT = ".default";
+	public static final String SUFFIX_TIMING = ".timing";
 
 	//UID related
 	public static final String DEFAULT_UIDCLASSNAME = "com.ibm.ets.ita.ce.store.uid.UidManagerDefault";
@@ -44,9 +46,6 @@ public class MiscNames {
 	public static final String DEFAULT_DATEFMT = "yyyy-MM-dd";
 	public static final String DEFAULT_NOVAL = "-1";
 	public static final int DEFAULT_MAXSUGGS = 10;
-	public static final String CEVALUE_TRUE = "true";
-	public static final String CEVALUE_FALSE = "false";
-	public static final String CEVALUE_EMPTY = "";
 	public static final int CEVALUE_UNLIMITED = -1;
 
 	//Characters
@@ -76,8 +75,10 @@ public class MiscNames {
 	public static final String PREFIX_CLAUSE = "clause_";
 	public static final String PREFIX_CONCAT = "ccv_";
 	public static final String PREFIX_PROPVAL = "pv_";
+	public static final String PREFIX_QUERY = "query_";
 	public static final String PREFIX_TEMP = "temp_";
 	public static final String FORMAT_SRC = "%03d";
+	public static final String REGEX_KEYWORDLIST = "([^\"]\\S*|\".+?\")\\s*";
 
 	public static final String MODELNAME_CORE = "core";
 	public static final String CESRC_NAME = "my knowledgebase";

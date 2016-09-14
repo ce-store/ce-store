@@ -5,17 +5,18 @@ package com.ibm.ets.ita.ce.store.parsing.tokenizer;
  * All Rights Reserved
  *******************************************************************************/
 
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_AND;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_OPENSQBR;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_CLOSESQBR;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_OPENPAR;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_CLOSEPAR;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_IF;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_THEN;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.SCELABEL_CONNECTOR;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.SCELABEL_NORMAL;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.SCELABEL_RQNAME;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.SCELABEL_RQSTART;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.SCELABEL_CONNECTOR;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_AND;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_CLOSEPAR;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_CLOSESQBR;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_IF;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_OPENPAR;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_OPENSQBR;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_THEN;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_UNDERSCORE;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.isReportDebug;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportDebug;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
@@ -46,7 +47,7 @@ public class TokenizerRuleSentence extends TokenizerSentence {
 	private CeClause currentClause = null;
 
 	private static void doClauseProcessingForExistanceStatement(CeClause pClause) {
-		String cloneSeqId = pClause.getSeqId() + "_" + Integer.toString(1);
+		String cloneSeqId = pClause.getSeqId() + TOKEN_UNDERSCORE + Integer.toString(1);
 		CeClause thisClause = pClause.cloneFromStemUsing(cloneSeqId);
 		pClause.addChildClause(thisClause);
 		thisClause = null;
@@ -58,7 +59,7 @@ public class TokenizerRuleSentence extends TokenizerSentence {
 		int seqCounter = 0;
 
 		for (CeConcept thisSecCon : pSenBuilder.getSecondaryConceptsNormal()) {
-			String cloneSeqId = origSeqId + "_" + Integer.toString(++seqCounter);
+			String cloneSeqId = origSeqId + TOKEN_UNDERSCORE + Integer.toString(++seqCounter);
 			thisClause = pClause.cloneFromStemUsing(cloneSeqId);
 			thisClause.addSecondaryConceptNormal(thisSecCon);
 			pClause.addSecondaryConceptNormal(thisSecCon);
@@ -67,7 +68,7 @@ public class TokenizerRuleSentence extends TokenizerSentence {
 		}
 
 		for (CeConcept thisSecCon : pSenBuilder.getSecondaryConceptsNegated()) {
-			String cloneSeqId = origSeqId + "_" + Integer.toString(++seqCounter);
+			String cloneSeqId = origSeqId + TOKEN_UNDERSCORE + Integer.toString(++seqCounter);
 			thisClause = pClause.cloneFromStemUsing(cloneSeqId);
 			thisClause.addSecondaryConceptNegated(thisSecCon);
 			pClause.addSecondaryConceptNegated(thisSecCon);
@@ -77,7 +78,7 @@ public class TokenizerRuleSentence extends TokenizerSentence {
 
 		for (CePropertyInstance thisProp : pSenBuilder.getDatatypeProperties()) {
 			thisProp.setClauseVariableId(pSenBuilder.getInstanceName());
-			String cloneSeqId = origSeqId + "_" + Integer.toString(++seqCounter);
+			String cloneSeqId = origSeqId + TOKEN_UNDERSCORE + Integer.toString(++seqCounter);
 			thisClause = pClause.cloneFromStemUsing(cloneSeqId);
 			thisClause.addDatatypeProperty(thisProp);
 			pClause.addDatatypeProperty(thisProp);
@@ -87,7 +88,7 @@ public class TokenizerRuleSentence extends TokenizerSentence {
 
 		for (CePropertyInstance thisProp : pSenBuilder.getObjectProperties()) {
 			thisProp.setClauseVariableId(pSenBuilder.getInstanceName());
-			String cloneSeqId = origSeqId + "_" + Integer.toString(++seqCounter);
+			String cloneSeqId = origSeqId + TOKEN_UNDERSCORE + Integer.toString(++seqCounter);
 			thisClause = pClause.cloneFromStemUsing(cloneSeqId);
 			thisClause.addObjectProperty(thisProp);
 			pClause.addObjectProperty(thisProp);
@@ -96,7 +97,7 @@ public class TokenizerRuleSentence extends TokenizerSentence {
 		}
 
 		for (String thisCvt : pSenBuilder.getConceptVariableTokens()) {
-			String cloneSeqId = origSeqId + "_" + Integer.toString(++seqCounter);
+			String cloneSeqId = origSeqId + TOKEN_UNDERSCORE + Integer.toString(++seqCounter);
 			thisClause = pClause.cloneFromStemUsing(cloneSeqId);
 			thisClause.addConceptVariableToken(thisCvt);
 			pClause.addConceptVariableToken(thisCvt);
@@ -105,7 +106,7 @@ public class TokenizerRuleSentence extends TokenizerSentence {
 		}
 
 		for (CeConcatenatedValue thisCc : pSenBuilder.getConcatenatedValues()) {
-			String cloneSeqId = origSeqId + "_" + Integer.toString(++seqCounter);
+			String cloneSeqId = origSeqId + TOKEN_UNDERSCORE + Integer.toString(++seqCounter);
 			thisClause = pClause.cloneFromStemUsing(cloneSeqId);
 			thisClause.addConcatenatedValue(thisCc);
 			pClause.addConcatenatedValue(thisCc);
@@ -255,7 +256,6 @@ public class TokenizerRuleSentence extends TokenizerSentence {
 		processClauses();
 
 		//Finished, so notify the sentence that validation is complete
-		//getTargetSentence().testTokens(this.ac);	//DSB 27/11/2012 - Test removed as it had stopped working anyway
 		getTargetSentence().validationComplete();
 	}
 

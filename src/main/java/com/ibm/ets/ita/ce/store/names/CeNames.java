@@ -140,6 +140,29 @@ public class CeNames {
 	public static final String PROP_CANWHY = "can why";
 	public static final String PROP_CANEXP = "can expand";
 
+	//Properties: Conversation config
+	public static final String PROP_SPLITPHRASES = "split phrases";
+	public static final String PROP_RUNRULES = "run rules";
+	public static final String PROP_SINGANS = "single answers";
+	public static final String PROP_PHRASEDELIMS = "phrase delimiters";
+	public static final String PROP_SENDELIMS = "sentence delimiters";
+	public static final String PROP_CLAUSEDELIMS = "clause delimiters";
+	public static final String PROP_CLAUSEPUNCS = "clause punctuation";
+	public static final String PROP_QSMS = "question start markers";
+	public static final String PROP_QEMS = "question end markers";
+	public static final String PROP_COMWORDS = "common words";
+	public static final String PROP_NEGWORDS = "negation words";
+	public static final String PROP_MARKER = "marker";
+	public static final String PROP_MAXSUGGS = "max suggestions";
+	public static final String PROP_MAXRESULTS = "max answer result rows";
+	public static final String PROP_MAXDBROWS = "max database to ce rows";
+	public static final String PROP_DEFANSCONF = "default answer confidence";
+	public static final String PROP_DEFINTCONF = "default interpretation confidence";
+	public static final String PROP_DEFABANSCONF = "default ability to answer confidence";
+	public static final String PROP_COMPANSCONF = "compute answer confidence";
+	public static final String PROP_COMPINTCONF = "compute interpretation confidence";
+	public static final String PROP_COMPABANSCONF = "compute ability to answer confidence";
+
 	//Properties: Hudson
 	public static final String PROP_LAT = "latitude";
 	public static final String PROP_LON = "longitude";

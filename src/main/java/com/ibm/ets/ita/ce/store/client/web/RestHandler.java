@@ -1,15 +1,25 @@
 package com.ibm.ets.ita.ce.store.client.web;
 
+//ALL DONE
+
 /*******************************************************************************
  * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.MiscNames.ENCODING;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_COMMA;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_TRUE;
+import static com.ibm.ets.ita.ce.store.names.RestNames.HDR_AC_AC;
+import static com.ibm.ets.ita.ce.store.names.RestNames.HDR_AC_AH;
+import static com.ibm.ets.ita.ce.store.names.RestNames.HDR_AC_AM;
+import static com.ibm.ets.ita.ce.store.names.RestNames.HDR_AC_AO;
+import static com.ibm.ets.ita.ce.store.names.RestNames.HDR_AC_RH;
 import static com.ibm.ets.ita.ce.store.names.RestNames.HDR_AUTH;
 import static com.ibm.ets.ita.ce.store.names.RestNames.HDR_CEUSER;
+import static com.ibm.ets.ita.ce.store.names.RestNames.HDR_ORIGIN;
 import static com.ibm.ets.ita.ce.store.names.RestNames.RESPONSE_JSON;
 import static com.ibm.ets.ita.ce.store.names.RestNames.RESPONSE_TEXT;
-import static com.ibm.ets.ita.ce.store.names.MiscNames.ENCODING;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportDebug;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportException;
 
@@ -36,21 +46,27 @@ public class RestHandler extends HttpServlet {
 	private static final String PACKAGE_NAME = RestHandler.class.getPackage().getName();
 	private static final Logger logger = Logger.getLogger(PACKAGE_NAME);
 
+	private static final String ALL_METHODS = "GET,POST,HEAD,OPTIONS,PUT,DELETE";
+
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
+	 *      response)
 	 */
 	@Override
-	protected void doGet(HttpServletRequest pRequest, HttpServletResponse pResponse) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest pRequest, HttpServletResponse pResponse)
+			throws ServletException, IOException {
 		doStandardProcessing(pRequest, pResponse);
 	}
 
 	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
+	 *      response)
 	 */
 	@Override
-	protected void doPost(HttpServletRequest pRequest, HttpServletResponse pResponse) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest pRequest, HttpServletResponse pResponse)
+			throws ServletException, IOException {
 		doStandardProcessing(pRequest, pResponse);
 	}
 
@@ -58,7 +74,8 @@ public class RestHandler extends HttpServlet {
 	 * @see HttpServlet#doPut(HttpServletRequest, HttpServletResponse)
 	 */
 	@Override
-	protected void doPut(HttpServletRequest pRequest, HttpServletResponse pResponse) throws ServletException, IOException {
+	protected void doPut(HttpServletRequest pRequest, HttpServletResponse pResponse)
+			throws ServletException, IOException {
 		doStandardProcessing(pRequest, pResponse);
 	}
 
@@ -66,7 +83,8 @@ public class RestHandler extends HttpServlet {
 	 * @see HttpServlet#doDelete(HttpServletRequest, HttpServletResponse)
 	 */
 	@Override
-	protected void doDelete(HttpServletRequest pRequest, HttpServletResponse pResponse) throws ServletException, IOException {
+	protected void doDelete(HttpServletRequest pRequest, HttpServletResponse pResponse)
+			throws ServletException, IOException {
 		doStandardProcessing(pRequest, pResponse);
 	}
 
@@ -74,8 +92,9 @@ public class RestHandler extends HttpServlet {
 	 * @see HttpServlet#doOptions(HttpServletRequest, HttpServletResponse)
 	 */
 	@Override
-	protected void doOptions(HttpServletRequest pRequest, HttpServletResponse pResponse) throws ServletException, IOException {
-		//For an options request just set the standard CORS response headers
+	protected void doOptions(HttpServletRequest pRequest, HttpServletResponse pResponse)
+			throws ServletException, IOException {
+		// For an options request just set the standard CORS response headers
 		setCorsResponseHeaders(pRequest, pResponse);
 	}
 
@@ -105,7 +124,7 @@ public class RestHandler extends HttpServlet {
 
 	private static void extractCredentials(WebActionContext pWc, HttpServletRequest pRequest) {
 		String creds = pRequest.getHeader(HDR_AUTH);
-		
+
 		if ((creds != null) && (!creds.isEmpty())) {
 			pWc.setCredentials(creds);
 			reportDebug("Setting request credentials (" + creds + ")", pWc);
@@ -115,8 +134,9 @@ public class RestHandler extends HttpServlet {
 	private static void initialiseHttpRequest(HttpServletRequest pRequest, WebActionContext pWc) {
 		final String METHOD_NAME = "initialiseRequest";
 
-		//TODO: Why is this even needed?
-		//TODO: The encoding should come from the container, not be hard-coded on FileUtilities?
+		// TODO: Why is this even needed?
+		// TODO: The encoding should come from the container, not be hard-coded
+		// on FileUtilities?
 		try {
 			pRequest.setCharacterEncoding(ENCODING);
 		} catch (UnsupportedEncodingException e) {
@@ -124,28 +144,33 @@ public class RestHandler extends HttpServlet {
 		}
 
 	}
-	
-	private static void setCorsResponseHeaders(HttpServletRequest pRequest, HttpServletResponse pResponse) {
-		//TODO: Abstract these
-		//Set headers to allow cross domain responses
-		pResponse.setHeader("Access-Control-Allow-Origin", pRequest.getHeader("Origin"));
-		pResponse.setHeader("Access-Control-Allow-Credentials", "true");
-		pResponse.setHeader("Access-Control-Allow-Methods", "GET,POST,HEAD,OPTIONS,PUT,DELETE");
-		pResponse.setHeader("Access-Control-Allow-Headers", "Authorization, " + pRequest.getHeader("Access-Control-Request-Headers"));
 
-		//IMPORTANT:
-		//If you enable http authentication in Tomcat (i.e. in web.xml) then you must also add a corresponding CorsFilter
-		//in web.xml also.  The values specified in there must match the above methods/headers and origins.
-		//So, if you need to add a new header (for example) then don't forget to review and update web.xml also (if http authentication is on).
+	private static void setCorsResponseHeaders(HttpServletRequest pRequest, HttpServletResponse pResponse) {
+		// TODO: Abstract these
+		// Set headers to allow cross domain responses
+		pResponse.setHeader(HDR_AC_AO, pRequest.getHeader(HDR_ORIGIN));
+		pResponse.setHeader(HDR_AC_AC, TOKEN_TRUE);
+		pResponse.setHeader(HDR_AC_AM, ALL_METHODS);
+		pResponse.setHeader(HDR_AC_AH, HDR_AUTH + TOKEN_COMMA + pRequest.getHeader(HDR_AC_RH));
+
+		// IMPORTANT:
+		// If you enable http authentication in Tomcat (i.e. in web.xml) then
+		// you must also add a corresponding CorsFilter
+		// in web.xml also. The values specified in there must match the above
+		// methods/headers and origins.
+		// So, if you need to add a new header (for example) then don't forget
+		// to review and update web.xml also (if http authentication is on).
 	}
 
-	private static void wrapUpAndReturn(WebActionContext pWc, HttpServletRequest pRequest, HttpServletResponse pResponse, boolean pWrapResponse) {
+	private static void wrapUpAndReturn(WebActionContext pWc, HttpServletRequest pRequest,
+			HttpServletResponse pResponse, boolean pWrapResponse) {
 		updateResponse(pWc, pRequest, pResponse);
 		updateCeStore(pWc);
 		createResponseAndReturn(pWc, pResponse, pWrapResponse);
 	}
-	
-	private static void updateResponse(WebActionContext pWc, HttpServletRequest pRequest, HttpServletResponse pResponse) {
+
+	private static void updateResponse(WebActionContext pWc, HttpServletRequest pRequest,
+			HttpServletResponse pResponse) {
 		setCorsResponseHeaders(pRequest, pResponse);
 
 		pResponse.setCharacterEncoding(ENCODING);
@@ -163,7 +188,8 @@ public class RestHandler extends HttpServlet {
 		}
 	}
 
-	private static void createResponseAndReturn(WebActionContext pWc, HttpServletResponse pResponse, boolean pWrapResponse) {
+	private static void createResponseAndReturn(WebActionContext pWc, HttpServletResponse pResponse,
+			boolean pWrapResponse) {
 		if (pWc.getWebActionResponse().hasHttpError()) {
 			returnErrorDetails(pWc, pResponse);
 		} else {
@@ -185,8 +211,9 @@ public class RestHandler extends HttpServlet {
 			reportException(e, pWc, logger, CLASS_NAME, METHOD_NAME);
 		}
 	}
-	
-	private static void returnNormalResponse(WebActionContext pWc, HttpServletResponse pResponse, boolean pWrapResponse) {
+
+	private static void returnNormalResponse(WebActionContext pWc, HttpServletResponse pResponse,
+			boolean pWrapResponse) {
 		final String METHOD_NAME = "returnNormalResponse";
 
 		try {

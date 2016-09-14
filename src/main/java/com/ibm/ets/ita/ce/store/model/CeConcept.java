@@ -718,7 +718,6 @@ public class CeConcept extends CeModelEntity {
 					fullPropName = CeProperty.calculateFullPropertyNameFor(getConceptName(), pPropName, thisParent.getConceptName());
 					targetProperty = retrievePropertyFullyNamed(fullPropName);
 
-					//DSB 11/09/2013 - Added break to improve performance
 					if (targetProperty != null) {
 						break break_position;
 					}

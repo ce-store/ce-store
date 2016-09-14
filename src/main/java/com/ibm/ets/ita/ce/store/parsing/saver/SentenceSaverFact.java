@@ -176,7 +176,7 @@ public class SentenceSaverFact extends SentenceSaver {
 		}
 		
 		if (existingPropInst.getRelatedProperty().isObjectProperty()) {
-			//DSB 14/09/2014 - Add the referring property instance to each of the related instances
+			//Add the referring property instance to each of the related instances
 			ModelBuilder mb = this.ac.getModelBuilder();
 			for (String instName : existingPropInst.getValueList()) {
 				if (!instName.isEmpty()) {

@@ -9,6 +9,7 @@ import static com.ibm.ets.ita.ce.store.names.MiscNames.NO_TS;
 import static com.ibm.ets.ita.ce.store.names.MiscNames.URL_MODELDIR;
 import static com.ibm.ets.ita.ce.store.names.MiscNames.CELOG_FILENAME;
 import static com.ibm.ets.ita.ce.store.names.MiscNames.NL;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_UNDERSCORE;
 import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.appendNewLineToSb;
 import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.appendToSb;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.isQuoteDelimited;
@@ -140,7 +141,6 @@ public class ModelBuilder implements PersistableStore {
 		// with the DbActions constructor calling the ModelBuilder constructor
 		this.instanceRepository = new InstanceRepository();
 
-		// DSB 11/09/2013 - Clear the cached string values
 		this.allValues = new HashMap<String, String>();
 
 		this.cachedConceptFragmentNames = new HashSet<String>();
@@ -170,7 +170,7 @@ public class ModelBuilder implements PersistableStore {
 	}
 
 	public String calculateCeLoggingFilename() {
-		return getCeStoreName() + "_" + CELOG_FILENAME;
+		return getCeStoreName() + TOKEN_UNDERSCORE + CELOG_FILENAME;
 	}
 
 	public InstanceRepository getInstanceRepository() {
@@ -340,7 +340,6 @@ public class ModelBuilder implements PersistableStore {
 		}
 
 		//Save the inferred sentences against the rule that inferred them
-		//Added by DSB 29/10/2013
 		if (sc.getValidSentencesCreated() != null) {
 			for (CeSentence thisSen : sc.getValidSentencesCreated()) {
 				String ruleName = thisSen.getRationaleRuleName();

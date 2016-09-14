@@ -72,7 +72,6 @@ public abstract class ContainerQueryResult extends ContainerResult {
 
 	public void addHeader(String pHeader, String pType) {
 		if (!this.headers.contains(pHeader)) {
-			//DSB 01/05/2015 #1096
 			if (pHeader.startsWith(TOKEN_COUNT)) {
 				this.headers.add(pHeader);
 				this.types.add(TYPE_COUNT);

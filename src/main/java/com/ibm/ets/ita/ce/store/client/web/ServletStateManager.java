@@ -148,7 +148,6 @@ public class ServletStateManager {
 		this.mbs.put(newMb.getCeStoreName(), newMb);
 		pAc.setModelBuilderAndCeStoreName(newMb);
 
-		//Added by DSB 20/06/2014
 		//Ensure that the CE Store is reset if it is empty.
 		//...thus enabling users to use the CE store without being forced to issue
 		//the command "perform reset store.".

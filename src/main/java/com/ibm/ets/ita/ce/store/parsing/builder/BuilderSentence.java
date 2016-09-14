@@ -231,7 +231,6 @@ public abstract class BuilderSentence {
 	}
 
 	public void addFinalToken(String pStructuredCeLabel, String pStructuredCeDetails, String pToken) {
-		//DSB 27/10/2015 - Added null pointer test after fixing rationale generation bug
 		if (pToken != null) {
 			if (!pToken.trim().isEmpty()) {
 				if ((pStructuredCeLabel != null) && (!pStructuredCeLabel.isEmpty())) {

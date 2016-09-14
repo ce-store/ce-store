@@ -5,30 +5,34 @@ package com.ibm.ets.ita.ce.store.parsing.tokenizer;
  * All Rights Reserved
  *******************************************************************************/
 
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_IS;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_AND;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_THAT;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_OPENSQBR;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_CLOSESQBR;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_OPENPAR;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_CLOSEPAR;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_COMMA;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_FOR;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_HOW;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_MANY;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_WHICH;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_IT;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_TRUE;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_OR;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_ORDER;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_LIMIT;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_BY;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_ASCENDING;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_DESCENDING;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.ES;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.PREFIX_QUERY;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.SCELABEL_CONNECTOR;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.SCELABEL_NORMAL;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.SCELABEL_RQNAME;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.SCELABEL_RQSTART;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.SCELABEL_CONNECTOR;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_AND;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_ASCENDING;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_BY;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_CLOSEPAR;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_CLOSESQBR;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_COMMA;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_DESCENDING;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_FOR;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_HOW;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_IS;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_IT;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_LIMIT;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_MANY;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_OPENPAR;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_OPENSQBR;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_OR;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_ORDER;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_SPACE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_THAT;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_TRUE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_UNDERSCORE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_WHICH;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.isReportDebug;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportDebug;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
@@ -51,15 +55,15 @@ public class TokenizerQuerySentence extends TokenizerSentence {
 	private boolean ignoreThisToken = false;
 	private boolean inPreamble = false;
 	private boolean inVariableList = false;
-	private boolean inOrderBy = false;	//DSB 01/05/2015 #1095
+	private boolean inOrderBy = false;
 	private boolean inLimit = false;
 
-	private String queryName = "";
+	private String queryName = ES;
 	private CeQuery targetQuery = null;
 	private CeClause currentClause = null;
 
 	private static void doClauseProcessingForExistenceStatement(CeClause pClause) {
-		String cloneSeqId = pClause.getSeqId() + "_" + Integer.toString(1);
+		String cloneSeqId = pClause.getSeqId() + TOKEN_UNDERSCORE + Integer.toString(1);
 		CeClause thisClause = pClause.cloneFromStemUsing(cloneSeqId);
 		pClause.addChildClause(thisClause);
 		thisClause = null;
@@ -71,7 +75,7 @@ public class TokenizerQuerySentence extends TokenizerSentence {
 		int seqCounter = 0;
 
 		for (CeConcept thisSecCon : pSenBuilder.getSecondaryConceptsNormal()) {
-			String cloneSeqId = origSeqId + "_" + Integer.toString(++seqCounter);
+			String cloneSeqId = origSeqId + TOKEN_UNDERSCORE + Integer.toString(++seqCounter);
 			thisClause = pClause.cloneFromStemUsing(cloneSeqId);
 			thisClause.addSecondaryConceptNormal(thisSecCon);
 			pClause.addSecondaryConceptNormal(thisSecCon);
@@ -80,7 +84,7 @@ public class TokenizerQuerySentence extends TokenizerSentence {
 		}
 
 		for (CeConcept thisSecCon : pSenBuilder.getSecondaryConceptsNegated()) {
-			String cloneSeqId = origSeqId + "_" + Integer.toString(++seqCounter);
+			String cloneSeqId = origSeqId + TOKEN_UNDERSCORE + Integer.toString(++seqCounter);
 			thisClause = pClause.cloneFromStemUsing(cloneSeqId);
 			thisClause.addSecondaryConceptNegated(thisSecCon);
 			pClause.addSecondaryConceptNegated(thisSecCon);
@@ -90,7 +94,7 @@ public class TokenizerQuerySentence extends TokenizerSentence {
 
 		for (CePropertyInstance thisProp : pSenBuilder.getDatatypeProperties()) {
 			thisProp.setClauseVariableId(pSenBuilder.getInstanceName());
-			String cloneSeqId = origSeqId + "_" + Integer.toString(++seqCounter);
+			String cloneSeqId = origSeqId + TOKEN_UNDERSCORE + Integer.toString(++seqCounter);
 			thisClause = pClause.cloneFromStemUsing(cloneSeqId);
 			thisClause.addDatatypeProperty(thisProp);
 			pClause.addDatatypeProperty(thisProp);
@@ -100,7 +104,7 @@ public class TokenizerQuerySentence extends TokenizerSentence {
 
 		for (CePropertyInstance thisProp : pSenBuilder.getObjectProperties()) {
 			thisProp.setClauseVariableId(pSenBuilder.getInstanceName());
-			String cloneSeqId = origSeqId + "_" + Integer.toString(++seqCounter);
+			String cloneSeqId = origSeqId + TOKEN_UNDERSCORE + Integer.toString(++seqCounter);
 			thisClause = pClause.cloneFromStemUsing(cloneSeqId);
 			thisClause.addObjectProperty(thisProp);
 			pClause.addObjectProperty(thisProp);
@@ -109,7 +113,7 @@ public class TokenizerQuerySentence extends TokenizerSentence {
 		}
 
 		for (CeConcatenatedValue thisCc : pSenBuilder.getConcatenatedValues()) {
-			String cloneSeqId = origSeqId + "_" + Integer.toString(++seqCounter);
+			String cloneSeqId = origSeqId + TOKEN_UNDERSCORE + Integer.toString(++seqCounter);
 			thisClause = pClause.cloneFromStemUsing(cloneSeqId);
 			thisClause.addConcatenatedValue(thisCc);
 			pClause.addConcatenatedValue(thisCc);
@@ -125,7 +129,7 @@ public class TokenizerQuerySentence extends TokenizerSentence {
 
 	@Override
 	protected BuilderSentenceRuleOrQuery getTargetSentence() {
-		return (BuilderSentenceRuleOrQuery)superTargetSentence();
+		return (BuilderSentenceRuleOrQuery) superTargetSentence();
 	}
 
 	@Override
@@ -136,7 +140,7 @@ public class TokenizerQuerySentence extends TokenizerSentence {
 		this.targetQuery.calculateAllVariableIds();
 		this.targetQuery.testIntegrity(this.ac);
 
-		//Only save the query if it is being created, not executed
+		// Only save the query if it is being created, not executed
 		if (!this.ac.isExecutingQueryOrRule()) {
 			this.mb.addQuery(this.targetQuery);
 		}
@@ -151,7 +155,7 @@ public class TokenizerQuerySentence extends TokenizerSentence {
 		this.inPreamble = false;
 		this.inVariableList = false;
 
-		this.queryName = "";
+		this.queryName = ES;
 
 		this.targetQuery = null;
 		this.currentClause = null;
@@ -202,39 +206,44 @@ public class TokenizerQuerySentence extends TokenizerSentence {
 
 	private void handleOpenSquareBracket() {
 		if (this.insideSqBr) {
-			reportError("Attempt to open parenthesis ([) when already open during processing of query sentence:" + getTargetSentence().getSentenceText(), this.ac);
+			reportError("Attempt to open parenthesis ([) when already open during processing of query sentence:"
+					+ getTargetSentence().getSentenceText(), this.ac);
 		}
 
 		this.insideSqBr = true;
 		this.ignoreThisToken = true;
-		getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_OPENSQBR);
+		getTargetSentence().addFinalToken(SCELABEL_NORMAL, ES, TOKEN_OPENSQBR);
 	}
 
 	private void handleCloseSquareBracket() {
 		if (!this.insideSqBr) {
-			reportError("Attempt to close parenthesis (]) when it has not yet been opened during processing of query sentence:" + getTargetSentence().getSentenceText(), this.ac);
+			reportError(
+					"Attempt to close parenthesis (]) when it has not yet been opened during processing of query sentence:"
+							+ getTargetSentence().getSentenceText(),
+					this.ac);
 		}
 
-		//The query name is complete so store as a final token
-		getTargetSentence().addFinalToken(SCELABEL_RQNAME, "", this.ac.getModelBuilder().getCachedStringValueLevel3(this.queryName));
+		// The query name is complete so store as a final token
+		getTargetSentence().addFinalToken(SCELABEL_RQNAME, ES,
+				this.ac.getModelBuilder().getCachedStringValueLevel3(this.queryName));
 		this.insideSqBr = false;
 		this.ignoreThisToken = true;
-		getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_CLOSESQBR);
+		getTargetSentence().addFinalToken(SCELABEL_NORMAL, ES, TOKEN_CLOSESQBR);
 	}
 
 	private int handleTokenFor(int pCounter) {
 		int result = pCounter;
 
 		if (!this.insideSqBr) {
-			//Only treat "for" as a special case if it is the first token
+			// Only treat 'for' as a special case if it is the first token
 			if (pCounter == 0) {
-				//The query can now be created
+				// The query can now be created
 				createNewQuery();
-	
+
 				this.ignoreThisToken = true;
 				this.inPreamble = true;
 				++result;
-				getTargetSentence().addFinalToken(SCELABEL_RQSTART, "", TOKEN_FOR);
+				getTargetSentence().addFinalToken(SCELABEL_RQSTART, ES, TOKEN_FOR);
 			}
 		}
 
@@ -245,12 +254,13 @@ public class TokenizerQuerySentence extends TokenizerSentence {
 		int result = pCounter;
 
 		if (!this.insideSqBr) {
-			//Only treat "how" as a special case if it is the second token and we are in the preamble
+			// Only treat 'how' as a special case if it is the second token and
+			// we are in the preamble
 			if ((pCounter == 1) && (this.inPreamble)) {
 				this.targetQuery.markAsCountQuery();
 				this.ignoreThisToken = true;
 				++result;
-				getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_HOW);
+				getTargetSentence().addFinalToken(SCELABEL_NORMAL, ES, TOKEN_HOW);
 			}
 		}
 
@@ -261,14 +271,15 @@ public class TokenizerQuerySentence extends TokenizerSentence {
 		int result = pCounter;
 
 		if (!this.insideSqBr) {
-			//Only treat "many" as a special case if it is the third token and we are in the preamble
+			// Only treat 'many' as a special case if it is the third token and
+			// we are in the preamble
 			if ((pCounter == 2) && (this.inPreamble)) {
 				this.targetQuery.markAsCountQuery();
 				this.ignoreThisToken = true;
 				this.inPreamble = false;
 				this.inVariableList = true;
 				++result;
-				getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_MANY);
+				getTargetSentence().addFinalToken(SCELABEL_NORMAL, ES, TOKEN_MANY);
 			}
 		}
 
@@ -279,14 +290,15 @@ public class TokenizerQuerySentence extends TokenizerSentence {
 		int result = pCounter;
 
 		if (!this.insideSqBr) {
-			//Only treat "which" as a special case if it is the second token and we are in the preamble
+			// Only treat 'which' as a special case if it is the second token
+			// and we are in the preamble
 			if ((pCounter == 1) && (this.inPreamble)) {
 				this.targetQuery.markAsNormalQuery();
 				this.ignoreThisToken = true;
 				this.inPreamble = false;
 				this.inVariableList = true;
 				++result;
-				getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_WHICH);
+				getTargetSentence().addFinalToken(SCELABEL_NORMAL, ES, TOKEN_WHICH);
 			}
 		}
 
@@ -297,13 +309,14 @@ public class TokenizerQuerySentence extends TokenizerSentence {
 		int result = pCounter;
 
 		if (!this.insideSqBr) {
-			//Only treat "is" as a special case if it is the third or fourth token and we are in the preamble
+			// Only treat 'is' as a special case if it is the third or fourth
+			// token and we are in the preamble
 			if (((pCounter == 2) || (pCounter == 3)) && (this.inVariableList)) {
 				this.ignoreThisToken = true;
 				this.inVariableList = false;
 				this.inPreamble = true;
 				++result;
-				getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_IS);
+				getTargetSentence().addFinalToken(SCELABEL_NORMAL, ES, TOKEN_IS);
 			}
 		}
 
@@ -314,12 +327,13 @@ public class TokenizerQuerySentence extends TokenizerSentence {
 		int result = pCounter;
 
 		if (!this.insideSqBr) {
-			//Only treat "it" as a special case if it is the fourth or fifth token and we are in the preamble
+			// Only treat 'it' as a special case if it is the fourth or fifth
+			// token and we are in the preamble
 			if (((pCounter == 3) || (pCounter == 4)) && (this.inPreamble)) {
 				this.ignoreThisToken = true;
 				this.inPreamble = true;
 				++result;
-				getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_IT);
+				getTargetSentence().addFinalToken(SCELABEL_NORMAL, ES, TOKEN_IT);
 			}
 		}
 
@@ -330,12 +344,13 @@ public class TokenizerQuerySentence extends TokenizerSentence {
 		int result = pCounter;
 
 		if (!this.insideSqBr) {
-			//Only treat "true" as a special case if it is the fifth or sixth token and we are in the preamble
+			// Only treat 'true' as a special case if it is the fifth or sixth
+			// token and we are in the preamble
 			if (((pCounter == 4) || (pCounter == 5)) && (this.inPreamble)) {
 				this.ignoreThisToken = true;
 				this.inPreamble = true;
 				++result;
-				getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_TRUE);
+				getTargetSentence().addFinalToken(SCELABEL_NORMAL, ES, TOKEN_TRUE);
 			}
 		}
 
@@ -346,12 +361,13 @@ public class TokenizerQuerySentence extends TokenizerSentence {
 		int result = pCounter;
 
 		if (!this.insideSqBr) {
-			//Only treat "that" as a special case if it is the sixth or seventh token and we are in the preamble
+			// Only treat 'that' as a special case if it is the sixth or seventh
+			// token and we are in the preamble
 			if (((pCounter == 5) || (pCounter == 6)) && (this.inPreamble)) {
 				this.ignoreThisToken = true;
 				this.inPreamble = false;
 				++result;
-				getTargetSentence().addFinalToken(SCELABEL_CONNECTOR, "", TOKEN_THAT);
+				getTargetSentence().addFinalToken(SCELABEL_CONNECTOR, ES, TOKEN_THAT);
 			}
 		}
 
@@ -361,13 +377,15 @@ public class TokenizerQuerySentence extends TokenizerSentence {
 	private void handleTokenAnd() {
 		if (!this.insideSqBr) {
 			if (this.inVariableList) {
-				//If it is inside the list of variable ids then it is a separator
+				// If it is inside the list of variable ids then it is a
+				// separator
 				this.ignoreThisToken = true;
-				getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_AND);
+				getTargetSentence().addFinalToken(SCELABEL_NORMAL, ES, TOKEN_AND);
 			}
-	
+
 			if (this.insidePar) {
-				//If it is inside the parenthesis then it is part of a (multi-term) clause and must be retained
+				// If it is inside the parenthesis then it is part of a
+				// (multi-term) clause and must be retained
 				this.currentClause.addRawToken(TOKEN_AND);
 				this.ignoreThisToken = true;
 			}
@@ -376,9 +394,9 @@ public class TokenizerQuerySentence extends TokenizerSentence {
 
 	private void handleTokenComma() {
 		if (this.inVariableList) {
-			//If it is inside the list of variable ids then it is a separator
+			// If it is inside the list of variable ids then it is a separator
 			this.ignoreThisToken = true;
-			getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_COMMA);
+			getTargetSentence().addFinalToken(SCELABEL_NORMAL, ES, TOKEN_COMMA);
 		}
 	}
 
@@ -397,10 +415,10 @@ public class TokenizerQuerySentence extends TokenizerSentence {
 	}
 
 	private void tokenizingComplete() {
-		//The tokenizing is complete so now the clauses can be processed
+		// The tokenizing is complete so now the clauses can be processed
 		processClauses();
 
-		//Finished, so notify the sentence that validation is complete
+		// Finished, so notify the sentence that validation is complete
 		getTargetSentence().validationComplete();
 	}
 
@@ -408,27 +426,28 @@ public class TokenizerQuerySentence extends TokenizerSentence {
 		int result = pCounter;
 
 		if (this.insideSqBr) {
-			//Inside square brackets any tokens are names
+			// Inside square brackets any tokens are names
 			processNameToken(pToken);
 		} else {
 			if (this.inVariableList) {
-				//We are in the variable list so this is a variable id
+				// We are in the variable list so this is a variable id
 				this.targetQuery.addResponseVariableId(pToken);
-				getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", this.ac.getModelBuilder().getCachedStringValueLevel3(pToken));
+				getTargetSentence().addFinalToken(SCELABEL_NORMAL, ES,
+						this.ac.getModelBuilder().getCachedStringValueLevel3(pToken));
 			} else if (this.inOrderBy) {
-				//DSB 01/05/2015 #1095
-				//We are in an "order by" suffix
+				// We are in an 'order by' suffix
 				if (pToken.equals(TOKEN_BY)) {
-					//Ignore the "by token"
+					// Ignore the 'by token'
 				} else if (pToken.equals(TOKEN_COMMA)) {
-					//Ignore any commas
+					// Ignore any commas
 				} else if (pToken.equals(TOKEN_LIMIT)) {
-					//Limit can follow order by
+					// Limit can follow order by
 					this.inOrderBy = false;
 					processLimitToken();
 				} else {
 					if (pToken.equals(TOKEN_ASCENDING)) {
-						//Ascending is the default order so just ignore this token
+						// Ascending is the default order so just ignore this
+						// token
 					} else if (pToken.equals(TOKEN_DESCENDING)) {
 						this.targetQuery.setSortOrderDescending();
 					} else {
@@ -436,29 +455,29 @@ public class TokenizerQuerySentence extends TokenizerSentence {
 					}
 				}
 			} else if (this.inLimit) {
-				//We are in a "limit" suffix - this must be the number
+				// We are in a 'limit' suffix - this must be the number
 				this.targetQuery.setRowLimit(pToken);
 				inLimit = false;
 			} else {
-				//Outside square brackets and the variable list the token counter must be incremented
+				// Outside square brackets and the variable list the token
+				// counter must be incremented
 				++result;
 				if (this.insidePar) {
-					//If inside a parenthesis then this is a clause 
+					// If inside a parenthesis then this is a clause
 					processClauseToken(pToken);
 				} else {
-					//Only the "and" token or a suffix token acceptable outside of all the query sections
+					// Only the 'and' token or a suffix token acceptable outside
+					// of all the query sections
 					if (pToken.equals(TOKEN_AND)) {
-						//Just ignore the "and"
+						// Just ignore the 'and'
 					} else if (pToken.equals(TOKEN_OR)) {
-						//DSB 01/05/2015 #1095
 						processUnsupportedOrToken();
 					} else if (pToken.equals(TOKEN_ORDER)) {
-						//DSB 01/05/2015 #1095
 						processOrderToken();
 					} else if (pToken.equals(TOKEN_LIMIT)) {
 						processLimitToken();
 					} else {
-						//No unexpected tokens should occur outside brackets
+						// No unexpected tokens should occur outside brackets
 						processUnexpectedToken(pToken);
 					}
 				}
@@ -472,7 +491,7 @@ public class TokenizerQuerySentence extends TokenizerSentence {
 		if (this.queryName.isEmpty()) {
 			this.queryName = pToken;
 		} else {
-			this.queryName += " " + pToken;
+			this.queryName += TOKEN_SPACE + pToken;
 		}
 	}
 
@@ -485,15 +504,18 @@ public class TokenizerQuerySentence extends TokenizerSentence {
 	}
 
 	private void processUnexpectedToken(String pToken) {
-		reportError("Unexpected token '" + pToken + "' found outside square brackets and parentheses during query processing, for sentence:" + getTargetSentence().getSentenceText(), this.ac);
+		reportError("Unexpected token '" + pToken
+				+ "' found outside square brackets and parentheses during query processing, for sentence:"
+				+ getTargetSentence().getSentenceText(), this.ac);
 	}
 
-	//DSB 01/05/2015 #1095
 	private void processUnsupportedOrToken() {
-		reportError("The 'or' operator is not yet supported in CE Queries and will be treated as an 'and', for sentence:" + getTargetSentence().getSentenceText(), this.ac);
+		reportError(
+				"The 'or' operator is not yet supported in CE Queries and will be treated as an 'and', for sentence:"
+						+ getTargetSentence().getSentenceText(),
+				this.ac);
 	}
 
-	//DSB 01/05/2015 #1095
 	private void processOrderToken() {
 		this.inOrderBy = true;
 	}
@@ -510,20 +532,22 @@ public class TokenizerQuerySentence extends TokenizerSentence {
 				firstClause = false;
 			}
 		} else {
-			reportError("No targetQuery identified during query tokenizing, for sentence: " + getTargetSentence().getSentenceText(), this.ac);
+			reportError("No targetQuery identified during query tokenizing, for sentence: "
+					+ getTargetSentence().getSentenceText(), this.ac);
 		}
 	}
 
 	private void processClause(CeClause pClause, boolean pFirstClause) {
 		String clauseText = pClause.terminatedClauseText();
 		if (!clauseText.isEmpty()) {
-			BuilderSentenceFact bsF = (BuilderSentenceFact)BuilderSentence.createForSentenceText(this.ac, clauseText, pClause.getRawTokens());
+			BuilderSentenceFact bsF = (BuilderSentenceFact) BuilderSentence.createForSentenceText(this.ac, clauseText,
+					pClause.getRawTokens());
 
 			if (bsF != null) {
 				if (!pFirstClause) {
-					getTargetSentence().addFinalToken(SCELABEL_CONNECTOR, "", TOKEN_AND);
+					getTargetSentence().addFinalToken(SCELABEL_CONNECTOR, ES, TOKEN_AND);
 				}
-				getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_OPENPAR);
+				getTargetSentence().addFinalToken(SCELABEL_NORMAL, ES, TOKEN_OPENPAR);
 				bsF.markAsClause();
 				bsF.categoriseSentence();
 
@@ -544,7 +568,7 @@ public class TokenizerQuerySentence extends TokenizerSentence {
 					int totalCount = dpCount + opCount + stCount + cvCount;
 
 					if (totalCount == 0) {
-						//Plain statement of existence
+						// Plain statement of existence
 						doClauseProcessingForExistenceStatement(pClause);
 					} else {
 						doNormalClauseProcessingOn(bsF, pClause);
@@ -553,12 +577,15 @@ public class TokenizerQuerySentence extends TokenizerSentence {
 					for (String thisError : bsF.errors) {
 						addErrorToSentence(thisError);
 					}
-					reportWarning("Query clause '" + clauseText + "' contains errors, in sentence: '" + getTargetSentence().getSentenceText() + "'", this.ac);
+					reportWarning("Query clause '" + clauseText + "' contains errors, in sentence: '"
+							+ getTargetSentence().getSentenceText() + "'", this.ac);
 				}
 			}
-			getTargetSentence().addFinalToken(SCELABEL_NORMAL, "", TOKEN_CLOSEPAR);
+			getTargetSentence().addFinalToken(SCELABEL_NORMAL, ES, TOKEN_CLOSEPAR);
 		} else {
-			reportWarning("Unexpected empty clause for query, in sentence: '" + getTargetSentence().getSentenceText() + "'", this.ac);
+			reportWarning(
+					"Unexpected empty clause for query, in sentence: '" + getTargetSentence().getSentenceText() + "'",
+					this.ac);
 		}
 	}
 
@@ -566,7 +593,9 @@ public class TokenizerQuerySentence extends TokenizerSentence {
 		if (this.queryName.isEmpty()) {
 			this.queryName = generateDefaultQueryName();
 			if (isReportDebug()) {
-				reportDebug("No query name specified, so '" + this.queryName + "' has been generated for query in sentence: " + getTargetSentence().getSentenceText(), this.ac);
+				reportDebug("No query name specified, so '" + this.queryName
+						+ "' has been generated for query in sentence: " + getTargetSentence().getSentenceText(),
+						this.ac);
 			}
 		}
 
@@ -578,18 +607,20 @@ public class TokenizerQuerySentence extends TokenizerSentence {
 			this.currentClause = CeClause.createNewPremiseClauseFor(this.targetQuery);
 			this.targetQuery.addDirectPremiseClause(this.currentClause);
 		} else {
-			reportError("Null targetQuery encountered when trying to add new premise clause to query, for sentence: " + getTargetSentence().getSentenceText(), this.ac);
+			reportError("Null targetQuery encountered when trying to add new premise clause to query, for sentence: "
+					+ getTargetSentence().getSentenceText(), this.ac);
 		}
 	}
 
 	private static String generateDefaultQueryName() {
-		//This is used when a query name has not been specified
-		return "query_" + CeQuery.nextPatternId();
+		// This is used when a query name has not been specified
+		return PREFIX_QUERY + CeQuery.nextPatternId();
 	}
 
 	private void saveCurrentClause() {
 		if (this.currentClause == null) {
-			reportError("Unxepected null currentClause whilst processing sentence: " + getTargetSentence().getSentenceText(), this.ac);
+			reportError("Unxepected null currentClause whilst processing sentence: "
+					+ getTargetSentence().getSentenceText(), this.ac);
 		}
 	}
 

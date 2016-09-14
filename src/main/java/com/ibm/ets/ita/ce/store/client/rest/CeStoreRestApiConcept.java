@@ -407,7 +407,6 @@ public class CeStoreRestApiConcept extends CeStoreRestApi {
 	}
 
 	private void jsonListAllConcepts() {
-		//DSB 20/06/2014 - Create a copy to avoid concurrent modification issues
 		ArrayList<CeConcept> conList = new ArrayList<CeConcept>(getModelBuilder().listAllConcepts());
 		setConceptListAsStructuredResult(conList);
 	}
@@ -713,8 +712,6 @@ public class CeStoreRestApiConcept extends CeStoreRestApi {
 		ArrayList<CeProperty> filteredProps = new ArrayList<CeProperty>();
 		CeConcept tgtRangeCon = this.wc.getModelBuilder().getConceptNamed(this.wc, pRangeName);
 
-		//DSB 04/08/2014 - This code was only checking for direct property range matches
-		//upgraded to ensure that inheritance is accounted for.
 		if (tgtRangeCon != null) {
 			allProps = pCon.calculateAllProperties();
 
@@ -738,8 +735,6 @@ public class CeStoreRestApiConcept extends CeStoreRestApi {
 
 		appendCeMainHeader(sb, "All object properties with range '" + pRangeName + "' for concept " + pCon.getConceptName());
 
-		//DSB 04/08/2014 - This code was only checking for direct property range matches
-		//upgraded to ensure that inheritance is accounted for.
 		if (tgtRangeCon != null) {
 			for (CeProperty thisProp : pCon.calculateAllProperties().values()) {
 				if (thisProp.isObjectProperty()) {

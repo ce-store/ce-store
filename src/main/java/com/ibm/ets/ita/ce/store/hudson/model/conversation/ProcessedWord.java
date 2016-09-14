@@ -1090,8 +1090,6 @@ public class ProcessedWord extends GeneralItem {
 			}
 		} else {
 			if (!pFirstTime) {
-				// DSB 23/10/2015 - Improved to only consider non-inferred
-				// properties
 				ArrayList<CeProperty> tempResult = pAc.getModelBuilder().getPropertiesNamed(pLcWordText);
 
 				for (CeProperty thisProp : tempResult) {
@@ -1233,9 +1231,6 @@ public class ProcessedWord extends GeneralItem {
 			result = new TreeMap<String, ArrayList<CeInstance>>();
 		}
 
-		// DSB 20/10/2015 - Moved this processing out so it is always done (even
-		// when there
-		// are partial matches
 		ArrayList<CeInstance> extraResult = hm.getWordCheckerCache().checkForMatchingInstances(pAc, strippedWord);
 
 		if (!extraResult.isEmpty()) {

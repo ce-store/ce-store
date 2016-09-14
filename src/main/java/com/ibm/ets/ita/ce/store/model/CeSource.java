@@ -52,7 +52,6 @@ public class CeSource extends CeModelEntity {
 
 	private CeConceptualModel[] definedModels = new CeConceptualModel[0];
 
-	//DSB 22/07/2013 - Relocated from ActionContext
 	private HashSet<CeConcept> affectedConcepts = new HashSet<CeConcept>();
 	private HashSet<CeProperty> affectedProperties = new HashSet<CeProperty>();
 	private HashSet<CeRule> affectedRules = new HashSet<CeRule>();

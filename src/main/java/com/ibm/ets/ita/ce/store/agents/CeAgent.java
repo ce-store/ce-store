@@ -24,9 +24,6 @@ import static com.ibm.ets.ita.ce.store.names.CeNames.PROP_TGT_CONCEPT;
 import static com.ibm.ets.ita.ce.store.names.CeNames.PROP_TGT_PROP;
 import static com.ibm.ets.ita.ce.store.names.CeNames.PROP_TGT_RANGE;
 import static com.ibm.ets.ita.ce.store.names.CeNames.PROP_TGT_SOURCE;
-import static com.ibm.ets.ita.ce.store.names.MiscNames.CEVALUE_EMPTY;
-import static com.ibm.ets.ita.ce.store.names.MiscNames.CEVALUE_FALSE;
-import static com.ibm.ets.ita.ce.store.names.MiscNames.CEVALUE_TRUE;
 import static com.ibm.ets.ita.ce.store.names.MiscNames.CEVALUE_UNLIMITED;
 import static com.ibm.ets.ita.ce.store.names.MiscNames.DEFAULT_NOVAL;
 import static com.ibm.ets.ita.ce.store.names.MiscNames.ES;
@@ -35,6 +32,8 @@ import static com.ibm.ets.ita.ce.store.names.MiscNames.SENMODE_NORMAL;
 import static com.ibm.ets.ita.ce.store.names.MiscNames.SUFFIX_CE;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_BECAUSE;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_DOT;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_FALSE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_TRUE;
 import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.appendNewLineToSb;
 import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.appendToSb;
 import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.appendToSbNoNl;
@@ -90,7 +89,11 @@ public abstract class CeAgent {
 	private boolean saveCeIndividually = false;
 	private boolean doesNotGenerateCe = false;
 	protected boolean generateRationale = false;
-	protected boolean doubleRationaleSentences = false;			// A temporary fix to allow prolog integration (which requires double sentences)
+	protected boolean doubleRationaleSentences = false; // A temporary fix to
+														// allow prolog
+														// integration (which
+														// requires double
+														// sentences)
 	private boolean failedToGetMandatoryParameter = false;
 	private String ceFilename = null;
 	private int maxSentences = -1;
@@ -110,77 +113,81 @@ public abstract class CeAgent {
 	private String targetPropertyName = null;
 	private String targetRangeName = null;
 
-	private CeConcept sourceConcept = null;	
+	private CeConcept sourceConcept = null;
 	private CeProperty sourceProperty = null;
-	private CeConcept targetConcept = null;	
+	private CeConcept targetConcept = null;
 	private CeProperty targetProperty = null;
 
 	private CeSource existingSource = null;
-	
+
 	private boolean agentDebug = false;
 
 	public abstract String getAgentName();
+
 	public abstract String getAgentVersion();
+
 	protected abstract void executeAgentProcessing();
+
 	protected abstract void loadAgentParameters();
 
 	protected StoreConfig getCeConfig() {
 		return this.ac.getCeConfig();
 	}
-	
+
 	private void loadGeneralParameters() {
 		String thisVal = null;
 		String defaultVal = null;
-		
+
 		thisVal = getConfigSingleValueNamed(PROP_CLASSNAME);
 		if ((thisVal != null) && (!thisVal.isEmpty())) {
-			this.className = thisVal;		//Class name can never be empty, but this test is here for consistency
+			this.className = thisVal; // Class name can never be empty, but this
+										// test is here for consistency
 		} else {
 			this.className = ES;
 		}
-		
-		thisVal = getConfigOptionalSingleValueNamed(PROP_DOESNOTGENERATECE, CEVALUE_FALSE);
+
+		thisVal = getConfigOptionalSingleValueNamed(PROP_DOESNOTGENERATECE, TOKEN_FALSE);
 		if ((thisVal != null) && (!thisVal.isEmpty())) {
-			this.doesNotGenerateCe = thisVal.equals(CEVALUE_TRUE);
+			this.doesNotGenerateCe = thisVal.equals(TOKEN_TRUE);
 		}
 
-		defaultVal = CEVALUE_TRUE;
+		defaultVal = TOKEN_TRUE;
 		thisVal = getConfigOptionalSingleValueNamed(PROP_SENDTOSTORE, defaultVal);
 		if ((thisVal != null) && (!thisVal.isEmpty())) {
 			if (doesNotGenerateCe() && (thisVal != defaultVal)) {
 				reportInconsistentParmError(PROP_SENDTOSTORE);
 			} else {
-				this.sendCeToStore = thisVal.equals(CEVALUE_TRUE);
+				this.sendCeToStore = thisVal.equals(TOKEN_TRUE);
 			}
 		}
 
-		defaultVal = CEVALUE_FALSE;
+		defaultVal = TOKEN_FALSE;
 		thisVal = getConfigOptionalSingleValueNamed(PROP_SAVETOFILE, defaultVal);
 		if ((thisVal != null) && (!thisVal.isEmpty())) {
 			if (doesNotGenerateCe() && (thisVal != defaultVal)) {
 				reportInconsistentParmError(PROP_SAVETOFILE);
 			} else {
-				this.saveCeToFile = thisVal.equals(CEVALUE_TRUE);
+				this.saveCeToFile = thisVal.equals(TOKEN_TRUE);
 			}
 		}
 
-		defaultVal = CEVALUE_TRUE;
+		defaultVal = TOKEN_TRUE;
 		thisVal = getConfigOptionalSingleValueNamed(PROP_RESTATE, defaultVal);
 		if ((thisVal != null) && (!thisVal.isEmpty())) {
 			if (!getCeConfig().cacheCeText() && (thisVal != defaultVal)) {
 				reportInconsistentParmError(PROP_RESTATE);
 			} else {
-				this.restateExistingSentences = thisVal.equals(CEVALUE_TRUE);
+				this.restateExistingSentences = thisVal.equals(TOKEN_TRUE);
 			}
 		}
 
-		defaultVal = CEVALUE_FALSE;
+		defaultVal = TOKEN_FALSE;
 		thisVal = getConfigOptionalSingleValueNamed(PROP_SAVEINDIVIDUAL, defaultVal);
 		if ((thisVal != null) && (!thisVal.isEmpty())) {
 			if (doesNotGenerateCe() && (thisVal != defaultVal)) {
 				reportInconsistentParmError(PROP_SAVEINDIVIDUAL);
 			} else {
-				this.saveCeIndividually = thisVal.equals(CEVALUE_TRUE);
+				this.saveCeIndividually = thisVal.equals(TOKEN_TRUE);
 			}
 		}
 
@@ -206,62 +213,63 @@ public abstract class CeAgent {
 			}
 		}
 
-		thisVal = getConfigOptionalSingleValueNamed(PROP_SRC_CONCEPT, CEVALUE_EMPTY);
+		thisVal = getConfigOptionalSingleValueNamed(PROP_SRC_CONCEPT, ES);
 		if ((thisVal != null) && (!thisVal.isEmpty())) {
 			this.sourceConceptName = thisVal;
 		} else {
 			this.sourceConceptName = ES;
 		}
 
-		thisVal = getConfigOptionalSingleValueNamed(PROP_SRC_PROP, CEVALUE_EMPTY);
+		thisVal = getConfigOptionalSingleValueNamed(PROP_SRC_PROP, ES);
 		if ((thisVal != null) && (!thisVal.isEmpty())) {
 			this.sourcePropertyName = thisVal;
 		} else {
 			this.sourcePropertyName = ES;
 		}
 
-		thisVal = getConfigOptionalSingleValueNamed(PROP_SRC_RANGE, CEVALUE_EMPTY);
+		thisVal = getConfigOptionalSingleValueNamed(PROP_SRC_RANGE, ES);
 		if ((thisVal != null) && (!thisVal.isEmpty())) {
 			this.sourceRangeName = thisVal;
 		} else {
 			this.sourceRangeName = ES;
 		}
 
-		thisVal = getConfigOptionalSingleValueNamed(PROP_TGT_CONCEPT, CEVALUE_EMPTY);
+		thisVal = getConfigOptionalSingleValueNamed(PROP_TGT_CONCEPT, ES);
 		if ((thisVal != null) && (!thisVal.isEmpty())) {
 			this.targetConceptName = thisVal;
 		} else {
 			this.targetConceptName = ES;
 		}
 
-		thisVal = getConfigOptionalSingleValueNamed(PROP_TGT_PROP, CEVALUE_EMPTY);
+		thisVal = getConfigOptionalSingleValueNamed(PROP_TGT_PROP, ES);
 		if ((thisVal != null) && (!thisVal.isEmpty())) {
 			this.targetPropertyName = thisVal;
 		} else {
 			this.targetPropertyName = ES;
 		}
 
-		thisVal = getConfigOptionalSingleValueNamed(PROP_TGT_RANGE, CEVALUE_EMPTY);
+		thisVal = getConfigOptionalSingleValueNamed(PROP_TGT_RANGE, ES);
 		if ((thisVal != null) && (!thisVal.isEmpty())) {
 			this.targetRangeName = thisVal;
 		} else {
 			this.targetRangeName = ES;
 		}
 
-		thisVal = getConfigOptionalSingleValueNamed(PROP_TGT_SOURCE, CEVALUE_EMPTY);
+		thisVal = getConfigOptionalSingleValueNamed(PROP_TGT_SOURCE, ES);
 		if ((thisVal != null) && (!thisVal.isEmpty())) {
 			this.targetSourceName = thisVal;
 		} else {
 			this.targetSourceName = ES;
 		}
 
-		this.agentDebug = getBooleanValueFrom(getConfigOptionalSingleValueNamed(PROP_DEBUG, CEVALUE_FALSE));
-		this.generateRationale = getBooleanValueFrom(getConfigOptionalSingleValueNamed(PROP_GENRAT, CEVALUE_FALSE));
-		this.doubleRationaleSentences = getBooleanValueFrom(getConfigOptionalSingleValueNamed(PROP_DUBRAT, CEVALUE_FALSE));
+		this.agentDebug = getBooleanValueFrom(getConfigOptionalSingleValueNamed(PROP_DEBUG, TOKEN_FALSE));
+		this.generateRationale = getBooleanValueFrom(getConfigOptionalSingleValueNamed(PROP_GENRAT, TOKEN_FALSE));
+		this.doubleRationaleSentences = getBooleanValueFrom(
+				getConfigOptionalSingleValueNamed(PROP_DUBRAT, TOKEN_FALSE));
 
 		this.maxIterations = getIntValueFrom(getConfigOptionalSingleValueNamed(PROP_MAXITS, DEFAULT_NOVAL));
 	}
-	
+
 	protected void initialise(ActionContext pAc, CeInstance pConfigInstance) {
 		this.ac = pAc;
 		this.mb = this.ac.getModelBuilder();
@@ -282,7 +290,8 @@ public abstract class CeAgent {
 		return this.configInstance.getDirectConcepts();
 	}
 
-	// TODO - needs extra processing in case there is more than one direct concept
+	// TODO - needs extra processing in case there is more than one direct
+	// concept
 	public CeConcept getConfigInstanceConcept() {
 		CeConcept result = null;
 
@@ -321,34 +330,34 @@ public abstract class CeAgent {
 		return result;
 	}
 
-    public ArrayList<CeInstance> getAllInstancesForConceptNamed(String pConceptName) {
+	public ArrayList<CeInstance> getAllInstancesForConceptNamed(String pConceptName) {
 		ArrayList<CeInstance> result = null;
-		
+
 		if (this.mb != null) {
 			result = this.mb.getAllInstancesForConceptNamed(this.ac, pConceptName);
 		} else {
 			result = new ArrayList<CeInstance>();
 		}
-		
+
 		return result;
 	}
-	
+
 	public ArrayList<CeInstance> getAllInstancesForConcept(CeConcept pConcept) {
 		ArrayList<CeInstance> result = null;
-		
+
 		if (this.mb != null) {
 			result = this.mb.retrieveAllInstancesForConcept(pConcept);
 		} else {
 			result = new ArrayList<CeInstance>();
 		}
-		
+
 		return result;
 	}
 
 	public ArrayList<CeInstance> getAllInstancesForSourceConcept() {
 		ArrayList<CeInstance> result = null;
-		CeConcept srcCon = getSourceConcept(); 
-		
+		CeConcept srcCon = getSourceConcept();
+
 		if (srcCon != null) {
 			if (this.mb != null) {
 				result = this.mb.retrieveAllInstancesForConcept(srcCon);
@@ -358,7 +367,7 @@ public abstract class CeAgent {
 		} else {
 			result = new ArrayList<CeInstance>();
 		}
-		
+
 		return result;
 	}
 
@@ -368,7 +377,7 @@ public abstract class CeAgent {
 		if (this.mb != null) {
 			result = this.mb.getInstanceNamed(this.ac, pName);
 		}
-		
+
 		return result;
 	}
 
@@ -395,27 +404,27 @@ public abstract class CeAgent {
 	public boolean isSavingCeToFile() {
 		return this.saveCeToFile;
 	}
-	
+
 	public boolean isSentenceLimitExceeded() {
 		return this.sentenceLimitExceeded;
 	}
-	
+
 	public String getCeFilename() {
 		return this.ceFilename;
 	}
-	
+
 	public int getMaxSentences() {
 		return this.maxSentences;
 	}
-	
+
 	public boolean hasNoSentenceLimit() {
 		return (this.maxSentences == CEVALUE_UNLIMITED);
 	}
-	
+
 	public int getSentenceCounter() {
 		return this.sentenceCounter;
 	}
-	
+
 	public int rejectedSentenceCount() {
 		return (this.sentenceCounter - this.maxSentences);
 	}
@@ -423,7 +432,7 @@ public abstract class CeAgent {
 	public int getValidSentenceCount() {
 		return this.validSentenceCount;
 	}
-	
+
 	public int getInvalidSentenceCount() {
 		return this.invalidSentenceCount;
 	}
@@ -431,7 +440,7 @@ public abstract class CeAgent {
 	protected String getSourceConceptName() {
 		return this.sourceConceptName;
 	}
-	
+
 	protected void setSourceConceptName(String pSrcConName) {
 		this.sourceConceptName = pSrcConName;
 	}
@@ -447,14 +456,14 @@ public abstract class CeAgent {
 				reportError("No source concept specified");
 			}
 		}
-		
+
 		return this.sourceConcept;
 	}
-	
+
 	protected String getTargetConceptName() {
 		return this.targetConceptName;
 	}
-	
+
 	protected void setTargetConceptName(String pTgtConName) {
 		this.targetConceptName = pTgtConName;
 	}
@@ -473,11 +482,11 @@ public abstract class CeAgent {
 
 		return this.targetConcept;
 	}
-	
+
 	protected String getSourcePropertyName() {
 		return this.sourcePropertyName;
 	}
-	
+
 	protected void setSourcePropertyName(String pSrcPropName) {
 		this.sourcePropertyName = pSrcPropName;
 	}
@@ -486,51 +495,55 @@ public abstract class CeAgent {
 		if (this.sourceProperty == null) {
 			if (getSourceConcept() != null) {
 				if (this.sourcePropertyName != null) {
-					String fullPropName = CeProperty.calculateFullPropertyNameFor(getSourceConcept().getConceptName(), this.sourcePropertyName, this.sourceRangeName);
+					String fullPropName = CeProperty.calculateFullPropertyNameFor(getSourceConcept().getConceptName(),
+							this.sourcePropertyName, this.sourceRangeName);
 					this.sourceProperty = getSourceConcept().retrievePropertyFullyNamed(fullPropName);
 					if (this.sourceProperty == null) {
-						reportWarning("Unable to locate specified source property '" + this.sourcePropertyName + ":" + this.sourceRangeName + "'");
+						reportWarning("Unable to locate specified source property '" + this.sourcePropertyName + ":"
+								+ this.sourceRangeName + "'");
 					}
 				} else {
 					reportError("No source property specified");
 				}
 			}
 		}
-		
+
 		return this.sourceProperty;
 	}
-	
+
 	protected ArrayList<CePropertyInstance> getAllSourcePropertyInstances() {
 		ArrayList<CePropertyInstance> result = new ArrayList<CePropertyInstance>();
-		
+
 		CeConcept srcConcept = getSourceConcept();
 		String srcPropName = getSourcePropertyName();
-		
+
 		if (this.mb != null) {
 			if ((srcPropName != null) && (!srcPropName.isEmpty())) {
 				if (srcConcept != null) {
 					for (CeInstance thisInst : this.mb.retrieveAllInstancesForConcept(srcConcept)) {
 						CePropertyInstance thisPi = thisInst.getPropertyInstanceNamed(srcPropName);
-						
+
 						if (thisPi != null) {
 							result.add(thisPi);
 						}
 					}
 				} else {
-					reportError("Attempt to list all source property instances failed because the 'source concept' could not be located for this agent instance");
+					reportError(
+							"Attempt to list all source property instances failed because the 'source concept' could not be located for this agent instance");
 				}
 			} else {
-				reportError("Attempt to list all source property instances failed because the 'source property' value is not specified for this agent instance");
+				reportError(
+						"Attempt to list all source property instances failed because the 'source property' value is not specified for this agent instance");
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	protected String getTargetPropertyName() {
 		return this.targetPropertyName;
 	}
-	
+
 	protected void setTargetPropertyName(String pTgtPropName) {
 		this.targetPropertyName = pTgtPropName;
 	}
@@ -539,10 +552,12 @@ public abstract class CeAgent {
 		if (this.targetProperty == null) {
 			if (getTargetConcept() != null) {
 				if (this.targetPropertyName != null) {
-					String fullPropName = CeProperty.calculateFullPropertyNameFor(getSourceConcept().getConceptName(), this.targetPropertyName, this.targetRangeName);
+					String fullPropName = CeProperty.calculateFullPropertyNameFor(getSourceConcept().getConceptName(),
+							this.targetPropertyName, this.targetRangeName);
 					this.targetProperty = getTargetConcept().retrievePropertyFullyNamed(fullPropName);
 					if (this.targetProperty == null) {
-						reportWarning("Unable to locate specified target property '" + this.targetPropertyName + ":" + this.targetRangeName + "'");
+						reportWarning("Unable to locate specified target property '" + this.targetPropertyName + ":"
+								+ this.targetRangeName + "'");
 					}
 				} else {
 					reportError("No target property specified");
@@ -552,51 +567,51 @@ public abstract class CeAgent {
 
 		return this.targetProperty;
 	}
-	
+
 	protected CeConcept getConceptNamed(String pConceptName) {
 		CeConcept result = null;
-		
+
 		if (this.mb != null) {
 			result = this.mb.getConceptNamed(this.ac, pConceptName);
 		}
-		
+
 		return result;
 	}
-	
+
 	protected ArrayList<CeInstance> retrieveAllInstancesForConceptNamed(String pConceptName) {
 		ArrayList<CeInstance> result = new ArrayList<CeInstance>();
 		CeConcept tgtConcept = getConceptNamed(pConceptName);
-		
+
 		if (tgtConcept != null) {
 			result = this.mb.retrieveAllInstancesForConcept(tgtConcept);
 		} else {
 			reportError("Unable to retrieve concept named '" + pConceptName + "'");
 		}
-		
+
 		return result;
 	}
-	
+
 	public StringBuilder getAndClearGeneratedCeSentenceText() {
 		StringBuilder result = this.outputCe;
 		this.outputCe = new StringBuilder();
-		
+
 		return result;
 	}
-	
+
 	public int getSizeOfGeneratedCeText() {
 		return this.outputCe.length();
 	}
-	
+
 	public void runAgent(ActionContext pAc, CeInstance pConfigInstance) {
 		initialise(pAc, pConfigInstance);
 		boolean oldDebug = this.ac.getCeConfig().isDebug();
-		
+
 		if (this.agentDebug) {
-			this.ac.getCeConfig().setDebug(this.agentDebug); 
+			this.ac.getCeConfig().setDebug(this.agentDebug);
 		}
-		
-		if(this.ac.getCeConfig().isCatchingAgentErrors()) {
-			//Try the agent execution and catch any errors
+
+		if (this.ac.getCeConfig().isCatchingAgentErrors()) {
+			// Try the agent execution and catch any errors
 			try {
 				if (!this.failedToGetMandatoryParameter) {
 					executeAgentProcessing();
@@ -608,125 +623,140 @@ public abstract class CeAgent {
 			}
 		} else {
 			if (!this.failedToGetMandatoryParameter) {
-				//Just run the agent execution with no attempt to catch errors
+				// Just run the agent execution with no attempt to catch errors
 				executeAgentProcessing();
 			} else {
 				reportError("Not all mandatory parameters were specified, so this agent will not be executed");
 			}
 		}
-		
+
 		if (!doesNotGenerateCe()) {
-			//Only deal with generated sentences if this agent is not barred from generating any!
+			// Only deal with generated sentences if this agent is not barred
+			// from generating any!
 			if (this.flushCounter > 0) {
-				//Increment the flush counter if it has already been incremented
+				// Increment the flush counter if it has already been
+				// incremented
 				++this.flushCounter;
 			}
 
 			dealWithGeneratedSentences();
 		}
-		
+
 		agentProcessingCompleted();
-		
+
 		this.ac.getCeConfig().setDebug(oldDebug);
 	}
-	
+
 	public void flushSentences() {
 		incrementFlushCounter();
 		dealWithGeneratedSentences();
 
-		//After a flush ensure the created sentences and instances are saved
+		// After a flush ensure the created sentences and instances are saved
 		if (isReportDebug()) {
-			reportDebug("Updating created things following CE agent flush (" + getAgentName() + ", " + getAgentVersion() + ")");
+			reportDebug("Updating created things following CE agent flush (" + getAgentName() + ", " + getAgentVersion()
+					+ ")");
 		}
 		this.ac.getModelBuilder().updateCreatedThingsFrom(this.ac);
 	}
-	
+
 	private void incrementFlushCounter() {
 		++this.flushCounter;
 	}
-	
+
 	private void dealWithGeneratedSentences() {
 		StringBuilder finalCe = getAndClearGeneratedCeSentenceText();
-		
+
 		if (finalCe.length() != 0) {
 			finalCe.insert(0, ceAgentAnnotationPrefix());
 			if (isSentenceLimitExceeded()) {
-				reportWarning("Sentence limit of " + getMaxSentences() + " was exceeded for agent '" + getQualifiedAgentNameAndVersion() + "' (" + Integer.toString(rejectedSentenceCount()) + " sentences were generated but not stored)");
+				reportWarning("Sentence limit of " + getMaxSentences() + " was exceeded for agent '"
+						+ getQualifiedAgentNameAndVersion() + "' (" + Integer.toString(rejectedSentenceCount())
+						+ " sentences were generated but not stored)");
 			}
 			if (isSendingCeToStore()) {
-				//Only send the sentences to the store if they are not being saved individually
+				// Only send the sentences to the store if they are not being
+				// saved individually
 				if (!isSavingCeIndividually()) {
 					sendSentencesToStore(finalCe);
 				}
 			} else {
 				if (isReportDebug()) {
-					reportDebug("Output from agent '" + getAgentName()	+ "' ("	+ getSentenceCounter() + " sentences) not sent to store due to configuration setting [send CE to store=false]");
+					reportDebug("Output from agent '" + getAgentName() + "' (" + getSentenceCounter()
+							+ " sentences) not sent to store due to configuration setting [send CE to store=false]");
 				}
 			}
 			if (isSavingCeToFile()) {
-				//The CE filename is expected to NOT be fully qualified, and the standard "generation" sub-folder will be used
+				// The CE filename is expected to NOT be fully qualified, and
+				// the standard "generation" sub-folder will be used
 				String targetFilename = null;
-				
+
 				if (getCeFilename().isEmpty()) {
 					targetFilename = getAgentName() + SUFFIX_CE;
 				} else {
 					targetFilename = getCeFilename();
 				}
-				
+
 				targetFilename = calculateFilenameWithFlush(targetFilename);
-				
+
 				targetFilename = joinFolderAndFilename(this.ac, getCeConfig().getGenPath(), targetFilename);
-				
+
 				writeToFile(this.ac, finalCe, targetFilename);
 				if (isReportDebug()) {
-					reportDebug("Output from agent '" + getAgentName() + "' has been logged to file '" + targetFilename + "'");
+					reportDebug("Output from agent '" + getAgentName() + "' has been logged to file '" + targetFilename
+							+ "'");
 				}
 			}
 		}
 	}
-	
+
 	private String calculateFilenameWithFlush(String pFilename) {
 		String result = pFilename;
-		//TODO: Abstract these values
+		// TODO: Abstract these values
 		if (this.flushCounter > 0) {
 			String flushbit = "_flush_" + Integer.toString(this.flushCounter);
 
-			//TODO: Improve this to handle other extensions too
+			// TODO: Improve this to handle other extensions too
 			if (result.endsWith(".ce")) {
 				result = result.substring(0, (result.length() - 3)) + flushbit + ".ce";
 			} else if (result.endsWith(".CE")) {
 				result = result.substring(0, (result.length() - 3)) + flushbit + ".CE";
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	private void sendSentencesToStore(StringBuilder pSb) {
 		final String METHOD_NAME = "sendSentencesToStore";
-		
+
 		long startTime = System.currentTimeMillis();
 
 		if (pSb != null) {
 			if (pSb.length() != 0) {
-				ContainerSentenceLoadResult senStats = ContainerSentenceLoadResult.createWithZeroValues("sendSentencesToStore()");
+				ContainerSentenceLoadResult senStats = ContainerSentenceLoadResult
+						.createWithZeroValues("sendSentencesToStore()");
 				ProcessorCe procCe = new ProcessorCe(this.ac, false, senStats);
 				CeSource oldCurrSource = this.ac.getCurrentSource();
-				
-				//If the agent config states that a named source should be used then
-				//ensure that this is the case
+
+				// If the agent config states that a named source should be used
+				// then
+				// ensure that this is the case
 				if ((this.targetSourceName != null) && (!this.targetSourceName.isEmpty())) {
 					this.existingSource = this.mb.getSourceById(this.targetSourceName);
-					
+
 					if (this.existingSource == null) {
-						this.existingSource = CeSource.createNewAgentSource(this.ac, getQualifiedAgentNameAndVersion(), getConfigInstanceName(), this.targetSourceName);
+						this.existingSource = CeSource.createNewAgentSource(this.ac, getQualifiedAgentNameAndVersion(),
+								getConfigInstanceName(), this.targetSourceName);
 					}
 				}
-				
+
 				if (this.existingSource != null) {
-					procCe.processNormalSentencesFromSbWithExistingSource(pSb, CeSource.SRCTYPE_ID_AGENT, getQualifiedAgentNameAndVersion(), getConfigInstanceName(), startTime, SENMODE_NORMAL, this.existingSource);
+					procCe.processNormalSentencesFromSbWithExistingSource(pSb, CeSource.SRCTYPE_ID_AGENT,
+							getQualifiedAgentNameAndVersion(), getConfigInstanceName(), startTime, SENMODE_NORMAL,
+							this.existingSource);
 				} else {
-					this.existingSource = procCe.processNormalSentencesFromSb(pSb, CeSource.SRCTYPE_ID_AGENT, getQualifiedAgentNameAndVersion(), getConfigInstanceName(), startTime, SENMODE_NORMAL);
+					this.existingSource = procCe.processNormalSentencesFromSb(pSb, CeSource.SRCTYPE_ID_AGENT,
+							getQualifiedAgentNameAndVersion(), getConfigInstanceName(), startTime, SENMODE_NORMAL);
 				}
 
 				this.existingSource.setParentSource(this.ac, oldCurrSource);
@@ -735,22 +765,27 @@ public abstract class CeAgent {
 				this.validSentenceCount += senStats.getValidSentenceCount();
 				this.invalidSentenceCount += senStats.getInvalidSentenceCount();
 
-				reportExecutionTiming(getActionContext(), startTime, "[ag] sendSentencesToStore, agent=" + getAgentName(), CLASS_NAME, METHOD_NAME);
+				reportExecutionTiming(getActionContext(), startTime,
+						"[ag] sendSentencesToStore, agent=" + getAgentName(), CLASS_NAME, METHOD_NAME);
 			} else {
-				//No need to report an error or warning if an agent doesn't generate any sentences
+				// No need to report an error or warning if an agent doesn't
+				// generate any sentences
 				if (isReportDebug()) {
-					reportDebug("No CE sentences found in supplied string (empty string) [" + getQualifiedAgentNameAndVersion() + "]");
+					reportDebug("No CE sentences found in supplied string (empty string) ["
+							+ getQualifiedAgentNameAndVersion() + "]");
 				}
 			}
 		} else {
-			//The agent should return an empty string rather than null, so log a warning here
-			reportWarning("No CE sentences generated by the agent '" + getQualifiedAgentNameAndVersion() + "' (" + getConfigInstanceName() + ")");
+			// The agent should return an empty string rather than null, so log
+			// a warning here
+			reportWarning("No CE sentences generated by the agent '" + getQualifiedAgentNameAndVersion() + "' ("
+					+ getConfigInstanceName() + ")");
 		}
 	}
 
 	protected void closeWithStandardRationale(StringBuilder pSb) {
 		if (generateRationale()) {
-			//TODO: Need to add proper rationale
+			// TODO: Need to add proper rationale
 			appendNewLineToSb(pSb);
 			appendToSbNoNl(pSb, TOKEN_BECAUSE);
 			appendToSbNoNl(pSb, " ");
@@ -760,33 +795,35 @@ public abstract class CeAgent {
 	}
 
 	private String ceAgentAnnotationPrefix() {
-		//TODO: Anonymise this
-		return "Note: All sentences generated by CE Agent " + getAgentName() + " (Version " + getAgentVersion() + ") using agent instance '" + getConfigInstanceName() + "'." + NL + NL;
+		// TODO: Anonymise this
+		return "Note: All sentences generated by CE Agent " + getAgentName() + " (Version " + getAgentVersion()
+				+ ") using agent instance '" + getConfigInstanceName() + "'." + NL + NL;
 	}
 
 	protected void agentProcessingCompleted() {
-		//Subclass this method if you wish to do anything once the processing is completed
+		// Subclass this method if you wish to do anything once the processing
+		// is completed
 	}
 
 	public ActionContext getActionContext() {
 		return this.ac;
 	}
 
-	protected ModelBuilder getModelBuilder() {		
+	protected ModelBuilder getModelBuilder() {
 		if (this.mb == null) {
 			this.mb = this.ac.getModelBuilder();
 		}
-		
+
 		return this.mb;
 	}
-	
+
 	public String getConfigSingleValueNamed(String pPropName) {
 		String result = ES;
 
 		if (this.configInstance != null) {
 			CePropertyInstance thisInst = this.configInstance.getPropertyInstanceNamed(pPropName);
-			
-			if (thisInst != null) { 
+
+			if (thisInst != null) {
 				result = thisInst.getSingleOrFirstValue();
 			} else {
 				this.failedToGetMandatoryParameter = true;
@@ -796,7 +833,7 @@ public abstract class CeAgent {
 			this.failedToGetMandatoryParameter = true;
 			reportError("No config instance loaded");
 		}
-		
+
 		return result;
 	}
 
@@ -805,8 +842,8 @@ public abstract class CeAgent {
 
 		if (this.configInstance != null) {
 			CePropertyInstance thisInst = this.configInstance.getPropertyInstanceNamed(pPropName);
-			
-			if (thisInst != null) { 
+
+			if (thisInst != null) {
 				result = calculateFullFilenameFrom(getActionContext(), thisInst.getSingleOrFirstValue());
 			} else {
 				this.failedToGetMandatoryParameter = true;
@@ -816,7 +853,7 @@ public abstract class CeAgent {
 			this.failedToGetMandatoryParameter = true;
 			reportError("No config instance loaded");
 		}
-		
+
 		return result;
 	}
 
@@ -825,8 +862,8 @@ public abstract class CeAgent {
 
 		if (this.configInstance != null) {
 			CePropertyInstance thisInst = this.configInstance.getPropertyInstanceNamed(pPropName);
-			
-			if (thisInst != null) { 
+
+			if (thisInst != null) {
 				result = getFolderValueFor(getActionContext(), thisInst.getSingleOrFirstValue());
 			} else {
 				this.failedToGetMandatoryParameter = true;
@@ -836,7 +873,7 @@ public abstract class CeAgent {
 			this.failedToGetMandatoryParameter = true;
 			reportError("No config instance loaded");
 		}
-		
+
 		return result;
 	}
 
@@ -845,12 +882,12 @@ public abstract class CeAgent {
 
 		if (this.configInstance != null) {
 			CePropertyInstance thisInst = this.configInstance.getPropertyInstanceNamed(pPropName);
-			
+
 			result = (thisInst != null);
 		} else {
 			reportError("No config instance loaded");
 		}
-		
+
 		return result;
 	}
 
@@ -859,8 +896,8 @@ public abstract class CeAgent {
 
 		if (this.configInstance != null) {
 			CePropertyInstance thisInst = this.configInstance.getPropertyInstanceNamed(pPropName);
-			
-			if (thisInst != null) { 
+
+			if (thisInst != null) {
 				result = thisInst.getSingleOrFirstValue();
 			} else {
 				result = pDefaultValue;
@@ -868,7 +905,7 @@ public abstract class CeAgent {
 		} else {
 			reportError("No config instance loaded");
 		}
-		
+
 		return result;
 	}
 
@@ -877,8 +914,8 @@ public abstract class CeAgent {
 
 		if (this.configInstance != null) {
 			CePropertyInstance thisInst = this.configInstance.getPropertyInstanceNamed(pPropName);
-			
-			if (thisInst != null) { 
+
+			if (thisInst != null) {
 				result = calculateFullFilenameFrom(getActionContext(), thisInst.getSingleOrFirstValue());
 			} else {
 				result = pDefaultValue;
@@ -886,7 +923,7 @@ public abstract class CeAgent {
 		} else {
 			reportError("No config instance loaded");
 		}
-		
+
 		return result;
 	}
 
@@ -895,8 +932,8 @@ public abstract class CeAgent {
 
 		if (this.configInstance != null) {
 			CePropertyInstance thisInst = this.configInstance.getPropertyInstanceNamed(pPropName);
-			
-			if (thisInst != null) { 
+
+			if (thisInst != null) {
 				result = getFolderValueFor(getActionContext(), thisInst.getSingleOrFirstValue());
 			} else {
 				result = pDefaultValue;
@@ -904,7 +941,7 @@ public abstract class CeAgent {
 		} else {
 			reportError("No config instance loaded");
 		}
-		
+
 		return result;
 	}
 
@@ -913,8 +950,8 @@ public abstract class CeAgent {
 
 		if (this.configInstance != null) {
 			CePropertyInstance thisInst = this.configInstance.getPropertyInstanceNamed(pPropName);
-			
-			if (thisInst != null) { 
+
+			if (thisInst != null) {
 				result.addAll(thisInst.getValueList());
 			} else {
 				this.failedToGetMandatoryParameter = true;
@@ -924,17 +961,17 @@ public abstract class CeAgent {
 			this.failedToGetMandatoryParameter = true;
 			reportError("No config instance loaded");
 		}
-		
+
 		return result;
 	}
-	
+
 	public ArrayList<String> getConfigFileListNamed(String pPropName) {
 		ArrayList<String> result = new ArrayList<String>();
 
 		if (this.configInstance != null) {
 			CePropertyInstance thisInst = this.configInstance.getPropertyInstanceNamed(pPropName);
-			
-			if (thisInst != null) { 
+
+			if (thisInst != null) {
 				for (String rawVal : thisInst.getValueList()) {
 					result.add(calculateFullFilenameFrom(getActionContext(), rawVal));
 				}
@@ -946,7 +983,7 @@ public abstract class CeAgent {
 			this.failedToGetMandatoryParameter = true;
 			reportError("No config instance loaded");
 		}
-		
+
 		return result;
 	}
 
@@ -955,8 +992,8 @@ public abstract class CeAgent {
 
 		if (this.configInstance != null) {
 			CePropertyInstance thisInst = this.configInstance.getPropertyInstanceNamed(pPropName);
-			
-			if (thisInst != null) { 
+
+			if (thisInst != null) {
 				for (String rawVal : thisInst.getValueList()) {
 					result.add(getFolderValueFor(getActionContext(), rawVal));
 				}
@@ -968,7 +1005,7 @@ public abstract class CeAgent {
 			this.failedToGetMandatoryParameter = true;
 			reportError("No config instance loaded");
 		}
-		
+
 		return result;
 	}
 
@@ -977,7 +1014,7 @@ public abstract class CeAgent {
 
 		for (String thisInstName : getConfigValueListNamed(pPropName)) {
 			CeInstance thisInst = getInstanceNamed(thisInstName);
-			
+
 			if (thisInst != null) {
 				result.add(thisInst);
 			}
@@ -991,42 +1028,42 @@ public abstract class CeAgent {
 
 		if (this.configInstance != null) {
 			CePropertyInstance thisInst = this.configInstance.getPropertyInstanceNamed(pPropName);
-			
-			if (thisInst != null) { 
+
+			if (thisInst != null) {
 				result.addAll(thisInst.getValueList());
 			}
 		} else {
 			reportError("No config instance loaded");
 		}
-		
+
 		return result;
 	}
-	
+
 	public ArrayList<String> getConfigOptionalFileListNamed(String pPropName) {
 		ArrayList<String> result = new ArrayList<String>();
 
 		if (this.configInstance != null) {
 			CePropertyInstance thisInst = this.configInstance.getPropertyInstanceNamed(pPropName);
-			
-			if (thisInst != null) { 
+
+			if (thisInst != null) {
 				for (String rawVal : thisInst.getValueList()) {
-					result.add(	calculateFullFilenameFrom(getActionContext(), rawVal));
+					result.add(calculateFullFilenameFrom(getActionContext(), rawVal));
 				}
 			}
 		} else {
 			reportError("No config instance loaded");
 		}
-		
+
 		return result;
 	}
-			
+
 	public ArrayList<String> getConfigOptionalFolderListNamed(String pPropName) {
 		ArrayList<String> result = new ArrayList<String>();
 
 		if (this.configInstance != null) {
 			CePropertyInstance thisInst = this.configInstance.getPropertyInstanceNamed(pPropName);
-			
-			if (thisInst != null) { 
+
+			if (thisInst != null) {
 				for (String rawVal : thisInst.getValueList()) {
 					result.add(getFolderValueFor(getActionContext(), rawVal));
 				}
@@ -1034,69 +1071,75 @@ public abstract class CeAgent {
 		} else {
 			reportError("No config instance loaded");
 		}
-		
+
 		return result;
 	}
-			
+
 	public ArrayList<CeInstance> getConfigOptionalValueInstanceListNamed(String pPropName) {
 		ArrayList<CeInstance> result = new ArrayList<CeInstance>();
 
 		if (this.configInstance != null) {
 			CePropertyInstance thisInst = this.configInstance.getPropertyInstanceNamed(pPropName);
-			
+
 			if (thisInst != null) {
 				result = new ArrayList<CeInstance>(thisInst.getValueInstanceList(this.ac));
 			}
 		} else {
 			reportError("No config instance loaded");
 		}
-		
+
 		return result;
 	}
 
 	protected void addRationaleSentenceCe(String pCeText, boolean pNoAppend) {
 		if (!generateRationale()) {
-			reportWarning("Generated CE sentence (" + pCeText + ") submitted with rationale when rationale generation is switched off");
-		}
-		
-	    String ceText = pCeText;
-	    if (!pNoAppend) {
-	    	int lastDotIdx = ceText.lastIndexOf(TOKEN_DOT);
-	    	
-	    	if (lastDotIdx > 0) {
-		    	ceText = ceText.substring(0, lastDotIdx);
-			    ceText += " [ agent_" + getAgentName() + " ].";  //TODO: Anonymise this
-	    	} else {
-	    		reportWarning("Sentence with no dot detected during rationale processing: |" + ceText + "|");
-	    	}
-	    }
-	    
-	    addActualSentenceCe(ceText);
-	}
-	
-	protected void addSentenceCe(String pCeText) {
-		if (generateRationale()) {
-			reportWarning("Generated CE sentence (" + pCeText + ") submitted without rationale when rationale generation is switched on");
+			reportWarning("Generated CE sentence (" + pCeText
+					+ ") submitted with rationale when rationale generation is switched off");
 		}
 
-	    addActualSentenceCe(pCeText);
+		String ceText = pCeText;
+		if (!pNoAppend) {
+			int lastDotIdx = ceText.lastIndexOf(TOKEN_DOT);
+
+			if (lastDotIdx > 0) {
+				ceText = ceText.substring(0, lastDotIdx);
+				ceText += " [ agent_" + getAgentName() + " ]."; // TODO:
+																// Anonymise
+																// this
+			} else {
+				reportWarning("Sentence with no dot detected during rationale processing: |" + ceText + "|");
+			}
+		}
+
+		addActualSentenceCe(ceText);
+	}
+
+	protected void addSentenceCe(String pCeText) {
+		if (generateRationale()) {
+			reportWarning("Generated CE sentence (" + pCeText
+					+ ") submitted without rationale when rationale generation is switched on");
+		}
+
+		addActualSentenceCe(pCeText);
 	}
 
 	private void addActualSentenceCe(String pCeText) {
 		if (doesNotGenerateCe()) {
-			reportError("Attempt to add sentence when agent is defined as not generating CE.  Sentence='" + pCeText + "'");
+			reportError(
+					"Attempt to add sentence when agent is defined as not generating CE.  Sentence='" + pCeText + "'");
 		} else {
 			if (hasNoSentenceLimit() || (this.sentenceCounter <= this.maxSentences)) {
 				if (isSentenceToBeSaved(pCeText)) {
 					if (isSavingCeIndividually()) {
-						//Send the CE straight to the store
-						//(sentences are being saved individually)
+						// Send the CE straight to the store
+						// (sentences are being saved individually)
 						StringBuilder sbText = new StringBuilder(pCeText);
 						sbText.append(NL);
 						sendSentencesToStore(sbText);
 					} else {
-						//Append the CE to the current cache of CE
-						//(sentences will be submitted collectively at the end of agent execution)
+						// Append the CE to the current cache of CE
+						// (sentences will be submitted collectively at the end
+						// of agent execution)
 						this.outputCe.append(pCeText);
 						this.outputCe.append(NL);
 					}
@@ -1121,12 +1164,12 @@ public abstract class CeAgent {
 
 	public String addSentenceCe(String pCeTemplate, TreeMap<String, String> pValues) {
 		String ceSentence = substituteCeParameters(pCeTemplate, pValues);
-		
+
 		addSentenceCe(ceSentence);
-		
+
 		return ceSentence;
 	}
-	
+
 	public void addRationaleSentenceCe(String pCeTemplate, TreeMap<String, String> pValues) {
 		String ceSentence = substituteCeParameters(pCeTemplate, pValues);
 
@@ -1150,8 +1193,9 @@ public abstract class CeAgent {
 
 	public void addSentenceCeWithOrWithoutRationale(String pCeTemplate, TreeMap<String, String> pCeParms) {
 		if (generateRationale()) {
-			//Temporary - if requested, double up the rationale sentences by generating two sentences (one with and one without rationale)
-			//This is to allow integration with Prolog
+			// Temporary - if requested, double up the rationale sentences by
+			// generating two sentences (one with and one without rationale)
+			// This is to allow integration with Prolog
 			if (this.doubleRationaleSentences) {
 				addSentenceCe(pCeTemplate, pCeParms);
 			}
@@ -1161,24 +1205,24 @@ public abstract class CeAgent {
 			addSentenceCe(pCeTemplate, pCeParms);
 		}
 	}
-	
+
 	protected ArrayList<CeInstance> executeCeQueryForInstancesWithSingleColumnResult(String pCeQuery, String pColName) {
 		ContainerCeResult ceResult = executeCeQueryForInstances(pCeQuery);
-		
+
 		ArrayList<CeInstance> result = ceResult.getColumnOfInstancesFor(this.ac, pColName);
-		
+
 		return result;
 	}
-	
+
 	protected ContainerCeResult executeNamedCeQueryForInstances(String pQueryName, String pStartTs, String pEndTs) {
 		QueryHandler qh = new QueryHandler(this.ac);
 		return qh.executeUserSpecifiedCeQueryByNameForInstances(pQueryName, false, pStartTs, pEndTs);
 	}
-	
+
 	protected void reportError(String pError) {
 		ReportingUtilities.reportError(pError + agentMessageSuffix(), this.ac);
 	}
-	
+
 	protected void reportWarning(String pWarning) {
 		ReportingUtilities.reportWarning(pWarning + agentMessageSuffix(), this.ac);
 	}
@@ -1188,40 +1232,50 @@ public abstract class CeAgent {
 	}
 
 	public void reportUnhandledException(Exception pE, String pMethod, String pExtra) {
-		reportException(pE, pExtra, this.ac, logger, CLASS_NAME, pMethod); // calling class unknown so use this class name 
+		reportException(pE, pExtra, this.ac, logger, CLASS_NAME, pMethod); // calling
+																			// class
+																			// unknown
+																			// so
+																			// use
+																			// this
+																			// class
+																			// name
 	}
-	
+
 	private void reportInconsistentParmError(String pParmName) {
-		reportError("Attempt to set inconsistent property '" + pParmName + "' (Agent is stated as not generating CE sentences)");
+		reportError("Attempt to set inconsistent property '" + pParmName
+				+ "' (Agent is stated as not generating CE sentences)");
 	}
-	
+
 	private String agentMessageSuffix() {
-		return " [Agent=" + getAgentName() + ", config=" + getConfigInstanceName() + "]";	//TODO: Anonymise this
+		return " [Agent=" + getAgentName() + ", config=" + getConfigInstanceName() + "]"; // TODO:
+																							// Anonymise
+																							// this
 	}
-	
+
 	public String getNextUid(String pOptionalPrefix) {
 		return this.mb.getNextUid(this.ac, pOptionalPrefix);
 	}
-	
+
 	public Properties getBatchOfUids(long pBatchSize) {
 		return this.mb.getBatchOfUids(this.ac, pBatchSize);
 	}
-	
+
 	public boolean hasRequiredParameters() {
 		return !this.failedToGetMandatoryParameter;
 	}
-	
+
 	protected void incrementIterationCounter() {
-		this.iterationCounter++;		
+		this.iterationCounter++;
 	}
-	
+
 	protected boolean hasExceededMaxIterationCount() {
 		boolean result = (this.maxIterations != -1) && (this.iterationCounter > this.maxIterations);
-		
+
 		if (result) {
 			reportWarning("Max iterations (" + this.maxIterations + ") have been exceeded for agent " + getAgentName());
 		}
-		
+
 		return result;
 	}
 

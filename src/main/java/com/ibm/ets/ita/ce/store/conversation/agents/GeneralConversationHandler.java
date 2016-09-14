@@ -17,10 +17,11 @@ import static com.ibm.ets.ita.ce.store.names.CeNames.PROP_FROMCONCONCEPT;
 import static com.ibm.ets.ita.ce.store.names.CeNames.PROP_FROMINSTANCE;
 import static com.ibm.ets.ita.ce.store.names.CeNames.PROP_MILLISECONDSDELAY;
 import static com.ibm.ets.ita.ce.store.names.CeNames.PROP_RUNRULESONSAVE;
-import static com.ibm.ets.ita.ce.store.names.MiscNames.ES;
 import static com.ibm.ets.ita.ce.store.names.MiscNames.DEFAULT_DELAY;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.ES;
 import static com.ibm.ets.ita.ce.store.names.MiscNames.FORM_CONVFACT;
 import static com.ibm.ets.ita.ce.store.names.MiscNames.UID_PREFIX;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_FALSE;
 import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.appendToSb;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.getBooleanValueFrom;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.substituteCeParameters;
@@ -81,8 +82,8 @@ public abstract class GeneralConversationHandler extends CeNotifyHandler {
 	}
 
 	protected void initialise(ActionContext pAc) {
-		//Cannot be done in constructore as this is a trigger class and is
-		//generically instantiated by ce-store
+		// Cannot be done in constructore as this is a trigger class and is
+		// generically instantiated by ce-store
 		this.ac = pAc;
 		this.oldDebug = this.ac.getCeConfig().isDebug();
 	}
@@ -114,7 +115,7 @@ public abstract class GeneralConversationHandler extends CeNotifyHandler {
 		this.trigInst = this.ac.getModelBuilder().getInstanceNamed(this.ac, pTrigInstName);
 
 		if (this.trigInst != null) {
-			boolean triggerDebug = getBooleanValueFrom(getConfigOptionalSingleValueNamed(PROP_DEBUG, "false"));
+			boolean triggerDebug = getBooleanValueFrom(getConfigOptionalSingleValueNamed(PROP_DEBUG, TOKEN_FALSE));
 
 			if (triggerDebug) {
 				this.ac.getCeConfig().setDebug(triggerDebug);
@@ -235,7 +236,7 @@ public abstract class GeneralConversationHandler extends CeNotifyHandler {
 	public void saveCeForNotifiedInstance(CeInstance pTgtInst, String pNewConName, String pSrcName) {
 		StringBuilder sb = new StringBuilder();
 
-		//TODO: Abstract these values?
+		// TODO: Abstract these values?
 		appendToSb(sb, "the %TGT_CON% '%TGT_INST%' is a %NEW_CON%.");
 
 		TreeMap<String, String> ceParms = new TreeMap<String, String>();
@@ -251,7 +252,7 @@ public abstract class GeneralConversationHandler extends CeNotifyHandler {
 			String pIrtInstName, String pFromConName, String pFromInstName, String pToConName,
 			ArrayList<String> pToInstNames, String pPriCon, String pSecCon, String pSrcName,
 			ArrayList<String> pAboutIds) {
-		//TODO: Abstract these values?
+		// TODO: Abstract these values?
 		if (pTgtConName != null) {
 			StringBuilder sb = new StringBuilder();
 			TreeMap<String, String> ceParms = new TreeMap<String, String>();

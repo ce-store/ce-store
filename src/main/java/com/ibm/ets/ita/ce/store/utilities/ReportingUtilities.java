@@ -5,14 +5,18 @@ package com.ibm.ets.ita.ce.store.utilities;
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.MiscNames.SUFFIX_DEFAULT;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.SUFFIX_TIMING;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_DOT;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.substituteNormalParameters;
+
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.Map.Entry;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -25,18 +29,18 @@ import com.ibm.ets.ita.ce.store.core.ActionResponse;
 public class ReportingUtilities {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
-	private static final String CLASS_NAME = ReportingUtilities.class.getName(); 
+	private static final String CLASS_NAME = ReportingUtilities.class.getName();
 	private static final String PACKAGE_NAME = ReportingUtilities.class.getPackage().getName();
 	private static final Logger thisLogger = Logger.getLogger(PACKAGE_NAME);
 
-	public  static final String CE_ROOT_LOGGER_NAME = "com.ibm.ets.ita.ce";
+	public static final String CE_ROOT_LOGGER_NAME = "com.ibm.ets.ita.ce";
 	private static final Level DEBUG_LEVEL = Level.FINER;
-	private static final Level MICRO_LEVEL = Level.FINEST;		//DSB 22/10/2015 - added new micro debug level
-	private static final Level TIMING_LEVEL = Level.FINEST;		//DSB 12/10/2015 - changed to FINEST from FINER
-	private static final Logger ceRootLogger =  Logger.getLogger(CE_ROOT_LOGGER_NAME);
-	private static final Logger defaultLogger = Logger.getLogger(CE_ROOT_LOGGER_NAME + ".default");
-	private static final Logger defaultTimingLogger = Logger.getLogger(CE_ROOT_LOGGER_NAME + ".timing");
-	
+	private static final Level MICRO_LEVEL = Level.FINEST;
+	private static final Level TIMING_LEVEL = Level.FINEST;
+	private static final Logger ceRootLogger = Logger.getLogger(CE_ROOT_LOGGER_NAME);
+	private static final Logger defaultLogger = Logger.getLogger(CE_ROOT_LOGGER_NAME + SUFFIX_DEFAULT);
+	private static final Logger defaultTimingLogger = Logger.getLogger(CE_ROOT_LOGGER_NAME + SUFFIX_TIMING);
+
 	private static Map<String, Level> preDebugLoggerLevels = null;
 	private static Handler debugHandler = null;
 
@@ -49,7 +53,7 @@ public class ReportingUtilities {
 	public static void reportError(String message, ActionContext actionContext) {
 		reportError(message, null, actionContext, defaultLogger, null, null);
 	}
-	
+
 	/*
 	 * Log at Level.SEVERE using the default logger and always add to action
 	 * response if non-null.
@@ -59,28 +63,26 @@ public class ReportingUtilities {
 	public static void reportError(String message, TreeMap<String, String> pParms, ActionContext actionContext) {
 		reportError(message, pParms, actionContext, defaultLogger, null, null);
 	}
-	
+
 	/*
-	 * Log at Level.SEVERE using the given logger and always add to action 
+	 * Log at Level.SEVERE using the given logger and always add to action
 	 * response if non-null.
 	 * 
 	 * Input parameters must be non-null.
 	 */
-	public static void reportError(String message, ActionContext actionContext,
-	 Logger logger, String className, String methodName)
-	{
+	public static void reportError(String message, ActionContext actionContext, Logger logger, String className,
+			String methodName) {
 		reportError(message, null, actionContext, defaultLogger, className, methodName);
 	}
 
 	/*
-	 * Log at Level.SEVERE using the given logger and always add to action 
+	 * Log at Level.SEVERE using the given logger and always add to action
 	 * response if non-null.
 	 * 
 	 * Input parameters must be non-null.
 	 */
 	public static void reportError(String message, TreeMap<String, String> pParms, ActionContext actionContext,
-	 Logger logger, String className, String methodName)
-	{
+			Logger logger, String className, String methodName) {
 		logger.logp(Level.SEVERE, className, methodName, message);
 		ActionResponse actionResponse = actionContext.getActionResponse();
 		if (actionResponse != null) {
@@ -115,16 +117,15 @@ public class ReportingUtilities {
 	public static void reportWarning(String message, TreeMap<String, String> pParms, ActionContext actionContext) {
 		reportWarning(message, pParms, actionContext, defaultLogger, null, null);
 	}
-	
+
 	/*
 	 * Log at Level.WARNING using the given logger and always add to action
 	 * response if non-null.
 	 * 
 	 * Input parameters must be non-null.
 	 */
-	public static void reportWarning(String message, ActionContext actionContext,
-	 Logger logger, String className, String methodName)
-	{
+	public static void reportWarning(String message, ActionContext actionContext, Logger logger, String className,
+			String methodName) {
 		reportWarning(message, null, actionContext, defaultLogger, className, methodName);
 	}
 
@@ -135,8 +136,7 @@ public class ReportingUtilities {
 	 * Input parameters must be non-null.
 	 */
 	public static void reportWarning(String message, TreeMap<String, String> pParms, ActionContext actionContext,
-	 Logger logger, String className, String methodName)
-	{
+			Logger logger, String className, String methodName) {
 		logger.logp(Level.WARNING, className, methodName, message);
 		ActionResponse actionResponse = actionContext.getActionResponse();
 		if (actionResponse != null) {
@@ -161,16 +161,15 @@ public class ReportingUtilities {
 	public static void reportInfo(String message, ActionContext actionContext) {
 		reportInfo(message, actionContext, defaultLogger, null, null);
 	}
-	
+
 	/*
 	 * Log at Level.INFO using the given logger and always add to action
 	 * response if non-null.
 	 * 
 	 * Input parameters must be non-null.
 	 */
-	public static void reportInfo(String message, ActionContext actionContext,
-	 Logger logger, String className, String methodName)
-	{
+	public static void reportInfo(String message, ActionContext actionContext, Logger logger, String className,
+			String methodName) {
 		logger.logp(Level.INFO, className, methodName, message);
 		ActionResponse actionResponse = actionContext.getActionResponse();
 		if (actionResponse != null) {
@@ -188,7 +187,7 @@ public class ReportingUtilities {
 	public static void reportDebug(String message, ActionContext actionContext) {
 		reportDebug(message, null, actionContext, defaultLogger, null, null);
 	}
-	
+
 	/*
 	 * Log at DEBUG_LEVEL using the default logger and add to action response if
 	 * logging at DEBUG_LEVEL is configured, and if non-null. See also
@@ -207,9 +206,8 @@ public class ReportingUtilities {
 	 * 
 	 * Input parameters must be non-null.
 	 */
-	public static void reportDebug(String message, ActionContext actionContext,
-	 Logger logger, String className, String methodName)
-	{
+	public static void reportDebug(String message, ActionContext actionContext, Logger logger, String className,
+			String methodName) {
 		reportDebug(message, null, actionContext, defaultLogger, className, methodName);
 	}
 
@@ -221,8 +219,7 @@ public class ReportingUtilities {
 	 * Input parameters must be non-null.
 	 */
 	public static void reportDebug(String message, TreeMap<String, String> pParms, ActionContext actionContext,
-	 Logger logger, String className, String methodName)
-	{
+			Logger logger, String className, String methodName) {
 		if (isReportDebug(logger)) {
 			logger.logp(DEBUG_LEVEL, className, methodName, message);
 			ActionResponse actionResponse = actionContext.getActionResponse();
@@ -253,8 +250,8 @@ public class ReportingUtilities {
 	}
 
 	/*
-	 * Return a boolean indicating whether invoking the reportDebug() method 
-	 * would result in output being produced (useful if the message that would 
+	 * Return a boolean indicating whether invoking the reportDebug() method
+	 * would result in output being produced (useful if the message that would
 	 * be output is expensive to construct). See also reportDebug().
 	 * 
 	 * Input parameter must be non-null.
@@ -273,7 +270,7 @@ public class ReportingUtilities {
 	public static void reportMicroDebug(String message, ActionContext actionContext) {
 		reportMicroDebug(message, actionContext, defaultLogger, null, null);
 	}
-	
+
 	/*
 	 * Log at MICRO_LEVEL using the given logger and add to action response if
 	 * logging at MICRO_LEVEL is configured, and if non-null. See also
@@ -281,9 +278,8 @@ public class ReportingUtilities {
 	 * 
 	 * Input parameters must be non-null.
 	 */
-	public static void reportMicroDebug(String message, ActionContext actionContext,
-	 Logger logger, String className, String methodName)
-	{
+	public static void reportMicroDebug(String message, ActionContext actionContext, Logger logger, String className,
+			String methodName) {
 		if (isReportMicroDebug(logger)) {
 			logger.logp(MICRO_LEVEL, className, methodName, message);
 			ActionResponse actionResponse = actionContext.getActionResponse();
@@ -294,8 +290,8 @@ public class ReportingUtilities {
 	}
 
 	/*
-	 * Return a boolean indicating whether invoking the reportMicroDebug() method
-	 * that uses the default logger would result in output being produced
+	 * Return a boolean indicating whether invoking the reportMicroDebug()
+	 * method that uses the default logger would result in output being produced
 	 * (useful if the message that would be output is expensive to construct).
 	 * See also reportMicroDebug().
 	 * 
@@ -306,9 +302,9 @@ public class ReportingUtilities {
 	}
 
 	/*
-	 * Return a boolean indicating whether invoking the reportMicroDebug() method 
-	 * would result in output being produced (useful if the message that would 
-	 * be output is expensive to construct). See also reportMicroDebug().
+	 * Return a boolean indicating whether invoking the reportMicroDebug()
+	 * method would result in output being produced (useful if the message that
+	 * would be output is expensive to construct). See also reportMicroDebug().
 	 * 
 	 * Input parameter must be non-null.
 	 */
@@ -319,38 +315,33 @@ public class ReportingUtilities {
 	/*
 	 * Version of reportException() that doesn't include a message parameter.
 	 */
-	public static void reportException(Exception exception, 
-	 ActionContext actionContext, Logger logger, String className,
-	 String methodName)
-	{
+	public static void reportException(Exception exception, ActionContext actionContext, Logger logger,
+			String className, String methodName) {
 		reportException(exception, null, actionContext, logger, className, methodName);
 	}
-	
+
 	/*
 	 * Log the given exception and message (if non-null) at Level.SEVERE using
 	 * the given logger and always add to action response if non-null.
 	 *
 	 * Input parameters must be non-null, except for message.
 	 */
-	public static void reportException(Exception exception, String message,
-	 ActionContext actionContext, Logger logger, String className,
-	 String methodName)
-	{
+	public static void reportException(Exception exception, String message, ActionContext actionContext, Logger logger,
+			String className, String methodName) {
 		logger.logp(Level.SEVERE, className, methodName, message, exception);
-		
+
 		String exceptionType = exception.getClass().getSimpleName();
-		String errorMessage = "Exception " + exceptionType + " in " +
-		 className + "." + methodName + " : '" + exception.getMessage() + "'";
+		String errorMessage = "Exception " + exceptionType + " in " + className + TOKEN_DOT + methodName + " : '"
+				+ exception.getMessage() + "'";
 		if (message != null && !message.isEmpty()) {
-			errorMessage += " (" + message + ")"; 
+			errorMessage += " (" + message + ")";
 		}
-		
+
 		ActionResponse actionResponse = actionContext.getActionResponse();
 		if (actionResponse != null) {
 			actionResponse.addErrorMessage(errorMessage);
 		}
-		
-		//Added by DSB 27/01/2015 - Also log the exception stack trace
+
 		exception.printStackTrace();
 	}
 
@@ -361,12 +352,10 @@ public class ReportingUtilities {
 	 * 
 	 * Input parameters must be non-null.
 	 */
-	public static void reportTiming(String message, ActionContext actionContext,
-	 String className, String methodName)
-	{
+	public static void reportTiming(String message, ActionContext actionContext, String className, String methodName) {
 		reportTiming(message, actionContext, defaultTimingLogger, className, methodName);
 	}
-	
+
 	/*
 	 * Log at TIMING_LEVEL using the given logger and add to action response if
 	 * logging at TIMING_LEVEL is configured, and if non-null. See also
@@ -377,14 +366,13 @@ public class ReportingUtilities {
 	 * private, as so far, all timing logging is done using the default timing
 	 * logger. Make public if a specific logger is desired.
 	 */
-	private static void reportTiming(String message, ActionContext actionContext,
-	 Logger logger, String className, String methodName)
-	{
+	private static void reportTiming(String message, ActionContext actionContext, Logger logger, String className,
+			String methodName) {
 		if (isReportTiming(logger)) {
 			logger.logp(TIMING_LEVEL, className, methodName, message);
 			ActionResponse actionResponse = actionContext.getActionResponse();
 			if (actionResponse != null) {
-				actionResponse.addDebugMessage(message + " (" + className + "." + methodName + ")");
+				actionResponse.addDebugMessage(message + " (" + className + TOKEN_DOT + methodName + ")");
 			}
 		}
 	}
@@ -402,8 +390,8 @@ public class ReportingUtilities {
 	}
 
 	/*
-	 * Return a boolean indicating whether invoking the reportDebug() method 
-	 * would result in output being produced (useful if the message that would 
+	 * Return a boolean indicating whether invoking the reportDebug() method
+	 * would result in output being produced (useful if the message that would
 	 * be output is expensive to construct). See also reportTiming().
 	 * 
 	 * Input parameter must be non-null.
@@ -431,25 +419,25 @@ public class ReportingUtilities {
 					loggerNamesToLevels.put(loggerName, logger.getLevel());
 				}
 			}
-		}		
+		}
 		return loggerNamesToLevels;
 	}
-	
+
 	/*
 	 * Set the logger levels of the the loggers named in the given map to the
 	 * corresponding values in the map.
 	 */
 	private static void setLoggerLevels(Map<String, Level> loggerNamesToLevels) {
 		if (loggerNamesToLevels != null) {
-			for(Map.Entry<String,Level> loggerNameToLevel : loggerNamesToLevels.entrySet()) {
+			for (Map.Entry<String, Level> loggerNameToLevel : loggerNamesToLevels.entrySet()) {
 				Logger logger = Logger.getLogger(loggerNameToLevel.getKey());
 				logger.setLevel(loggerNameToLevel.getValue());
 			}
 		}
 	}
-	
+
 	/*
-	 * Indicate whether debug mode is on or off. When debug mode is on, loggers 
+	 * Indicate whether debug mode is on or off. When debug mode is on, loggers
 	 * are configured to ensure all DEBUG_LEVEL log messages are output. Code
 	 * may also switch on the value of this state to perform extra debug
 	 * processing.
@@ -463,44 +451,48 @@ public class ReportingUtilities {
 	public static boolean isDebugOn() {
 		return (preDebugLoggerLevels != null);
 	}
-	
+
 	/*
 	 * If not in debug mode, configure logging such that any CE loggers (any
 	 * that have a name beginning with CE_ROOT_LOGGER) with levels that do not
-     * already resolve to DEBUG_LEVEL are set to DEBUG_LEVEL, and if a debug log
-     * filename is given, add a suitable handler so log records are written by
-     * the CE root logger to that file.
-     * 
-     * This overrides the existing logger configuration, for example that set by
-     * a web-container or a logging.properties file. 
-     * 
-     * Return true if successful (regardless of whether a change occurred),
-     * and false otherwise (indicating an error occurred).
-     */
+	 * already resolve to DEBUG_LEVEL are set to DEBUG_LEVEL, and if a debug log
+	 * filename is given, add a suitable handler so log records are written by
+	 * the CE root logger to that file.
+	 * 
+	 * This overrides the existing logger configuration, for example that set by
+	 * a web-container or a logging.properties file.
+	 * 
+	 * Return true if successful (regardless of whether a change occurred), and
+	 * false otherwise (indicating an error occurred).
+	 */
 	public synchronized static boolean setDebugOn(String debugLogFilename) {
 		final String METHOD_NAME = "setDebugOn";
 		boolean success = true;
 		if (!isDebugOn()) {
 			try {
 				LogManager logManager = LogManager.getLogManager();
-				logManager.checkAccess(); // throws SecurityException if not allowed
+				logManager.checkAccess(); // throws SecurityException if not
+											// allowed
 				// ensure all CE loggers are set to DEBUG_LEVEL at least.
 				preDebugLoggerLevels = getCELoggerLevelsLessThan(DEBUG_LEVEL);
-				Map<String, Level> postDebugLoggerLevels = new HashMap<String,Level>(preDebugLoggerLevels);
-			    Set<Entry<String,Level>> levelsEntrySet = postDebugLoggerLevels.entrySet();
-			    for(Entry<String,Level> levelsEntry : levelsEntrySet) {
-			      levelsEntry.setValue(DEBUG_LEVEL);
-			    }
+				Map<String, Level> postDebugLoggerLevels = new HashMap<String, Level>(preDebugLoggerLevels);
+				Set<Entry<String, Level>> levelsEntrySet = postDebugLoggerLevels.entrySet();
+				for (Entry<String, Level> levelsEntry : levelsEntrySet) {
+					levelsEntry.setValue(DEBUG_LEVEL);
+				}
 				setLoggerLevels(postDebugLoggerLevels);
-				// add a handler if a debug log filename is given.  
+				// add a handler if a debug log filename is given.
 				if (debugHandler == null && debugLogFilename != null) {
-					debugHandler = new FileHandler(debugLogFilename); // true means "append"
+					debugHandler = new FileHandler(debugLogFilename); // true
+																		// means
+																		// 'append'
 					ceRootLogger.addHandler(debugHandler);
 				}
 				thisLogger.logp(Level.INFO, CLASS_NAME, METHOD_NAME, "CE loggers set to debug levels.");
 			} catch (SecurityException se) {
 				// swallow, no change to logging possible
-				thisLogger.logp(Level.WARNING, CLASS_NAME, METHOD_NAME, "cannot update logger configuration dynamically.");
+				thisLogger.logp(Level.WARNING, CLASS_NAME, METHOD_NAME,
+						"cannot update logger configuration dynamically.");
 				success = false;
 			} catch (IOException ioe) {
 				// swallow, could not set-up file handler.
@@ -510,15 +502,15 @@ public class ReportingUtilities {
 		}
 		return success;
 	}
-	
-    /*  
-     * If in debug mode, configure logging such that any CE loggers return to
-     * the previous levels before debug mode was activated (note that this will
-     * override any intervening changes to these loggers from other sources),
-     * and close the debug handler if present.
-     * 
-     * Return true if successful (regardless of whether a change occurred),
-     * and false otherwise (indicating an error occurred).
+
+	/*
+	 * If in debug mode, configure logging such that any CE loggers return to
+	 * the previous levels before debug mode was activated (note that this will
+	 * override any intervening changes to these loggers from other sources),
+	 * and close the debug handler if present.
+	 * 
+	 * Return true if successful (regardless of whether a change occurred), and
+	 * false otherwise (indicating an error occurred).
 	 */
 	public synchronized static boolean setDebugOff() {
 		final String METHOD_NAME = "setDebugOff";
@@ -526,7 +518,8 @@ public class ReportingUtilities {
 		if (isDebugOn()) {
 			try {
 				LogManager logManager = LogManager.getLogManager();
-				logManager.checkAccess(); // throws SecurityException if not allowed
+				logManager.checkAccess(); // throws SecurityException if not
+											// allowed
 				// close the debug handler if it exists.
 				if (debugHandler != null) {
 					debugHandler.close();
@@ -539,11 +532,12 @@ public class ReportingUtilities {
 				thisLogger.logp(Level.INFO, CLASS_NAME, METHOD_NAME, "CE loggers set to pre-debug levels.");
 			} catch (SecurityException se) {
 				// swallow, no change to logging possible
-				thisLogger.logp(Level.WARNING, CLASS_NAME, METHOD_NAME, "cannot update logger configuration dynamically.");
+				thisLogger.logp(Level.WARNING, CLASS_NAME, METHOD_NAME,
+						"cannot update logger configuration dynamically.");
 				success = false;
 			}
 		}
-		return success;				
+		return success;
 	}
-	
+
 }

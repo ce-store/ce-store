@@ -29,7 +29,6 @@ public class MatchedClauseList {
 	private boolean specialOperatorMcl = false;
 	private boolean doubleVariableMcl = false;
 
-	//DSB 29/10/2015 - Added for new result set processing
 	private TreeMap<String, ArrayList<String>> srcToTgtList = null;
 	private TreeMap<String, ArrayList<String>> tgtToSrcList = null;
 
@@ -482,7 +481,7 @@ public class MatchedClauseList {
 		
 		for (ArrayList<String> thisPair : this.matchedPairs.values()) {
 			if (thisPair.get(0).equals(pSrcValue)) {
-				//DSB 24/09/2013 - Only add the row if the target is not empty
+				//Only add the row if the target is not empty
 				if (!thisPair.get(1).isEmpty()) {
 					result.add(thisPair);
 				}
@@ -497,7 +496,7 @@ public class MatchedClauseList {
 		
 		for (ArrayList<String> thisPair : this.matchedPairs.values()) {
 			if (thisPair.get(1).equals(pSrcValue)) {
-				//DSB 24/09/2013 - Only add the row if the source is not empty
+				//Only add the row if the source is not empty
 				if (!thisPair.get(0).isEmpty()) {
 					result.add(thisPair);
 				}

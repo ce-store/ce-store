@@ -163,7 +163,7 @@ public class QueryExecutionManagerMem extends QueryExecutionManager {
 				ArrayList<CeClause> thisClauseList = sortedClauses.get(thisKey);
 
 				for (CeClause thisClause : thisClauseList) {
-					//Added by DSB 09/09/2012 - If any clause is empty then there is no need to continue as the result must be empty
+					//If any clause is empty then there is no need to continue as the result must be empty
 					if (!isEmpty) {
 						CeConcept domainConcept = thisClause.getTargetConcept();
 						
@@ -215,7 +215,7 @@ public class QueryExecutionManagerMem extends QueryExecutionManager {
 				ArrayList<CeClause> thisClauseList = sortedClauses.get(thisKey);
 				
 				for (CeClause thisClause : thisClauseList) {
-					//Added by DSB 09/09/2012 - If any clause is empty then there is no need to continue as the result must be empty
+					//If any clause is empty then there is no need to continue as the result must be empty
 					if (!isEmpty) {
 						CeConcept domainConcept = thisClause.getTargetConcept();
 						
@@ -889,7 +889,7 @@ public class QueryExecutionManagerMem extends QueryExecutionManager {
 		CeProperty datProp = pDatPi.getRelatedProperty();
 		String propName = datProp.getPropertyName();
 		
-		//DSB 09/09/2012 - Changed to handle comparisons against variables
+		//Changed to handle comparisons against variables
 		if (pDatPi.hadQuotesOriginally(this.ac)) {
 			//This was a quoted value so just add the specified value to the target values list
 			targetVals = new ArrayList<String>();
@@ -918,7 +918,6 @@ public class QueryExecutionManagerMem extends QueryExecutionManager {
 				}
 			} else if (clauseTestOnPartialMatchContains(pDatPi)) {
 				for (String thisTval : targetVals) {
-					//DSB 01/05/2015 (#1098)
 					boolean result = false;
 					
 					if (this.ac.getCeConfig().isCaseSensitive()) {
@@ -941,7 +940,6 @@ public class QueryExecutionManagerMem extends QueryExecutionManager {
 				}
 			} else if (clauseTestOnPartialMatchNotContains(pDatPi)) {
 				for (String thisTval : targetVals) {
-					//DSB 01/05/2015 (#1098)
 					boolean result = false;
 					
 					if (this.ac.getCeConfig().isCaseSensitive()) {
@@ -964,7 +962,6 @@ public class QueryExecutionManagerMem extends QueryExecutionManager {
 				}
 			} else if (clauseTestOnPartialMatchMatches(pDatPi)) {
 				for (String thisTval : targetVals) {
-					//DSB 01/05/2015 (#1098)
 					boolean result = false;
 					
 					if (this.ac.getCeConfig().isCaseSensitive()) {
@@ -987,7 +984,6 @@ public class QueryExecutionManagerMem extends QueryExecutionManager {
 				}
 			} else if (clauseTestOnPartialMatchStartsWith(pDatPi)) {
 				for (String thisTval : targetVals) {
-					//DSB 01/05/2015 (#1098)
 					boolean result = false;
 					
 					if (this.ac.getCeConfig().isCaseSensitive()) {
@@ -1010,7 +1006,6 @@ public class QueryExecutionManagerMem extends QueryExecutionManager {
 				}
 			} else if (clauseTestOnPartialMatchNotStartsWith(pDatPi)) {
 				for (String thisTval : targetVals) {
-					//DSB 01/05/2015 (#1098)
 					boolean result = false;
 					
 					if (this.ac.getCeConfig().isCaseSensitive()) {
@@ -1033,7 +1028,6 @@ public class QueryExecutionManagerMem extends QueryExecutionManager {
 				}
 			} else if (clauseTestOnPartialMatchEndsWith(pDatPi)) {
 				for (String thisTval : targetVals) {
-					//DSB 01/05/2015 (#1098)
 					boolean result = false;
 					
 					if (this.ac.getCeConfig().isCaseSensitive()) {
@@ -1056,7 +1050,6 @@ public class QueryExecutionManagerMem extends QueryExecutionManager {
 				}
 			} else if (clauseTestOnNegativeMatch(pDatPi)) {
 				for (String thisTval : targetVals) {
-					//DSB 01/05/2015 (#1098)
 					boolean result = false;
 					
 					if (this.ac.getCeConfig().isCaseSensitive()) {
@@ -1249,8 +1242,7 @@ public class QueryExecutionManagerMem extends QueryExecutionManager {
 	private void saveThisMatchedSpecialValue(String pSrcVar, String pTgtVar, String pSrcVal, String pTgtVal, String pPropName) {
 		ArrayList<String> thisPair = new ArrayList<String>();
 		thisPair.add(pSrcVal);
-		//DSB 09/09/2012 - Previously the target value was not saved, but this must be in cases where both source and target are variables
-		//		thisPair.add("");
+		//Previously the target value was not saved, but this must be in cases where both source and target are variables
 		thisPair.add(pTgtVal);
 
 		saveCommonMatchedValues(pSrcVar, pTgtVar, pPropName, thisPair, true);

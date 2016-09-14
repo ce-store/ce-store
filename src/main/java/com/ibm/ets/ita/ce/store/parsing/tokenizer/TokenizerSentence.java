@@ -5,6 +5,7 @@ package com.ibm.ets.ita.ce.store.parsing.tokenizer;
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.MiscNames.ES;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_AN;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_THE;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.isReportDebug;
@@ -22,17 +23,19 @@ public abstract class TokenizerSentence {
 	protected ActionContext ac = null;
 	protected ModelBuilder mb = null;
 	private BuilderSentence targetSentence = null;
-	protected String conQualifier = "";
+	protected String conQualifier = ES;
 
 	protected abstract BuilderSentence getTargetSentence();
+
 	protected abstract void doTokenizing();
+
 	protected abstract String tokenizerType();
 
 	public static void doTokenizingFor(ActionContext pAc, BuilderSentence pSentence, boolean pIsInClause) {
 		ModelBuilder mb = pAc.getModelBuilder();
 
 		if (pSentence.isFactSentence()) {
-			new TokenizerFactSentence().tokenizeNormalSentence(pAc, (BuilderSentenceFact)pSentence, pIsInClause);
+			new TokenizerFactSentence().tokenizeNormalSentence(pAc, (BuilderSentenceFact) pSentence, pIsInClause);
 		} else if (pSentence.isModelSentence()) {
 			new TokenizerModelSentence().tokenizeSentence(pAc, mb, pSentence);
 		} else if (pSentence.isRuleSentence()) {
@@ -70,7 +73,7 @@ public abstract class TokenizerSentence {
 
 	@Override
 	public String toString() {
-		String result = "";
+		String result = ES;
 
 		if (this.targetSentence != null) {
 			result += tokenizerType() + " tokenizer for sentence : " + this.targetSentence.getSentenceText();
@@ -81,15 +84,21 @@ public abstract class TokenizerSentence {
 
 	protected void checkForConceptQualifierMismatch(CeConcept pConcept, String pContext) {
 		if (isReportDebug()) {
-			//If the qualifier is missing (which means it was "the") then the test cannot be carried out as the qualifier is ambiguous
+			// If the qualifier is missing (which means it was 'the') then the
+			// test cannot be carried out as the qualifier is ambiguous
 			if ((!this.conQualifier.isEmpty()) && (!this.conQualifier.equals(TOKEN_THE))) {
 				if (this.conQualifier.equals(TOKEN_AN)) {
 					if (!pConcept.isQualifiedWithAn()) {
-						reportDebug("Inconsistent use of concept qualifier (" + this.conQualifier + ") between conceptualise and " + pContext + " sentence, for concept '" + pConcept.getConceptName() + "' in sentence: " + getTargetSentence().getSentenceText(), this.ac);
+						reportDebug("Inconsistent use of concept qualifier (" + this.conQualifier
+								+ ") between conceptualise and " + pContext + " sentence, for concept '"
+								+ pConcept.getConceptName() + "' in sentence: " + getTargetSentence().getSentenceText(),
+								this.ac);
 					}
 				} else {
 					if (pConcept.isQualifiedWithAn()) {
-						reportDebug("Inconsistent use of (" + this.conQualifier + ") between conceptualise and " + pContext + " sentence, for concept '" + pConcept.getConceptName() + "' in sentence: " + getTargetSentence().getSentenceText(), this.ac);
+						reportDebug("Inconsistent use of (" + this.conQualifier + ") between conceptualise and "
+								+ pContext + " sentence, for concept '" + pConcept.getConceptName() + "' in sentence: "
+								+ getTargetSentence().getSentenceText(), this.ac);
 					}
 				}
 			}
