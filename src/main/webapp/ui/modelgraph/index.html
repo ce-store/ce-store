@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CE Model Visualisation</title>
+<style>
+html, body, #modelgraph, svg {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+.node {
+  stroke: #fff;
+  stroke-width: 1.5px;
+}
+
+.link {
+  stroke: #999;
+  stroke-opacity: .6;
+}
+
+.d3-tip {
+  line-height: 1;
+  font-weight: bold;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  border-radius: 2px;
+}
+
+/* Creates a small triangle extender for the tooltip */
+.d3-tip:after {
+  box-sizing: border-box;
+  display: inline;
+  font-size: 10px;
+  width: 100%;
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.8);
+  content: "\25BC";
+  position: absolute;
+  text-align: center;
+}
+
+/* Style northward tooltips differently */
+.d3-tip.n:after {
+  margin: -1px 0 0 0;
+  top: 100%;
+  left: 0;
+}
+
+.overlay {
+  fill: none;
+  pointer-events: all;
+}
+
+#legend {
+    position: fixed;
+    bottom: 0px;
+    width: 160px;
+    height: 160px;
+    background-color: #FFF;
+}
+
+#refresh {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+}
+
+#toggleroot {
+    margin-right: 20px;
+}
+
+</style>
+<body>
+<div id="modelgraph"></div>
+<div id="legend"></div>
+<div id="refresh"><a id="toggleroot" href="?showroot" onclick="toggleroot()">Show Root Concept</a><a href="">Refresh</a></div>
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
+<script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+<script>
+
+if (window.location.search.match(/showroot/i)) {
+	document.getElementById("toggleroot").text = "Hide Root Concept";
+}
+
+function toggleroot() {
+	if (window.location.search.match(/showroot/i)) {
+		document.getElementById("toggleroot").text = "Hide Root Concept";
+		document.getElementById("toggleroot").href = document.getElementById("toggleroot").href.replace(/\?showroot/,"");
+	} else {
+		document.getElementById("toggleroot").text = "Show Root Concept";
+		document.getElementById("toggleroot").href = document.getElementById("toggleroot").href + "?showroot";
+	}
+}
+
+// how big the SVG canvas is
+var SVGwidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 500);
+var SVGheight = Math.max(document.documentElement.clientHeight, window.innerHeight || 500);
+
+var legendWidth = 160;
+var legendHeight = 160;
+
+var ConceptWidth,
+    ConceptHeight;
+
+var root;
+
+var graph = {
+  nodes: [],
+  links: []
+}
+var map = {};
+
+var color = d3.scale.category20();
+
+var force = d3.layout.force()
+    .charge(-1000)
+    .linkDistance(50)
+    .size([SVGwidth, SVGheight])
+    .on("tick", tick);
+
+var tip = d3.tip()
+  .attr('class', 'd3-tip')
+  .offset([-10, 0])
+  .html(function(d) {
+    var conceptModelName = 'none';
+    if (d.group) {
+      conceptModelName = d.group;
+    }
+    return "<strong>" + d.id + " - Concept:</strong> <span>" + d.name + ". <strong>Grouping:</strong> " + conceptModelName + "</span>";
+  });
+
+var svg = d3.select("#modelgraph").append("svg")
+    .attr("width", SVGwidth)
+    .attr("height", SVGheight);
+
+var g = svg.append("g");
+
+var min_zoom = 0.1;
+var max_zoom = 7;
+var zoom = d3.behavior.zoom().scaleExtent([min_zoom,max_zoom]);
+
+zoom.on("zoom", zoomSVG);
+
+svg.style("cursor","move");
+svg.call(tip);
+svg.call(zoom);
+
+g.append("rect")
+    .attr("class", "overlay")
+    .attr("width", SVGwidth)
+    .attr("height", SVGheight);
+
+// Added markers to indicate that this is a directed graph
+g.append("defs").selectAll("marker")
+    .data(["arrow"])
+    .enter().append("marker")
+    .attr("id", function(d) { return d; })
+    .attr("viewBox", "0 -5 10 10")
+    .attr("refX", 15)
+    .attr("refY", -1.5)
+    .attr("markerWidth", 4)
+    .attr("markerHeight", 4)
+    .attr("orient", "auto")
+    .append("path")
+    .attr("d", "M0,-5L10,0L0,5");
+
+var link = g.selectAll(".link"),
+    node = g.selectAll(".node");
+
+d3.json("/ce-store/stores/DEFAULT/concepts", function(error, json) {
+  if (error) throw error;
+
+  var maxnamelength = 0;
+
+  // format data (ignore the "thing" concept)
+  for (var i = 0; i < json.length; ++i) {
+    if (json[i]._type && json[i]._type === "concept") {
+    	
+      if (window.location.search.match(/showroot/i) === null && json[i]._id === "thing")
+    	  continue;
+    	
+      map[json[i]._id] = graph.nodes.length;
+
+      var node = {
+        name: json[i]._id
+      };
+
+      if (node.name.length > maxnamelength) {
+        maxnamelength = node.name.length;
+      }
+
+      if (json[i].conceptual_model_names && json[i].conceptual_model_names.length > 0) {
+        node.group = json[i].conceptual_model_names;
+      }
+
+      graph.nodes.push(node);
+    }
+  }
+
+  for (var i = 0; i < json.length; ++i) {
+    if (json[i]._type && json[i]._type === "concept") {
+      if (window.location.search.match(/showroot/i) === null && json[i]._id === "thing")
+        continue;
+    	
+      var targets = json[i].direct_child_names;
+
+      if (targets) {
+        for (var j = 0; j < targets.length; ++j) {
+          var link = {
+            source: map[json[i]._id],
+            target: map[targets[j]],
+            value: 1
+          };
+
+          graph.links.push(link);
+        }
+      }
+    }
+  }
+
+  root = graph;
+  //console.log(root);
+
+  // Give nodes ids and initialize variables
+  for (var i = 0; i < root.nodes.length; i++) {
+    var node = root.nodes[i];
+    node.id = i;
+    node.collapsing = 0;
+    node.collapsed = false;
+  }
+
+  // Give links ids and initialize variables
+  for (var i = 0; i < root.links.length; i++) {
+    var link = root.links[i];
+    link.source = root.nodes[link.source];
+    link.target = root.nodes[link.target];
+    link.id = i;
+  }
+
+  // how big the Concept boxes are
+  ConceptWidth = 5 + (maxnamelength * 5);
+  ConceptHeight = 16;
+
+  update();
+});
+
+function update() {
+  // Keep only the visible nodes
+  var nodes = root.nodes.filter(function(d) {
+    return d.collapsing === 0;
+  });
+  var links = root.links;
+
+  // Keep only the visible links
+  links = root.links.filter(function(d) {
+    return d.source.collapsing === 0 && d.target.collapsing === 0;
+  });
+
+  force
+      .nodes(nodes)
+      .links(links)
+      .start();
+
+  // Update the links
+  link = link.data(links, function(d) { return d.id; });
+
+  // Exit any old links
+  link.exit().remove();
+
+  // Enter any new links
+  link.enter().append("line", ".node")
+      .attr("class", "link")
+      .attr("x1", function(d) { return d.source.x; })
+      .attr("y1", function(d) { return d.source.y; })
+      .attr("x2", function(d) { return d.target.x; })
+      .attr("y2", function(d) { return d.target.y; })
+      .attr("marker-end", "url(#arrow)")
+      .style("stroke-width", function(d) { return Math.sqrt(d.value); });
+
+  // Update the nodes
+  node = node.data(nodes, function(d) { return d.id; });
+
+  // Exit any old nodes
+  node.exit().remove();
+
+  // Enter any new nodes
+  var nodeEnter = node.enter().append("g")
+      .on("click", click)
+      .call(force.drag);
+
+  nodeEnter.append("rect")
+      .attr("class", "node")
+      .attr("width", ConceptWidth)
+      .attr("height", ConceptHeight)
+      .attr("rx", 4)
+      .attr("ry", 4)
+      .on('mouseover', tip.show)
+      .on('mouseout', tip.hide);
+
+  nodeEnter.append("text")
+      .attr("x", 5)
+      .attr("y", function() { return ConceptHeight - 5; })
+      .attr("font-family", "sans-serif")
+      .text(function(d) { return d.name; })
+      .style("font-size", "10px");
+
+  node.select("rect")
+      .style("fill", colorNode);
+    
+  node.select("text")
+      .style("fill", colorText)
+
+  // Mouse over events
+  node.on("mouseover", function(d) {
+    svg.style("cursor", "pointer");
+  })
+  .on("mousedown", function(d) {
+    d3.event.stopPropagation();
+  })
+  .on("mouseout", function(d) {
+    svg.style("cursor", "move");
+  });
+
+  var legend_svg = d3.select("#legend").append("svg")
+  .attr("width", legendWidth)
+  .attr("height", legendHeight);
+
+  var legend_g = legend_svg.append("g");
+  
+  // Legend
+  var legend = legend_g.selectAll(".legend")
+      .data(color.domain())
+      .enter().append("g")
+      .attr("class", "legend")
+      .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+  legend.append("rect")
+      .attr("x", legendWidth - 18)
+      .attr("width", 18)
+      .attr("height", 18)
+      .style("fill", color);
+
+  legend.append("text")
+      .attr("x", legendWidth - 24)
+      .attr("y", 9)
+      .attr("dy", ".35em")
+      .attr("font-family", "sans-serif")
+      .style("text-anchor", "end")
+      .text(function(d) { return d; });
+}
+
+function tick() {
+  link.attr("x1", function(d) { return d.source.x; })
+      .attr("y1", function(d) { return d.source.y; })
+      .attr("x2", function(d) { return d.target.x; })
+      .attr("y2", function(d) { return d.target.y; });
+
+  node.attr("transform", function(d) { return "translate(" + (d.x - (ConceptWidth / 2)) + "," + (d.y - (ConceptHeight / 2)) + ")"});
+}
+
+// Color collpased node background
+function colorNode(d) {
+  return d.collapsed ? "#111" : color(d.group);
+}
+
+// Color collpased node text
+function colorText(d) {
+  return d.collapsed ? "#EEE" : "#111";
+}
+
+// Toggle children on click
+function click(d) {
+  if (!d3.event.defaultPrevented) {
+
+    var recurse = function(parent, collapsed) {
+
+      // Check if link is from this node, and if so, collapse
+      for (var i = 0; i < root.links.length; ++i) {
+        var l = root.links[i];
+
+        if (l.source.collapsed !== collapsed) {
+          if (l.source.id === parent.id) {
+            if (root.nodes[parent.id].collapsed) {
+              l.target.collapsing--;
+            } else {
+              l.target.collapsing++;
+            }
+            recurse(l.target, collapsed);
+          }
+        }
+      }
+
+      parent.collapsed = collapsed;
+    }
+
+    recurse(d, !d.collapsed);
+  }
+
+  update();
+}
+
+function zoomSVG() {
+  g.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+};
+
+</script>
