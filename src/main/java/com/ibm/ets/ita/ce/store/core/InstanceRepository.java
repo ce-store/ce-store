@@ -45,8 +45,10 @@ public class InstanceRepository {
 	public CeInstance getInstanceNamed(ActionContext pAc, String pInstName) {
 		CeInstance result = null;
 
-		if (this.allInstances != null) {
-			result = this.allInstances.get(getKeyNameFor(pAc, pInstName));
+		if (pInstName != null) {
+			if (this.allInstances != null) {
+				result = this.allInstances.get(getKeyNameFor(pAc, pInstName));
+			}
 		}
 
 		return result;

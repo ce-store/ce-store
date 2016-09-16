@@ -73,16 +73,20 @@ public class SentenceSaverAnnotation extends SentenceSaver {
 					reportWarning("Unable to link annotation text '" + annoText + "' to concept because it is null (" + this.lastSentence.getSentenceText() + ")", this.ac);
 				}
 			} else if (this.lastSentence.isFactSentence()) {
-				//Fact sentence - save to the instance
-				String tgtInstName = ((BuilderSentenceFact)this.lastSentence).getInstanceName();
-				CeInstance tgtInst = this.ac.getModelBuilder().getInstanceNamed(this.ac, tgtInstName);
+				if (this.lastSentence.isValid()) {
+					//Fact sentence - save to the instance
+					String tgtInstName = ((BuilderSentenceFact)this.lastSentence).getInstanceName();					
+					CeInstance tgtInst = this.ac.getModelBuilder().getInstanceNamed(this.ac, tgtInstName);
 
-				if (tgtInst != null) {
-					//Save against the instance
-					//TODO: Is this correct?  It is more likely that the annotation applies to the sentence rather than the instance...
-					saveAnnotation(tgtInst, annoLabel, annoText);
+					if (tgtInst != null) {
+						//Save against the instance
+						//TODO: Is this correct?  It is more likely that the annotation applies to the sentence rather than the instance...
+						saveAnnotation(tgtInst, annoLabel, annoText);
+					} else {
+						reportWarning("Unable to link annotation text '" + annoText + "' to instance named '" + tgtInstName + "' because it could not be located", this.ac);
+					}
 				} else {
-					reportWarning("Unable to link annotation text '" + annoText + "' to instance named '" + tgtInstName + "' because it could not be located", this.ac);
+					reportWarning("Unable to link annotation text '" + annoText + "' to fact sentence because the sentence was not valid", this.ac);
 				}
 			} else if (this.lastSentence.isQuerySentence()) {
 				//Query sentence - save to the query
