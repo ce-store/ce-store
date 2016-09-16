@@ -1,0 +1,134 @@
+[
+	{
+		"id": "001a",
+		"description": "list stores",
+		"url": "/stores",
+		"method": "GET"
+	},
+	{
+		"id": "001b",
+		"description": "list stores (showStats)",
+		"url": "/stores",
+		"parameters": "?showStats=true",
+		"method": "GET"
+	},
+	{
+		"id": "002",
+		"description": "list concepts",
+		"url": "/concepts",
+		"method": "GET",
+		"delay": 1000
+	},
+	{
+		"id": "003",
+		"description": "person details",
+		"url": "/concepts/person",
+		"method": "GET"
+	},
+	{
+		"id": "004",
+		"description": "patient instances",
+		"url": "/concepts/patient/instances",
+		"method": "GET"
+	},
+	{
+		"id": "005a",
+		"description": "Jean details",
+		"url": "/instances/Jean",
+		"method": "GET"
+	},
+	{
+		"id": "005b",
+		"description": "Jean details (showStats)",
+		"url": "/instances/Jean",
+		"parameters": "?showStats=true",
+		"method": "GET"
+	},
+	{
+		"id": "005c",
+		"description": "Jean details (normal)",
+		"url": "/instances/Jean",
+		"parameters": "?showStats=true&style=normal",
+		"method": "GET"
+	},
+	{
+		"id": "005d",
+		"description": "Jean details (full)",
+		"url": "/instances/Jean",
+		"parameters": "?showStats=true&style=full",
+		"method": "GET"
+	},
+	{
+		"id": "005e",
+		"description": "Jean details (summary)",
+		"url": "/instances/Jean",
+		"parameters": "?showStats=true&style=summary",
+		"method": "GET"
+	},
+	{
+		"id": "005f",
+		"description": "Jean details (minimal)",
+		"url": "/instances/Jean",
+		"parameters": "?showStats=true&style=minimal",
+		"method": "GET"
+	},
+	{
+		"id": "006a",
+		"description": "Jean details (steps=2)",
+		"url": "/instances/Jean",
+		"parameters": "?steps=2",
+		"method": "GET"
+	},
+	{
+		"id": "007",
+		"description": "Model sentences",
+		"url": "/sentences",
+		"parameters": "?type=model",
+		"method": "GET"
+	},
+	{
+		"id": "008",
+		"description": "Fact sentences",
+		"url": "/sentences",
+		"parameters": "?type=fact",
+		"method": "GET"
+	},
+	{
+		"id": "009",
+		"description": "Rule sentences",
+		"url": "/sentences",
+		"parameters": "?type=rule",
+		"method": "GET"
+	},
+	{
+		"id": "010",
+		"description": "Shadow concepts",
+		"url": "/special/shadow-concepts",
+		"method": "GET"
+	},
+	{
+		"id": "011",
+		"description": "Shadow instances",
+		"url": "/special/shadow-instances",
+		"method": "GET"
+	},
+	{
+		"id": "012a",
+		"description": "Unreferenced instances",
+		"url": "/special/unreferenced-instances",
+		"method": "GET"
+	},
+	{
+		"id": "012b",
+		"description": "Unreferenced non-metamodel instances",
+		"url": "/special/unreferenced-instances",
+		"parameters": "?ignoreMetaModel=true",
+		"method": "GET"
+	},
+	{
+		"id": "013",
+		"description": "Diverse concept instances",
+		"url": "/special/diverse-concept-instances",
+		"method": "GET"
+	}
+]

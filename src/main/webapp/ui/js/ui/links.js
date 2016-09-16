@@ -741,6 +741,10 @@ function CeStoreLinks() {
 		return this.hyperlinkFor('../doc/index.html', 'help', 'Open the help page', TARGET_POPUP);
 	};
 
+	this.test = function() {
+		return this.hyperlinkFor('../tests/index.html', 'test', 'Open the test page', TARGET_POPUP);
+	};
+
 	this.hudson = function() {
 		return this.hyperlinkFor('../hudson/', 'Hudson', 'Open Hudson', TARGET_HUDSON);
 	};

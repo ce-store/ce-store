@@ -1,0 +1,12 @@
+/*
+ * (C) Copyright IBM Corporation  2011, 2016
+ * All Rights Reserved
+ */
+
+@CHARSET "UTF-8";
+
+body {
+   font-family:"HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
+   font-weight:300;
+   font-size:100%;
+}

@@ -136,6 +136,7 @@ function RendererMessages() {
 
 		result += TAB + '[' + gEp.ui.links.refreshPage() + ']';
 		result += NBSP + '[' + gEp.ui.links.help() + ']';
+		result += NBSP + '[' + gEp.ui.links.test() + ']';
 		result += NBSP + '[' + gEp.ui.links.hudson() + ']';
 		result += TAB + TAB + gEp.ui.htmlLoggedInUserText();
 

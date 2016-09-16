@@ -27,7 +27,7 @@ public abstract class HelperConcept {
 	}
 
 	public static CeConcept thingConcept(ActionContext pAc) {
-		return CeConcept.createOrRetrieveConceptNamed(pAc, CON_THING);
+		return pAc.getModelBuilder().getConceptNamed(pAc, CON_THING);
 	}
 
 	public static boolean hasReservedName(CeConcept pConcept) {

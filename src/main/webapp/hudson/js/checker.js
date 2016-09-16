@@ -6,7 +6,7 @@
 var gChecker = new Checker();
 
 function Checker() {
-
+	
 	this.compareExecuteReplies = function(pAr1, pAr2, pMaxDepth) {
 		return compareJson(pAr1, pAr2, pMaxDepth, "execute");
 	};
@@ -38,8 +38,6 @@ function Checker() {
 
 		if ((pObj1 != null) && (pObj2 != null)) {
 			var elemNames = computeElementNames(pObj1, pObj2);
-//			console.log(pErrCode);
-//			console.log(elemNames);
 
 			for (var i = 0; i < elemNames.length; i++) {
 				var elemName = elemNames[i];

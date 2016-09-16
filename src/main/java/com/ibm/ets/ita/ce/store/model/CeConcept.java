@@ -61,7 +61,7 @@ public class CeConcept extends CeModelEntity {
 		CeConcept newConcept = new CeConcept();
 
 		newConcept.name = pAc.getModelBuilder().getCachedStringValueLevel1(pConceptName);	
-		newConcept.isThing = (newConcept.name.equals(CON_THING));
+		newConcept.isThing = newConcept.name.equals(CON_THING);
 
 		if (HelperConcept.hasReservedName(newConcept)) {
 			reportError("Attempting to use reserved concept name '" + pConceptName + "'", pAc);
