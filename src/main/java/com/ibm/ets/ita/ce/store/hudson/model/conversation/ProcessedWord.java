@@ -207,7 +207,7 @@ public class ProcessedWord extends GeneralItem {
 		wcc.checkForMatchingInstances(pAc, this);
 
 		checkForReferringConcepts(pAc);
-		checkForReferringRelations(pAc);
+		checkForReferringRelations(pAc, wcc);
 		checkForReferringInstances(pAc, wcc);
 
 		String decText = getDeclutteredText();
@@ -306,6 +306,19 @@ public class ProcessedWord extends GeneralItem {
 			result = pRawText.substring(0, pRawText.length() - 1);
 		} else if (pRawText.endsWith("'")) {
 			result = pRawText.substring(0, pRawText.length() - 1);
+		}
+
+		return result;
+	}
+
+	public String pluralise(String pRawText) {
+		String result = null;
+
+		// Quick and dirty pluralisation
+		if (pRawText.endsWith("s")) {
+			result = pRawText + "es";
+		} else {
+			result = pRawText + "s";
 		}
 
 		return result;
@@ -506,56 +519,70 @@ public class ProcessedWord extends GeneralItem {
 		return result;
 	}
 
-	private void checkForReferringRelations(ActionContext pAc) {
-		for (CeInstance thisInst : pAc.getModelBuilder().getAllInstancesForConceptNamed(pAc, CON_PROPCON)) {
-			String propFullName = thisInst.getInstanceName();
-			String decText = getDeclutteredText();
+	private void checkForReferringRelations(ActionContext pAc, WordCheckerCache pWcc) {
+		// checkForPluralMatchingRelation(pAc, getDeclutteredText(), pWcc);
 
-			ArrayList<String> expList = thisInst.getValueListFromPropertyNamed(PROP_ISEXPBY);
+		for (CeInstance thisInst : pWcc.getLingThingInstances(pAc)) {
+			if (thisInst.isConceptNamed(pAc, CON_PROPCON)) {
+				checkForRelationByExpressedBy(pAc, thisInst);
+			}
+		}
+	}
 
-			if (!expList.isEmpty()) {
-				ArrayList<String> lcExpList = new ArrayList<String>();
+	private void checkForRelationByExpressedBy(ActionContext pAc, CeInstance pPossInst) {
+		String decText = getDeclutteredText().toLowerCase();
 
-				for (String thisExp : expList) {
-					lcExpList.add(thisExp.toLowerCase());
+		specificCheckForRelationByExpressedBy(pAc, pPossInst, decText, null);
+
+		String trimmedText = depluralise(decText);
+
+		if (trimmedText != null) {
+			specificCheckForRelationByExpressedBy(pAc, pPossInst, trimmedText, decText);
+		}
+	}
+
+	private void specificCheckForRelationByExpressedBy(ActionContext pAc, CeInstance pInst, String pDecText,
+			String pLongText) {
+		String propFullName = pInst.getInstanceName();
+
+		ArrayList<String> expList = pInst.getValueListFromPropertyNamed(PROP_ISEXPBY);
+
+		if (!expList.isEmpty()) {
+			ArrayList<String> lcExpList = new ArrayList<String>();
+
+			for (String thisExp : expList) {
+				lcExpList.add(thisExp.toLowerCase());
+			}
+
+			for (String expVal : lcExpList) {
+				boolean match = expVal.equals(pDecText);
+				boolean exact = false;
+
+				if (match) {
+					exact = true;
+				} else {
+					exact = false;
+					match = expVal.startsWith(pDecText);
 				}
 
-				for (String expVal : lcExpList) {
-					boolean match = expVal.equals(decText);
-					boolean exact = false;
-
-					if (match) {
-						exact = true;
+				if (match) {
+					if (exact) {
+						CeProperty tgtProp = pAc.getModelBuilder().getPropertyFullyNamed(propFullName);
+						if (!alreadyMatchesRelation(tgtProp)) {
+							addReferredExactRelation(pAc, propFullName, tgtProp);
+						}
 					} else {
-						exact = false;
-						match = expVal.startsWith(decText);
-					}
-
-					if (match) {
-						if (exact) {
-							CeProperty tgtProp = pAc.getModelBuilder().getPropertyFullyNamed(propFullName);
+						CeProperty tgtProp = pAc.getModelBuilder().getPropertyFullyNamed(propFullName);
+						if (tgtProp != null) {
 							if (!alreadyMatchesRelation(tgtProp)) {
-								addReferredExactRelation(pAc, propFullName, tgtProp);
-							}
-						} else {
-							CeProperty tgtProp = pAc.getModelBuilder().getPropertyFullyNamed(propFullName);
-							if (tgtProp != null) {
-								if (!alreadyMatchesRelation(tgtProp)) {
-									if (!alreadyRefersToExactRelation(tgtProp)) {
-										ArrayList<ProcessedWord> otherWords = new ArrayList<ProcessedWord>();
+								if (!alreadyRefersToExactRelation(tgtProp)) {
+									ArrayList<ProcessedWord> otherWords = new ArrayList<ProcessedWord>();
 
-										if (testForFullRelationReferenceWithLaterWords(pAc, decText, lcExpList, 1,
-												otherWords)) {
-											reportMicroDebug("Found multiple word relation reference at: " + decText,
-													pAc);
-											addReferredExactRelationFromMultipleWords(pAc, expVal, tgtProp, otherWords);
-										}
+									if (testForFullRelationReferenceWithLaterWords(pAc, pDecText, lcExpList, 1,
+											otherWords)) {
+										reportMicroDebug("Found multiple word relation reference at: " + pDecText, pAc);
+										addReferredExactRelationFromMultipleWords(pAc, expVal, tgtProp, otherWords);
 									}
-								}
-							} else {
-								// TODO: Do this properly
-								if (propFullName.equals("special:inheritance")) {
-									reportMicroDebug("I found the special inheritance relationship", pAc);
 								}
 							}
 						}

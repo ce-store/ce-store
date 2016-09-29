@@ -21,20 +21,26 @@ import com.ibm.ets.ita.ce.store.model.CeProperty;
 
 public class WordCheckerCache {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
-	
+
 	private HashMap<String, CeConcept> matchingConcepts = new HashMap<String, CeConcept>();
 	private HashMap<String, TreeMap<String, CeProperty>> matchingRelations = new HashMap<String, TreeMap<String, CeProperty>>();
 	private HashMap<String, ArrayList<CeInstance>> matchingInstances = new HashMap<String, ArrayList<CeInstance>>();
-	
+
 	private ArrayList<String> commonWords = null;
 	private ArrayList<String> negationWords = null;
 	private ArrayList<CeInstance> lingThingInsts = null;
 	private HashMap<String, ArrayList<CeInstance>> lingThingPluralFormInsts = new HashMap<String, ArrayList<CeInstance>>();
-	
+
 	public synchronized void checkForMatchingConcept(ActionContext pAc, ProcessedWord pWord) {
 		checkForMatchingConceptUsing(pAc, pWord, pWord.getDeclutteredText());
 
 		String depText = pWord.depluralise(pWord.getDeclutteredText());
+
+		if (depText != null) {
+			checkForMatchingConceptUsing(pAc, pWord, depText);
+		}
+
+		depText = pWord.pluralise(pWord.getDeclutteredText());
 
 		if (depText != null) {
 			checkForMatchingConceptUsing(pAc, pWord, depText);
@@ -44,7 +50,7 @@ public class WordCheckerCache {
 	public synchronized void checkForMatchingConceptUsing(ActionContext pAc, ProcessedWord pWord, String pText) {
 		String cacheKey = pText;
 		CeConcept tgtCon = null;
-		
+
 		if (!this.matchingConcepts.containsKey(cacheKey)) {
 			tgtCon = pAc.getModelBuilder().getConceptNamed(pAc, cacheKey);
 			this.matchingConcepts.put(cacheKey, tgtCon);
@@ -65,11 +71,17 @@ public class WordCheckerCache {
 		if (depText != null) {
 			checkForMatchingRelationUsing(pAc, pWord, depText);
 		}
+
+		depText = pWord.pluralise(pWord.getDeclutteredText());
+
+		if (depText != null) {
+			checkForMatchingRelationUsing(pAc, pWord, depText);
+		}
 	}
 
 	public synchronized void checkForMatchingRelationUsing(ActionContext pAc, ProcessedWord pWord, String pText) {
 		TreeMap<String, CeProperty> tgtProps = null;
-		
+
 		if (!this.matchingRelations.containsKey(pText)) {
 			tgtProps = new TreeMap<String, CeProperty>();
 
@@ -102,6 +114,12 @@ public class WordCheckerCache {
 		if (depText != null) {
 			checkForMatchingInstancesUsing(pAc, pWord, depText);
 		}
+
+		depText = pWord.pluralise(pWord.getDeclutteredText());
+
+		if (depText != null) {
+			checkForMatchingInstancesUsing(pAc, pWord, depText);
+		}
 	}
 
 	public synchronized void checkForMatchingInstancesUsing(ActionContext pAc, ProcessedWord pWord, String pText) {
@@ -110,10 +128,11 @@ public class WordCheckerCache {
 
 		if (!this.matchingInstances.containsKey(pText)) {
 			tgtInsts = new ArrayList<CeInstance>();
-			ArrayList<CeInstance> possInsts = hm.getIndexedEntityAccessor(pAc.getModelBuilder()).getInstancesNamedOrIdentifiedAs(pAc, pText);
+			ArrayList<CeInstance> possInsts = hm.getIndexedEntityAccessor(pAc.getModelBuilder())
+					.getInstancesNamedOrIdentifiedAs(pAc, pText);
 
 			for (CeInstance possInst : possInsts) {
-				if (isValidMatchingInstance(pAc, possInst)) {	
+				if (isValidMatchingInstance(pAc, possInst)) {
 					tgtInsts.add(possInst);
 				}
 			}
@@ -134,10 +153,11 @@ public class WordCheckerCache {
 
 		if (!this.matchingInstances.containsKey(pText)) {
 			tgtInsts = new ArrayList<CeInstance>();
-			ArrayList<CeInstance> possInsts = hm.getIndexedEntityAccessor(pAc.getModelBuilder()).getInstancesNamedOrIdentifiedAs(pAc, pText);
+			ArrayList<CeInstance> possInsts = hm.getIndexedEntityAccessor(pAc.getModelBuilder())
+					.getInstancesNamedOrIdentifiedAs(pAc, pText);
 
 			for (CeInstance possInst : possInsts) {
-				if (isValidMatchingInstance(pAc, possInst)) {	
+				if (isValidMatchingInstance(pAc, possInst)) {
 					tgtInsts.add(possInst);
 				}
 			}
@@ -154,7 +174,8 @@ public class WordCheckerCache {
 		boolean result = false;
 
 		if (pInst != null) {
-			result = !pInst.isOnlyMetaModelInstance() && !isUninterestingInstance(pAc, pInst) && !isOnlyConfigCon(pAc, pInst);
+			result = !pInst.isOnlyMetaModelInstance() && !isUninterestingInstance(pAc, pInst)
+					&& !isOnlyConfigCon(pAc, pInst);
 		}
 
 		return result;
