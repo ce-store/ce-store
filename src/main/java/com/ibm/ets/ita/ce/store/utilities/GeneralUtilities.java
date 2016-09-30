@@ -31,6 +31,7 @@ import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_PROTOCOL_HTTPS;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.REGEX_NEWUID;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.REGEX_LOGGEDINUSER;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.REGEX_NOW;
+import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.getFolderValueFor;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.isReportTiming;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportException;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportInfo;
@@ -382,11 +383,23 @@ public abstract class GeneralUtilities {
 
 		//Remove the first slash if there is one
 		if (result.startsWith(TOKEN_FS)) {
+			String rootUrl = pAc.getCeConfig().getDefaultCeRootUrl();
+
+			if ((pAc.getCeRoot() != null) && (!pAc.getCeRoot().isEmpty())) {
+				rootUrl = getFolderValueFor(pAc, pAc.getCeRoot());
+			}
+
 			result = result.substring(1, result.length());
-			result = pAc.getCeConfig().getDefaultCeRootUrl() + result;
+			result = rootUrl + result;
 		} else if (result.startsWith(TOKEN_DOT)) {
+			String currentUrl = pAc.getCeConfig().getDefaultCeCurrentUrl();
+
+			if ((pAc.getCeRoot() != null) && (!pAc.getCeRoot().isEmpty())) {
+				currentUrl = getFolderValueFor(pAc, pAc.getCeRoot());
+			}
+
 			result = result.substring(2, result.length());
-			result = pAc.getCeConfig().getDefaultCeCurrentUrl() + result;
+			result = currentUrl + result;
 		}
 
 		return result;

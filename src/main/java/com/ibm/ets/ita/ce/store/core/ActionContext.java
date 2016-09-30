@@ -16,6 +16,7 @@ public abstract class ActionContext {
 	private String ceStoreName = null;
 	private String userName = null;
 	private String credentials = null;
+	private String ceRoot = null;
 
 	private ModelBuilder mb = null;
 	private StoreConfig conf = null;
@@ -48,6 +49,14 @@ public abstract class ActionContext {
 
 	public String getCeStoreName() {
 		return this.ceStoreName;
+	}
+
+	public String getCeRoot() {
+		return this.ceRoot;
+	}
+
+	public void setCeRoot(String pVal) {
+		this.ceRoot = pVal;
 	}
 
 	public String getUserName() {

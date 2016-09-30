@@ -165,6 +165,7 @@ public class ParseNames {
 	public static final String PREAMBLE_NOVALUE = "no value";
 
 	public static final String VARNAME_ARR = "autorun rules";
+	public static final String VARNAME_CER = "ce root";
 	public static final String VARNAME_MDU = "model directory url";
 
 	public static final String UID_NEXTAVAIL = "(next available)";

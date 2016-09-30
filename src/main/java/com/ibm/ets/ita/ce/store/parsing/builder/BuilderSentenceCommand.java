@@ -45,6 +45,7 @@ import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_USING;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_VALUE;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_WITH;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.VARNAME_ARR;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.VARNAME_CER;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.VARNAME_MDU;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_TRUE;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.UID_NEXTAVAIL;
@@ -633,6 +634,8 @@ public class BuilderSentenceCommand extends BuilderSentence {
 			}
 		} else if (varName.equals(VARNAME_MDU)) {
 			pAc.getModelBuilder().setModelDirectoryUrl(varVal);
+		} else if (varName.equals(VARNAME_CER)) {
+			pAc.setCeRoot(varVal);
 		}
 	}
 
