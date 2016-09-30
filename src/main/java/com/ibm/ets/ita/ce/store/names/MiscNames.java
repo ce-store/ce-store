@@ -102,6 +102,11 @@ public class MiscNames {
 	public static final String PROPTYPE_OBJECT = "O";
 	public static final String PROPTYPE_DATATYPE = "D";
 	
+	public static final String FOLDER_JSON = "json/";
+	public static final String FOLDER_MODELS = "models/";
+	public static final String JSONFILE_QUESTIONS = "questions_core.json";
+	public static final String JSONFILE_ANSWERS = "answers_core.json";
+
 	//TO BE REMOVED
 	public static final String JNDI_CONTEXT_TOMCAT = "java:/comp/env";
 	public static final String JNDI_CONTEXT_LIBERTY = "cestore";

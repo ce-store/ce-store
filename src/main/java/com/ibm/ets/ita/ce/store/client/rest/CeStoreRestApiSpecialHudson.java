@@ -5,6 +5,8 @@ package com.ibm.ets.ita.ce.store.client.rest;
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_ANSWER;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_MODEL;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REST_HELPER;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REST_EXECUTOR;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REST_INTERPRETER;
@@ -13,6 +15,8 @@ import static com.ibm.ets.ita.ce.store.names.RestNames.REST_RESET;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REST_STATUS;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REST_DIR_LIST;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REST_DIR_LOAD;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_DIR_GETAS;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_DIR_GETQS;
 
 import java.util.ArrayList;
 
@@ -31,20 +35,18 @@ import com.ibm.ets.ita.ce.store.hudson.handler.QuestionManagementHandler;
 public class CeStoreRestApiSpecialHudson extends CeStoreRestApi {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
-	public CeStoreRestApiSpecialHudson(WebActionContext pWc, ArrayList<String> pRestParts, HttpServletRequest pRequest) {
+	public CeStoreRestApiSpecialHudson(WebActionContext pWc, ArrayList<String> pRestParts,
+			HttpServletRequest pRequest) {
 		super(pWc, pRestParts, pRequest);
 	}
 
 	/*
-	 * Supported requests:
-	 * 		/special/hudson/helper
-	 * 		/special/hudson/executor
-	 * 		/special/hudson/interpreter
-	 * 		/special/hudson/answerer
-	 * 		/special/hudson/reset
-	 * 		/special/hudson/status
-	 * 		/special/hudson/directory_list
-	 * 		/special/hudson/directory_load
+	 * Supported requests: /special/hudson/helper /special/hudson/executor
+	 * /special/hudson/interpreter /special/hudson/answerer
+	 * /special/hudson/reset /special/hudson/status
+	 * /special/hudson/directory_list /special/hudson/directory_load
+	 * /special/hudson/directory_get_questions
+	 * /special/hudson/directory_get_answers
 	 */
 	public boolean processRequest() {
 		if (this.restParts.size() == 3) {
@@ -58,10 +60,11 @@ public class CeStoreRestApiSpecialHudson extends CeStoreRestApi {
 
 	private void processThreeElementHudsonRequest() {
 		CeStoreJsonObject result = null;
+		String strResult = null;
 		long st = System.currentTimeMillis();
 		String command = this.restParts.get(2);
 		String qt = getTextFromRequest();
-		
+
 		boolean plainText = false;
 
 		if (isPost()) {
@@ -74,20 +77,25 @@ public class CeStoreRestApiSpecialHudson extends CeStoreRestApi {
 			} else if (command.equals(REST_ANSWERER)) {
 				result = processAnswererRequest(qt, st);
 				plainText = true;
-			} else if(command.equals(REST_DIR_LOAD)){
-				result = processLoadDirectoryModel(st,getParameterNamed("model"));
+			} else if (command.equals(REST_DIR_LOAD)) {
+				result = processLoadDirectoryModel(st, getParameterNamed(PARM_MODEL));
+			} else if (command.equals(REST_DIR_GETQS)) {
+				strResult = processGetDirectoryQuestions(st, getParameterNamed(PARM_MODEL));
+			} else if (command.equals(REST_DIR_GETAS)) {
+				strResult = processGetDirectoryAnswers(st, getParameterNamed(PARM_MODEL));
 			} else {
 				reportUnhandledUrl();
 			}
 		} else if (isGet()) {
 			if (command.equals(REST_RESET)) {
-				//TODO: /reset should probably be implemented as a POST rather than GET
+				// TODO: /reset should probably be implemented as a POST rather
+				// than GET
 				result = processResetRequest(st);
 			} else if (command.equals(REST_STATUS)) {
 				result = processStatusRequest(st);
-			} else if(command.equals(REST_DIR_LIST)){
+			} else if (command.equals(REST_DIR_LIST)) {
 				result = processListDirectoryModels(st);
-			}else {
+			} else {
 				reportUnhandledUrl();
 			}
 		} else {
@@ -97,10 +105,13 @@ public class CeStoreRestApiSpecialHudson extends CeStoreRestApi {
 		if (result != null) {
 			if (plainText) {
 				getWebActionResponse().setIsPlainTextResponse(true);
-				getWebActionResponse().setPlainTextPayload(this.wc, (String)result.get(this.wc, "answer"));
+				getWebActionResponse().setPlainTextPayload(this.wc, (String) result.get(this.wc, JSON_ANSWER));
 			} else {
 				getWebActionResponse().setPayloadTo(result);
 			}
+		} else {
+			getWebActionResponse().setIsPlainTextResponse(true);
+			getWebActionResponse().setPlainTextPayload(this.wc, strResult);
 		}
 	}
 
@@ -150,20 +161,29 @@ public class CeStoreRestApiSpecialHudson extends CeStoreRestApi {
 
 		return result;
 	}
-	
+
 	private CeStoreJsonObject processListDirectoryModels(long pStartTime) {
 		CeStoreJsonObject result = new CeStoreJsonObject();
 		ModelDirectoryHandler mdh = new ModelDirectoryHandler(this.wc, pStartTime);
 		result = mdh.handleList();
 		return result;
 	}
-	
-	
+
 	private CeStoreJsonObject processLoadDirectoryModel(long pStartTime, String modelName) {
 		CeStoreJsonObject result = new CeStoreJsonObject();
 		ModelDirectoryHandler mdh = new ModelDirectoryHandler(this.wc, pStartTime);
 		result = mdh.handleLoad(modelName);
 		return result;
+	}
+
+	private String processGetDirectoryQuestions(long pStartTime, String modelName) {
+		ModelDirectoryHandler mdh = new ModelDirectoryHandler(this.wc, pStartTime);
+		return mdh.handleGetQuestions(wc, modelName);
+	}
+
+	private String processGetDirectoryAnswers(long pStartTime, String modelName) {
+		ModelDirectoryHandler mdh = new ModelDirectoryHandler(this.wc, pStartTime);
+		return mdh.handleGetAnswers(wc, modelName);
 	}
 
 	private CeStoreJsonObject processStatusRequest(long pStartTime) {

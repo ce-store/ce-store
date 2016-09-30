@@ -94,6 +94,8 @@ public class RestNames {
 	public static final String REST_STATUS = "status";	
 	public static final String REST_DIR_LIST = "directory_list";
 	public static final String REST_DIR_LOAD = "directory_load";
+	public static final String REST_DIR_GETQS = "directory_get_questions";
+	public static final String REST_DIR_GETAS = "directory_get_answers";
 
 	//Parameter names
 	public static final String PARM_PROPNAME = "propName";
@@ -124,6 +126,7 @@ public class RestNames {
 	public static final String PARM_AGENTINSTNAME = "filterByAgentInstanceName";
 	public static final String PARM_DETAIL = "filterByDetail";
 	public static final String PARM_SIZE = "size";
+	public static final String PARM_MODEL = "model";
 
 	public static final String PARM_SEARCHTERMS = "keywords";
 	public static final String PARM_CASESEN = "caseSensitive";

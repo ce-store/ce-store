@@ -3,10 +3,8 @@
  * All Rights Reserved
  *******************************************************************************/
 
-var gTester = new Tester(true);
 var gHudson = new Hudson(true);
-
-gHudson.loadQuestions(gTester.initialiseTestPage);
+var gTester = new Tester(true);
 
 function Tester(pJsDebug) {
 	var URL_ANSWERS_LIST = [
@@ -48,15 +46,12 @@ function Tester(pJsDebug) {
 	this.definitiveNormalResponses = null;
 	this.definitiveDebugResponses = null;
 	this.answers = {};
+	this.answerCount = 0;
 	this.testErrors = 0;
 	this.testUnknowns = 0;
 	this.testCount = 0;
 	this.testTime = 0;
 	this.totalQuestions = 0;
-
-	this.initialiseTestPage = function() {
-		gTester.renderQuestionList();
-	};
 
 	this.getCurrentPos = function() {
 		return this.currentPos;
@@ -66,19 +61,21 @@ function Tester(pJsDebug) {
 		return this.currentIteration;
 	};
 
-	this.loadDefinitiveAnswers = function() {
-		var cbf = function(pResponse) { gTester.handleDefinitiveAnswersResponse(pResponse); };
-
-		this.answers = {};
-
-		for (var i = 0; i < URL_ANSWERS_LIST.length; i++) {
-			var thisUrl = URL_ANSWERS_LIST[i].url;
-
-			gHudson.sendJsonFileRequest(thisUrl, cbf);
-		}
-	};
+//	this.loadDefinitiveAnswers = function() {
+//		var cbf = function(pResponse) { gTester.handleDefinitiveAnswersResponse(pResponse); };
+//
+//		this.answers = {};
+//
+//		for (var i = 0; i < URL_ANSWERS_LIST.length; i++) {
+//			var thisUrl = URL_ANSWERS_LIST[i].url;
+//
+//			gHudson.sendJsonFileRequest(thisUrl, cbf);
+//		}
+//	};
 
 	this.handleDefinitiveAnswersResponse = function(pResponse) {
+		this.answers = {};
+
 		for (var i = 0; i < pResponse.length; i++) {
 			var thisAnswer = pResponse[i];
 
@@ -88,8 +85,10 @@ function Tester(pJsDebug) {
 
 			this.answers[thisAnswer.id] = thisAnswer;
 		}
+		
+		this.answerCount = pResponse.length;
 
-		var countUrl = hyperlinksForNewWindow(URL_ANSWERS_LIST, definitiveCountTextFor(this.answers));
+		var countUrl = definitiveCountTextFor(this.answers);
 
 		setTextIn(DOM_XL, countUrl);
 	};

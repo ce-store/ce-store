@@ -8,10 +8,15 @@ package com.ibm.ets.ita.ce.store.hudson.handler;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportDebug;
 import static com.ibm.ets.ita.ce.store.names.CeNames.SRC_HUDSON;
 import static com.ibm.ets.ita.ce.store.names.MiscNames.MODELNAME_CORE;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.FOLDER_JSON;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.FOLDER_MODELS;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.JSONFILE_QUESTIONS;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.JSONFILE_ANSWERS;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_ET;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_MODELS;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SM;
 import static com.ibm.ets.ita.ce.store.names.MiscNames.CESTORENAME_DEFAULT;
+import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.sendHttpGetRequest;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -62,7 +67,7 @@ public class ModelDirectoryHandler extends GenericHandler {
 	    
 		return result;
 	}
-	
+
 	public CeStoreJsonObject handleLoad(String modelName){
 		CeStoreJsonObject result = new CeStoreJsonObject();	
 
@@ -81,13 +86,33 @@ public class ModelDirectoryHandler extends GenericHandler {
 		result.put(JSON_SM, "The CE Store has been reset");
 		result.put(JSON_ET, System.currentTimeMillis() - this.startTime);
 
-		
-	    
 		return result;
 	}
 	
-	
-	
+	public String handleGetQuestions(ActionContext pAc, String pModelName){
+		String modelName = pModelName;
+
+		if ((modelName == null) || (modelName.isEmpty())) {
+			modelName = MODELNAME_CORE;
+		}
+
+		String questionUrl = pAc.getModelBuilder().getModelDirectoryUrl() + "/" + FOLDER_MODELS + modelName + "/"+ FOLDER_JSON + JSONFILE_QUESTIONS;
+
+		return sendHttpGetRequest(pAc, questionUrl, null, false);
+	}
+
+	public String handleGetAnswers(ActionContext pAc, String pModelName){
+		String modelName = pModelName;
+
+		if ((modelName == null) || (modelName.isEmpty())) {
+			modelName = MODELNAME_CORE;
+		}
+
+		String answerUrl = pAc.getModelBuilder().getModelDirectoryUrl() + "/" + FOLDER_MODELS + modelName + "/"+ FOLDER_JSON + JSONFILE_ANSWERS;
+
+		return sendHttpGetRequest(pAc, answerUrl, null, false);
+	}
+
 	protected static void setupCeStore(ActionContext pAc, ServletStateManager pSsm, HudsonManager pHm, String modelName) {
 		String storeName = CESTORENAME_DEFAULT;
 		ModelBuilder mb = pSsm.getModelBuilder(storeName);

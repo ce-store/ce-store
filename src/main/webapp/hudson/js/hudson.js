@@ -4,8 +4,9 @@
  *******************************************************************************/
 
 var gHudson = new Hudson(true);
+var gTester = null;
 
-gHudson.loadQuestions();
+//gHudson.loadQuestions();
 gHudson.listDirectoryModels();
 
 window.onload = function(){
@@ -45,26 +46,27 @@ function Hudson(pJsDebug) {
 	this.cachedAnswer = null;
 	this.lastInterpretation = null;
 	this.allQuestions = [];
+	this.questionCount = 0;
 
-	this.sendJsonFileRequest = function(pUrl, pCbf) {
-		var xhr = new XMLHttpRequest();
-
-		xhr.open('GET', pUrl, true);
-
-		xhr.onload = function(e) {
-			if (this.status === 200) {
-				pCbf(JSON.parse(xhr.response));
-			} else {
-				ajaxErrorOther(xhr.response, e, this.status, pUrl);
-			}
-		};
-
-		xhr.onerror = function(e) {
-			ajaxErrorOther(xhr.response, e, this.status, pUrl);
-		};
-
-		xhr.send();
-	};
+//	this.sendJsonFileRequest = function(pUrl, pCbf) {
+//		var xhr = new XMLHttpRequest();
+//
+//		xhr.open('GET', pUrl, true);
+//
+//		xhr.onload = function(e) {
+//			if (this.status === 200) {
+//				pCbf(JSON.parse(xhr.response));
+//			} else {
+//				ajaxErrorOther(xhr.response, e, this.status, pUrl);
+//			}
+//		};
+//
+//		xhr.onerror = function(e) {
+//			ajaxErrorOther(xhr.response, e, this.status, pUrl);
+//		};
+//
+//		xhr.send();
+//	};
 
 	this.listDirectoryModels = function(){
 		var xhr = new XMLHttpRequest();
@@ -90,10 +92,16 @@ function Hudson(pJsDebug) {
 	};
 
 	this.loadDirectoryModel = function(model){
+		this.doLoadDirectoryModel(model);
+		this.doGetDirectoryQuestions(model);
+		this.doGetDirectoryAnswers(model);
+	};
+
+	this.doLoadDirectoryModel = function(model){
 		document.getElementById('directory_load_message').innerHTML = "Loading " + model + ".";
 
 		var xhr = new XMLHttpRequest();
-		xhr.onreadystatechange = function() {
+		xhr.onreadystatechange = function(pResponse) {
 		  if(this.readyState == 4 && this.status == 200) {
 				document.getElementById('directory_load_message').innerHTML = "Finished loading.";
 		  }
@@ -107,25 +115,95 @@ function Hudson(pJsDebug) {
 		xhr.send("model="+model);
 	};
 
-	this.loadQuestions = function(pCbf) {
-		var cbf = null;
+	this.doGetDirectoryQuestions = function(model){
+		document.getElementById('directory_questions_message').innerHTML = "Getting questions for " + model + ".";
 
-		if (pCbf == null) {
-			cbf = function(pResponse) { gHudson.handleLoadQuestions(pResponse); };
-		} else {
-			cbf = pCbf;
-		}
+		var xhr = new XMLHttpRequest();
+		xhr.onreadystatechange = function() {
+		  if(this.readyState == 4 && this.status == 200) {
+			  gHudson.handleDirectoryQuestions(this.response);
+		  } else if(this.readyState == 4 && this.status != 200) {
+			  document.getElementById('directory_questions_message').innerHTML = "Error getting questions. " + this.responseText;
+		  }
+		};
 
-		for (var i = 0; i < URL_QUESTIONS_LIST.length; i++) {
-			var thisUrl = URL_QUESTIONS_LIST[i];
-
-			this.sendJsonFileRequest(thisUrl, cbf);
-		}
+		xhr.open("POST", '../special/hudson/directory_get_questions', true);
+		xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		xhr.send("model="+model);
 	};
+
+	this.doGetDirectoryAnswers = function(model){
+		document.getElementById('directory_answers_message').innerHTML = "Getting answers for " + model + ".";
+
+		var xhr = new XMLHttpRequest();
+		xhr.onreadystatechange = function() {
+		  if(this.readyState == 4 && this.status == 200) {
+			  gHudson.handleDirectoryAnswers(this.response);
+		  }
+			else if(this.readyState == 4 && this.status != 200) {
+				document.getElementById('directory_answers_message').innerHTML = "Error getting answers. " + this.responseText;
+			}
+		};
+
+		xhr.open("POST", '../special/hudson/directory_get_answers', true);
+		xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		xhr.send("model="+model);
+	};
+
+	this.handleDirectoryQuestions = function(pResponse) {
+		var trimmed = pResponse.trim();
+		var msgText = null;
+		
+		if (trimmed != "") {
+			var questions = JSON.parse(trimmed);
+			this.handleLoadQuestions(questions);
+			msgText = this.questionCount + " questions retrieved.";
+		} else {
+			msgText = "0 questions retrieved.";
+		}
+
+		document.getElementById('directory_questions_message').innerHTML = msgText;
+	};
+	
+	this.handleDirectoryAnswers = function(pResponse) {
+		var trimmed = pResponse.trim();
+		var msgText = null;
+		
+		if (trimmed != "") {
+			var answers = JSON.parse(trimmed);
+
+			if (gTester) {
+				gTester.handleDefinitiveAnswersResponse(answers);
+				msgText = gTester.answerCount + " answers retrieved.";
+			} else {
+				msgText = answers.length + " answers retrieved.";
+			}
+		} else {
+			msgText = "0 answers retrieved.";
+		}
+
+		document.getElementById('directory_answers_message').innerHTML = msgText;
+	};
+	
+//	this.loadQuestions = function(pCbf) {
+//		var cbf = null;
+//
+//		if (pCbf == null) {
+//			cbf = function(pResponse) { gHudson.handleLoadQuestions(pResponse); };
+//		} else {
+//			cbf = pCbf;
+//		}
+//
+//		for (var i = 0; i < URL_QUESTIONS_LIST.length; i++) {
+//			var thisUrl = URL_QUESTIONS_LIST[i];
+//
+//			this.sendJsonFileRequest(thisUrl, cbf);
+//		}
+//	};
 
 	this.sortQuestions = function(pList) {
 		pList.sort(sortById);
-	}
+	};
 
 	function sortById(a, b) {
 		var result = null;
@@ -142,54 +220,21 @@ function Hudson(pJsDebug) {
 	}
 
 	this.handleLoadQuestions = function(pResponse) {
+		this.allQuestions = [];
+
 		for (var i = 0; i < pResponse.length; i++) {
 			var thisQ = pResponse[i];
 			this.allQuestions.push(thisQ);
 		}
 
+		this.questionCount = pResponse.length;
+
 		this.sortQuestions(this.allQuestions);
 		this.loadCurrentQuestion();
-	};
-
-	this.listDirectoryModels = function(){
-		var xhr = new XMLHttpRequest();
-		xhr.onreadystatechange = function() {
-		  if (this.readyState == 4 && this.status == 200) {
-				var html = '<option>Default</option>';
-				if(this.responseText){
-					var directory = JSON.parse(this.responseText);
-					if(directory && directory.models){
-						for(var i=0; i <directory.models.length; i++){
-							html = html + "<option value='"+directory.models[i]+"'>"+directory.models[i]+'</option>';
-						}
-					}
-					document.getElementById("directory_model").innerHTML = html;
-
-				}
-
-		  }
-		};
-
-		xhr.open("GET", '../special/hudson/directory_list', true);
-		xhr.send();
-	};
-
-	this.loadDirectoryModel = function(model){
-		document.getElementById('directory_load_message').innerHTML = "Loading " + model + ".";
-
-		var xhr = new XMLHttpRequest();
-		xhr.onreadystatechange = function() {
-		  if(this.readyState == 4 && this.status == 200) {
-				document.getElementById('directory_load_message').innerHTML = "Finished loading.";
-		  }
-			else if(this.readyState == 4 && this.status != 200) {
-				document.getElementById('directory_load_message').innerHTML = "Error loading. " + this.responseText;
-			}
-		};
-
-		xhr.open("POST", '../special/hudson/directory_load', true);
-		xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-		xhr.send("model="+model);
+		
+		if (gTester) {
+			gTester.renderQuestionList();
+		}
 	};
 
 	this.isLoggingResults = function() {
@@ -232,7 +277,8 @@ function Hudson(pJsDebug) {
 			this.clearAnswerText();
 
 			setTextIn(DOM_QT, qText);
-			this.parseQuestionText();
+			this.clearHelpText();
+//			this.parseQuestionText();
 		}
 	};
 
@@ -242,7 +288,8 @@ function Hudson(pJsDebug) {
 		this.clearAnswerText();
 
 		setTextIn(DOM_QT, qText);
-		this.parseQuestionText();
+		this.clearHelpText();
+//		this.parseQuestionText();
 	};
 
 	this.loadNextQuestion = function() {
@@ -251,14 +298,15 @@ function Hudson(pJsDebug) {
 		this.clearAnswerText();
 
 		setTextIn(DOM_QT, qText);
-		this.parseQuestionText();
+		this.clearHelpText();
+//		this.parseQuestionText();
 	};
 
-	this.resetCeStore = function() {
-		var cbf = function(pResponse) {gHudson.updateAnswer(pResponse);};
-
-		sendResetRequest(cbf, false);
-	};
+//	this.resetCeStore = function() {
+//		var cbf = function(pResponse) {gHudson.updateAnswer(pResponse);};
+//
+//		sendResetRequest(cbf, false);
+//	};
 
 	this.getCeStoreStatus = function() {
 		var cbf = function(pResponse) {gHudson.updateAnswer(pResponse);};
@@ -345,6 +393,10 @@ function Hudson(pJsDebug) {
 		this.clearAnswerText();
 
 		this.executeSpecificQuestion(qText, cbf);
+	};
+
+	this.clearHelpText = function() {
+		setTextIn(DOM_PQ, '');
 	};
 
 	this.clearAnswerText = function() {
@@ -770,10 +822,10 @@ function Hudson(pJsDebug) {
 		sendAjaxPost(url, pQuestionJson, pCbf);
 	}
 
-	function sendResetRequest(pCbf) {
-		var url = getTextFrom(DOM_EP) + URL_QMR;
-		sendAjaxGet(url, pCbf);
-	}
+//	function sendResetRequest(pCbf) {
+//		var url = getTextFrom(DOM_EP) + URL_QMR;
+//		sendAjaxGet(url, pCbf);
+//	}
 
 	function sendStatusRequest(pCbf) {
 		var url = getTextFrom(DOM_EP) + URL_QMS;

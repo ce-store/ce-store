@@ -213,6 +213,7 @@ public class JsonNames {
 	public static final String JSON_Q_TEXT = "text";
 	public static final String JSON_Q_WORDS = "words";
 	public static final String JSON_ANSWERS = "answers";
+	public static final String JSON_ANSWER = "answer";
 	public static final String JSON_A_RESTEXT = "result text";
 	public static final String JSON_A_CONF = "confidence";
 	public static final String JSON_INTS = "interpretations";

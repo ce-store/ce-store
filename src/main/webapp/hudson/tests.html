@@ -20,8 +20,6 @@
 		Endpoint: <input type="text" id="endpoint" size="40" value=".."/>
 		<a href="javascript:gHudson.swapEndpoint();">swap</a>
 		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
-		<a href="javascript:gHudson.resetCeStore();">reset</a>
-		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
 		Version: 1.0.14
 		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
 		<a href="docs.html">docs</a>
@@ -31,8 +29,13 @@
 		Username: <input type="text" id="username" size="15" value="davebraines"/>
 		&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
 		<hr/>
-		Load definitive responses:
-		<a href="javascript:gTester.loadDefinitiveAnswers();">Load predefined answers</a>
+		<select id="directory_model"></select>
+		<button id="directory_load" type="button">Load</button>
+		<span id="directory_load_message"></span>
+		<span id="directory_questions_message"></span>
+		<span id="directory_answers_message"></span>
+		<hr/>
+		Predefined answers:
 		<span id="loaded"> (0 loaded)</span>
 		<hr/>
 		Question range: <input type="text" id="question_range" size="10" onKeyUp="javascript:gTester.keyUpQuestionRange();"/>
