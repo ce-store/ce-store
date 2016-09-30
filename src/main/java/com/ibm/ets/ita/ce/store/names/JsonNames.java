@@ -1,14 +1,14 @@
 package com.ibm.ets.ita.ce.store.names;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
- * All Rights Reserved
+ * (C) Copyright IBM Corporation 2011, 2016 All Rights Reserved
  *******************************************************************************/
 
 public class JsonNames {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
-	//JSON type values (returned in "type" element to signify the type of JSON object)
+	// JSON type values (returned in "type" element to signify the type of JSON
+	// object)
 	public static final String JSONTYPE_CON = "concept";
 	public static final String JSONTYPE_CONMOD = "conceptual model";
 	public static final String JSONTYPE_INST = "instance";
@@ -19,7 +19,7 @@ public class JsonNames {
 	public static final String JSONTYPE_SOURCE = "source";
 	public static final String JSONTYPE_STORE = "store";
 
-	//JSON element names
+	// JSON element names
 	public static final String JSON_TYPE = "_type";
 	public static final String JSON_STYLE = "_style";
 	public static final String JSON_ID = "_id";
@@ -34,7 +34,7 @@ public class JsonNames {
 	public static final String JSON_PROP_NAME = "property_name";
 	public static final String JSON_PROP_VAL = "property_value";
 	public static final String JSON_PROP_TYPE = "property_type";
-	
+
 	public static final String JSON_HEADERS = "headers";
 	public static final String JSON_RESULTS = "results";
 	public static final String JSON_ROWS = "rows";
@@ -68,9 +68,9 @@ public class JsonNames {
 	public static final String JSON_DIRPARENT_NAMES = "direct_parent_names";
 	public static final String JSON_ALLPARENT_NAMES = "all_parent_names";
 	public static final String JSON_ALLCHILD_NAMES = "all_child_names";
-	public static final String JSON_CHILD_NAMES = "direct_child_names";		
-	public static final String JSON_DIR_PROPERTY_NAMES = "direct_property_names";		
-	public static final String JSON_INH_PROPERTY_NAMES = "inherited_property_names";		
+	public static final String JSON_CHILD_NAMES = "direct_child_names";
+	public static final String JSON_DIR_PROPERTY_NAMES = "direct_property_names";
+	public static final String JSON_INH_PROPERTY_NAMES = "inherited_property_names";
 	public static final String JSON_DIR_PARENTS = "direct_parents";
 	public static final String JSON_DIR_CHILDREN = "direct_children";
 	public static final String JSON_PRISEN_COUNT = "primary_sentence_count";
@@ -100,7 +100,7 @@ public class JsonNames {
 	public static final String JSON_A_ATTRIBUTES = "attributes";
 	public static final String JSON_A_RELATIONSHIPS = "relationships";
 
-	public static final String JSON_S_CE = "ce";	
+	public static final String JSON_S_CE = "ce";
 	public static final String JSON_S_QR_TYPE = "qr_type";
 	public static final String JSON_S_QUERY_NAME = "query_name";
 	public static final String JSON_L_QUERY_TIME = "query_time";
@@ -208,7 +208,7 @@ public class JsonNames {
 
 	public static final String TYPE_STORE = "store";
 
-	//Hudson
+	// Hudson
 	public static final String JSON_QUESTION = "question";
 	public static final String JSON_Q_TEXT = "text";
 	public static final String JSON_Q_WORDS = "words";
@@ -233,16 +233,18 @@ public class JsonNames {
 	public static final String JSON_STARTPOS = "start position";
 	public static final String JSON_ENDPOS = "end position";
 
-	//Help handler
+	// Help handler
 	public static final String JSON_QT = "question text";
 	public static final String JSON_SUGGS = "suggestions";
 	public static final String JSON_BT = "before text";
 	public static final String JSON_AT = "after text";
 
-	//Model directory handler
+	public static final String JSON_ENTITIES = "entities";
+
+	// Model directory handler
 	public static final String JSON_MODELS = "models";
 
-	//General management
+	// General management
 	public static final String JSON_ET = "execution time";
 	public static final String JSON_SM = "system message";
 

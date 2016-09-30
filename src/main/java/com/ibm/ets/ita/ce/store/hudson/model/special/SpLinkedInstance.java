@@ -1,5 +1,10 @@
 package com.ibm.ets.ita.ce.store.hudson.model.special;
 
+/*******************************************************************************
+ * (C) Copyright IBM Corporation  2011, 2016
+ * All Rights Reserved
+ *******************************************************************************/
+
 import static com.ibm.ets.ita.ce.store.names.JsonNames.SPEC_LINKEDINST;
 
 import java.util.ArrayList;
@@ -24,9 +29,11 @@ public class SpLinkedInstance extends SpThing {
 
 	public SpLinkedInstance(CeStoreJsonObject pJo) {
 		super(pJo);
+		// TODO: Complete this
 	}
 
-	public SpLinkedInstance(String pPhraseText, MatchedItem pMatchedInstance, CeProperty pLinkingProperty, ArrayList<CeInstance> pLinkedInstances) {
+	public SpLinkedInstance(String pPhraseText, MatchedItem pMatchedInstance, CeProperty pLinkingProperty,
+			ArrayList<CeInstance> pLinkedInstances) {
 		super(pPhraseText, pMatchedInstance.getStartPos(), pMatchedInstance.getEndPos());
 
 		this.matchedInstance = pMatchedInstance;

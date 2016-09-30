@@ -1,5 +1,10 @@
 package com.ibm.ets.ita.ce.store.hudson.model.special;
 
+/*******************************************************************************
+ * (C) Copyright IBM Corporation  2011, 2016
+ * All Rights Reserved
+ *******************************************************************************/
+
 import static com.ibm.ets.ita.ce.store.names.JsonNames.SPEC_COLLECTION;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_CONS;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_INSTS;
@@ -21,15 +26,17 @@ public class SpCollection extends SpThing {
 	private ArrayList<MatchedItem> connectors = null;
 	private ArrayList<MatchedItem> items = null;
 
-	public SpCollection(String pPhraseText, int pStartPos, int pEndPos, ArrayList<MatchedItem> pConns, ArrayList<MatchedItem> pItems) {
+	public SpCollection(String pPhraseText, int pStartPos, int pEndPos, ArrayList<MatchedItem> pConns,
+			ArrayList<MatchedItem> pItems) {
 		super(pPhraseText, pStartPos, pEndPos);
-		
+
 		this.connectors = pConns;
 		this.items = pItems;
 	}
 
 	public SpCollection(CeStoreJsonObject pJo) {
 		super(pJo);
+		// TODO: Complete this
 	}
 
 	public boolean isCollection() {
@@ -52,7 +59,7 @@ public class SpCollection extends SpThing {
 		CeStoreJsonArray jProps = new CeStoreJsonArray();
 
 		addStandardFields(jResult, SPEC_COLLECTION);
-		
+
 		for (MatchedItem mi : getConnectors()) {
 			CeStoreJsonArray mmArr = new CeStoreJsonArray();
 			mmArr.add(QuestionInterpreterHandler.jsonFor(pAc, mi.getInstance()));
@@ -66,7 +73,7 @@ public class SpCollection extends SpThing {
 
 			jInsts.add(QuestionInterpreterHandler.jsonForMatchedItem(mi, mmArr));
 		}
-		
+
 		for (MatchedItem mi : getConceptMatches()) {
 			CeStoreJsonArray mmArr = new CeStoreJsonArray();
 			mmArr.add(QuestionInterpreterHandler.jsonFor(pAc, mi.getConcept()));
@@ -92,7 +99,7 @@ public class SpCollection extends SpThing {
 		if (!jCons.isEmpty()) {
 			jResult.put(JSON_CONS, jCons);
 		}
-		
+
 		if (!jProps.isEmpty()) {
 			jResult.put(JSON_PROPS, jProps);
 		}

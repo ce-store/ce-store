@@ -1,12 +1,12 @@
 package com.ibm.ets.ita.ce.store.hudson.model.special;
 
-import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
-import com.ibm.ets.ita.ce.store.hudson.model.conversation.MatchedItem;
-
 /*******************************************************************************
  * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
+
+import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
+import com.ibm.ets.ita.ce.store.hudson.model.conversation.MatchedItem;
 
 public abstract class SpThing {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
@@ -24,7 +24,7 @@ public abstract class SpThing {
 	protected SpThing(CeStoreJsonObject pJo) {
 		this.phraseText = pJo.getString(JSON_PHRASE);
 		this.startPos = pJo.getInt(JSON_STARTPOS);
-		this.startPos = pJo.getInt(JSON_ENDPOS);
+		this.endPos = pJo.getInt(JSON_ENDPOS);
 	}
 
 	protected SpThing(MatchedItem pMi) {

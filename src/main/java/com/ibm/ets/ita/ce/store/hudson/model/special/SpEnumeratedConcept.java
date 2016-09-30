@@ -1,5 +1,10 @@
 package com.ibm.ets.ita.ce.store.hudson.model.special;
 
+/*******************************************************************************
+ * (C) Copyright IBM Corporation  2011, 2016
+ * All Rights Reserved
+ *******************************************************************************/
+
 import static com.ibm.ets.ita.ce.store.names.JsonNames.SPEC_ENUMCON;
 
 import java.util.ArrayList;
@@ -13,11 +18,6 @@ import com.ibm.ets.ita.ce.store.hudson.model.conversation.ProcessedWord;
 import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
 
-/*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
- * All Rights Reserved
- *******************************************************************************/
-
 public class SpEnumeratedConcept extends SpThing {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
@@ -29,9 +29,11 @@ public class SpEnumeratedConcept extends SpThing {
 
 	public SpEnumeratedConcept(CeStoreJsonObject pJo) {
 		super(pJo);
+		// TODO: Complete this
 	}
 
-	public SpEnumeratedConcept(String pPhraseText, int pEndPos, ProcessedWord pNumWord, ArrayList<MatchedItem> pConItems) {
+	public SpEnumeratedConcept(String pPhraseText, int pEndPos, ProcessedWord pNumWord,
+			ArrayList<MatchedItem> pConItems) {
 		super(pPhraseText, pNumWord.getWordPos(), pEndPos);
 
 		this.numberWordText = pNumWord.getWordText();

@@ -1,5 +1,10 @@
 package com.ibm.ets.ita.ce.store.hudson.model.special;
 
+/*******************************************************************************
+ * (C) Copyright IBM Corporation  2011, 2016
+ * All Rights Reserved
+ *******************************************************************************/
+
 import static com.ibm.ets.ita.ce.store.names.JsonNames.SPEC_MATCHTRIP;
 
 import java.util.ArrayList;
@@ -7,7 +12,8 @@ import java.util.ArrayList;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonArray;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
 import com.ibm.ets.ita.ce.store.core.ActionContext;
-import com.ibm.ets.ita.ce.store.hudson.handler.QuestionInterpreterHandler;
+import com.ibm.ets.ita.ce.store.hudson.model.InstancePhrase;
+import com.ibm.ets.ita.ce.store.hudson.model.PropertyPhrase;
 import com.ibm.ets.ita.ce.store.hudson.model.conversation.MatchedItem;
 
 public class SpMatchedTriple extends SpThing {
@@ -17,59 +23,50 @@ public class SpMatchedTriple extends SpThing {
 	private static final String JSON_SUBS = "subject instances";
 	private static final String JSON_OBJS = "object instances";
 
-	private ArrayList<MatchedItem> subjects = null;
-	private MatchedItem predicate = null;
-	private ArrayList<MatchedItem> objects = null;
+	private ArrayList<InstancePhrase> subjects = null;
+	private PropertyPhrase predicate = null;
+	private ArrayList<InstancePhrase> objects = null;
 
-	public SpMatchedTriple(CeStoreJsonObject pJo) {
+	public SpMatchedTriple(ActionContext pAc, CeStoreJsonObject pJo) {
 		super(pJo);
+
+		this.subjects = new ArrayList<InstancePhrase>();
+		this.objects = new ArrayList<InstancePhrase>();
+
+		CeStoreJsonObject jPred = pJo.getJsonObject(JSON_PRED);
+		this.predicate = new PropertyPhrase(pAc, jPred);
+
+		CeStoreJsonArray jSubs = pJo.getJsonArray(JSON_SUBS);
+
+		if (jSubs != null) {
+			for (Object thisItem : jSubs.items()) {
+				CeStoreJsonObject jSub = (CeStoreJsonObject) thisItem;
+
+				this.subjects.add(new InstancePhrase(pAc, jSub));
+			}
+		}
+
+		CeStoreJsonArray jObjs = pJo.getJsonArray(JSON_OBJS);
+
+		if (jObjs != null) {
+			for (Object thisItem : jObjs.items()) {
+				CeStoreJsonObject jObj = (CeStoreJsonObject) thisItem;
+
+				this.objects.add(new InstancePhrase(pAc, jObj));
+			}
+		}
 	}
 
-	public SpMatchedTriple(String pPhraseText, int pStartPos, int pEndPos, MatchedItem pPredicate, ArrayList<MatchedItem> pSubjects, ArrayList<MatchedItem> pObjects) {
+	public SpMatchedTriple(String pPhraseText, int pStartPos, int pEndPos, MatchedItem pPredicate,
+			ArrayList<MatchedItem> pSubjects, ArrayList<MatchedItem> pObjects) {
 		super(pPhraseText, pStartPos, pEndPos);
-		
-		this.predicate = pPredicate;
-		
-		this.subjects = pSubjects;
-		this.objects = pObjects;
+
+		this.predicate = new PropertyPhrase(pPredicate);
+
+		this.subjects = InstancePhrase.createListFrom(pSubjects);
+		this.objects = InstancePhrase.createListFrom(pObjects);
 	}
 
-//	public static SpMatchedTriple createFromJson(ActionContext pAc, CeStoreJsonObject pJo) {
-//		SpMatchedTriple result = new SpMatchedTriple(pJo);
-//		ArrayList<CeInstance> subInsts = new ArrayList<CeInstance>();
-//		ArrayList<CeInstance> objInsts = new ArrayList<CeInstance>();
-//
-//		CeStoreJsonObject jPred = pJo.getJsonObject(JSON_PRED);
-//		if (!jPred.isEmpty()) {
-//			String propId = jPred.getString(JSON_CEID);
-//			
-//			result.predicate = pAc.getModelBuilder().getPropertyFullyNamed(propId);
-//		}
-//
-//		CeStoreJsonArray jSubs = pJo.getJsonArray(JSON_SUBS);
-//		if (!jSubs.isEmpty()) {
-//			for (Object oSub : jSubs.items()) {
-//				CeStoreJsonObject jSub = (CeStoreJsonObject)oSub;
-//				CeInstance subInst = pAc.getModelBuilder().getInstanceNamed(pAc, jSub.getString(JSON_CEID));
-//				subInsts.add(subInst);
-//			}
-//		}
-//
-//		CeStoreJsonArray jObjs = pJo.getJsonArray(JSON_OBJS);
-//		if (!jObjs.isEmpty()) {
-//			for (Object oObj : jSubs.items()) {
-//				CeStoreJsonObject jObj = (CeStoreJsonObject)oObj;
-//				CeInstance subInst = pAc.getModelBuilder().getInstanceNamed(pAc, jObj.getString(JSON_CEID));
-//				objInsts.add(subInst);
-//			}
-//		}
-//
-//		result.subjects = subInsts;
-//		result.objects = objInsts;
-//
-//		return result;
-//	}
-	
 	public boolean isMatchedTriple() {
 		return true;
 	}
@@ -90,7 +87,7 @@ public class SpMatchedTriple extends SpThing {
 		return !hasSubjects() && hasObjects();
 	}
 
-	public ArrayList<MatchedItem> getSubjects() {
+	public ArrayList<InstancePhrase> getSubjects() {
 		return this.subjects;
 	}
 
@@ -98,11 +95,11 @@ public class SpMatchedTriple extends SpThing {
 		return ((this.subjects != null) && !this.subjects.isEmpty());
 	}
 
-	public MatchedItem getPredicate() {
+	public PropertyPhrase getPredicate() {
 		return this.predicate;
 	}
 
-	public ArrayList<MatchedItem> getObjects() {
+	public ArrayList<InstancePhrase> getObjects() {
 		return this.objects;
 	}
 
@@ -112,16 +109,24 @@ public class SpMatchedTriple extends SpThing {
 
 	public CeStoreJsonObject toJson(ActionContext pAc) {
 		CeStoreJsonObject jResult = new CeStoreJsonObject();
-		CeStoreJsonObject jPred = QuestionInterpreterHandler.jsonForMatchedItemProperty(pAc, getPredicate());
-		CeStoreJsonArray jSubs = QuestionInterpreterHandler.jsonForMatchedItemInstances(pAc, getSubjects());
-		CeStoreJsonArray jObjs = QuestionInterpreterHandler.jsonForMatchedItemInstances(pAc, getObjects());
+		CeStoreJsonObject jPred = this.predicate.toJson(pAc);
+		CeStoreJsonArray jSubs = new CeStoreJsonArray();
+		CeStoreJsonArray jObjs = new CeStoreJsonArray();
 
 		addStandardFields(jResult, SPEC_MATCHTRIP);
 
 		jResult.put(JSON_PRED, jPred);
 
+		for (InstancePhrase subjIp : this.subjects) {
+			jSubs.add(subjIp.toJson(pAc));
+		}
+
 		if (!jSubs.isEmpty()) {
 			jResult.put(JSON_SUBS, jSubs);
+		}
+
+		for (InstancePhrase objIp : this.objects) {
+			jObjs.add(objIp.toJson(pAc));
 		}
 
 		if (!jObjs.isEmpty()) {

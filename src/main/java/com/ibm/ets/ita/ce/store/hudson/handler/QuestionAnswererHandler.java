@@ -79,31 +79,32 @@ public class QuestionAnswererHandler extends GenericHandler {
 	private ArrayList<ConceptPhrase> listConceptPhrases() {
 		return this.interpretation.getConceptPhrases();
 	}
-	
+
 	private ArrayList<InstancePhrase> listInstancePhrases() {
 		return this.interpretation.getBestInstancePhrases();
 	}
-	
+
 	private ArrayList<PropertyPhrase> listPropertyPhrases() {
 		return this.interpretation.getPropertyPhrases();
 	}
-	
+
 	private ArrayList<SpecialPhrase> listSpecialPhrases() {
 		return this.interpretation.getSpecialPhrases();
 	}
-	
+
 	private void doInterpretationProcessing() {
 		if (this.interpretationJson != null) {
-			CeStoreJsonArray jInts = (CeStoreJsonArray)this.interpretationJson.get(this.ac, JSON_INTS);
+			CeStoreJsonArray jInts = (CeStoreJsonArray) this.interpretationJson.get(this.ac, JSON_INTS);
 
 			if (!jInts.isEmpty()) {
-				CeStoreJsonObject jFirstInt = (CeStoreJsonObject)jInts.get(0);
+				CeStoreJsonObject jFirstInt = (CeStoreJsonObject) jInts.get(0);
 
 				if (jFirstInt != null) {
 					this.interpretation = new Interpretation(this.ac, jFirstInt);
 				}
 
-				//TODO: Need to handle additional interpretations when implemented
+				// TODO: Need to handle additional interpretations when
+				// implemented
 			}
 
 			filterInstances();
@@ -111,7 +112,8 @@ public class QuestionAnswererHandler extends GenericHandler {
 	}
 
 	private void answerQuestion() {
-		//TODO: This needs to be improved.  For now it just attempts various special matches first
+		// TODO: This needs to be improved. For now it just attempts various
+		// special matches first
 		if (hasMultiMatches()) {
 			tryMultiMatchAnswer();
 		} else if (hasMatchedTriples()) {
@@ -134,7 +136,7 @@ public class QuestionAnswererHandler extends GenericHandler {
 				}
 			}
 		}
-		
+
 		return result;
 	}
 
@@ -151,7 +153,7 @@ public class QuestionAnswererHandler extends GenericHandler {
 				}
 			}
 		}
-		
+
 		return result;
 	}
 
@@ -161,32 +163,109 @@ public class QuestionAnswererHandler extends GenericHandler {
 
 			if (thisSp != null) {
 				if (thisSp.isMatchedTriple()) {
-					matchedTripleAnswerFor((SpMatchedTriple)thisSp);
+					matchedTripleAnswerFor((SpMatchedTriple) thisSp);
 				}
 			}
 		}
 	}
-	
+
 	private void tryMultiMatchAnswer() {
 		for (SpecialPhrase thisSpecPhrase : listSpecialPhrases()) {
 			SpThing thisSp = thisSpecPhrase.getSpecial();
 
 			if (thisSp != null) {
 				if (thisSp.isMultiMatch()) {
-					multiMatchAnswerFor((SpMultiMatch)thisSp);
+					multiMatchAnswerFor((SpMultiMatch) thisSp);
 				}
 			}
 		}
 	}
 
 	private void matchedTripleAnswerFor(SpMatchedTriple pMt) {
-		//TODO: Complete this
 		if (pMt.isFullTriple()) {
-			appendToAnswer("TBC - matchedTripleAnswerFor (full)");			
+			matchedTripleFullAnswerFor(pMt);
 		} else if (pMt.isPartialSubjectTriple()) {
-			appendToAnswer("TBC - matchedTripleAnswerFor (subject-based)");			
+			matchedTripleSubjectAnswerFor(pMt);
 		} else {
-			appendToAnswer("TBC - matchedTripleAnswerFor (object-based)");			
+			matchedTripleObjectAnswerFor(pMt);
+		}
+	}
+
+	private void matchedTripleFullAnswerFor(SpMatchedTriple pMt) {
+		// TODO: Complete this
+		appendToAnswer("TBC - matchedTripleAnswerFor (full)");
+	}
+
+	private void matchedTripleObjectAnswerFor(SpMatchedTriple pMt) {
+		PropertyPhrase propPhrase = pMt.getPredicate();
+		CeProperty mProp = propPhrase.getFirstProperty();
+		CeConcept domCon = mProp.getDomainConcept();
+		ArrayList<String> answerValues = new ArrayList<String>();
+
+		if (mProp != null) {
+			for (InstancePhrase thisIp : pMt.getObjects()) {
+				CeInstance mInst = thisIp.getFirstInstance();
+
+				for (CeInstance subInst : this.ac.getModelBuilder().listAllInstancesForConcept(domCon)) {
+					for (CeInstance objInst : subInst.getInstanceListFromPropertyNamed(this.ac,
+							mProp.getPropertyName())) {
+						if (objInst.equals(mInst)) {
+							answerValues.add(subInst.getInstanceName());
+						}
+					}
+				}
+			}
+		}
+
+		String sepVal = "";
+		for (String thisVal : answerValues) {
+			this.answerText += sepVal + thisVal;
+			sepVal = ", ";
+		}
+
+		this.answerText += " ";
+		this.answerText += pMt.getPredicate().getPhraseText();
+		this.answerText += " ";
+
+		for (InstancePhrase objPhrase : pMt.getObjects()) {
+			this.answerText += objPhrase.getPhraseText();
+		}
+
+	}
+
+	private void matchedTripleSubjectAnswerFor(SpMatchedTriple pMt) {
+		PropertyPhrase propPhrase = pMt.getPredicate();
+		CeProperty mProp = propPhrase.getFirstProperty();
+		ArrayList<String> answerValues = new ArrayList<String>();
+
+		if (mProp != null) {
+			for (InstancePhrase thisIp : pMt.getSubjects()) {
+				CeInstance mInst = thisIp.getFirstInstance();
+
+				if (mProp.isObjectProperty()) {
+					for (CeInstance thisInst : mInst.getInstanceListFromPropertyNamed(this.ac,
+							mProp.getPropertyName())) {
+						answerValues.add(thisInst.getInstanceName());
+					}
+				} else {
+					for (String thisVal : mInst.getValueListFromPropertyNamed(mProp.getPropertyName())) {
+						answerValues.add(thisVal);
+					}
+				}
+			}
+		}
+
+		for (InstancePhrase subPhrase : pMt.getSubjects()) {
+			this.answerText += subPhrase.getPhraseText() + "'s ";
+		}
+
+		this.answerText += pMt.getPredicate().getPhraseText();
+		this.answerText += " is ";
+
+		String sepVal = "";
+		for (String thisVal : answerValues) {
+			this.answerText += sepVal + thisVal;
+			sepVal = ", ";
 		}
 	}
 
@@ -196,7 +275,7 @@ public class QuestionAnswererHandler extends GenericHandler {
 		if (matchedInst != null) {
 			String desc = matchedInst.getSingleValueFromPropertyNamed(PROP_DESC);
 
-			if ((desc!= null) && (!desc.isEmpty())) {
+			if ((desc != null) && (!desc.isEmpty())) {
 				appendToAnswer(desc);
 			} else {
 				appendToAnswer("TBC - multiMatchAnswerFor (no description)");
@@ -210,42 +289,42 @@ public class QuestionAnswererHandler extends GenericHandler {
 		if (listConceptPhrases().isEmpty()) {
 			if (listPropertyPhrases().isEmpty()) {
 				if (this.domainInstances.isEmpty()) {
-					//no concepts, no properties, no domain instances
+					// no concepts, no properties, no domain instances
 					handleEverythingEmpty();
 				} else {
-					//no concepts, no properties, some domain instances
+					// no concepts, no properties, some domain instances
 					handleJustInstances();
 				}
 			} else {
 				if (this.domainInstances.isEmpty()) {
-					//no concepts, some properties, no domain instances
+					// no concepts, some properties, no domain instances
 					handleJustProperties();
 				} else {
-					//no concepts, some properties, some domain instances
+					// no concepts, some properties, some domain instances
 					handleSomePropertiesAndInstances();
 				}
 			}
 		} else {
 			if (listPropertyPhrases().isEmpty()) {
 				if (this.domainInstances.isEmpty()) {
-					//some concepts, no properties, no domain instances
+					// some concepts, no properties, no domain instances
 					handleJustConcepts();
 				} else {
-					//some concepts, no properties, some domain instances
+					// some concepts, no properties, some domain instances
 					handleSomeConceptsAndInstances();
 				}
 			} else {
 				if (this.domainInstances.isEmpty()) {
-					//some concepts, some properties, no domain instances
+					// some concepts, some properties, no domain instances
 					handleSomeConceptsAndProperties();
 				} else {
-					//some concepts, some properties, some domain instances
+					// some concepts, some properties, some domain instances
 					handleSomeConceptsPropertiesAndInstances();
 				}
 			}
 		}
 	}
-	
+
 	private void handleJustInstances() {
 		for (CeInstance thisInst : this.domainInstances) {
 			answerInstanceQuestionFor(thisInst);
@@ -261,7 +340,7 @@ public class QuestionAnswererHandler extends GenericHandler {
 	}
 
 	private void handleEverythingEmpty() {
-		//TODO: Complete this
+		// TODO: Complete this
 		appendToAnswer("TBC - handleEverythingEmpty");
 	}
 
@@ -276,21 +355,21 @@ public class QuestionAnswererHandler extends GenericHandler {
 		String instName = null;
 		String propName = null;
 		String propVals = null;
-		
+
 		instName = pInst.getInstanceName();
-		
+
 		for (PropertyPhrase thisPp : listPropertyPhrases()) {
 			for (CeProperty thisProp : thisPp.getProperties()) {
 				for (CePropertyInstance thisPi : pInst.getPropertyInstances()) {
 					CeProperty innerProp = thisPi.getRelatedProperty();
-					
+
 					if (!innerProp.isStatedProperty()) {
 						innerProp = innerProp.getStatedSourceProperty();
 					}
 
 					if (innerProp.equals(thisProp)) {
 						propName = thisPi.getPropertyName();
-						
+
 						for (String thisVal : thisPi.getValueList()) {
 							if (propVals == null) {
 								propVals = "";
@@ -302,7 +381,7 @@ public class QuestionAnswererHandler extends GenericHandler {
 						}
 					}
 				}
-				
+
 				if (thisProp.isFunctionalNoun()) {
 					result = instName + " has " + propVals + " as " + propName;
 				} else {
@@ -315,7 +394,7 @@ public class QuestionAnswererHandler extends GenericHandler {
 	}
 
 	private void handleJustProperties() {
-		//TODO: Complete this
+		// TODO: Complete this
 		appendToAnswer("TBC - handleJustProperties");
 	}
 
@@ -335,18 +414,18 @@ public class QuestionAnswererHandler extends GenericHandler {
 		if (isLocate()) {
 			ArrayList<CeInstance> instList = filterInstancesByConcepts();
 			String result = "";
-			
+
 			for (CeInstance thisInst : instList) {
 				result += answerLocateFor(thisInst);
 			}
-			
+
 			appendToAnswer(result);
 		} else {
-			//TODO: Complete this
+			// TODO: Complete this
 			appendToAnswer("TBC - handleSomeConceptsAndInstances");
 		}
 	}
-	
+
 	private ArrayList<CeInstance> filterInstancesByConcepts() {
 		ArrayList<CeInstance> result = new ArrayList<CeInstance>();
 
@@ -364,12 +443,12 @@ public class QuestionAnswererHandler extends GenericHandler {
 	}
 
 	private void handleSomeConceptsAndProperties() {
-		//TODO: Complete this
+		// TODO: Complete this
 		appendToAnswer("TBC - handleSomeConceptsAndProperties");
 	}
 
 	private void handleSomeConceptsPropertiesAndInstances() {
-		//TODO: Complete this
+		// TODO: Complete this
 		appendToAnswer("TBC - handleSomeConceptsPropertiesAndInstances");
 	}
 
@@ -396,7 +475,8 @@ public class QuestionAnswererHandler extends GenericHandler {
 
 	private void answerConceptQuestionFor(CeConcept pCon) {
 		if (isExpand()) {
-			//TODO: Consider other properties like properties, parent concepts, conceptual models etc
+			// TODO: Consider other properties like properties, parent concepts,
+			// conceptual models etc
 			answerExpandFor(pCon.retrieveMetaModelInstance(this.ac));
 		} else if (isLinksFrom()) {
 			answerLinksFromFor(pCon);
@@ -415,7 +495,7 @@ public class QuestionAnswererHandler extends GenericHandler {
 
 	private void answerExpandFor(CeInstance pInst) {
 		String result = answerSummaryFor(pInst);
-		
+
 		for (CePropertyInstance thisPi : pInst.getPropertyInstances()) {
 			result += "\n";
 			result += "  ";
@@ -438,29 +518,29 @@ public class QuestionAnswererHandler extends GenericHandler {
 	}
 
 	private void answerLinksFromFor(CeInstance pInst) {
-		//TODO: Complete this
+		// TODO: Complete this
 		appendToAnswer("TBC - answerLinksFromForInstance: " + pInst.getInstanceName());
 	}
 
 	private void answerLinksFromFor(CeConcept pCon) {
-		//TODO: Complete this
+		// TODO: Complete this
 		appendToAnswer("TBC - answerLinksFromForConcept: " + pCon.getConceptName());
 	}
 
 	private void answerLinksToFor(CeInstance pInst) {
-		//TODO: Complete this
+		// TODO: Complete this
 		appendToAnswer("TBC - answerLinksToForInstance: " + pInst.getInstanceName());
 	}
 
 	private void answerLinksToFor(CeConcept pCon) {
-		//TODO: Complete this
+		// TODO: Complete this
 		appendToAnswer("TBC - answerLinksToForConcept: " + pCon.getConceptName());
 	}
 
 	private String answerLocateFor(CeInstance pInst) {
 		String result = "";
 
-		//TODO: Also check for related instances that are spatial things
+		// TODO: Also check for related instances that are spatial things
 		if (pInst.isConceptNamed(this.ac, CON_SPATIAL)) {
 			result += pInst.getInstanceName();
 		}
@@ -469,12 +549,12 @@ public class QuestionAnswererHandler extends GenericHandler {
 	}
 
 	private void answerLocateFor(CeConcept pCon) {
-		//TODO: Complete this
+		// TODO: Complete this
 		appendToAnswer("TBC - answerLocateForConcept: " + pCon.getConceptName());
 	}
 
 	private void answerCountFor(CeInstance pInst) {
-		//TODO: Complete this
+		// TODO: Complete this
 		appendToAnswer("TBC - answerCountForInstance: " + pInst.getInstanceName());
 	}
 
@@ -482,7 +562,7 @@ public class QuestionAnswererHandler extends GenericHandler {
 		String result = null;
 		String pluralName = pCon.pluralFormName(this.ac);
 		int count = this.ac.getModelBuilder().countAllInstancesForConcept(pCon);
-		
+
 		if (count == 0) {
 			result = "there are no ";
 			result += pluralName;
@@ -503,7 +583,7 @@ public class QuestionAnswererHandler extends GenericHandler {
 	}
 
 	private void answerListFor(CeInstance pInst) {
-		//TODO: Complete this
+		// TODO: Complete this
 		appendToAnswer("TBC - answerListForInstance: " + pInst.getInstanceName());
 	}
 
@@ -516,17 +596,17 @@ public class QuestionAnswererHandler extends GenericHandler {
 	}
 
 	private void answerListFor(CeConcept pCon) {
-		//TODO: Complete this
+		// TODO: Complete this
 		appendToAnswer("TBC - answerListForConcept: " + pCon.getConceptName());
 	}
 
 	private void answerShowFor(CeInstance pInst) {
-		//TODO: Complete this
+		// TODO: Complete this
 		appendToAnswer("TBC - answerShowForInstance: " + pInst.getInstanceName());
 	}
 
 	private void answerShowFor(CeConcept pCon) {
-		//TODO: Complete this
+		// TODO: Complete this
 		appendToAnswer("TBC - answerShowForConcept: " + pCon.getConceptName());
 	}
 
@@ -537,13 +617,13 @@ public class QuestionAnswererHandler extends GenericHandler {
 	private String answerSummaryFor(CeInstance pInst) {
 		String result = null;
 		String descText = pInst.getSingleValueFromPropertyNamed(PROP_DESC);
-		
+
 		if ((descText != null) && (!descText.isEmpty())) {
 			result = descText;
 		} else {
 			result = pInst.getInstanceName() + textForConcepts(pInst);
 		}
-		
+
 		return result;
 	}
 
@@ -559,7 +639,7 @@ public class QuestionAnswererHandler extends GenericHandler {
 				} else {
 					result += ", ";
 				}
-	
+
 				result += thisCon.getConceptName();
 			}
 		}
@@ -656,7 +736,7 @@ public class QuestionAnswererHandler extends GenericHandler {
 		CeStoreJsonObject jFirstAnswer = new CeStoreJsonObject();
 		CeStoreJsonObject jQuestion = new CeStoreJsonObject();
 
-		CeStoreJsonObject jQues = (CeStoreJsonObject)this.interpretationJson.get(this.ac, JSON_QUESTION);
+		CeStoreJsonObject jQues = (CeStoreJsonObject) this.interpretationJson.get(this.ac, JSON_QUESTION);
 
 		if (jQues != null) {
 			String qText = jQues.getString(JSON_Q_TEXT);
@@ -667,7 +747,8 @@ public class QuestionAnswererHandler extends GenericHandler {
 		}
 
 		jFirstAnswer.put(JSON_A_RESTEXT, this.answerText);
-		jFirstAnswer.put(JSON_A_CONF, 100);	//TODO: This should not be hardcoded
+		jFirstAnswer.put(JSON_A_CONF, 100); // TODO: This should not be
+											// hardcoded
 
 		jAnswers.add(jFirstAnswer);
 

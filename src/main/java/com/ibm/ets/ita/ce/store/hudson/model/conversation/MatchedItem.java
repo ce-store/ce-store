@@ -34,7 +34,7 @@ public class MatchedItem {
 	private String phraseText = null;
 
 	private MatchedItem(ProcessedWord pWord, String pContext) {
-		//Private constructor to force use of static methods to create
+		// Private constructor to force use of static methods to create
 		this.context = pContext;
 		this.firstWord = pWord;
 	}
@@ -48,7 +48,8 @@ public class MatchedItem {
 		return mi;
 	}
 
-	public static MatchedItem createForReferredConceptExact(ProcessedWord pWord, CeConcept pCon, String pPhraseText, ArrayList<ProcessedWord> pOtherWords) {
+	public static MatchedItem createForReferredConceptExact(ProcessedWord pWord, CeConcept pCon, String pPhraseText,
+			ArrayList<ProcessedWord> pOtherWords) {
 		MatchedItem mi = createForReferredConceptExact(pWord, pCon, pPhraseText);
 
 		mi.setOtherWords(pOtherWords);
@@ -65,7 +66,8 @@ public class MatchedItem {
 		return mi;
 	}
 
-	public static MatchedItem createForReferredConceptPlural(ProcessedWord pWord, CeConcept pCon, String pPhraseText, ArrayList<ProcessedWord> pOtherWords) {
+	public static MatchedItem createForReferredConceptPlural(ProcessedWord pWord, CeConcept pCon, String pPhraseText,
+			ArrayList<ProcessedWord> pOtherWords) {
 		MatchedItem mi = createForReferredConceptPlural(pWord, pCon, pPhraseText);
 
 		mi.setOtherWords(pOtherWords);
@@ -82,7 +84,8 @@ public class MatchedItem {
 		return mi;
 	}
 
-	public static MatchedItem createForReferredConceptPastTense(ProcessedWord pWord, CeConcept pCon, String pPhraseText, ArrayList<ProcessedWord> pOtherWords) {
+	public static MatchedItem createForReferredConceptPastTense(ProcessedWord pWord, CeConcept pCon, String pPhraseText,
+			ArrayList<ProcessedWord> pOtherWords) {
 		MatchedItem mi = createForReferredConceptPastTense(pWord, pCon, pPhraseText);
 
 		mi.setOtherWords(pOtherWords);
@@ -90,7 +93,8 @@ public class MatchedItem {
 		return mi;
 	}
 
-	public static MatchedItem createForReferredConceptPastTense(ProcessedWord pWord, CeConcept pCon, String pPhraseText) {
+	public static MatchedItem createForReferredConceptPastTense(ProcessedWord pWord, CeConcept pCon,
+			String pPhraseText) {
 		MatchedItem mi = new MatchedItem(pWord, CONTEXT_REFCON_PAST);
 
 		mi.concept = pCon;
@@ -108,7 +112,8 @@ public class MatchedItem {
 		return mi;
 	}
 
-	public static MatchedItem createForReferredPropertyExact(ProcessedWord pWord, CeProperty pProp, String pPhraseText, ArrayList<ProcessedWord> pOtherWords) {
+	public static MatchedItem createForReferredPropertyExact(ProcessedWord pWord, CeProperty pProp, String pPhraseText,
+			ArrayList<ProcessedWord> pOtherWords) {
 		MatchedItem mi = createForReferredPropertyExact(pWord, pProp, pPhraseText);
 
 		mi.setOtherWords(pOtherWords);
@@ -116,7 +121,8 @@ public class MatchedItem {
 		return mi;
 	}
 
-	public static MatchedItem createForReferredPropertyExact(ProcessedWord pWord, CeProperty pProp, String pPhraseText) {
+	public static MatchedItem createForReferredPropertyExact(ProcessedWord pWord, CeProperty pProp,
+			String pPhraseText) {
 		MatchedItem mi = new MatchedItem(pWord, CONTEXT_REFPROP_EXACT);
 
 		mi.property = pProp;
@@ -134,7 +140,8 @@ public class MatchedItem {
 		return mi;
 	}
 
-	public static MatchedItem createForReferredInstanceExact(ProcessedWord pWord, CeInstance pInst, String pPhraseText, ArrayList<ProcessedWord> pOtherWords) {
+	public static MatchedItem createForReferredInstanceExact(ProcessedWord pWord, CeInstance pInst, String pPhraseText,
+			ArrayList<ProcessedWord> pOtherWords) {
 		MatchedItem mi = createForReferredInstanceExact(pWord, pInst, pPhraseText);
 
 		mi.setOtherWords(pOtherWords);
@@ -142,7 +149,8 @@ public class MatchedItem {
 		return mi;
 	}
 
-	public static MatchedItem createForReferredInstanceExact(ProcessedWord pWord, CeInstance pInst, String pPhraseText) {
+	public static MatchedItem createForReferredInstanceExact(ProcessedWord pWord, CeInstance pInst,
+			String pPhraseText) {
 		MatchedItem mi = new MatchedItem(pWord, CONTEXT_REFINST_EXACT);
 
 		mi.instance = pInst;
@@ -151,7 +159,8 @@ public class MatchedItem {
 		return mi;
 	}
 
-	public static MatchedItem createForReferredInstancePlural(ProcessedWord pWord, CeInstance pInst, String pPhraseText) {
+	public static MatchedItem createForReferredInstancePlural(ProcessedWord pWord, CeInstance pInst,
+			String pPhraseText) {
 		MatchedItem mi = new MatchedItem(pWord, CONTEXT_REFINST_PLURAL);
 
 		mi.instance = pInst;

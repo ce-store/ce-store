@@ -35,13 +35,13 @@ public class SpecialPhrase extends InterpretationPhrase {
 		} else if (this.type.equals(SPEC_LINKEDINST)) {
 			this.special = new SpLinkedInstance(pJo);
 		} else if (this.type.equals(SPEC_MATCHTRIP)) {
-			this.special = new SpMatchedTriple(pJo);
+			this.special = new SpMatchedTriple(pAc, pJo);
 		} else if (this.type.equals(SPEC_MULTIMATCH)) {
 			this.special = new SpMultiMatch(pAc, pJo);
 		} else if (this.type.equals(SPEC_NUMBER)) {
 			this.special = new SpNumber(pJo);
 		} else {
-			//TODO: Proper error reporting needed
+			// TODO: Proper error reporting needed
 			System.out.println("Unexpected special type: " + this.type);
 		}
 	}

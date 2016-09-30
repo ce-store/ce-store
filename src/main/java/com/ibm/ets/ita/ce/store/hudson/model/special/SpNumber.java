@@ -1,5 +1,10 @@
 package com.ibm.ets.ita.ce.store.hudson.model.special;
 
+/*******************************************************************************
+ * (C) Copyright IBM Corporation  2011, 2016
+ * All Rights Reserved
+ *******************************************************************************/
+
 import static com.ibm.ets.ita.ce.store.names.JsonNames.SPEC_NUMBER;
 
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
@@ -14,6 +19,7 @@ public class SpNumber extends SpThing {
 
 	public SpNumber(CeStoreJsonObject pJo) {
 		super(pJo);
+		// Nothing else needed
 	}
 
 	public boolean isNumber() {
