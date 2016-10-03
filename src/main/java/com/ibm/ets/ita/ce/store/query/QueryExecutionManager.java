@@ -19,7 +19,6 @@ import static com.ibm.ets.ita.ce.store.names.CeNames.SPECIALNAME_NOTEQUALS;
 import static com.ibm.ets.ita.ce.store.names.CeNames.SPECIALNAME_NOTSTARTSWITH;
 import static com.ibm.ets.ita.ce.store.names.CeNames.SPECIALNAME_STARTSWITH;
 import static com.ibm.ets.ita.ce.store.names.MiscNames.ES;
-import static com.ibm.ets.ita.ce.store.names.MiscNames.FILENAME_QUERYLOG_CE;
 import static com.ibm.ets.ita.ce.store.names.MiscNames.HDR_CE;
 import static com.ibm.ets.ita.ce.store.names.MiscNames.HDR_COUNT;
 import static com.ibm.ets.ita.ce.store.names.MiscNames.NL;
@@ -29,8 +28,6 @@ import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_DOT;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_PERCENT;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_SPACE;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_ZERO;
-import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.joinFolderAndFilename;
-import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.writeToFile;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.reportExecutionTiming;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.substituteCeParameters;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
@@ -245,8 +242,6 @@ public abstract class QueryExecutionManager {
 
 		long sTime = System.currentTimeMillis();
 		ContainerCeResult result = null;
-
-		logQuery(pQuery.getCeText() + NL + NL);
 
 		if (!pQuery.listAllChildPremiseClauses().isEmpty()) {
 			result = performQueryExecution(pQuery);
@@ -475,14 +470,6 @@ public abstract class QueryExecutionManager {
 		}
 		
 		return result;
-	}
-
-	private void logQuery(String pQuery) {
-		if (this.ac.getCeConfig().isLoggingQueries()) {
-			String logFilename = joinFolderAndFilename(this.ac, this.ac.getCeConfig().getTempPath(), FILENAME_QUERYLOG_CE);
-
-			writeToFile(this.ac, logFilename, pQuery, true);
-		}
 	}
 
 	private void addCeToResultSet(ContainerCeResult pResult, CeQuery pQuery) {

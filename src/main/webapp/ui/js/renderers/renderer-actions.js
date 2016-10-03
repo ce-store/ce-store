@@ -35,21 +35,21 @@ function RendererActions() {
 			var sr = gCe.utils.getStructuredResponseFrom(pResponse);
 			
 			if (sr != null) {
-				var genProps = sr.general_properties;
-				
-				if (genProps != null) {
-					var hdrs = ['Key', 'Value'];
-					var rows = [];
+//				var genProps = sr.general_properties;
+//				
+//				if (genProps != null) {
+//					var hdrs = ['Key', 'Value'];
+//					var rows = [];
+//
+//					for (var key in genProps) {
+//						rows.push( [ key, genProps[key] ] );
+//					}
+//
+//					html += '<h2>General properties (not editable)</h2>';
+//					html += gEp.ui.htmlTableFor(hdrs, rows, gEp.ui.DEFAULT_STYLE);
+//				}
 
-					for (var key in genProps) {
-						rows.push( [ key, genProps[key] ] );
-					}
-
-					html += '<h2>General properties (not editable)</h2>';
-					html += gEp.ui.htmlTableFor(hdrs, rows, gEp.ui.DEFAULT_STYLE);
-				}
-
-				var envProps = sr.environment_properties;
+				var envProps = sr.store_properties;
 				
 				if (envProps != null) {
 					var hdrs = ['Key', 'Value', 'Action'];
@@ -60,7 +60,7 @@ function RendererActions() {
 						rows.push( [ key, thisVal, gEp.ui.links.editConfigValue(key, thisVal) ] );
 					}
 
-					html += '<h2>Environment properties (editable)</h2>';
+					html += '<h2>Store properties</h2>';
 					html += gEp.ui.htmlTableFor(hdrs, rows, gEp.ui.DEFAULT_STYLE);
 				}
 			}

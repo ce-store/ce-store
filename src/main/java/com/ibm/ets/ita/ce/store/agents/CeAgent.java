@@ -610,24 +610,11 @@ public abstract class CeAgent {
 			this.ac.getCeConfig().setDebug(this.agentDebug);
 		}
 
-		if (this.ac.getCeConfig().isCatchingAgentErrors()) {
-			// Try the agent execution and catch any errors
-			try {
-				if (!this.failedToGetMandatoryParameter) {
-					executeAgentProcessing();
-				} else {
-					reportError("Not all mandatory parameters were specified, so this agent will not be executed");
-				}
-			} catch (Exception e) {
-				reportUnhandledException(e, "Exception", "CeAgent:runAgent()");
-			}
+		if (!this.failedToGetMandatoryParameter) {
+			// Just run the agent execution with no attempt to catch errors
+			executeAgentProcessing();
 		} else {
-			if (!this.failedToGetMandatoryParameter) {
-				// Just run the agent execution with no attempt to catch errors
-				executeAgentProcessing();
-			} else {
-				reportError("Not all mandatory parameters were specified, so this agent will not be executed");
-			}
+			reportError("Not all mandatory parameters were specified, so this agent will not be executed");
 		}
 
 		if (!doesNotGenerateCe()) {

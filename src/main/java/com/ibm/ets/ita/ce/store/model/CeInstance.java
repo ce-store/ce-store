@@ -25,8 +25,6 @@ public class CeInstance extends CeModelEntity {
 	private CePropertyInstance[] propertyInstances = new CePropertyInstance[0];
 	private CePropertyInstance[] referringPropertyInstances = new CePropertyInstance[0];
 
-	private CeProperty[] cachedAllProperties = new CeProperty[0];
-
 	private CeInstance() {
 		//This is private to ensure that new instances can only be created via the static methods
 	}
@@ -61,45 +59,6 @@ public class CeInstance extends CeModelEntity {
 		}
 
 		result.addAll(getInheritedConcepts());
-
-		return result;
-	}
-
-	public ArrayList<CeProperty> retrieveAllProperties(ActionContext pAc) {
-		ArrayList<CeProperty> result = new ArrayList<CeProperty>();
-
-		if (pAc.getCeConfig().cacheInstanceProperties()) {
-			if (this.cachedAllProperties.length == 0) {
-				ArrayList<CeProperty> allProps = calculateAllProperties();
-
-				if (!allProps.isEmpty()) {
-					this.cachedAllProperties = new CeProperty[allProps.size()];
-
-					int ctr = 0;
-					for (CeProperty thisProp : allProps) {
-						this.cachedAllProperties[ctr++] = thisProp;
-					}
-				}
-			}
-
-			result = this.calculateAllProperties();
-		} else {
-			result = calculateAllProperties();
-		}
-
-		return result;
-	}
-
-	private ArrayList<CeProperty> calculateAllProperties() {
-		ArrayList<CeProperty> result = new ArrayList<CeProperty>();
-
-		for (CeConcept thisConcept : listAllConcepts()) {
-			for (CeProperty thisProp : thisConcept.calculateAllProperties().values()) {
-				if (!result.contains(thisProp)) {
-					result.add(thisProp);
-				}
-			}
-		}
 
 		return result;
 	}

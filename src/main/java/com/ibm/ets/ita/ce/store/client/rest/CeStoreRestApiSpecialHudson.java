@@ -11,7 +11,6 @@ import static com.ibm.ets.ita.ce.store.names.RestNames.REST_HELPER;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REST_EXECUTOR;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REST_INTERPRETER;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REST_ANSWERER;
-import static com.ibm.ets.ita.ce.store.names.RestNames.REST_RESET;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REST_STATUS;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REST_DIR_LIST;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REST_DIR_LOAD;
@@ -43,7 +42,6 @@ public class CeStoreRestApiSpecialHudson extends CeStoreRestApi {
 	/*
 	 * Supported requests: /special/hudson/helper /special/hudson/executor
 	 * /special/hudson/interpreter /special/hudson/answerer
-	 * /special/hudson/reset /special/hudson/status
 	 * /special/hudson/directory_list /special/hudson/directory_load
 	 * /special/hudson/directory_get_questions
 	 * /special/hudson/directory_get_answers
@@ -87,11 +85,7 @@ public class CeStoreRestApiSpecialHudson extends CeStoreRestApi {
 				reportUnhandledUrl();
 			}
 		} else if (isGet()) {
-			if (command.equals(REST_RESET)) {
-				// TODO: /reset should probably be implemented as a POST rather
-				// than GET
-				result = processResetRequest(st);
-			} else if (command.equals(REST_STATUS)) {
+			if (command.equals(REST_STATUS)) {
 				result = processStatusRequest(st);
 			} else if (command.equals(REST_DIR_LIST)) {
 				result = processListDirectoryModels(st);
@@ -149,15 +143,6 @@ public class CeStoreRestApiSpecialHudson extends CeStoreRestApi {
 
 		QuestionAnswererHandler qh = new QuestionAnswererHandler(this.wc, pQuestionText, pStartTime);
 		result = qh.processInterpretation();
-
-		return result;
-	}
-
-	private CeStoreJsonObject processResetRequest(long pStartTime) {
-		CeStoreJsonObject result = new CeStoreJsonObject();
-
-		QuestionManagementHandler qh = new QuestionManagementHandler(this.wc, pStartTime);
-		result = qh.handleReset();
 
 		return result;
 	}

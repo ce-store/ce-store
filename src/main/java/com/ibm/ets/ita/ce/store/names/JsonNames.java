@@ -181,8 +181,7 @@ public class JsonNames {
 	public static final String JSON_INST_COUNT = "instance_count";
 	public static final String JSON_STRUCTURED = "structured_response";
 
-	public static final String JSON_ENV_PROPS = "environment_properties";
-	public static final String JSON_GEN_PROPS = "general_properties";
+	public static final String JSON_STOREPROPS = "store_properties";
 
 	public static final String JSON_VALUE = "value";
 	public static final String JSON_RANGE = "range";

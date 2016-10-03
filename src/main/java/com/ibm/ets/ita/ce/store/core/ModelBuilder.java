@@ -6,10 +6,7 @@ package com.ibm.ets.ita.ce.store.core;
  *******************************************************************************/
 
 import static com.ibm.ets.ita.ce.store.names.MiscNames.NO_TS;
-import static com.ibm.ets.ita.ce.store.names.MiscNames.URL_MODELDIR;
-import static com.ibm.ets.ita.ce.store.names.MiscNames.CELOG_FILENAME;
 import static com.ibm.ets.ita.ce.store.names.MiscNames.NL;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_UNDERSCORE;
 import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.appendNewLineToSb;
 import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.appendToSb;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.isQuoteDelimited;
@@ -19,19 +16,16 @@ import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportDebug;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.isReportMicroDebug;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportMicroDebug;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
-import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportException;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportWarning;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Properties;
 import java.util.TreeMap;
-import java.util.logging.Logger;
 
 import com.ibm.ets.ita.ce.store.model.CeAnnotation;
 import com.ibm.ets.ita.ce.store.model.CeClause;
@@ -56,17 +50,12 @@ import com.ibm.ets.ita.ce.store.model.rationale.CeRationalePart;
 import com.ibm.ets.ita.ce.store.model.rationale.CeRationalePremise;
 import com.ibm.ets.ita.ce.store.model.rationale.CeRationaleReasoningStep;
 import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentence;
-import com.ibm.ets.ita.ce.store.persistence.PersistableStore;
 import com.ibm.ets.ita.ce.store.query.QueryExecutionManager;
 import com.ibm.ets.ita.ce.store.uid.UidManager;
 import com.ibm.ets.ita.ce.store.uid.UidManagerDefault;
 
-public class ModelBuilder implements PersistableStore {
+public class ModelBuilder {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
-
-	private static final String CLASS_NAME = ModelBuilder.class.getName();
-	private static final String PACKAGE_NAME = ModelBuilder.class.getPackage().getName();
-	private static final Logger logger = Logger.getLogger(PACKAGE_NAME);
 
 	//String caching levels (0 = No caching at all)
 	private static final int CACHELEVEL_1 = 1;	//Caching of heavily repetitive strings
@@ -97,7 +86,6 @@ public class ModelBuilder implements PersistableStore {
 	private ArrayList<String> tempWarnings = null;
 
 	private UidManager uidMgr = null;
-	private String modelDirectoryUrl = URL_MODELDIR;
 
 	private ModelBuilder(ActionContext pAc, String pCeStoreName) {
 		// private so new instances can only be created via the static method
@@ -111,15 +99,6 @@ public class ModelBuilder implements PersistableStore {
 		return newMb;
 	}
 
-	public String getModelDirectoryUrl() {
-		return this.modelDirectoryUrl;
-	}
-
-	public void setModelDirectoryUrl(String pVal) {
-		this.modelDirectoryUrl = pVal;
-	}
-	
-	@Override
 	public void reset(ActionContext pAc) {
 		// Create empty collections for each of the relevant properties
 		if (pAc.getCeConfig().isCaseSensitive()) {
@@ -167,10 +146,6 @@ public class ModelBuilder implements PersistableStore {
 
 	public long getCreationTime() {
 		return this.creationTime;
-	}
-
-	public String calculateCeLoggingFilename() {
-		return getCeStoreName() + TOKEN_UNDERSCORE + CELOG_FILENAME;
 	}
 
 	public InstanceRepository getInstanceRepository() {
@@ -1439,39 +1414,9 @@ public class ModelBuilder implements PersistableStore {
 	}
 	
 	private void initialiseUidManager(ActionContext pAc) {
-		String METHOD_NAME = "initialiseUidManager";
-		
-		StoreConfig conf = pAc.getCeConfig();
-		String uidClassName = conf.getUidClassName();
-		String uidFn = conf.getUidFilename();			
-		boolean uidPrefixes = conf.isAllowingUidPrefixes();
-		long uidBatchSize = conf.getUidBatchSize();
-		
-		if ((uidClassName != null) && (!uidClassName.isEmpty())) {
-			try {
-				@SuppressWarnings("unchecked")
-				// The user must specify a valid subclass of CeAgent
-				Class<UidManager> uidClass = (Class<UidManager>)Class.forName(uidClassName);
-				try {
-					this.uidMgr = uidClass.newInstance();
-					this.uidMgr.initialiseUidManager(isReportDebug(), isReportMicroDebug(), uidFn, uidPrefixes, uidBatchSize);
-					this.uidMgr.initialiseUids(uidBatchSize);
-				} catch (IllegalAccessException e) {
-					reportException(e, pAc, logger, CLASS_NAME, METHOD_NAME);
-				} catch (InstantiationException e) {
-					reportException(e, pAc, logger, CLASS_NAME, METHOD_NAME);
-				}
-			} catch (ClassNotFoundException e) {
-				reportException(e, pAc, logger, CLASS_NAME, METHOD_NAME);
-			}
-		} else {
-			if (isReportDebug()) {
-				reportDebug("Class name property not specified - resorting to default", pAc);
-			}
-			
-			this.uidMgr = new UidManagerDefault();
-			this.uidMgr.initialiseUidManager(isReportDebug(), isReportMicroDebug(), uidFn, uidPrefixes, uidBatchSize);
-		}
+		this.uidMgr = new UidManagerDefault();
+		this.uidMgr.initialiseUidManager(isReportDebug(), isReportMicroDebug(), "", true, -1);
+		this.uidMgr.initialiseUids(-1);
 
 		handleMessagesFrom(pAc, this.uidMgr);
 	}
@@ -1721,75 +1666,5 @@ public class ModelBuilder implements PersistableStore {
 	public boolean isCeStoreEmpty() {
 		return this.allConcepts.isEmpty();
 	}
-
-	/*
-	 * @see com.ibm.ets.ita.ce.store.persistence.PersistableStore#getName()
-	 */
-	@Override
-	public String getName() {
-		return getCeStoreName();
-	}
-
-	/*
-	 * @see com.ibm.ets.ita.ce.store.persistence.PersistableStore#getLastSentenceResetEventId()
-	 */
-    @Override
-	public int getLastSentenceResetEventId() {
-		int vEventId = this.allValidSentences.getCreateEventId();
-		int iEventId = this.allInvalidSentences.getCreateEventId();
-		return Math.max(vEventId, iEventId);
-    }
-
-	/*
-	 * @see com.ibm.ets.ita.ce.store.persistence.PersistableStore#getLastSentenceAddEventId()
-	 */
-    @Override
-	public int getLastSentenceAddEventId() {
-		int vEventId = this.allValidSentences.getAddEventId();
-		int iEventId = this.allInvalidSentences.getAddEventId();
-		return Math.max(vEventId, iEventId);
-    }
-
-	/*
-	 * @see com.ibm.ets.ita.ce.store.persistence.PersistableStore#getLastSentenceRemoveEventId()
-	 */
-    @Override
-	public int getLastSentenceRemoveEventId() {
-		int vEventId = this.allValidSentences.getRemoveEventId();
-		int iEventId = this.allInvalidSentences.getRemoveEventId();
-		return Math.max(vEventId, iEventId);
-    }
-
-	/*
-	 * @see
-	 * com.ibm.ets.ita.ce.store.persistence.PersistableStore#getSentences(int)
-	 */
-	@Override
-	public List<CeSentence> getSentences(int startId) {
-		ArrayList<CeSentence> result = new ArrayList<CeSentence>();
-		Collections.addAll(result, this.allValidSentences.getSentencesFrom(startId));
-		Collections.addAll(result, this.allInvalidSentences.getSentencesFrom(startId));
-		Collections.sort(result);
-		return result;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.ibm.ets.ita.ce.store.persistence.PersistableStore#loadSentences(java.util.List, com.ibm.ets.ita.ce.store.ActionContext)
-	 */
-	@Override
-    public void loadSentences(List<String> sentences, ActionContext actionContext) {
-		// actionContext autoExecutingRules should be false, and cachedCeLoading
-		// should be true, both will be set up in BuilderSentenceCommand before
-		// calling PersistenceManager.load(), which in turn calls this method.
-		StringBuilder stringBuilder = new StringBuilder();
-		for(String sentence : sentences) {
-			stringBuilder.append(sentence);
-		}
-		String allSentences = stringBuilder.toString();
-		String sourceName = "load store";	// TODO: Anonymise this
-		CeSource source = CeSource.createNewInternalSource(actionContext, sourceName, null);
-		StoreActions storeActions = StoreActions.createUsingDefaultConfig(actionContext);
-		storeActions.saveCeText(allSentences, source); // TODO am I supposed to do something with the return value ?
-    }
 
 }

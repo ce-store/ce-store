@@ -51,9 +51,8 @@ public class ServletStateManager {
 			// Creating the WebActionContext with the default constructor
 			// will create all required resources since they are not
 			// available to be reused.
-			StoreConfigServlet newCc = new StoreConfigServlet();
+			StoreConfig newCc = new StoreConfig();
 			wc = new WebActionContext(newCc, pUserName, wr);
-			newCc.initialiseManually(wc);
 			StoreActions.initialiseEnvironment(wc);
 			pm = new ServletStateManager(wc);
 

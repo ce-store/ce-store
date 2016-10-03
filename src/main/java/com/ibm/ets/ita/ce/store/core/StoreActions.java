@@ -14,8 +14,7 @@ import static com.ibm.ets.ita.ce.store.core.StaticCeRepository.ceMetamodel;
 import static com.ibm.ets.ita.ce.store.names.CeNames.PROP_CLASSNAME;
 import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.bufferedReaderFromUrlWithApplicationTextHeader;
 import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.calculateFullFilenameFrom;
-import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.createFolderOnStartupIfNeeded;
-import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.deleteFile;
+import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.checkForFolderOnStartup;
 import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.readTextFromFile;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.createFullUrlForRelativePath;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.doGarbageCollection;
@@ -70,10 +69,8 @@ public class StoreActions {
 	private static final Logger logger = Logger.getLogger(PACKAGE_NAME);
 
 	private static final int ACTION_RESET = 1;
-	private static final int ACTION_RELOAD = 2;
-	private static final int ACTION_EMPTY = 3;
+	private static final int ACTION_EMPTY = 2;
 
-	private StoreConfig conf = null;
 	private ActionContext ac = null;
 
 	private StoreActions() {
@@ -84,7 +81,6 @@ public class StoreActions {
 		StoreActions newSa = new StoreActions();
 
 		newSa.ac = pAc;
-		newSa.conf = pAc.getCeConfig();
 
 		return newSa;
 	}
@@ -92,7 +88,6 @@ public class StoreActions {
 	public static StoreActions createUsingSpecificConfig(StoreConfig pCc, ActionContext pAc) {
 		StoreActions newSa = new StoreActions();
 
-		newSa.conf = pCc;
 		newSa.ac = pAc;
 
 		return newSa;
@@ -109,15 +104,11 @@ public class StoreActions {
 		if ((rootFolder == null) || (rootFolder.isEmpty())) {
 			reportError("Unable to initialise CE Store as the mandatory 'rootFolder' property has not been specified", pAc);
 		} else {
-			// Create all of the required folders (if not already created, and if authorised)
-			createFolderOnStartupIfNeeded(pAc, rootFolder);
-			createFolderOnStartupIfNeeded(pAc, conf.getLogPath());
-			createFolderOnStartupIfNeeded(pAc, conf.getTempPath());
-			createFolderOnStartupIfNeeded(pAc, conf.getGenPath());
-			createFolderOnStartupIfNeeded(pAc, conf.getPersistPath());
+			// Check for the subfolders
+			checkForFolderOnStartup(pAc, rootFolder);
+			checkForFolderOnStartup(pAc, conf.getGenPath());
 		}
 	}
-
 	
 	public ContainerSentenceLoadResult resetStore(String pStartingUid, boolean pFromCommand) {
 		ContainerSentenceLoadResult result = null;
@@ -132,15 +123,7 @@ public class StoreActions {
 
 		return result;
 	}
-
 	
-	public ContainerSentenceLoadResult reloadStore() {
-		ContainerSentenceLoadResult result = null;
-
-		result = performAndReportAction(ACTION_RELOAD, false);
-
-		return result;
-	}
 	private void renumberExistingSources(CeSource pLastSource) {
 		ArrayList<CeSource> listToRenumber = new ArrayList<CeSource>();
 		
@@ -465,28 +448,9 @@ public class StoreActions {
 		return senStats;
 	}
 
-	//
-	public void updateConfig(String pConfigName, String pConfigVal) {
-		String targetVal = "";
-
-		if (pConfigVal != null) {
-			targetVal = pConfigVal;
-		} else {
-			targetVal = "";
-		}
-
-		if (pConfigName != null) {
-			this.conf.setPropertyByName(this.ac, pConfigName, pConfigVal);
-		} else {
-			reportError("Cannot update config value (" + targetVal	+ ") as no config property name is specified", this.ac);
-		}
-	}
-
-	
 	public ArrayList<CeConcept> listAllConcepts() {
 		return new ArrayList<CeConcept>(this.ac.getModelBuilder().listAllConcepts());
 	}
-
 	
 	public ArrayList<CeConcept> listAllChildConceptsFor(String pConceptName) {
 		ArrayList<CeConcept> childConcepts = null;
@@ -501,7 +465,6 @@ public class StoreActions {
 
 		return childConcepts;
 	}
-
 	
 	public ArrayList<CeConcept> listDirectChildConceptsFor(String pConceptName) {
 		ArrayList<CeConcept> childConcepts = null;
@@ -1083,10 +1046,6 @@ public class StoreActions {
 				senStats = performStoreReset(pFromCommand);
 				resultLabel = "Sentence store reset - ";
 				break;
-			case ACTION_RELOAD:
-				senStats = performStoreReload();
-				resultLabel = "Sentence store reload - ";
-				break;
 			case ACTION_EMPTY:
 				senStats = performEmptyInstances();
 				resultLabel = "Empty instances - ";
@@ -1116,27 +1075,6 @@ public class StoreActions {
 		}
 
 		if (this.ac.getModelBuilder().isCeStoreEmpty()) {
-			if (!this.ac.isCachedCeLoading()) {
-				deleteFile(this.ac, this.ac.getCeConfig().getTempPath() + this.ac.getModelBuilder().calculateCeLoggingFilename());
-				result = conceptualiseMetamodel(); // Load the core meta model concepts
-			} else {
-				//Do not load the meta-model if this is cached CE loading (since the meta-model will be in the cached CE)
-				result = ContainerSentenceLoadResult.createWithZeroValues("performStoreReset");	//TODO: Abstract this
-			}
-		}
-
-		return result;
-	}
-
-	private ContainerSentenceLoadResult performStoreReload() {
-		ContainerSentenceLoadResult result = null;
-
-		this.ac.getModelBuilder().reset(this.ac);
-
-		result = checkForDefaultLoad();
-
-		if (this.ac.getModelBuilder().isCeStoreEmpty()) {
-			deleteFile(this.ac, this.ac.getCeConfig().getTempPath() + this.ac.getModelBuilder().calculateCeLoggingFilename());
 			result = conceptualiseMetamodel(); // Load the core meta model concepts
 		}
 

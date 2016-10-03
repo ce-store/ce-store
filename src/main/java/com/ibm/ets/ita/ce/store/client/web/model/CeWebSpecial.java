@@ -12,8 +12,7 @@ import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_UID_BATCHSIZE;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_INSTANCE_NAME;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_RESULTS;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_PROP_NAME;
-import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_ENV_PROPS;
-import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_GEN_PROPS;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_STOREPROPS;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_VALUE;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_RANGE;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_FREQUENCY;
@@ -433,16 +432,13 @@ public class CeWebSpecial extends CeWebObject {
     }
 
     // Store Config response:
-    // JSON_ENV_PROPS[]
-    // {KEY}
-    // JSON_GEN_PROPS[]
+    // JSON_STOREPROPS[]
     // {KEY}
     public static CeStoreJsonObject generateStoreConfigListFrom(ActionContext pAc) {
         StoreConfig config = pAc.getCeConfig();
         CeStoreJsonObject jObj = new CeStoreJsonObject();
 
-        putObjectValueIn(jObj, JSON_ENV_PROPS, createJsonObjectsFor(config.getAllEnvironmentProperties()));
-        putObjectValueIn(jObj, JSON_GEN_PROPS, createJsonObjectsFor(config.getAllGeneralProperties()));
+        putObjectValueIn(jObj, JSON_STOREPROPS, createJsonObjectsFor(config.getAllProperties()));
 
         return jObj;
     }

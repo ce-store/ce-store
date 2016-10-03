@@ -46,7 +46,7 @@ public class ModelDirectoryHandler extends GenericHandler {
 		StringBuilder stringBuilder = new StringBuilder();
 
 		try{
-		    URL url = new URL(this.ac.getModelBuilder().getModelDirectoryUrl());
+		    URL url = new URL(this.ac.getCeConfig().getModelDirectoryUrl());
 		    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 		    conn.setRequestMethod("GET");
 		    BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -96,7 +96,7 @@ public class ModelDirectoryHandler extends GenericHandler {
 			modelName = MODELNAME_CORE;
 		}
 
-		String questionUrl = pAc.getModelBuilder().getModelDirectoryUrl() + "/" + FOLDER_MODELS + modelName + "/"+ FOLDER_JSON + JSONFILE_QUESTIONS;
+		String questionUrl = pAc.getCeConfig().getModelDirectoryUrl() + "/" + FOLDER_MODELS + modelName + "/"+ FOLDER_JSON + JSONFILE_QUESTIONS;
 
 		return sendHttpGetRequest(pAc, questionUrl, null, false);
 	}
@@ -108,7 +108,7 @@ public class ModelDirectoryHandler extends GenericHandler {
 			modelName = MODELNAME_CORE;
 		}
 
-		String answerUrl = pAc.getModelBuilder().getModelDirectoryUrl() + "/" + FOLDER_MODELS + modelName + "/"+ FOLDER_JSON + JSONFILE_ANSWERS;
+		String answerUrl = pAc.getCeConfig().getModelDirectoryUrl() + "/" + FOLDER_MODELS + modelName + "/"+ FOLDER_JSON + JSONFILE_ANSWERS;
 
 		return sendHttpGetRequest(pAc, answerUrl, null, false);
 	}
@@ -127,9 +127,6 @@ public class ModelDirectoryHandler extends GenericHandler {
 		//The CE store does not need to be created but it does still need to
 		//be added to the action context
 		pAc.setModelBuilderAndCeStoreName(mb);
-
-		//For this application the CE Store is always case-insenstive
-		pAc.getCeConfig().setCaseInsensitive();
 
 		ConvConfig cc = pHm.getConvConfig(pAc);
 
@@ -167,12 +164,12 @@ public class ModelDirectoryHandler extends GenericHandler {
 			
 			//load core
 			if(loadCore && !modelName.equalsIgnoreCase(MODELNAME_CORE)){
-				String coreUrl = pAc.getModelBuilder().getModelDirectoryUrl() + "/" + MODELNAME_CORE;
+				String coreUrl = pAc.getCeConfig().getModelDirectoryUrl() + "/" + MODELNAME_CORE;
 				sa.loadSentencesFromUrl(coreUrl, tgtSrc);
 			}
 			
 			// now load the specific model
-			String tgtUrl = pAc.getModelBuilder().getModelDirectoryUrl() + "/" + modelName;
+			String tgtUrl = pAc.getCeConfig().getModelDirectoryUrl() + "/" + modelName;
 			sa.loadSentencesFromUrl(tgtUrl, tgtSrc);
 
 			reportDebug("Successfully loaded CE from url " + tgtUrl, pAc);

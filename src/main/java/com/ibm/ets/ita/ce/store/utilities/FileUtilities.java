@@ -279,16 +279,12 @@ public abstract class FileUtilities {
 		}
 	}
 
-	public static void createFolderOnStartupIfNeeded(ActionContext pAc, String pFolderName) {
+	public static void checkForFolderOnStartup(ActionContext pAc, String pFolderName) {
 		String tgtFolderName = calculateFullFilenameFrom(pAc, pFolderName);
 
 		File f = new File(tgtFolderName);
 		if (!f.exists()) {
-			if (pAc.getCeConfig().isAutogeneratingFolders()) {
-				createFolder(tgtFolderName);
-			} else {
-				reportDebug("The folder '" + tgtFolderName + "' does not exist and must be created.", pAc);
-			}
+			reportDebug("The folder '" + tgtFolderName + "' does not exist and must be created.", pAc);
 		}
 	}
 

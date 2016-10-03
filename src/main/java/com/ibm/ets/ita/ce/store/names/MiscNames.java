@@ -20,20 +20,13 @@ public class MiscNames {
 	public static final String URL_CONV_INITIALISE = "/ce-store/ce/conversation/cmd/load_conv.cecmd";
 
 	//File related
-	public static final String DEFAULT_ROOT = "/opt/ibm/cestore/var/icnlpe/";
-	public static final String SUB_FOLDER_LOGGING = "logging/";
-	public static final String SUB_FOLDER_TEMP = "temp/";
+	public static final String DEFAULT_ROOT = "/opt/ibm/ce-store/";
 	public static final String SUB_FOLDER_GENERATED = "generated/";
-	public static final String SUB_FOLDER_PERSIST = "persist/";
-	public static final String FILENAME_QUESTIONS = "logged_questions.txt";
-	public static final String CELOG_FILENAME = "all_ce_sentences.ce";
-	public static final String FILENAME_QUERYLOG_CE = "queries_ce.log";
 	public static final String SUFFIX_CE = ".ce";
 	public static final String SUFFIX_DEFAULT = ".default";
 	public static final String SUFFIX_TIMING = ".timing";
 
 	//UID related
-	public static final String DEFAULT_UIDCLASSNAME = "com.ibm.ets.ita.ce.store.uid.UidManagerDefault";
 	public static final String DEFAULT_UIDPREFIX = "";
 	public static final String DEFAULT_UIDPADFORMAT = "%01d";
 	public static final long DEFAULT_UIDSTART = 0;
@@ -108,8 +101,6 @@ public class MiscNames {
 	public static final String JSONFILE_ANSWERS = "answers_core.json";
 
 	//TO BE REMOVED
-	public static final String JNDI_CONTEXT_TOMCAT = "java:/comp/env";
-	public static final String JNDI_CONTEXT_LIBERTY = "cestore";
 	public static final String CESEN_SEPARATOR = "{|}";
 	public static final String LABEL_PREFIX = "{";
 	public static final String LABEL_SUFFIX = "}:";

@@ -7,13 +7,9 @@ package com.ibm.ets.ita.ce.store.parsing.builder;
 
 import static com.ibm.ets.ita.ce.store.names.MiscNames.SENMODE_NORMAL;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_AGENT;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_BUILD;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_CACHED;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_CE;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_DELETE;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_EMPTY;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_FILE;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_FOR;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_FROM;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_ID;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_INSTANCES;
@@ -21,17 +17,11 @@ import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_INTO;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_LOAD;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_NAME;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_NAMED;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_NEXT;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_PREPARE;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_QUERY;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_RELOAD;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_RESET;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_RUN;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_SAVE;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_SCHEMA;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_SENTENCES;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_SET;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_SHOW;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_SOURCE;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_SOURCES;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_STARTING;
@@ -42,11 +32,18 @@ import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_TO;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_UID;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_URL;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_USING;
-import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_VALUE;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_WITH;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.VARNAME_ARR;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.VARNAME_CER;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.VARNAME_MDU;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.VARNAME_CACHECE;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.VARNAME_CASESEN;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.VARNAME_DEBUG;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.VARNAME_DEFCECURRENT;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.VARNAME_DEFCEROOT;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.VARNAME_GENPATH;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.VARNAME_ROOTFOLDER;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.VARNAME_SAVESENS;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_TRUE;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.UID_NEXTAVAIL;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.decodeForCe;
@@ -54,12 +51,10 @@ import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.stripDelimitin
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.isReportMicroDebug;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportMicroDebug;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
-import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportWarning;
 
 import com.ibm.ets.ita.ce.store.core.ActionContext;
 import com.ibm.ets.ita.ce.store.core.StoreActions;
 import com.ibm.ets.ita.ce.store.model.container.ContainerSentenceLoadResult;
-import com.ibm.ets.ita.ce.store.persistence.PersistenceManagerFactory;
 
 public class BuilderSentenceCommand extends BuilderSentence {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
@@ -89,38 +84,6 @@ public class BuilderSentenceCommand extends BuilderSentence {
 	public boolean hasRationale() {
 		//Rationale does not apply to command sentences
 		return false;
-	}
-
-	public boolean isCmdSaveStore() {
-		boolean result = false;
-
-		if (this.rawTokens.size() == 3) {
-			// No need to check first token as it must be 'perform' for this to be a command sentence
-			result = (this.rawTokens.get(1).equals(TOKEN_SAVE)) && (this.rawTokens.get(2).equals(TOKEN_STORE));
-			if (result) {
-				this.isValid = true;
-			}
-		} else {
-			result = false;
-		}
-
-		return result;
-	}
-
-	public boolean isCmdLoadStore() {
-		boolean result = false;
-
-		if (this.rawTokens.size() == 3) {
-			// No need to check first token as it must be 'perform' for this to be a command sentence
-			result = (this.rawTokens.get(1).equals(TOKEN_LOAD)) && (this.rawTokens.get(2).equals(TOKEN_STORE));
-			if (result) {
-				this.isValid = true;
-			}
-		} else {
-			result = false;
-		}
-
-		return result;
 	}
 
 	public boolean isCmdSetValue() {
@@ -177,22 +140,6 @@ public class BuilderSentenceCommand extends BuilderSentence {
 		return result;
 	}
 
-	public boolean isCmdReloadStore() {
-		boolean result = false;
-
-		if (this.rawTokens.size() == 3) {
-			//No need to check first token as it must be 'perform' for this to be a command sentence
-			result = (this.rawTokens.get(1).equals(TOKEN_RELOAD)) && (this.rawTokens.get(2).equals(TOKEN_STORE));
-			if (result) {
-				this.isValid = true;
-			}
-		} else {
-			result = false;
-		}
-
-		return result;
-	}
-
 	public boolean isCmdSwitchStore() {
 		boolean result = false;
 
@@ -203,22 +150,6 @@ public class BuilderSentenceCommand extends BuilderSentence {
 			if (result) {
 				this.isValid = true;
 				this.cmdTargetStore = stripDelimitingQuotesFrom(this.rawTokens.get(4));
-			}
-		} else {
-			result = false;
-		}
-
-		return result;
-	}
-
-	public boolean isCmdBuildSchema() {
-		boolean result = false;
-
-		if (this.rawTokens.size() == 4) {
-			//No need to check first token as it must be 'perform' for this to be a command sentence
-			result = (this.rawTokens.get(1).equals(TOKEN_BUILD)) && (this.rawTokens.get(2).equals(TOKEN_STORE)) && (this.rawTokens.get(3).equals(TOKEN_SCHEMA));
-			if (result) {
-				this.isValid = true;
 			}
 		} else {
 			result = false;
@@ -421,53 +352,6 @@ public class BuilderSentenceCommand extends BuilderSentence {
 		return result;
 	}
 
-	public boolean isCmdShowNextUidValue() {
-		boolean result = false;
-
-		int tokLen = this.rawTokens.size();
-		if (tokLen == 5) {
-			//No need to check first token as it must be 'perform' for this to be a command sentence
-			result = ((this.rawTokens.get(1).equals(TOKEN_SHOW)) && (this.rawTokens.get(2).equals(TOKEN_NEXT)) && (this.rawTokens.get(3).equals(TOKEN_UID)) && (this.rawTokens.get(4).equals(TOKEN_VALUE)));
-		} else {
-			result = false;
-		}
-
-		return result;
-	}
-
-//	public boolean isCmdSetNextUidValue() {
-//		boolean result = false;
-//
-//		int tokLen = this.rawTokens.size();
-//		if (tokLen == 7) {
-//			//No need to check first token as it must be 'perform' for this to be a command sentence
-//			result = ((this.rawTokens.get(1).equals(TOKEN_SET)) && (this.rawTokens.get(2).equals(TOKEN_NEXT)) && (this.rawTokens.get(3).equals(TOKEN_UID)) && (this.rawTokens.get(4).equals(TOKEN_VALUE)) && (this.rawTokens.get(5).equals(TOKEN_TO)));
-//			this.cmdStartingUid = stripDelimitingQuotesFrom(this.rawTokens.get(6));
-//		} else if (tokLen == 8) {
-//			//No need to check first token as it must be 'perform' for this to be a command sentence
-//			result = ((this.rawTokens.get(1).equals(TOKEN_SET)) && (this.rawTokens.get(2).equals(TOKEN_NEXT)) && (this.rawTokens.get(3).equals(TOKEN_UID)) && (this.rawTokens.get(4).equals(TOKEN_VALUE)) && (this.rawTokens.get(5).equals(TOKEN_TO)) && (this.rawTokens.get(6).equals(TOKEN_NEXT)) && (this.rawTokens.get(7).equals(TOKEN_AVAIL)));
-//			this.cmdStartingUid = UID_NEXTAVAIL;
-//		} else {
-//			result = false;
-//		}
-//
-//		return result;
-//	}
-
-	public boolean isCmdPrepareForCachedCeLoad() {
-		boolean result = false;
-
-		int tokLen = this.rawTokens.size();
-		if (tokLen == 6) {
-			//No need to check first token as it must be 'perform' for this to be a command sentence
-			result = ((this.rawTokens.get(1).equals(TOKEN_PREPARE)) && (this.rawTokens.get(2).equals(TOKEN_FOR)) && (this.rawTokens.get(3).equals(TOKEN_CACHED)) && (this.rawTokens.get(4).equals(TOKEN_CE)) && (this.rawTokens.get(5).equals(TOKEN_LOAD)));
-		} else {
-			result = false;
-		}
-
-		return result;
-	}
-
 	public String getCmdTargetUrl() {
 		return this.cmdTargetUrlOrFile;
 	}
@@ -530,8 +414,6 @@ public class BuilderSentenceCommand extends BuilderSentence {
 			pSenStats.updateFrom(sa.resetStore("1", true), true);
 		} else if (isCmdResetStoreWithUidStart()) {
 			pSenStats.updateFrom(sa.resetStore(getCmdStartingUid(), true), true);
-		} else if (isCmdReloadStore()) {
-			pSenStats.updateFrom(sa.reloadStore(), true);
 		} else if (isCmdSwitchStore()) {
 			pAc.switchToStoreNamed(getCmdTargetStore());
 		} else if (isCmdEmptyInstances()) {
@@ -556,32 +438,6 @@ public class BuilderSentenceCommand extends BuilderSentence {
 			String agentInstName = getCmdAgentInstName();
 			String agentConName = getCmdAgentConceptName();
 			pSenStats.updateFrom(sa.runAgent(agentInstName, agentConName), true);
-		} else if (isCmdShowNextUidValue()) {
-			String nextUidValue = sa.showNextUidWithoutIncrementing();
-			reportWarning("Next UID value is '" + nextUidValue + "'", pAc);
-//		} else if (isCmdSetNextUidValue()) {
-//			long nextUidValue = getCmdNextUid();
-//
-//			if (nextUidValue == -1) {
-//				reportWarning("Calculation of next available UID is no longer supported.  Please remove this call", pAc);
-//				nextUidValue = pAc.getModelBuilder().calculateNextAvailableUid();
-//				if (isReportMicroDebug()) {
-//					reportMicroDebug("The next available UID has been calculated as " + nextUidValue, pAc);
-//				}
-//			}
-//			pAc.getModelBuilder().setNextUidValueTo(pAc, nextUidValue);
-//			if (isReportMicroDebug()) {
-//				reportMicroDebug("Next UID value has been set to '" + nextUidValue + "'", pAc);
-//			}
-		} else if (isCmdPrepareForCachedCeLoad()) {
-			pAc.markAsCachedCeLoading();
-			sa.resetStore("1", true);
-		} else if (isCmdSaveStore()) {
-			PersistenceManagerFactory.get().save(pAc);
-		} else if (isCmdLoadStore()) {
-			pAc.markAsAutoExecuteRules(false);
-			pAc.markAsCachedCeLoading();
-			PersistenceManagerFactory.get().load(pAc);
 		} else if (isCmdSetValue()) {
 			setUserSpecifiedValue(pAc);
 		} else {
@@ -608,13 +464,7 @@ public class BuilderSentenceCommand extends BuilderSentence {
 		isCmdDeleteSourceByName();
 		isCmdDeleteSourceById();
 		isCmdResetStore();
-		isCmdReloadStore();
 		isCmdRunAgent();
-		isCmdShowNextUidValue();
-//		isCmdSetNextUidValue();
-		isCmdPrepareForCachedCeLoad();
-		isCmdSaveStore();
-		isCmdLoadStore();
 		isCmdSetValue();
 
 		return this.isValid;
@@ -633,9 +483,41 @@ public class BuilderSentenceCommand extends BuilderSentence {
 				pAc.markAsAutoExecuteRules(false);
 			}
 		} else if (varName.equals(VARNAME_MDU)) {
-			pAc.getModelBuilder().setModelDirectoryUrl(varVal);
+			pAc.getCeConfig().setModelDirectoryUrl(varVal);
 		} else if (varName.equals(VARNAME_CER)) {
 			pAc.setCeRoot(varVal);
+		} else if (varName.equals(VARNAME_DEBUG)) {
+			if (varVal.equals(TOKEN_TRUE)) {
+				pAc.getCeConfig().setDebug(true);
+			} else {
+				pAc.getCeConfig().setDebug(false);
+			}
+		} else if (varName.equals(VARNAME_CACHECE)) {
+			if (varVal.equals(TOKEN_TRUE)) {
+				pAc.getCeConfig().setCacheCeText(true);
+			} else {
+				pAc.getCeConfig().setCacheCeText(false);
+			}
+		} else if (varName.equals(VARNAME_CASESEN)) {
+			if (varVal.equals(TOKEN_TRUE)) {
+				pAc.getCeConfig().setCaseSensitive(true);
+			} else {
+				pAc.getCeConfig().setCaseSensitive(false);
+			}
+		} else if (varName.equals(VARNAME_DEFCEROOT)) {
+			pAc.getCeConfig().setDefaultCeRootUrl(varVal);
+		} else if (varName.equals(VARNAME_DEFCECURRENT)) {
+			pAc.getCeConfig().setDefaultCeRootUrl(varVal);
+		} else if (varName.equals(VARNAME_SAVESENS)) {
+			if (varVal.equals(TOKEN_TRUE)) {
+				pAc.getCeConfig().setSaveCeSentences(true);
+			} else {
+				pAc.getCeConfig().setSaveCeSentences(false);
+			}
+		} else if (varName.equals(VARNAME_ROOTFOLDER)) {
+			pAc.getCeConfig().setRootFolder(varVal);
+		} else if (varName.equals(VARNAME_GENPATH)) {
+			pAc.getCeConfig().setGenPath(varVal);
 		}
 	}
 

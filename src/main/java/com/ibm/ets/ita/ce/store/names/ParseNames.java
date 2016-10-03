@@ -167,6 +167,15 @@ public class ParseNames {
 	public static final String VARNAME_ARR = "autorun rules";
 	public static final String VARNAME_CER = "ce root";
 	public static final String VARNAME_MDU = "model directory url";
+	public static final String VARNAME_DEBUG = "debug";
+	public static final String VARNAME_CACHECE = "cache CE text";
+	public static final String VARNAME_CASESEN = "case sensitive";
+	public static final String VARNAME_DEFCESVR = "default CE server";
+	public static final String VARNAME_SAVESENS = "save sentences";
+	public static final String VARNAME_ROOTFOLDER = "root folder";
+	public static final String VARNAME_GENPATH = "generated path";
+	public static final String VARNAME_DEFCEROOT = "default CE root";
+	public static final String VARNAME_DEFCECURRENT = "default CE current";
 
 	public static final String UID_NEXTAVAIL = "(next available)";
 

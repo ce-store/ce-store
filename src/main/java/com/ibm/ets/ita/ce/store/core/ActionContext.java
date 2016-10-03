@@ -25,7 +25,6 @@ public abstract class ActionContext {
 	private SessionCreations sc = null; // Lazy initialised
 
 	private boolean executingQueryOrRule = false;
-	private boolean cachedCeLoading = false;
 	private boolean validatingOnly = false;
 	private boolean autoExecuteRules = false;
 	private boolean keepSentences = false;
@@ -126,14 +125,6 @@ public abstract class ActionContext {
 
 	public void markAsExecutingQueryOrRule(boolean pVal) {
 		this.executingQueryOrRule = pVal;
-	}
-
-	public boolean isCachedCeLoading() {
-		return this.cachedCeLoading;
-	}
-
-	public void markAsCachedCeLoading() {
-		this.cachedCeLoading = true;
 	}
 
 	public boolean isValidatingOnly() {

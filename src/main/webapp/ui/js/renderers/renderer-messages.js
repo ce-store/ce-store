@@ -144,8 +144,8 @@ function RendererMessages() {
 	}
 
 	function htmlDebugLinks() {
-		var hlDebugOn = gEp.ui.links.setDebug(true, 'on');
-		var hlDebugOff = gEp.ui.links.setDebug(false, 'off');
+		var hlDebugOn = gEp.ui.links.setDebug('true', 'on');
+		var hlDebugOff = gEp.ui.links.setDebug('false', 'off');
 
 		return '<br/><br/>Switch debug ' + hlDebugOn + ' or ' + hlDebugOff + '.';
 	}

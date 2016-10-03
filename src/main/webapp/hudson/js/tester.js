@@ -3,8 +3,8 @@
  * All Rights Reserved
  *******************************************************************************/
 
-var gHudson = new Hudson(true);
-var gTester = new Tester(true);
+var gHudson = new Hudson(false);
+var gTester = new Tester(false);
 
 function Tester(pJsDebug) {
 	var URL_ANSWERS_LIST = [

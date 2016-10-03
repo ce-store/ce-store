@@ -1514,17 +1514,12 @@ function CeStoreApiSpecial(pCe) {
 		//Make the call:
 		//  GET will simply show the stats
 		//  POST will force a garbage collection and then show the stats
-//		ce.api.sendAjaxGet(targetUrl, pStdVals, pCallbackFunction, pUserParms);
 		ce.api.sendAjaxPost(targetUrl, pStdVals, pCallbackFunction, null, pUserParms);
 	};	
 
 	this.updateConfigValue = function(pStdVals, pCallbackFunction, pUserParms, pKeyName, pValue) {
-		var httpParms = ce.api.defaultHttpParms(pStdVals);
-		httpParms.value = pValue;
-		
-		var restPart = REST_SPECIAL + '/' + REST_CONFIG + '/' + pKeyName;
-		var targetUrl = ce.api.constructUrlFrom(pStdVals.address, pStdVals.store, restPart, httpParms);
-		ce.api.sendAjaxPut(targetUrl, pStdVals, pCallbackFunction, pUserParms);
+		var ceText = 'perform set \'' + pKeyName + '\' to \'' + gCe.utils.encodeForCe(pValue) + '\'.';
+		ce.api.sentences.add(pStdVals, pCallbackFunction, ceText, false, false, pUserParms);
 	};	
 
 	this.listInstancesForMultipleConcepts = function(pStdVals, pCallbackFunction, pConNames, pSinceTs, pUserParms) {

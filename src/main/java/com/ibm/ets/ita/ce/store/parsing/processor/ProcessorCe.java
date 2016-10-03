@@ -28,7 +28,6 @@ import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_AND;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_CLOSESQBR;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_DOT;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_OPENSQBR;
-import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.appendToFileWithNewlines;
 import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.bufferedReaderFromString;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.formattedDuration;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.reportExecutionTiming;
@@ -80,7 +79,7 @@ public class ProcessorCe {
 	private static final String PACKAGE_NAME = ProcessorCe.class.getPackage().getName();
 	private static final Logger logger = Logger.getLogger(PACKAGE_NAME);
 
-	private String auditFilename = null;
+//	private String auditFilename = null;
 	protected ActionContext ac = null;
 	private ContainerSentenceLoadResult senStats = null;
 
@@ -157,7 +156,7 @@ public class ProcessorCe {
 			}
 
 			tokenizeSentence(this.ac, pSentence, this.lastSentence, this.suppressMessages, this.senStats);
-			logFinalSentence(pSentence.getConvertedSentence());
+//			logFinalSentence(pSentence.getConvertedSentence());
 
 			if (!isRationaleProcessing()) {
 				if (pSentence.isValid()) {
@@ -656,29 +655,29 @@ public class ProcessorCe {
 		return thisSource;
 	}
 
-	private void logFinalSentence(CeSentence pSentence) {
-		if (this.ac.getCeConfig().isLoggingCeToFiles()) {
-			//Rationale processing is handling the clauses in the conclusion so these sentences should not be saved
-			if (!this.isRationaleProcessing()) {
-				String prefixText = "";
+//	private void logFinalSentence(CeSentence pSentence) {
+//		if (this.ac.getCeConfig().isLoggingCeToFiles()) {
+//			//Rationale processing is handling the clauses in the conclusion so these sentences should not be saved
+//			if (!this.isRationaleProcessing()) {
+//				String prefixText = "";
+//
+//				if (pSentence.isCommandSentence()) {
+//					//Command sentences must be commented out otherwise a reload will attempt to run those commands again
+//					prefixText = "-- ";
+//				}
+//
+//				appendToFileWithNewlines(this.ac, getAuditFilename(), prefixText + pSentence.getActualCeTextWithTokenSubstitutions());
+//			}
+//		}
+//	}
 
-				if (pSentence.isCommandSentence()) {
-					//Command sentences must be commented out otherwise a reload will attempt to run those commands again
-					prefixText = "-- ";
-				}
-
-				appendToFileWithNewlines(this.ac, getAuditFilename(), prefixText + pSentence.getActualCeTextWithTokenSubstitutions());
-			}
-		}
-	}
-
-	private String getAuditFilename() {
-		if (this.auditFilename == null) {
-			this.auditFilename = this.ac.getCeConfig().getTempPath() + this.ac.getModelBuilder().calculateCeLoggingFilename();
-		}
-
-		return this.auditFilename;
-	}
+//	private String getAuditFilename() {
+//		if (this.auditFilename == null) {
+//			this.auditFilename = this.ac.getCeConfig().getTempPath() + this.ac.getModelBuilder().calculateCeLoggingFilename();
+//		}
+//
+//		return this.auditFilename;
+//	}
 
 	public boolean isSuppressingMessages() {
 		return this.suppressMessages;
@@ -696,11 +695,7 @@ public class ProcessorCe {
 		linkSourceToProperties(pSource, sb);
 
 		giveParentsToFloatingConcepts();
-
-		//Only generate the meta-model sentences if not in cached CE loading mode
-		if (!this.ac.isCachedCeLoading()) {
-			generateMetamodelSentencesFor(pSource, sb);
-		}
+		generateMetamodelSentencesFor(pSource, sb);
 
 		//Send any notifications (by executing triggers)
 		sendNotifications(pSource);
