@@ -14,7 +14,6 @@ import com.ibm.ets.ita.ce.store.client.web.ServletStateManager;
 import com.ibm.ets.ita.ce.store.core.ActionContext;
 import com.ibm.ets.ita.ce.store.core.ModelBuilder;
 import com.ibm.ets.ita.ce.store.core.StoreActions;
-import com.ibm.ets.ita.ce.store.hudson.helper.HudsonManager;
 import com.ibm.ets.ita.ce.store.hudson.model.ConvConfig;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
 import com.ibm.ets.ita.ce.store.model.CeSource;
@@ -62,17 +61,9 @@ public abstract class GenericHandler {
 		ContainerSentenceLoadResult result = sa.saveCeText(pCeText, null);
 
 		//Clear the various caches
-		clearCaches(pAc);
+		ServletStateManager.getHudsonManager(pAc).clearCaches(pAc);
 
 		return result;
-	}
-
-	public static void clearCaches(ActionContext pAc) {
-		HudsonManager hm = ServletStateManager.getHudsonManager(pAc);
-
-		hm.clearInverseLists(pAc);
-		hm.clearWordCheckerCache(pAc);
-		hm.clearIndexedEntityAccessor(pAc);
 	}
 
 }

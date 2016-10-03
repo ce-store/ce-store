@@ -23,7 +23,6 @@ import java.util.ArrayList;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.ibm.ets.ita.ce.store.client.web.ServletStateManager;
 import com.ibm.ets.ita.ce.store.client.web.WebActionContext;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
 import com.ibm.ets.ita.ce.store.hudson.handler.ModelDirectoryHandler;
@@ -124,8 +123,6 @@ public class CeStoreRestApiSpecialHudson extends CeStoreRestApi {
 
 	private CeStoreJsonObject processExecutorRequest(String pQuestionText, boolean pRetInt, boolean pRetInsts, long pStartTime) {
 		CeStoreJsonObject result = new CeStoreJsonObject();
-
-		ServletStateManager.getHudsonManager(this.wc).logQuestionText(this.wc, pQuestionText);
 
 		QuestionExecutionHandler qe = new QuestionExecutionHandler(this.wc, pQuestionText, pRetInt, pRetInsts, pStartTime);
 		result = qe.processQuestion();

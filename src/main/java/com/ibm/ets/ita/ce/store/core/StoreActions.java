@@ -41,6 +41,7 @@ import java.util.TreeMap;
 import java.util.logging.Logger;
 
 import com.ibm.ets.ita.ce.store.agents.CeAgent;
+import com.ibm.ets.ita.ce.store.client.web.ServletStateManager;
 import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.model.CeConceptualModel;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
@@ -1069,6 +1070,7 @@ public class StoreActions {
 		ContainerSentenceLoadResult result = null;
 
 		this.ac.getModelBuilder().reset(this.ac);
+		ServletStateManager.getHudsonManager(this.ac).clearCaches(this.ac);
 
 		if (!pFromCommand) {
 			result = checkForDefaultLoad();
