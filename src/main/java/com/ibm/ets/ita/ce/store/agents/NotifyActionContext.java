@@ -12,7 +12,7 @@ public class NotifyActionContext extends ActionContext {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	public NotifyActionContext(ActionContext pAc, String pUserName) {
-		super(pAc.getCeConfig(), pUserName, pAc.getActionResponse());
+		super(pUserName, pAc.getActionResponse());
 
 		setModelBuilderAndCeStoreName(pAc.getModelBuilder());
 		markAsAutoExecuteRules(pAc.isAutoExecutingRules());

@@ -9,13 +9,12 @@ package com.ibm.ets.ita.ce.store.client.web;
 
 import com.ibm.ets.ita.ce.store.core.ActionContext;
 import com.ibm.ets.ita.ce.store.core.ModelBuilder;
-import com.ibm.ets.ita.ce.store.core.StoreConfig;
 
 public class WebActionContext extends ActionContext {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
-	protected WebActionContext(StoreConfig pCc, String pUserName, WebActionResponse pAr) {
-		super(pCc, pUserName, pAr);
+	protected WebActionContext(String pUserName, WebActionResponse pAr) {
+		super(pUserName, pAr);
 	}
 
 	public WebActionResponse getWebActionResponse() {

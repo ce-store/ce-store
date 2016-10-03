@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.TreeMap;
 
+import com.ibm.ets.ita.ce.store.client.web.ServletStateManager;
 import com.ibm.ets.ita.ce.store.model.CeAnnotation;
 import com.ibm.ets.ita.ce.store.model.CeClause;
 import com.ibm.ets.ita.ce.store.model.CeConcatenatedValue;
@@ -57,14 +58,18 @@ import com.ibm.ets.ita.ce.store.uid.UidManagerDefault;
 public class ModelBuilder {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
-	//String caching levels (0 = No caching at all)
-	private static final int CACHELEVEL_1 = 1;	//Caching of heavily repetitive strings
-	private static final int CACHELEVEL_2 = 2;	//Caching of level 2 plus CE sentence text
-	private static final int CACHELEVEL_3 = 3;	//Caching of all strings
+	// String caching levels (0 = No caching at all)
+	private static final int CACHELEVEL_1 = 1; // Caching of heavily repetitive
+												// strings
+	private static final int CACHELEVEL_2 = 2; // Caching of level 2 plus CE
+												// sentence text
+	private static final int CACHELEVEL_3 = 3; // Caching of all strings
 	private int cacheLevel = CACHELEVEL_1;
 
 	private String ceStoreName = null;
 	private long creationTime = NO_TS; // time of initial creation
+
+	private StoreConfig cc = null;
 
 	private TreeMap<String, CeConcept> allConcepts = null;
 	private HashMap<String, CeSource> allSources = null;
@@ -77,12 +82,12 @@ public class ModelBuilder {
 	private LinkedHashMap<String, CeQuery> allQueries = null;
 	private CeRationaleReasoningStep[] allReasoningSteps = new CeRationaleReasoningStep[0];
 	private HashMap<String, String> allValues = new HashMap<String, String>();
-	
+
 	private HashSet<String> cachedConceptFragmentNames = new HashSet<String>();
 	private HashSet<String> cachedPropertyFragmentNames = new HashSet<String>();
 	private HashSet<String> cachedInstanceFragmentNames = new HashSet<String>();
-	
-	//TODO: Need to remove or rename this
+
+	// TODO: Need to remove or rename this
 	private ArrayList<String> tempWarnings = null;
 
 	private UidManager uidMgr = null;
@@ -101,7 +106,7 @@ public class ModelBuilder {
 
 	public void reset(ActionContext pAc) {
 		// Create empty collections for each of the relevant properties
-		if (pAc.getCeConfig().isCaseSensitive()) {
+		if (getCeConfig(pAc).isCaseSensitive()) {
 			this.allConcepts = new TreeMap<String, CeConcept>();
 		} else {
 			this.allConcepts = new TreeMap<String, CeConcept>(String.CASE_INSENSITIVE_ORDER);
@@ -125,7 +130,7 @@ public class ModelBuilder {
 		this.cachedConceptFragmentNames = new HashSet<String>();
 		this.cachedPropertyFragmentNames = new HashSet<String>();
 		this.cachedInstanceFragmentNames = new HashSet<String>();
-		
+
 		// Reset all of the counters that are used when allocating objects
 		CeRationalePart.resetCounter();
 		CeAnnotation.resetCounter();
@@ -148,10 +153,23 @@ public class ModelBuilder {
 		return this.creationTime;
 	}
 
+	public StoreConfig getCeConfig(ActionContext pAc) {
+		if (this.cc == null) {
+			this.cc = new StoreConfig();
+
+			// The action context has been created already and may need to have
+			// the default CE server updated
+			this.cc.useDefaultCeServerIfNeeded(ServletStateManager.getDefaultRootUrl(),
+					ServletStateManager.getDefaultCurrentUrl(), pAc);
+		}
+
+		return this.cc;
+	}
+
 	public InstanceRepository getInstanceRepository() {
 		return this.instanceRepository;
 	}
-	
+
 	protected void resetInstanceRepository(ActionContext pAc) {
 		this.instanceRepository.removeAllNonMetamodelInstances(pAc);
 	}
@@ -159,7 +177,7 @@ public class ModelBuilder {
 	public ArrayList<CeInstance> retrieveAllInstancesForConcept(CeConcept pConcept) {
 		return getInstanceRepository().getAllInstancesForConcept(pConcept);
 	}
-	
+
 	public ArrayList<CeInstance> retrieveInstancesForConceptCreatedSince(CeConcept pConcept, long pSinceTs) {
 		return getInstanceRepository().getAllInstancesForConceptCreatedSince(pConcept, pSinceTs);
 	}
@@ -167,75 +185,75 @@ public class ModelBuilder {
 	public ArrayList<CeInstance> retrieveAllExactInstancesForConcept(CeConcept pConcept) {
 		return getAllExactInstancesForConcept(pConcept);
 	}
-	
+
 	public ArrayList<CeInstance> retrieveAllInstances() {
 		ArrayList<CeInstance> result = new ArrayList<CeInstance>();
-		
+
 		for (CeConcept thisConcept : listAllConcepts()) {
 			result.addAll(retrieveAllInstancesForConcept(thisConcept));
 		}
-		
+
 		return result;
 	}
-	
+
 	private ArrayList<CeInstance> getAllExactInstancesForConcept(CeConcept pConcept) {
 		return getInstanceRepository().getAllExactInstancesForConcept(pConcept);
 	}
-	
+
 	public ArrayList<CeInstance> getAllInstancesForConceptNamed(ActionContext pAc, String pConceptName) {
 		CeConcept tgtConcept = getConceptNamed(pAc, pConceptName);
 		ArrayList<CeInstance> result = new ArrayList<CeInstance>();
-		
+
 		if (tgtConcept != null) {
 			result = getInstanceRepository().getAllInstancesForConcept(tgtConcept);
 		} else {
 			reportError("Unable to locate concept named '" + pConceptName + "'", pAc);
 		}
-		
+
 		return result;
 	}
 
 	public CeInstance getInstanceNamed(ActionContext pAc, String pInstanceName) {
 		InstanceRepository ir = getInstanceRepository();
 		CeInstance result = null;
-		
+
 		if (ir != null) {
 			result = ir.getInstanceNamed(pAc, pInstanceName);
 		}
-		
+
 		return result;
 	}
-	
+
 	public CeInstance getOrCreateInstanceNamed(ActionContext pAc, String pInstanceName) {
 		CeInstance result = getInstanceNamed(pAc, pInstanceName);
-		
+
 		if (result == null) {
-			//Existing instance not found, so create a new one and save it
+			// Existing instance not found, so create a new one and save it
 			result = CeInstance.createInstanceNamed(pAc, pInstanceName);
 			saveInstance(pAc, result);
 		}
-		
+
 		return result;
 	}
 
 	public long getTotalInstanceCount() {
 		long result = -1;
-		
+
 		result = getInstanceRepository().getTotalInstanceCount();
-		
+
 		return result;
 	}
-	
+
 	public int getInstanceCountForConcept(CeConcept pConcept) {
 		return getInstanceRepository().getInstanceCountForConcept(pConcept);
 	}
 
 	public void saveInstance(ActionContext pAc, CeInstance pInstance) {
-		//Clear the instance fragment names cache
+		// Clear the instance fragment names cache
 		this.cachedInstanceFragmentNames = new HashSet<String>();
 
 		InstanceRepository ir = getInstanceRepository();
-		
+
 		if (ir != null) {
 			ir.saveInstance(pAc, pInstance);
 		} else {
@@ -244,11 +262,11 @@ public class ModelBuilder {
 	}
 
 	public void removeInstance(ActionContext pAc, CeInstance pInstance) {
-		//Clear the instance fragment names cache
+		// Clear the instance fragment names cache
 		this.cachedInstanceFragmentNames = new HashSet<String>();
 
 		InstanceRepository ir = getInstanceRepository();
-		
+
 		if (ir != null) {
 			ir.removeInstance(pInstance);
 		} else {
@@ -259,14 +277,14 @@ public class ModelBuilder {
 	public Collection<CeConcept> listAllConcepts() {
 		return this.allConcepts.values();
 	}
-	
+
 	public void saveConcept(CeConcept pConcept) {
-		//Clear the concept fragment cache
+		// Clear the concept fragment cache
 		this.cachedConceptFragmentNames = new HashSet<String>();
 
 		this.allConcepts.put(pConcept.identityKey(), pConcept);
 	}
-	
+
 	private void clearSources() {
 		this.allSources = new LinkedHashMap<String, CeSource>();
 	}
@@ -284,10 +302,10 @@ public class ModelBuilder {
 			saveInvalidSentence(pAc, pSentence);
 		}
 	}
-	
+
 	private void saveValidSentence(ActionContext pAc, CeSentence pSentence) {
 		if (pSentence != null) {
-			if (pAc.getCeConfig().isSavingCeSentences()) {
+			if (getCeConfig(pAc).isSavingCeSentences()) {
 				addValidSentence(pSentence);
 			}
 		}
@@ -295,7 +313,7 @@ public class ModelBuilder {
 
 	private void saveInvalidSentence(ActionContext pAc, CeSentence pSentence) {
 		if (pSentence != null) {
-			if (pAc.getCeConfig().isSavingCeSentences()) {
+			if (getCeConfig(pAc).isSavingCeSentences()) {
 				addInvalidSentence(pSentence);
 			}
 		}
@@ -309,12 +327,12 @@ public class ModelBuilder {
 	private void updateSentenceListsFrom(ActionContext pAc) {
 		SessionCreations sc = pAc.getSessionCreations();
 
-		if (pAc.getCeConfig().isSavingCeSentences()) {
+		if (getCeConfig(pAc).isSavingCeSentences()) {
 			addValidSentences(sc.getValidSentencesCreated());
 			addInvalidSentences(sc.getInvalidSentencesCreated());
 		}
 
-		//Save the inferred sentences against the rule that inferred them
+		// Save the inferred sentences against the rule that inferred them
 		if (sc.getValidSentencesCreated() != null) {
 			for (CeSentence thisSen : sc.getValidSentencesCreated()) {
 				String ruleName = thisSen.getRationaleRuleName();
@@ -326,16 +344,20 @@ public class ModelBuilder {
 						tgtRule.addInferredSentence(thisSen);
 					} else {
 						if (CeRule.isTemporaryRuleName(ruleName)) {
-							//This is expected behaviour.  Temporary rules are not saved
+							// This is expected behaviour. Temporary rules are
+							// not saved
 							reportDebug("Not saving sentences to temporary rule named '" + ruleName + "'", pAc);
 						} else {
-							//This is a real rule name, so this is an error that should be reported
-							reportDebug("Unable to find rule named '" + ruleName + "' when saving inferred sentences", pAc);
+							// This is a real rule name, so this is an error
+							// that should be reported
+							reportDebug("Unable to find rule named '" + ruleName + "' when saving inferred sentences",
+									pAc);
 						}
 					}
 				} else {
-					//TODO: Should be able to detect inferred sentences that are missing
-					//the rule name and output an error here
+					// TODO: Should be able to detect inferred sentences that
+					// are missing
+					// the rule name and output an error here
 				}
 			}
 		}
@@ -345,8 +367,9 @@ public class ModelBuilder {
 
 	private static synchronized void updateInstanceListFrom(ActionContext pAc) {
 		SessionCreations sc = pAc.getSessionCreations();
-		
-		//Update the concept instance lists for all new instances in this request
+
+		// Update the concept instance lists for all new instances in this
+		// request
 		pAc.getModelBuilder().getInstanceRepository().updateConceptInstanceListsFor(sc.getNewInstances());
 		sc.clearSessionInstances();
 	}
@@ -354,7 +377,7 @@ public class ModelBuilder {
 	public HashMap<String, CeSource> getAllSources() {
 		return this.allSources;
 	}
-	
+
 	public HashSet<CeProperty> getAllProperties() {
 		return this.allProperties;
 	}
@@ -362,21 +385,21 @@ public class ModelBuilder {
 	public HashMap<String, CeConceptualModel> getAllConceptualModels() {
 		return this.allConceptualModels;
 	}
-	
+
 	public ArrayList<CeConceptualModel> listAllConceptualModels() {
 		ArrayList<CeConceptualModel> result = new ArrayList<CeConceptualModel>();
-		
+
 		for (CeConceptualModel thisCm : this.allConceptualModels.values()) {
 			result.add(thisCm);
 		}
-		
+
 		return result;
 	}
 
 	public CeConceptualModel getConceptualModel(String pCmName) {
 		return this.allConceptualModels.get(pCmName);
 	}
-	
+
 	public void saveConceptualModel(CeConceptualModel pCm) {
 		if (pCm != null) {
 			this.allConceptualModels.put(pCm.getModelName(), pCm);
@@ -388,14 +411,14 @@ public class ModelBuilder {
 	}
 
 	public void addProperty(CeProperty pProp) {
-		//Clear the property fragment cache
+		// Clear the property fragment cache
 		this.cachedPropertyFragmentNames = new HashSet<String>();
 
 		this.allProperties.add(pProp);
 	}
 
 	public void removeProperty(CeProperty pProp) {
-		//Clear the property fragment cache
+		// Clear the property fragment cache
 		this.cachedPropertyFragmentNames = new HashSet<String>();
 
 		this.allProperties.remove(pProp);
@@ -404,14 +427,13 @@ public class ModelBuilder {
 	public CeSource getSourceById(String pId) {
 		CeSource result = null;
 
-		break_position:
-		for (CeSource thisSource : this.allSources.values()) {
+		break_position: for (CeSource thisSource : this.allSources.values()) {
 			if (thisSource.getId().equals(pId)) {
 				result = thisSource;
 				break break_position;
 			}
 		}
-		
+
 		return result;
 	}
 
@@ -455,14 +477,14 @@ public class ModelBuilder {
 
 		for (CeSource thisSource : this.allSources.values()) {
 			String thisAiName = thisSource.getAgentInstanceName();
-			
+
 			if (thisAiName != null) {
 				if (thisAiName.equals(pAgentInstName)) {
 					result.add(thisSource);
 				}
 			}
 		}
-		
+
 		return result;
 	}
 
@@ -520,14 +542,14 @@ public class ModelBuilder {
 		result.addAll(this.allInvalidSentences.getSentencesAsList());
 		return result;
 	}
-	
+
 	public ArrayList<CeSentence> listAllSentencesInSourcesNamed(String pSrcName) {
 		ArrayList<CeSentence> result = new ArrayList<CeSentence>();
-		
+
 		for (CeSource thisSrc : getSourcesByDetail(pSrcName)) {
 			result.addAll(thisSrc.listAllSentences());
 		}
-		
+
 		return result;
 	}
 
@@ -549,13 +571,13 @@ public class ModelBuilder {
 				return thisProp;
 			}
 		}
-		
+
 		return null;
 	}
 
 	public ArrayList<CeProperty> listAllPropertiesReferringTo(CeConcept pConcept) {
 		ArrayList<CeProperty> result = new ArrayList<CeProperty>();
-		
+
 		for (CeProperty thisProp : this.allProperties) {
 			CeConcept thisRange = thisProp.getRangeConcept();
 			if (thisRange != null) {
@@ -564,14 +586,14 @@ public class ModelBuilder {
 				}
 			}
 		}
-		
+
 		return result;
 	}
 
 	public boolean isThereAConceptNameStarting(ActionContext pAc, String pName) {
 		String tgtName = null;
 
-		if (pAc.getCeConfig().isCaseSensitive()) {
+		if (getCeConfig(pAc).isCaseSensitive()) {
 			tgtName = pName;
 		} else {
 			tgtName = pName.toLowerCase();
@@ -583,7 +605,7 @@ public class ModelBuilder {
 			for (CeConcept thisConcept : this.allConcepts.values()) {
 				String conName = null;
 
-				if (pAc.getCeConfig().isCaseSensitive()) {
+				if (getCeConfig(pAc).isCaseSensitive()) {
 					conName = thisConcept.getConceptName();
 				} else {
 					conName = thisConcept.getConceptName().toLowerCase();
@@ -601,13 +623,13 @@ public class ModelBuilder {
 
 	public boolean isThereAnInstanceNameStarting(ActionContext pAc, String pName) {
 		boolean result = this.cachedInstanceFragmentNames.contains(pName);
-		
+
 		if (!result) {
 			for (CeInstance thisInstance : listAllInstances()) {
 				String instName = null;
 				String tgtName = null;
 
-				if (pAc.getCeConfig().isCaseSensitive()) {
+				if (getCeConfig(pAc).isCaseSensitive()) {
 					instName = thisInstance.getInstanceName();
 					tgtName = pName;
 				} else {
@@ -621,13 +643,13 @@ public class ModelBuilder {
 				}
 			}
 		}
-		
+
 		return result;
 	}
 
 	public boolean isThereAPropertyNameStarting(String pName) {
 		boolean result = this.cachedPropertyFragmentNames.contains(pName);
-		
+
 		if (!result) {
 			for (CeProperty thisProperty : this.allProperties) {
 				if (thisProperty.getPropertyName().startsWith(pName)) {
@@ -636,14 +658,14 @@ public class ModelBuilder {
 				}
 			}
 		}
-		
+
 		return result;
 	}
 
 	public boolean isThereAConceptNameStartingButNotExactly(ActionContext pAc, String pName) {
 		return (getConceptNamed(pAc, pName) == null) && isThereAConceptNameStarting(pAc, pName);
 	}
-	
+
 	public boolean isThereADefinedPropertyNameStartingButNotExactly(String pName) {
 		for (CeProperty thisProp : getAllProperties()) {
 			if (!thisProp.isInferredProperty()) {
@@ -655,7 +677,7 @@ public class ModelBuilder {
 				}
 			}
 		}
-		
+
 		return false;
 	}
 
@@ -665,13 +687,13 @@ public class ModelBuilder {
 
 	public ArrayList<CeProperty> getPropertiesNamed(String pPropName) {
 		ArrayList<CeProperty> result = new ArrayList<CeProperty>();
-		
+
 		for (CeProperty thisProp : this.allProperties) {
 			if (thisProp.getPropertyName().equals(pPropName)) {
 				result.add(thisProp);
 			}
 		}
-		
+
 		return result;
 	}
 
@@ -679,12 +701,12 @@ public class ModelBuilder {
 		if (this.allRules == null) {
 			this.allRules = new LinkedHashMap<String, CeRule>();
 		}
-		
+
 		return this.allRules;
 	}
 
 	public CeRule getRuleNamed(String pRuleName) {
-		//Lazy initialisation
+		// Lazy initialisation
 		if ((this.allRules == null) || (this.allRules.isEmpty())) {
 			getAllRules();
 		}
@@ -707,43 +729,43 @@ public class ModelBuilder {
 			this.allRules = new LinkedHashMap<String, CeRule>();
 		}
 
-		//Now the new rule can be added
+		// Now the new rule can be added
 		this.allRules.put(pRule.getRuleName(), pRule);
 	}
-	
+
 	public LinkedHashMap<String, CeQuery> getAllQueries() {
 		if (this.allQueries == null) {
 			this.allQueries = new LinkedHashMap<String, CeQuery>();
 		}
-		
+
 		return this.allQueries;
 	}
 
-	public CeQuery getQueryNamed(String pQueryName) {		
-		//Lazy initialisation
+	public CeQuery getQueryNamed(String pQueryName) {
+		// Lazy initialisation
 		if ((this.allQueries == null) || (this.allQueries.isEmpty())) {
 			getAllQueries();
 		}
-		
+
 		CeQuery result = null;
-		
+
 		for (CeQuery thisQuery : this.allQueries.values()) {
 			String thisQueryName = thisQuery.getQueryName();
-			
+
 			if ((thisQueryName != null) && (thisQueryName.equals(pQueryName))) {
 				result = thisQuery;
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	public void addQuery(CeQuery pQuery) {
 		if (this.allQueries == null) {
 			this.allQueries = new LinkedHashMap<String, CeQuery>();
 		}
-		
-		//Now the new query can be added
+
+		// Now the new query can be added
 		this.allQueries.put(pQuery.getQueryName(), pQuery);
 	}
 
@@ -756,7 +778,7 @@ public class ModelBuilder {
 
 		return ratList;
 	}
-	
+
 	public void addReasoningStep(CeRationaleReasoningStep pRs) {
 		int currLen = 0;
 
@@ -765,18 +787,18 @@ public class ModelBuilder {
 		System.arraycopy(this.allReasoningSteps, 0, newArray, 0, currLen);
 		this.allReasoningSteps = newArray;
 
-		this.allReasoningSteps[currLen] = pRs;			
+		this.allReasoningSteps[currLen] = pRs;
 	}
 
 	public ArrayList<CeRationaleReasoningStep> getReasoningStepsForRule(String pRuleName) {
 		ArrayList<CeRationaleReasoningStep> result = new ArrayList<CeRationaleReasoningStep>();
-		
+
 		for (CeRationaleReasoningStep thisRs : this.allReasoningSteps) {
 			if (thisRs.getRuleName().equals(pRuleName)) {
 				result.add(thisRs);
 			}
 		}
-		
+
 		return result;
 	}
 
@@ -788,7 +810,7 @@ public class ModelBuilder {
 				result.add(thisRs);
 			}
 		}
-		
+
 		return result;
 	}
 
@@ -796,7 +818,7 @@ public class ModelBuilder {
 		ArrayList<CeRationaleReasoningStep> result = new ArrayList<CeRationaleReasoningStep>();
 
 		for (CeRationaleReasoningStep thisRs : this.allReasoningSteps) {
-			if (pCheckPremise == false){
+			if (pCheckPremise == false) {
 				for (CeRationaleConclusion thisConc : thisRs.getConclusions()) {
 					if (thisConc.getConceptName().equals(pConName)) {
 						result.add(thisRs);
@@ -810,15 +832,15 @@ public class ModelBuilder {
 				}
 			}
 		}
-		
+
 		return result;
 	}
 
 	public ArrayList<CeRationaleReasoningStep> getReasoningStepsForProperty(String pPropName, boolean pCheckPremise) {
 		ArrayList<CeRationaleReasoningStep> result = new ArrayList<CeRationaleReasoningStep>();
-		
+
 		for (CeRationaleReasoningStep thisRs : this.allReasoningSteps) {
-			if (pCheckPremise == false){
+			if (pCheckPremise == false) {
 				for (CeRationaleConclusion thisConc : thisRs.getConclusions()) {
 					if ((thisConc.getPropertyName().equals(pPropName))) {
 						result.add(thisRs);
@@ -832,7 +854,7 @@ public class ModelBuilder {
 				}
 			}
 		}
-		
+
 		return result;
 	}
 
@@ -854,29 +876,33 @@ public class ModelBuilder {
 				}
 			}
 		}
-		
+
 		return result;
 	}
 
-	public ArrayList<CeRationaleReasoningStep> getReasoningStepsForPropertyValue(String pInstName, String pPropName, String pValue, boolean pCheckPremise) {
+	public ArrayList<CeRationaleReasoningStep> getReasoningStepsForPropertyValue(String pInstName, String pPropName,
+			String pValue, boolean pCheckPremise) {
 		ArrayList<CeRationaleReasoningStep> result = new ArrayList<CeRationaleReasoningStep>();
-		
+
 		for (CeRationaleReasoningStep thisRs : this.allReasoningSteps) {
-			if (pCheckPremise == false){
+			if (pCheckPremise == false) {
 				for (CeRationaleConclusion thisConc : thisRs.getConclusions()) {
-					if ((thisConc.getInstanceName().equals(pInstName)) && (thisConc.getPropertyName().equals(pPropName)) && (thisConc.getValue().equals(pValue))) {
+					if ((thisConc.getInstanceName().equals(pInstName)) && (thisConc.getPropertyName().equals(pPropName))
+							&& (thisConc.getValue().equals(pValue))) {
 						result.add(thisRs);
 					}
 				}
 			} else {
 				for (CeRationalePremise thisPremise : thisRs.getPremises()) {
-					if ((thisPremise.getInstanceName().equals(pInstName)) && (thisPremise.getPropertyName().equals(pPropName)) && (thisPremise.getValue().equals(pValue))) {
+					if ((thisPremise.getInstanceName().equals(pInstName))
+							&& (thisPremise.getPropertyName().equals(pPropName))
+							&& (thisPremise.getValue().equals(pValue))) {
 						result.add(thisRs);
 					}
 				}
 			}
 		}
-		
+
 		return result;
 	}
 
@@ -886,10 +912,10 @@ public class ModelBuilder {
 
 		return valCount + invalCount;
 	}
-	
+
 	public ArrayList<CeSentence> listAllSentencesOfType(ActionContext pAc, int pSenType) {
 		ArrayList<CeSentence> result = null;
-		
+
 		switch (pSenType) {
 		case BuilderSentence.SENTYPE_FACT:
 			result = listAllFactSentences();
@@ -910,10 +936,11 @@ public class ModelBuilder {
 			result = listAllCommandSentences();
 			break;
 		default:
-			reportError("Unexpected sentence type '" + pSenType + "' encountered in ModelBuilder:getSentencesOfType()", pAc);
+			reportError("Unexpected sentence type '" + pSenType + "' encountered in ModelBuilder:getSentencesOfType()",
+					pAc);
 			break;
 		}
-		
+
 		return result;
 	}
 
@@ -928,25 +955,25 @@ public class ModelBuilder {
 	public ArrayList<CeSentence> listAllModelSentences() {
 		return listAllSentencesOfTypeWith(BuilderSentence.SENTYPE_MODEL);
 	}
-	
+
 	public ArrayList<CeSentence> listAllFactSentences() {
-		return listAllSentencesOfTypeWith(BuilderSentence.SENTYPE_FACT);		
+		return listAllSentencesOfTypeWith(BuilderSentence.SENTYPE_FACT);
 	}
 
 	public ArrayList<CeSentence> listAllRuleSentences() {
-		return listAllSentencesOfTypeWith(BuilderSentence.SENTYPE_RULE);		
+		return listAllSentencesOfTypeWith(BuilderSentence.SENTYPE_RULE);
 	}
-	
+
 	public ArrayList<CeSentence> listAllQuerySentences() {
-		return listAllSentencesOfTypeWith(BuilderSentence.SENTYPE_QUERY);		
+		return listAllSentencesOfTypeWith(BuilderSentence.SENTYPE_QUERY);
 	}
-	
+
 	public ArrayList<CeSentence> listAllRuleOrQuerySentences() {
 		ArrayList<CeSentence> result = new ArrayList<CeSentence>();
-			
+
 		result.addAll(listAllSentencesOfTypeWith(BuilderSentence.SENTYPE_RULE));
 		result.addAll(listAllSentencesOfTypeWith(BuilderSentence.SENTYPE_QUERY));
-		
+
 		return result;
 	}
 
@@ -970,29 +997,29 @@ public class ModelBuilder {
 	public ArrayList<CeInstance> listAllInstancesForConcept(CeConcept pConcept) {
 		return getInstanceRepository().getAllInstancesForConcept(pConcept);
 	}
-	
+
 	public ArrayList<CeInstance> listAllInstances() {
 		return getInstanceRepository().listAllInstances();
 	}
-		
+
 	public int countAllInstancesForConcept(CeConcept pConcept) {
 		return getInstanceRepository().getInstanceCountForConcept(pConcept);
 	}
 
 	public ArrayList<CePropertyValue> getPropertyValuesFromPremise(ActionContext pAc, CeRationalePremise pPrem) {
 		ArrayList<CePropertyValue> result = new ArrayList<CePropertyValue>();
-		
+
 		if (pPrem.hasPropertyDetails()) {
 			String instName = pPrem.getInstanceName();
 			CeInstance thisInst = getInstanceNamed(pAc, instName);
-			
+
 			String propName = pPrem.getPropertyName();
-			
+
 			if (thisInst != null) {
 				CePropertyInstance thisPi = thisInst.getPropertyInstanceNamed(propName);
-				
+
 				String tgtVal = pPrem.getValue();
-				
+
 				if (thisPi != null) {
 					for (CePropertyValue thisPv : thisPi.getPropertyValues()) {
 						if (thisPv.getValue().equals(tgtVal)) {
@@ -1004,43 +1031,45 @@ public class ModelBuilder {
 				reportWarning("Unable to get instance '" + instName + "' during premise processing for rationale", pAc);
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	protected void removeUnusedSentencesAndSources(ActionContext pAc) {
 		TreeMap<Integer, CeSentence> newSens = new TreeMap<Integer, CeSentence>();
 
-		//First delete all the fact sentences and sources
+		// First delete all the fact sentences and sources
 		deleteAllFactAndAnnotationSentences();
 		deleteAllSources();
-		
-		//Next recreate all fact sentences that are still referenced by any concept, instance or property
+
+		// Next recreate all fact sentences that are still referenced by any
+		// concept, instance or property
 		for (CeConcept thisConcept : listAllConcepts()) {
-			//Process sentences directly related to this concept
+			// Process sentences directly related to this concept
 			for (CeSentence thisConcSen : thisConcept.listAllSentences()) {
 				if ((thisConcSen.isFactSentence()) || (thisConcSen.isAnnotationSentence())) {
 					newSens.put(new Integer(thisConcSen.getId()), thisConcSen);
 				}
 			}
 
-			//Process properties and related sentences for this concept
+			// Process properties and related sentences for this concept
 			for (CeProperty thisProp : thisConcept.calculateAllProperties().values()) {
 				for (CeSentence thisPropSen : thisProp.listAllSentences()) {
 					if (thisPropSen.isFactSentence()) {
 						newSens.put(new Integer(thisPropSen.getId()), thisPropSen);
 					}
 				}
-			}			
+			}
 		}
 
-		//Process instances and related sentences
+		// Process instances and related sentences
 		for (CeInstance thisInst : getInstanceRepository().getAllInstances().values()) {
 			for (CeSentence thisInstSen : thisInst.listAllSentences()) {
 				if (thisInstSen.isFactSentence()) {
 					CeSource relSrc = thisInstSen.getSource();
 					if (relSrc.isInternalSource()) {
-						//Only sentences for metamodel instances from internal sources should be saved
+						// Only sentences for metamodel instances from internal
+						// sources should be saved
 						newSens.put(new Integer(thisInstSen.getId()), thisInstSen);
 					}
 				}
@@ -1051,14 +1080,15 @@ public class ModelBuilder {
 			saveSentence(pAc, newSen);
 		}
 
-		//Next recreate any sources that are referenced by any remaining sentence
+		// Next recreate any sources that are referenced by any remaining
+		// sentence
 		for (CeSentence thisSen : listAllSentences()) {
 			CeSource thisSource = thisSen.getSource();
 			saveSource(thisSource);
 		}
-		
-		//Finally recreate any sentences that define source annotations
-		//TODO: Need to decide how to do this
+
+		// Finally recreate any sentences that define source annotations
+		// TODO: Need to decide how to do this
 		for (CeSource thisSource : getAllSources().values()) {
 			if (thisSource.listAnnotationSentences() != null) {
 				for (CeSentence thisSen : thisSource.listAnnotationSentences()) {
@@ -1067,14 +1097,14 @@ public class ModelBuilder {
 			}
 		}
 	}
-	
+
 	private void deleteAllFactAndAnnotationSentences() {
 		int[] typesToRemove;
 
-		typesToRemove = new int[] {BuilderSentence.SENTYPE_FACT};
+		typesToRemove = new int[] { BuilderSentence.SENTYPE_FACT };
 		this.allValidSentences.removeSentencesOfTypes(typesToRemove);
 
-		typesToRemove = new int[] {BuilderSentence.SENTYPE_FACT, BuilderSentence.SENTYPE_ANNO};
+		typesToRemove = new int[] { BuilderSentence.SENTYPE_FACT, BuilderSentence.SENTYPE_ANNO };
 		this.allInvalidSentences.removeSentencesOfTypes(typesToRemove);
 	}
 
@@ -1083,64 +1113,69 @@ public class ModelBuilder {
 	}
 
 	public void deleteAllInstancesForConcept(ActionContext pAc, CeConcept pConcept) {
-		//Propagate on to the instance repository
+		// Propagate on to the instance repository
 		getInstanceRepository().deleteAllInstancesForConcept(pAc, pConcept);
 	}
 
 	public static void deleteExactInstancesForConcept(ActionContext pAc, CeConcept pConcept) {
-		//Propogate on to the instance repository
+		// Propogate on to the instance repository
 		InstanceRepository.deleteExactInstancesForConcept(pAc, pConcept);
 	}
 
 	public void deleteInstance(ActionContext pAc, CeInstance pInst) {
-		//Propogate on to the instance repository
+		// Propogate on to the instance repository
 		getInstanceRepository().deleteInstance(pInst);
-		
+
 		if (isReportDebug()) {
 			reportDebug("Instance '" + pInst.getInstanceName() + "' has been deleted", pAc);
 		}
 	}
 
 	public static void deleteConceptualModel(ActionContext pAc, CeConceptualModel pCm) {
-		//TODO: Implement this
-		reportError("Conceptual model deletion is not yet implemented (for conceptual model '" + pCm.getModelName() + "')", pAc);
+		// TODO: Implement this
+		reportError(
+				"Conceptual model deletion is not yet implemented (for conceptual model '" + pCm.getModelName() + "')",
+				pAc);
 	}
 
 	public static void deleteConcept(ActionContext pAc, CeConcept pCon) {
-		//TODO: Implement this
+		// TODO: Implement this
 		reportError("Concept deletion is not yet implemented (for concept '" + pCon.getConceptName() + "')", pAc);
 	}
 
 	public static void deleteProperty(ActionContext pAc, CeProperty pProp) {
-		//TODO: Implement this
-		reportError("Property deletion is not yet implemented (for property '" + pProp.formattedFullPropertyName() + "')", pAc);
+		// TODO: Implement this
+		reportError(
+				"Property deletion is not yet implemented (for property '" + pProp.formattedFullPropertyName() + "')",
+				pAc);
 	}
 
 	public static void deleteQuery(ActionContext pAc, CeQuery pQuery) {
-		//TODO: Implement this
+		// TODO: Implement this
 		reportError("Query deletion is not yet implemented (for query '" + pQuery.getQueryName() + "')", pAc);
 	}
 
 	public static void deleteRule(ActionContext pAc, CeRule pRule) {
-		//TODO: Implement this
+		// TODO: Implement this
 		reportError("Rule deletion is not yet implemented (for rule '" + pRule.getRuleName() + "')", pAc);
 	}
 
 	private void deleteSentence(ActionContext pAc, String pSenId) {
-		//TODO: Improve the performance of this (by storing links to relevant concepts / instances on the sentence?)
+		// TODO: Improve the performance of this (by storing links to relevant
+		// concepts / instances on the sentence?)
 		boolean anyFailures = false;
 		boolean dontDelete = false;
-		
+
 		ArrayList<CeConcept> possibleCons = new ArrayList<CeConcept>();
 		ArrayList<CeProperty> possibleProps = new ArrayList<CeProperty>();
-		
+
 		CeSentence tgtSen = getSentence(pSenId);
-		
-		if (tgtSen != null) {			
-			//Now try to remove from each concept
+
+		if (tgtSen != null) {
+			// Now try to remove from each concept
 			ArrayList<CeConcept> allCons = new ArrayList<CeConcept>();
 			allCons.addAll(this.allConcepts.values());
-			
+
 			for (CeConcept thisCon : allCons) {
 				if (thisCon.hasSentence(tgtSen)) {
 					if (thisCon.hasPrimarySentence(tgtSen)) {
@@ -1157,26 +1192,27 @@ public class ModelBuilder {
 					}
 				}
 			}
-			
-			//Now try to remove from each instance
+
+			// Now try to remove from each instance
 			ArrayList<CeInstance> allInsts = new ArrayList<CeInstance>();
 			allInsts.addAll(getInstanceRepository().getAllInstances().values());
-			
+
 			for (CeInstance thisInst : allInsts) {
 				if (thisInst.deleteSentence(tgtSen)) {
 					if (!thisInst.hasAnySentences()) {
-						//Instances cannot fail to be deleted, so no need to affect anyFailures
+						// Instances cannot fail to be deleted, so no need to
+						// affect anyFailures
 						deleteInstance(pAc, thisInst);
 					}
 				}
 			}
-			
-			//Now try to remove from each property
+
+			// Now try to remove from each property
 			ArrayList<CeProperty> allProps = new ArrayList<CeProperty>();
 			for (CeProperty thisProp : this.allProperties) {
 				allProps.add(thisProp);
 			}
-			
+
 			for (CeProperty thisProp : allProps) {
 				if (thisProp.hasSentence(tgtSen)) {
 					if (!thisProp.hasOtherSentences(tgtSen)) {
@@ -1187,12 +1223,15 @@ public class ModelBuilder {
 					}
 				}
 			}
-			
+
 			if (anyFailures) {
-				tempWarning("Sentence '" + tgtSen.getId() + "' has not been deleted as associated concept/property/instance(s) could not be deleted");
+				tempWarning("Sentence '" + tgtSen.getId()
+						+ "' has not been deleted as associated concept/property/instance(s) could not be deleted");
 			} else {
 				if (dontDelete) {
-					//There were no errors, but the sentence was not deleted from the property and/or concept but this can be safely done now
+					// There were no errors, but the sentence was not deleted
+					// from the property and/or concept but this can be safely
+					// done now
 					for (CeConcept thisCon : possibleCons) {
 						thisCon.deleteSentence(tgtSen);
 					}
@@ -1201,14 +1240,15 @@ public class ModelBuilder {
 						thisProp.deleteSentence(tgtSen);
 					}
 				}
-				
-				//Now remove from the source
+
+				// Now remove from the source
 				CeSource relSrc = tgtSen.getSource();
-				
+
 				if (relSrc != null) {
 					relSrc.removePrimarySentence(tgtSen);
 				}
-				//Note that sources are not deleted if they have no remaining sentences (so no need to test and delete here)
+				// Note that sources are not deleted if they have no remaining
+				// sentences (so no need to test and delete here)
 
 				if (hasInvalidSentence(pSenId)) {
 					removeInvalidSentenceWithId(pSenId);
@@ -1230,34 +1270,35 @@ public class ModelBuilder {
 		clearTempWarnings();
 
 		deleteSentence(pAc, pSenId);
-		
+
 		copyTempWarnings(pAc);
 	}
-	
+
 	public void deleteSource(ActionContext pAc, String pSrcId) {
 		CeSource tgtSrc = getSourceById(pSrcId);
-		
+
 		if (tgtSrc != null) {
 			int beforeCount = -1;
 			int afterCount = 0;
-						
+
 			while (beforeCount != afterCount) {
 				clearTempWarnings();
 
 				beforeCount = tgtSrc.listAllSentences().size();
-				//Create a new ArrayList to prevent concurrentModification exceptions
+				// Create a new ArrayList to prevent concurrentModification
+				// exceptions
 				ArrayList<CeSentence> allSens = new ArrayList<CeSentence>();
 				allSens.addAll(tgtSrc.listAllSentences());
-				
+
 				for (CeSentence thisSen : allSens) {
 					deleteSentence(pAc, thisSen.formattedId());
 				}
-				
+
 				afterCount = tgtSrc.listAllSentences().size();
 			}
-			
+
 			copyTempWarnings(pAc);
-			
+
 			if (tgtSrc.listAllSentences().isEmpty()) {
 				this.allSources.remove(tgtSrc.getId());
 				if (isReportDebug()) {
@@ -1268,65 +1309,66 @@ public class ModelBuilder {
 			}
 		} else {
 			reportError("No source with id '" + pSrcId + "' was found, so nothing was deleted", pAc);
-		}		
+		}
 	}
-	
+
 	private boolean deleteConcept(ActionContext pAc, CeConcept pCon, CeSentence pSen) {
 		boolean result = false;
-		
-		//Clear the concept fragment names cache
+
+		// Clear the concept fragment names cache
 		this.cachedConceptFragmentNames = new HashSet<String>();
 
-		//Only delete the concept if there are no children and no instances
+		// Only delete the concept if there are no children and no instances
 		if (pCon.hasAnyChildrenWithSentencesOtherThan(pSen)) {
 			tempWarning("Concept '" + pCon.getConceptName() + "' was not deleted because it has children");
 		} else if (pCon.hasAnyInstances(pAc)) {
-			tempWarning("Concept '" + pCon.getConceptName() + "' was not deleted because there are instances of this concept");
+			tempWarning("Concept '" + pCon.getConceptName()
+					+ "' was not deleted because there are instances of this concept");
 		} else {
 			result = true;
 			pCon.deleteSentence(pSen);
-			
+
 			for (CeConcept parCon : pCon.getDirectParents()) {
 				parCon.deleteDirectChild(pCon);
 			}
-			
+
 			this.allConcepts.remove(pCon.identityKey());
 
 			if (isReportDebug()) {
 				reportDebug("Concept '" + pCon.getConceptName() + "' has been deleted", pAc);
 			}
 		}
-		
+
 		return result;
 	}
 
 	private boolean deleteProperty(ActionContext pAc, CeProperty pProp, CeSentence pSen) {
-		//Only delete this property if there are no instances that use it
+		// Only delete this property if there are no instances that use it
 		boolean hasPropertyValues = false;
 		boolean result = false;
-		
+
 		for (CeInstance thisInst : getInstanceRepository().getAllInstancesForConcept(pProp.getDomainConcept())) {
 			if (!hasPropertyValues) {
-				CePropertyInstance mainPi = thisInst.getPropertyInstanceForProperty(pProp);	
+				CePropertyInstance mainPi = thisInst.getPropertyInstanceForProperty(pProp);
 				hasPropertyValues = (mainPi != null);
 
 				for (CeProperty thisProp : pProp.getInferredProperties()) {
 					if (!hasPropertyValues) {
-						CePropertyInstance infPi = thisInst.getPropertyInstanceForProperty(thisProp);	
+						CePropertyInstance infPi = thisInst.getPropertyInstanceForProperty(thisProp);
 						hasPropertyValues = (infPi != null);
 					}
 				}
 			}
 		}
-		
+
 		if (!hasPropertyValues) {
-			//There are no property instances so delete the property
+			// There are no property instances so delete the property
 			result = true;
 			pProp.deleteSentence(pSen);
-			
+
 			CeConcept domConcept = pProp.getDomainConcept();
 			domConcept.deleteProperty(pProp);
-			
+
 			removeProperty(pProp);
 			if (isReportDebug()) {
 				reportDebug("Property '" + pProp.identityKey() + "' has been deleted", pAc);
@@ -1335,27 +1377,28 @@ public class ModelBuilder {
 			for (CeProperty thisProp : pProp.getInferredProperties()) {
 				domConcept = thisProp.getDomainConcept();
 				domConcept.deleteProperty(thisProp);
-				
+
 				removeProperty(thisProp);
 				if (isReportDebug()) {
 					reportDebug("Inferred property '" + thisProp.identityKey() + "' has been deleted", pAc);
 				}
 			}
 		} else {
-			tempWarning("Property '" + pProp.identityKey() + "' was not deleted because there are instances that use this property");
+			tempWarning("Property '" + pProp.identityKey()
+					+ "' was not deleted because there are instances that use this property");
 		}
-		
+
 		return result;
 	}
-	
+
 	private void clearTempWarnings() {
 		this.tempWarnings = new ArrayList<String>();
 	}
-	
+
 	private void tempWarning(String pText) {
 		this.tempWarnings.add(pText);
 	}
-	
+
 	private void copyTempWarnings(ActionContext pAc) {
 		for (String thisWarning : this.tempWarnings) {
 			reportWarning(thisWarning, pAc);
@@ -1363,56 +1406,57 @@ public class ModelBuilder {
 	}
 
 	public String getNextUid(ActionContext pAc, String pPrefix) {
-		//Lazy initialisation
+		// Lazy initialisation
 		if (this.uidMgr == null) {
 			initialiseUidManager(pAc);
 		}
-		
+
 		return sendUidRequest(pAc, pPrefix);
 	}
-	
+
 	public String showNextUidWithoutIncrementing(ActionContext pAc) {
-		//Lazy initialisation
+		// Lazy initialisation
 		if (this.uidMgr == null) {
 			initialiseUidManager(pAc);
 		}
-		
+
 		return showNextUid();
 	}
 
 	public void setNextUidValueTo(ActionContext pAc, long pUidVal) {
-		//Lazy initialisation
+		// Lazy initialisation
 		if (this.uidMgr == null) {
 			initialiseUidManager(pAc);
 		}
-		
+
 		setNextUidTo(pUidVal);
 	}
 
 	public Properties getBatchOfUids(ActionContext pAc, long pBatchSize) {
 		Properties result = null;
-		
-		//Lazy initialisation
+
+		// Lazy initialisation
 		if (this.uidMgr == null) {
 			initialiseUidManager(pAc);
 		}
-		
+
 		if (this.uidMgr != null) {
 			result = this.uidMgr.getBatchOfUids(pBatchSize);
 		}
-		
+
 		return result;
 	}
-	
+
 	public void resetUids(ActionContext pAc, String pStartingUid) {
-		//Lazy initialisation - this does need to be done, otherwise any file based UID managers will not have their files deleted
+		// Lazy initialisation - this does need to be done, otherwise any file
+		// based UID managers will not have their files deleted
 		if (this.uidMgr == null) {
 			initialiseUidManager(pAc);
 		}
-		
+
 		this.uidMgr.resetUidCounter(pStartingUid);
 	}
-	
+
 	private void initialiseUidManager(ActionContext pAc) {
 		this.uidMgr = new UidManagerDefault();
 		this.uidMgr.initialiseUidManager(isReportDebug(), isReportMicroDebug(), "", true, -1);
@@ -1420,7 +1464,7 @@ public class ModelBuilder {
 
 		handleMessagesFrom(pAc, this.uidMgr);
 	}
-	
+
 	private String sendUidRequest(ActionContext pAc, String pPrefix) {
 		String result = this.uidMgr.getNextUid(pPrefix);
 
@@ -1428,7 +1472,7 @@ public class ModelBuilder {
 
 		return result;
 	}
-	
+
 	private String showNextUid() {
 		return this.uidMgr.showNextUid();
 	}
@@ -1440,24 +1484,24 @@ public class ModelBuilder {
 	private static void handleMessagesFrom(ActionContext pAc, UidManager pUm) {
 		String extraBit = " (generated on UID Manager)";
 
-		//Process errors
+		// Process errors
 		for (String thisErr : pUm.getErrors()) {
 			reportError(thisErr + extraBit, pAc);
 		}
 
-		//Process warnings
+		// Process warnings
 		for (String thisWarn : pUm.getWarnings()) {
 			reportWarning(thisWarn + extraBit, pAc);
 		}
 
-		//Process debugs
+		// Process debugs
 		if (isReportDebug()) {
 			for (String thisDebug : pUm.getDebugs()) {
 				reportDebug(thisDebug + extraBit, pAc);
 			}
 		}
-		
-		//Process micro debugs
+
+		// Process micro debugs
 		if (isReportMicroDebug()) {
 			for (String thisDebug : pUm.getMicroDebugs()) {
 				reportMicroDebug(thisDebug + extraBit, pAc);
@@ -1466,7 +1510,7 @@ public class ModelBuilder {
 
 		pUm.clearMessages();
 	}
-		
+
 	public String getCachedStringValueLevel1(String pValue) {
 		return getCachedStringValue(pValue, CACHELEVEL_1);
 	}
@@ -1480,13 +1524,13 @@ public class ModelBuilder {
 	}
 
 	private String getCachedStringValue(String pValue, int pCacheLevel) {
-		//This method has been tested against using string interning and
-		//found to be just as effective from a memory usage and performance
-		//perspective.  Given the issues with .intern() using PermGen space
-		//in v6 (limited to 64MB by default) we have chosen to stick with this
-		//custom implementation for now.
+		// This method has been tested against using string interning and
+		// found to be just as effective from a memory usage and performance
+		// perspective. Given the issues with .intern() using PermGen space
+		// in v6 (limited to 64MB by default) we have chosen to stick with this
+		// custom implementation for now.
 		String result = null;
-		
+
 		if (pCacheLevel <= this.cacheLevel) {
 			result = this.allValues.get(pValue);
 
@@ -1497,7 +1541,7 @@ public class ModelBuilder {
 		} else {
 			result = pValue;
 		}
-				
+
 		return result;
 	}
 
@@ -1528,36 +1572,38 @@ public class ModelBuilder {
 		if (!pRules.isEmpty()) {
 			String srcId = null;
 			String srcDetail = null;
-			
+
 			if (pSrc == null) {
-				srcId = "(none)";	//TODO: Abstract this
+				srcId = "(none)"; // TODO: Abstract this
 				srcDetail = "";
 			} else {
 				srcId = pSrc.getId();
 				srcDetail = pSrc.getDetail();
 			}
-			
+
 			updateCreatedThingsFrom(pAc);
 
 			if (isReportMicroDebug()) {
-				reportMicroDebug("Attempting to execute " + pRules.size() + " rules for Source " + srcId + " (" + srcDetail + ")", pAc);
+				reportMicroDebug("Attempting to execute " + pRules.size() + " rules for Source " + srcId + " ("
+						+ srcDetail + ")", pAc);
 			}
 
 			int itCtr = 0;
 			int newSens = -1;
-//			int totalSens = 0;
-			
+			// int totalSens = 0;
+
 			HashSet<String> genSentences = new HashSet<String>();
 			StringBuilder sb = new StringBuilder();
 
-			//Iterate through the rules and only stop if the max iterations is reached
-			//or there are no new sentences generated
+			// Iterate through the rules and only stop if the max iterations is
+			// reached
+			// or there are no new sentences generated
 			while ((itCtr < pMaxIterations) && (newSens != 0)) {
 				newSens = executeSpecifiedRules(pAc, genSentences, pRules, itCtr, true, false, false);
-				
+
 				++itCtr;
 
-				//Save the sentences
+				// Save the sentences
 				if (!genSentences.isEmpty()) {
 					for (String thisSen : genSentences) {
 						appendToSb(sb, thisSen);
@@ -1565,18 +1611,19 @@ public class ModelBuilder {
 					}
 				}
 			}
-			
+
 			if (sb.length() > 1) {
-				//Save the new sentences
+				// Save the new sentences
 				StoreActions sa = StoreActions.createUsingDefaultConfig(pAc);
-				sa.loadSentencesFromAgent(sb, "ruleExecution for source " + srcId, "autoRunRules");	
-	
+				sa.loadSentencesFromAgent(sb, "ruleExecution for source " + srcId, "autoRunRules");
+
 				genSentences = new HashSet<String>();
 			}
 		}
 	}
-	
-	private static int executeSpecifiedRules(ActionContext pAc, HashSet<String> pGenSentences, ArrayList<CeRule> pRules, int pIterationCounter, boolean pGenRat, boolean pDblRatSens, boolean pRestateSens) {
+
+	private static int executeSpecifiedRules(ActionContext pAc, HashSet<String> pGenSentences, ArrayList<CeRule> pRules,
+			int pIterationCounter, boolean pGenRat, boolean pDblRatSens, boolean pRestateSens) {
 		int newOverallSentences = 0;
 		int totalSentences = 0;
 		int ruleCtr = 0;
@@ -1589,14 +1636,15 @@ public class ModelBuilder {
 				++ruleCtr;
 				long ruleStart = System.currentTimeMillis();
 				if (isReportMicroDebug()) {
-					reportMicroDebug("[Start] Executing rule " + thisRule.getRuleName() + " (iteration=" + pIterationCounter + ")", pAc);
+					reportMicroDebug("[Start] Executing rule " + thisRule.getRuleName() + " (iteration="
+							+ pIterationCounter + ")", pAc);
 				}
 				ContainerCeResult result = qm.executeRule(thisRule, pGenRat, pDblRatSens);
 
 				ArrayList<String> allResults = result.getCeResults();
 				totalSentences += allResults.size();
 
-				//Initialise the sentence cache (huge performance improvement)
+				// Initialise the sentence cache (huge performance improvement)
 				thisRule.createSentenceLookup(pAc);
 
 				for (String thisSen : allResults) {
@@ -1605,7 +1653,7 @@ public class ModelBuilder {
 							if ((pRestateSens) || (!thisRule.doesSentenceTextAlreadyExist(pAc, innerSen))) {
 								int beforeSize = pGenSentences.size();
 								pGenSentences.add(innerSen + NL + NL);
-								
+
 								if (pGenSentences.size() > beforeSize) {
 									++newSentencesForThisRule;
 								}
@@ -1615,7 +1663,7 @@ public class ModelBuilder {
 						if ((pRestateSens) || (!thisRule.doesSentenceTextAlreadyExist(pAc, thisSen))) {
 							int beforeSize = pGenSentences.size();
 							pGenSentences.add(thisSen + NL + NL);
-							
+
 							if (pGenSentences.size() > beforeSize) {
 								++newSentencesForThisRule;
 							}
@@ -1623,14 +1671,15 @@ public class ModelBuilder {
 					}
 				}
 
-				//Clear the sentence cache
+				// Clear the sentence cache
 				thisRule.clearSentenceLookup();
 
 				newOverallSentences += newSentencesForThisRule;
 				long duration = System.currentTimeMillis() - ruleStart;
 
 				if ((duration > 2000) || (isReportDebug())) {
-					String ruleMsg = "[End] Executing rule " + thisRule.getRuleName() + " (results=" + result.getCeResults().size() + ", new=" + newSentencesForThisRule + ") time=" + duration;
+					String ruleMsg = "[End] Executing rule " + thisRule.getRuleName() + " (results="
+							+ result.getCeResults().size() + ", new=" + newSentencesForThisRule + ") time=" + duration;
 
 					if (duration > 2000) {
 						reportWarning("SLOW RULE: " + ruleMsg, pAc);
@@ -1645,7 +1694,7 @@ public class ModelBuilder {
 
 		if (isReportMicroDebug()) {
 			String summaryText = "";
-			
+
 			summaryText += "matched rules: " + ruleCtr + ", ";
 			summaryText += "total sentences: " + totalSentences + ", ";
 			summaryText += "new sentences: " + newOverallSentences + ", ";

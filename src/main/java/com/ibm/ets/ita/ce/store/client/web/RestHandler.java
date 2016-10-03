@@ -34,6 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.ibm.ets.ita.ce.store.client.rest.CeStoreRestApi;
+import com.ibm.ets.ita.ce.store.core.ModelBuilder;
 
 /**
  * Servlet implementation class RestHandler
@@ -104,7 +105,9 @@ public class RestHandler extends HttpServlet {
 		boolean statsInResponse = false;
 
 		try {
+			ServletStateManager.retainDefaultUrl(pRequest);
 			wc = createWebActionContext(pRequest);
+			extractCredentials(wc, pRequest);
 			initialiseHttpRequest(pRequest, wc);
 			statsInResponse = CeStoreRestApi.processRestRequest(wc, pRequest);
 		} catch (Exception e) {
@@ -115,9 +118,10 @@ public class RestHandler extends HttpServlet {
 	}
 
 	private static synchronized WebActionContext createWebActionContext(HttpServletRequest pRequest) {
-		String thisUserName = pRequest.getHeader(HDR_CEUSER);
-		WebActionContext wc = ServletStateManager.createWebActionContext(pRequest, thisUserName);
-		extractCredentials(wc, pRequest);
+		WebActionResponse wr = new WebActionResponse();
+		WebActionContext wc = new WebActionContext(pRequest.getHeader(HDR_CEUSER), wr);
+		ModelBuilder mb = ServletStateManager.getServletStateManager().getDefaultModelBuilder(wc);
+		wc.setModelBuilderAndCeStoreName(mb);
 
 		return wc;
 	}
@@ -136,7 +140,6 @@ public class RestHandler extends HttpServlet {
 
 		// TODO: Why is this even needed?
 		// TODO: The encoding should come from the container, not be hard-coded
-		// on FileUtilities?
 		try {
 			pRequest.setCharacterEncoding(ENCODING);
 		} catch (UnsupportedEncodingException e) {

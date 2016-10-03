@@ -19,7 +19,6 @@ public abstract class ActionContext {
 	private String ceRoot = null;
 
 	private ModelBuilder mb = null;
-	private StoreConfig conf = null;
 	protected ActionResponse ar = null;
 	private IndexedEntityAccessor iea = null; // Lazy initialised
 	private SessionCreations sc = null; // Lazy initialised
@@ -34,12 +33,10 @@ public abstract class ActionContext {
 
 	public abstract void switchToStoreNamed(String pStoreName);
 
-	public ActionContext(StoreConfig pConf, String pUserName, ActionResponse pAr) {
+	public ActionContext(String pUserName, ActionResponse pAr) {
 		this.startTime = System.currentTimeMillis();
 		this.userName = pUserName;
-		this.conf = pConf;
 		this.ar = pAr;
-		this.autoExecuteRules = pConf.getAutoRunRules();
 	}
 
 	public long getStartTime() {
@@ -81,6 +78,7 @@ public abstract class ActionContext {
 	public void setModelBuilderAndCeStoreName(ModelBuilder pMb) {
 		this.mb = pMb;
 		this.ceStoreName = pMb.getCeStoreName();
+		this.autoExecuteRules = pMb.getCeConfig(this).getAutoRunRules();
 	}
 
 	public boolean hasModelBuilder() {
@@ -92,7 +90,7 @@ public abstract class ActionContext {
 	}
 
 	public StoreConfig getCeConfig() {
-		return this.conf;
+		return this.mb.getCeConfig(this);
 	}
 
 	public ActionResponse getActionResponse() {

@@ -1070,7 +1070,7 @@ public class StoreActions {
 		ContainerSentenceLoadResult result = null;
 
 		this.ac.getModelBuilder().reset(this.ac);
-		ServletStateManager.getHudsonManager(this.ac).clearCaches(this.ac);
+		ServletStateManager.getHudsonManager().clearCaches(this.ac);
 
 		if (!pFromCommand) {
 			result = checkForDefaultLoad();

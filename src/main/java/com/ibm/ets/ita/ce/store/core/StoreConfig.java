@@ -19,7 +19,6 @@ import static com.ibm.ets.ita.ce.store.names.ParseNames.VARNAME_MDU;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.VARNAME_ROOTFOLDER;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.VARNAME_SAVESENS;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.isDebugOn;
-import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportDebug;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.setDebugOff;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.setDebugOn;
 
@@ -157,9 +156,9 @@ public class StoreConfig {
 		if (this.defaultCeRootUrl == null) {
 			this.setDefaultCeRootUrl(pDefCeRootUrl);
 
-			if (pAc.getCeConfig().isDebug()) {
-				reportDebug("Using this (default) root url for REST requests: " + this.defaultCeRootUrl, pAc);
-			}
+//			if (pAc.getCeConfig().isDebug()) {
+//				reportDebug("Using this (default) root url for REST requests: " + this.defaultCeRootUrl, pAc);
+//			}
 		}
 
 		// Only use the specified default CE Server if there is not one
@@ -167,9 +166,9 @@ public class StoreConfig {
 		if (this.defaultCeCurrentUrl == null) {
 			this.setDefaultCeCurrentUrl(pDefCeCurrentUrl);
 
-			if (pAc.getCeConfig().isDebug()) {
-				reportDebug("Using this (default) current url for REST requests: " + this.defaultCeCurrentUrl, pAc);
-			}
+//			if (pAc.getCeConfig().isDebug()) {
+//				reportDebug("Using this (default) current url for REST requests: " + this.defaultCeCurrentUrl, pAc);
+//			}
 		}
 	}
 

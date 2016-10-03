@@ -61,7 +61,7 @@ public abstract class GenericHandler {
 		ContainerSentenceLoadResult result = sa.saveCeText(pCeText, null);
 
 		//Clear the various caches
-		ServletStateManager.getHudsonManager(pAc).clearCaches(pAc);
+		ServletStateManager.getHudsonManager().clearCaches(pAc);
 
 		return result;
 	}

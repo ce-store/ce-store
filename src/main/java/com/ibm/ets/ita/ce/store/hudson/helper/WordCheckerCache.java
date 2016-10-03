@@ -124,7 +124,7 @@ public class WordCheckerCache {
 
 	public synchronized void checkForMatchingInstancesUsing(ActionContext pAc, ProcessedWord pWord, String pText) {
 		ArrayList<CeInstance> tgtInsts = null;
-		HudsonManager hm = ServletStateManager.getHudsonManager(pAc);
+		HudsonManager hm = ServletStateManager.getHudsonManager();
 
 		if (!this.matchingInstances.containsKey(pText)) {
 			tgtInsts = new ArrayList<CeInstance>();
@@ -149,7 +149,7 @@ public class WordCheckerCache {
 
 	public synchronized ArrayList<CeInstance> checkForMatchingInstances(ActionContext pAc, String pText) {
 		ArrayList<CeInstance> tgtInsts = null;
-		HudsonManager hm = ServletStateManager.getHudsonManager(pAc);
+		HudsonManager hm = ServletStateManager.getHudsonManager();
 
 		if (!this.matchingInstances.containsKey(pText)) {
 			tgtInsts = new ArrayList<CeInstance>();

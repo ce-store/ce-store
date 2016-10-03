@@ -200,7 +200,7 @@ public class ProcessedWord extends GeneralItem {
 	}
 
 	public void classify(ActionContext pAc, ConvConfig pCc) {
-		WordCheckerCache wcc = ServletStateManager.getHudsonManager(pAc).getWordCheckerCache();
+		WordCheckerCache wcc = ServletStateManager.getHudsonManager().getWordCheckerCache();
 
 		wcc.checkForMatchingConcept(pAc, this);
 		wcc.checkForMatchingRelation(pAc, this);
@@ -1242,7 +1242,7 @@ public class ProcessedWord extends GeneralItem {
 	private TreeMap<String, ArrayList<CeInstance>> checkForPartialMatchingInstanceList(ActionContext pAc,
 			String pLcWordText, boolean pFirstTime, ArrayList<ProcessedWord> pOtherWords) {
 		TreeMap<String, ArrayList<CeInstance>> result = null;
-		HudsonManager hm = ServletStateManager.getHudsonManager(pAc);
+		HudsonManager hm = ServletStateManager.getHudsonManager();
 		String strippedWord = stripDelimitingQuotesFrom(pLcWordText);
 
 		ArrayList<CeInstance> possInsts = hm.getIndexedEntityAccessor(pAc.getModelBuilder())

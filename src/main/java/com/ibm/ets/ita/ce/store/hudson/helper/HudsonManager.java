@@ -20,9 +20,7 @@ public class HudsonManager {
 	private WordCheckerCache wcc = null;
 	private IndexedEntityAccessor iea = null;
 
-	public HudsonManager(ActionContext pAc) {
-		reportDebug("Initialising HudsonManager", pAc);
-
+	public HudsonManager() {
 		this.inverseLists = new TreeMap<String, TreeMap<String, String>>();
 		this.wcc = new WordCheckerCache();
 	}
