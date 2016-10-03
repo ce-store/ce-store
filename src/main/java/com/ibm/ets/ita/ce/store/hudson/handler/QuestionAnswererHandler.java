@@ -13,6 +13,8 @@ import static com.ibm.ets.ita.ce.store.names.CeNames.MOD_SHOW;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_ANSWERS;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_A_CONF;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_A_RESTEXT;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_INSTS;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_INT;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_INTS;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_QUESTION;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_Q_TEXT;
@@ -27,6 +29,7 @@ import java.util.HashSet;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonArray;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonParser;
+import com.ibm.ets.ita.ce.store.client.web.model.CeWebInstance;
 import com.ibm.ets.ita.ce.store.core.ActionContext;
 import com.ibm.ets.ita.ce.store.hudson.model.ConceptPhrase;
 import com.ibm.ets.ita.ce.store.hudson.model.InstancePhrase;
@@ -49,10 +52,15 @@ public class QuestionAnswererHandler extends GenericHandler {
 	private HashSet<CeInstance> domainInstances = null;
 	private HashSet<CeInstance> otherInstances = null;
 	private String answerText = null;
+	private ArrayList<CeInstance> answerInstances = new ArrayList<CeInstance>();
+	private boolean returnInterpretation = false;
+	private boolean returnInstances = false;
 
-	public QuestionAnswererHandler(ActionContext pAc, String pIntJson, long pStartTime) {
+	public QuestionAnswererHandler(ActionContext pAc, String pIntJson, boolean pRetInt, boolean pRetInsts, long pStartTime) {
 		super(pAc, pStartTime);
 
+		this.returnInterpretation = pRetInt;
+		this.returnInstances = pRetInsts;
 		this.answerText = "";
 
 		CeStoreJsonParser sjp = new CeStoreJsonParser(pAc, pIntJson);
@@ -211,6 +219,7 @@ public class QuestionAnswererHandler extends GenericHandler {
 							mProp.getPropertyName())) {
 						if (objInst.equals(mInst)) {
 							answerValues.add(subInst.getInstanceName());
+							this.answerInstances.add(subInst);
 						}
 					}
 				}
@@ -246,6 +255,7 @@ public class QuestionAnswererHandler extends GenericHandler {
 					for (CeInstance thisInst : mInst.getInstanceListFromPropertyNamed(this.ac,
 							mProp.getPropertyName())) {
 						answerValues.add(thisInst.getInstanceName());
+						this.answerInstances.add(thisInst);
 					}
 				} else {
 					for (String thisVal : mInst.getValueListFromPropertyNamed(mProp.getPropertyName())) {
@@ -271,6 +281,8 @@ public class QuestionAnswererHandler extends GenericHandler {
 
 	private void multiMatchAnswerFor(SpMultiMatch pMm) {
 		CeInstance matchedInst = pMm.getMatchedInstance();
+
+		this.answerInstances.add(matchedInst);
 
 		if (matchedInst != null) {
 			String desc = matchedInst.getSingleValueFromPropertyNamed(PROP_DESC);
@@ -356,6 +368,8 @@ public class QuestionAnswererHandler extends GenericHandler {
 		String propName = null;
 		String propVals = null;
 
+		this.answerInstances.add(pInst);
+
 		instName = pInst.getInstanceName();
 
 		for (PropertyPhrase thisPp : listPropertyPhrases()) {
@@ -417,6 +431,7 @@ public class QuestionAnswererHandler extends GenericHandler {
 
 			for (CeInstance thisInst : instList) {
 				result += answerLocateFor(thisInst);
+				this.answerInstances.add(thisInst);
 			}
 
 			appendToAnswer(result);
@@ -496,6 +511,8 @@ public class QuestionAnswererHandler extends GenericHandler {
 	private void answerExpandFor(CeInstance pInst) {
 		String result = answerSummaryFor(pInst);
 
+		this.answerInstances.add(pInst);
+
 		for (CePropertyInstance thisPi : pInst.getPropertyInstances()) {
 			result += "\n";
 			result += "  ";
@@ -519,6 +536,7 @@ public class QuestionAnswererHandler extends GenericHandler {
 
 	private void answerLinksFromFor(CeInstance pInst) {
 		// TODO: Complete this
+		this.answerInstances.add(pInst);
 		appendToAnswer("TBC - answerLinksFromForInstance: " + pInst.getInstanceName());
 	}
 
@@ -529,6 +547,7 @@ public class QuestionAnswererHandler extends GenericHandler {
 
 	private void answerLinksToFor(CeInstance pInst) {
 		// TODO: Complete this
+		this.answerInstances.add(pInst);
 		appendToAnswer("TBC - answerLinksToForInstance: " + pInst.getInstanceName());
 	}
 
@@ -539,6 +558,7 @@ public class QuestionAnswererHandler extends GenericHandler {
 
 	private String answerLocateFor(CeInstance pInst) {
 		String result = "";
+		this.answerInstances.add(pInst);
 
 		// TODO: Also check for related instances that are spatial things
 		if (pInst.isConceptNamed(this.ac, CON_SPATIAL)) {
@@ -555,6 +575,7 @@ public class QuestionAnswererHandler extends GenericHandler {
 
 	private void answerCountFor(CeInstance pInst) {
 		// TODO: Complete this
+		this.answerInstances.add(pInst);
 		appendToAnswer("TBC - answerCountForInstance: " + pInst.getInstanceName());
 	}
 
@@ -584,6 +605,7 @@ public class QuestionAnswererHandler extends GenericHandler {
 
 	private void answerListFor(CeInstance pInst) {
 		// TODO: Complete this
+		this.answerInstances.add(pInst);
 		appendToAnswer("TBC - answerListForInstance: " + pInst.getInstanceName());
 	}
 
@@ -602,6 +624,7 @@ public class QuestionAnswererHandler extends GenericHandler {
 
 	private void answerShowFor(CeInstance pInst) {
 		// TODO: Complete this
+		this.answerInstances.add(pInst);
 		appendToAnswer("TBC - answerShowForInstance: " + pInst.getInstanceName());
 	}
 
@@ -623,6 +646,8 @@ public class QuestionAnswererHandler extends GenericHandler {
 		} else {
 			result = pInst.getInstanceName() + textForConcepts(pInst);
 		}
+
+		this.answerInstances.add(pInst);
 
 		return result;
 	}
@@ -747,15 +772,38 @@ public class QuestionAnswererHandler extends GenericHandler {
 		}
 
 		jFirstAnswer.put(JSON_A_RESTEXT, this.answerText);
-		jFirstAnswer.put(JSON_A_CONF, 100); // TODO: This should not be
-											// hardcoded
+		jFirstAnswer.put(JSON_A_CONF, 100); 
+		// TODO: The confidence should not be hardcoded
+
+		if (this.returnInstances) {
+			jsonAddAnswerInstances(jFirstAnswer);
+		}
 
 		jAnswers.add(jFirstAnswer);
 
 		jResult.put(JSON_QUESTION, jQuestion);
+		
+		if (this.returnInterpretation) {
+			jResult.put(JSON_INT, this.interpretationJson);
+		}
+
 		jResult.put(JSON_ANSWERS, jAnswers);
 
 		return jResult;
+	}
+
+	private void jsonAddAnswerInstances(CeStoreJsonObject pJo) {
+		if (!this.answerInstances.isEmpty()) {
+			CeStoreJsonArray jArr = new CeStoreJsonArray();
+			pJo.put(JSON_INSTS, jArr);
+
+			for (CeInstance thisInst : this.answerInstances) {
+				CeWebInstance webInst = new CeWebInstance(this.ac);
+				CeStoreJsonObject jInst = webInst.generateNormalisedDetailsJsonFor(thisInst, null, 0, false, false, null);
+	
+				jArr.add(jInst);
+			}
+		}
 	}
 
 }

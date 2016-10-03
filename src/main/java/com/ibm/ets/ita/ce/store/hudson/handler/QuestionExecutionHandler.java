@@ -26,8 +26,14 @@ public class QuestionExecutionHandler extends QuestionHandler {
 	private static final String PACKAGE_NAME = QuestionHandler.class.getPackage().getName();
 	private static final Logger logger = Logger.getLogger(PACKAGE_NAME);
 
-	public QuestionExecutionHandler(ActionContext pAc, String pQt, long pStartTime) {
+	private boolean returnInterpretation = false;
+	private boolean returnInstances = false;
+	
+	public QuestionExecutionHandler(ActionContext pAc, String pQt, boolean pRetInt, boolean pRetInsts, long pStartTime) {
 		super(pAc, Question.create(pQt), pStartTime);
+
+		this.returnInterpretation = pRetInt;
+		this.returnInstances = pRetInsts;
 	}
 
 	@Override
@@ -46,7 +52,7 @@ public class QuestionExecutionHandler extends QuestionHandler {
 		}
 
 		if (jsonText != null) {
-			QuestionAnswererHandler qah = new QuestionAnswererHandler(this.ac, jsonText, System.currentTimeMillis());
+			QuestionAnswererHandler qah = new QuestionAnswererHandler(this.ac, jsonText, this.returnInterpretation, this.returnInstances, System.currentTimeMillis());
 			ansResult = qah.processInterpretation();
 			
 			mergeAlerts(ansResult, intResult);

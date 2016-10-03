@@ -127,6 +127,7 @@ public class RestNames {
 	public static final String PARM_DETAIL = "filterByDetail";
 	public static final String PARM_SIZE = "size";
 	public static final String PARM_MODEL = "model";
+	public static final String PARM_RETINTER = "returnInterpretation";
 
 	public static final String PARM_SEARCHTERMS = "keywords";
 	public static final String PARM_CASESEN = "caseSensitive";

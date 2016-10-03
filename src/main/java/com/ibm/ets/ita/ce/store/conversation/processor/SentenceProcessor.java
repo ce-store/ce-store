@@ -30,7 +30,7 @@ public class SentenceProcessor {
 
 	public ResultOfAnalysis processSentence() {
 		QuestionExecutionHandler qe = new QuestionExecutionHandler(this.ac, this.convSentence.getSentenceText(),
-				System.currentTimeMillis());
+				false, false, System.currentTimeMillis());
 		String answerText = qe.processQuestionAndReturnAnswerText();
 
 		return ResultOfAnalysis.createQuestionResponseWithGistOnly(answerText);

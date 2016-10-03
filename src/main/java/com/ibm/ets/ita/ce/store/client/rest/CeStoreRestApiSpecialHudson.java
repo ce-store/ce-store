@@ -7,6 +7,8 @@ package com.ibm.ets.ita.ce.store.client.rest;
 
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_ANSWER;
 import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_MODEL;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_RETINTER;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_RETINSTS;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REST_HELPER;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REST_EXECUTOR;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REST_INTERPRETER;
@@ -62,6 +64,8 @@ public class CeStoreRestApiSpecialHudson extends CeStoreRestApi {
 		long st = System.currentTimeMillis();
 		String command = this.restParts.get(2);
 		String qt = getTextFromRequest();
+		Boolean retInters = getBooleanParameterNamed(PARM_RETINTER, false);
+		Boolean retInsts = getBooleanParameterNamed(PARM_RETINSTS, false);
 
 		boolean plainText = false;
 
@@ -69,11 +73,11 @@ public class CeStoreRestApiSpecialHudson extends CeStoreRestApi {
 			if (command.equals(REST_HELPER)) {
 				result = processHelperRequest(qt, st);
 			} else if (command.equals(REST_EXECUTOR)) {
-				result = processExecutorRequest(qt, st);
+				result = processExecutorRequest(qt, retInters, retInsts, st);
 			} else if (command.equals(REST_INTERPRETER)) {
 				result = processInterpreterRequest(qt, st);
 			} else if (command.equals(REST_ANSWERER)) {
-				result = processAnswererRequest(qt, st);
+				result = processAnswererRequest(qt, retInters, retInsts, st);
 				plainText = true;
 			} else if (command.equals(REST_DIR_LOAD)) {
 				result = processLoadDirectoryModel(st, getParameterNamed(PARM_MODEL));
@@ -118,12 +122,12 @@ public class CeStoreRestApiSpecialHudson extends CeStoreRestApi {
 		return result;
 	}
 
-	private CeStoreJsonObject processExecutorRequest(String pQuestionText, long pStartTime) {
+	private CeStoreJsonObject processExecutorRequest(String pQuestionText, boolean pRetInt, boolean pRetInsts, long pStartTime) {
 		CeStoreJsonObject result = new CeStoreJsonObject();
 
 		ServletStateManager.getHudsonManager(this.wc).logQuestionText(this.wc, pQuestionText);
 
-		QuestionExecutionHandler qe = new QuestionExecutionHandler(this.wc, pQuestionText, pStartTime);
+		QuestionExecutionHandler qe = new QuestionExecutionHandler(this.wc, pQuestionText, pRetInt, pRetInsts, pStartTime);
 		result = qe.processQuestion();
 
 		return result;
@@ -138,10 +142,10 @@ public class CeStoreRestApiSpecialHudson extends CeStoreRestApi {
 		return result;
 	}
 
-	private CeStoreJsonObject processAnswererRequest(String pQuestionText, long pStartTime) {
+	private CeStoreJsonObject processAnswererRequest(String pQuestionText, boolean pRetInt, boolean pRetInsts, long pStartTime) {
 		CeStoreJsonObject result = new CeStoreJsonObject();
 
-		QuestionAnswererHandler qh = new QuestionAnswererHandler(this.wc, pQuestionText, pStartTime);
+		QuestionAnswererHandler qh = new QuestionAnswererHandler(this.wc, pQuestionText, pRetInt, pRetInsts, pStartTime);
 		result = qh.processInterpretation();
 
 		return result;

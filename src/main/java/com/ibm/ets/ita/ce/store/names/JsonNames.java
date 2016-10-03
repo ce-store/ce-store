@@ -215,6 +215,7 @@ public class JsonNames {
 	public static final String JSON_ANSWER = "answer";
 	public static final String JSON_A_RESTEXT = "result text";
 	public static final String JSON_A_CONF = "confidence";
+	public static final String JSON_INT = "interpretation";
 	public static final String JSON_INTS = "interpretations";
 	public static final String JSON_AL_ERRORS = "errors";
 	public static final String JSON_AL_WARNINGS = "warnings";

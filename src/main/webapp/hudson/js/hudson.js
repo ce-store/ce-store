@@ -32,6 +32,8 @@ function Hudson(pJsDebug) {
 	var DOM_AC = 'answers_chatty';
 	var DOM_UN = 'username';
 	var DOM_LR = 'log_results';
+	var DOM_RI1 = 'returnInterpretation';
+	var DOM_RI2 = 'returnInstances';
 	var URL_QH = '/special/hudson/helper';
 	var URL_QE = '/special/hudson/executor';
 	var URL_QB = '/special/hudson/answerer';
@@ -241,6 +243,14 @@ function Hudson(pJsDebug) {
 		return this.getCheckboxValueFrom(DOM_LR);
 	};
 
+	this.isReturningInterpretation = function() {
+		return this.getCheckboxValueFrom(DOM_RI1);
+	};
+
+	this.isReturningInstances = function() {
+		return this.getCheckboxValueFrom(DOM_RI2);
+	};
+
 	this.getCurrentQuestion = function() {
 		return this.allQuestions[getCqPos()];
 	};
@@ -405,11 +415,25 @@ function Hudson(pJsDebug) {
 	};
 
 	this.executeSpecificQuestion = function(pQuestionText, pCbf) {
-		sendExecuteRequest(pQuestionText, pCbf);
+		var parmText = "";
+
+		if (this.isReturningInterpretation()) {
+			parmText += "?returnInterpretation=true";
+		}
+
+		if (this.isReturningInstances()) {
+			if (parmText == "") {
+				parmText += "?returnInstances=true";
+			} else {
+				parmText += "&returnInstances=true";
+			}
+		}
+
+		sendExecuteRequest(pQuestionText, pCbf, parmText);
 	};
 
 	this.interpretSpecificQuestion = function(pQuestionText, pCbf) {
-		sendInterpretRequest(pQuestionText, pCbf);
+		sendInterpretRequest(pQuestionText, pCbf, "");
 	};
 
 	this.answerSpecificQuestion = function(pQuestionText, pCbf) {
@@ -807,8 +831,8 @@ function Hudson(pJsDebug) {
 		sendAjaxPost(url, pQuestionText, pCbf);
 	}
 
-	function sendExecuteRequest(pQuestionJson, pCbf) {
-		var url = getTextFrom(DOM_EP) + URL_QE;
+	function sendExecuteRequest(pQuestionJson, pCbf, pParmText) {
+		var url = getTextFrom(DOM_EP) + URL_QE + pParmText;
 		sendAjaxPost(url, pQuestionJson, pCbf);
 	}
 
