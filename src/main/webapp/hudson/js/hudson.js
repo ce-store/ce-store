@@ -34,6 +34,7 @@ function Hudson(pJsDebug) {
 	var DOM_LR = 'log_results';
 	var DOM_RI1 = 'returnInterpretation';
 	var DOM_RI2 = 'returnInstances';
+	var DOM_ER = 'ce-alerts';
 	var URL_QH = '/special/hudson/helper';
 	var URL_QE = '/special/hudson/executor';
 	var URL_QB = '/special/hudson/answerer';
@@ -103,9 +104,10 @@ function Hudson(pJsDebug) {
 		document.getElementById('directory_load_message').innerHTML = "Loading " + model + ".";
 
 		var xhr = new XMLHttpRequest();
-		xhr.onreadystatechange = function(pResponse) {
+		xhr.onreadystatechange = function() {
 		  if(this.readyState == 4 && this.status == 200) {
 				document.getElementById('directory_load_message').innerHTML = "Finished loading.";
+				gHudson.handleAlerts(this.response);
 		  }
 			else if(this.readyState == 4 && this.status != 200) {
 				document.getElementById('directory_load_message').innerHTML = "Error loading. " + this.responseText;
@@ -116,6 +118,45 @@ function Hudson(pJsDebug) {
 		xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 		xhr.send("model="+model);
 	};
+
+	this.handleAlerts = function(pResponse) {
+		var html = "<hr/>";
+		var respObj = JSON.parse(pResponse);
+
+		if (respObj.alerts != null) {
+			if ((respObj.alerts.errors != null)  && (respObj.alerts.errors.length > 0)) {
+				html += "Errors:";
+				html += "<ul>";
+				for ( var i in respObj.alerts.errors) {
+					var thisError = respObj.alerts.errors[i];
+					html += "<li>" + thisError + "</li>";
+				}
+				html += "</ul>";
+			}
+
+			if ((respObj.alerts.warnings != null)  && (respObj.alerts.warnings.length > 0)) {
+				html += "Warnings:";
+				html += "<ul>";
+				for ( var i in respObj.alerts.warnings) {
+					var thisWarning = respObj.alerts.warnings[i];
+					html += "<li>" + thisWarning + "</li>";
+				}
+				html += "</ul>";
+			}
+
+			if ((respObj.alerts.debugs != null) && (respObj.alerts.debugs.length > 0)) {
+				html += "Debugs:";
+				html += "<ul>";
+				for ( var i in respObj.alerts.debugs) {
+					var thisDebug = respObj.alerts.debugs[i];
+					html += "<li>" + thisDebug + "</li>";
+				}
+				html += "</ul>";
+			}
+
+			setTextIn(DOM_ER, html);
+		}
+	}
 
 	this.doGetDirectoryQuestions = function(model){
 		document.getElementById('directory_questions_message').innerHTML = "Getting questions for " + model + ".";
@@ -412,6 +453,7 @@ function Hudson(pJsDebug) {
 	this.clearAnswerText = function() {
 		setTextIn(DOM_AT, '');
 		setTextIn(DOM_JT, '');
+		setTextIn(DOM_ER, '');
 	};
 
 	this.executeSpecificQuestion = function(pQuestionText, pCbf) {

@@ -13,6 +13,7 @@ import static com.ibm.ets.ita.ce.store.names.MiscNames.JSONFILE_ANSWERS;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_ET;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_MODELS;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SM;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_ALERTS;
 import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.sendHttpGetRequest;
 
 import java.io.BufferedReader;
@@ -22,7 +23,9 @@ import java.net.URL;
 
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonParser;
+import com.ibm.ets.ita.ce.store.client.web.model.CeWebObject;
 import com.ibm.ets.ita.ce.store.core.ActionContext;
+import com.ibm.ets.ita.ce.store.core.ActionResponse;
 import com.ibm.ets.ita.ce.store.core.StoreActions;
 
 public class ModelDirectoryHandler extends GenericHandler {
@@ -86,6 +89,12 @@ public class ModelDirectoryHandler extends GenericHandler {
 //		this.ac.clearIndexedEntityAccessor();
 //
 //		setupCeStore(this.ac, ssm, hm, modelName);
+
+		ActionResponse ar = this.ac.getActionResponse();
+
+		if (ar.hasErrors() || ar.hasWarnings()) {
+			result.put(JSON_ALERTS, CeWebObject.generateStandardAlertsFrom(ar.getAlerts()));
+		}
 
 		result.put(JSON_SM, "The CE Store has been reset");
 		result.put(JSON_ET, System.currentTimeMillis() - this.startTime);

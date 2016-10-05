@@ -146,6 +146,10 @@ public abstract class ActionResponse {
 		saveStructuredResult(pAc);
 	}
 
+	public LinkedHashMap<String, ArrayList<String>> getAlerts() {
+		return this.alerts;
+	}
+
 	public boolean hasErrors() {
 		return (this.errors != null) && (!this.errors.isEmpty());
 	}
