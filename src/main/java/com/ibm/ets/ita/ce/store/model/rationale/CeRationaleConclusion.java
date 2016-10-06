@@ -11,7 +11,7 @@ public class CeRationaleConclusion extends CeRationalePart {
 	public static CeRationaleConclusion createNew(boolean pConIsNegated, String pConName, String pInstName, boolean pPropIsNegated, String pPropName, String pRangeName, String pVal) {
 		CeRationaleConclusion newInst = new CeRationaleConclusion();
 
-		newInst.id = "conc_" + nextRationaleId();
+//		newInst.id = "conc_" + nextRationaleId();
 		newInst.isConceptNegated = pConIsNegated;
 		newInst.isPropertyNegated = pPropIsNegated;
 		newInst.conceptName = pConName;

@@ -8,7 +8,6 @@ package com.ibm.ets.ita.ce.store.model;
 import static com.ibm.ets.ita.ce.store.names.CeNames.RANGE_VALUE;
 import static com.ibm.ets.ita.ce.store.names.MiscNames.ES;
 import static com.ibm.ets.ita.ce.store.names.MiscNames.NL;
-import static com.ibm.ets.ita.ce.store.names.MiscNames.PREFIX_CLAUSE;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_AND;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_DOT;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_NEW;
@@ -18,7 +17,6 @@ import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_SQ;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_THE;
 
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicLong;
 
 public class CeClause {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
@@ -26,9 +24,9 @@ public class CeClause {
 	private static final int MODE_PREMISE = 1;
 	private static final int MODE_CONCLUSION = 2;
 
-	private static AtomicLong clauseIdVal = new AtomicLong(0);
+//	private static AtomicLong clauseIdVal = new AtomicLong(0);
 
-	private String id = null;
+//	private String id = null;
 	private String seqId = null;
 	private int clauseMode = 0; // Whether this is a premise or conclusion
 	private ArrayList<String> rawTokens = new ArrayList<String>();
@@ -47,14 +45,14 @@ public class CeClause {
 	private CeClause(String pSeqId, int pMode) {
 		// This is private to ensure that new instances can only be created via
 		// the various static methods
-		this.id = PREFIX_CLAUSE + nextClauseId();
+//		this.id = PREFIX_CLAUSE + nextClauseId();
 		this.seqId = pSeqId;
 		this.clauseMode = pMode;
 	}
 
-	public static void resetCounter() {
-		clauseIdVal = new AtomicLong(0);
-	}
+//	public static void resetCounter() {
+//		clauseIdVal = new AtomicLong(0);
+//	}
 
 	public static CeClause createNewPremiseClauseFor(CeQuery pQuery) {
 		String seqId = pQuery.calcNextSeqId();
@@ -87,13 +85,13 @@ public class CeClause {
 		return newClause;
 	}
 
-	private static long nextClauseId() {
-		return clauseIdVal.incrementAndGet();
-	}
+//	private static long nextClauseId() {
+//		return clauseIdVal.incrementAndGet();
+//	}
 
-	public String getId() {
-		return this.id;
-	}
+//	public String getId() {
+//		return this.id;
+//	}
 
 	public String getSeqId() {
 		return this.seqId;

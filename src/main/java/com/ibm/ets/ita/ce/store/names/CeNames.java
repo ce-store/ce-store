@@ -49,6 +49,7 @@ public class CeNames {
 	public static final String CON_COMWORD = "common word";
 	public static final String CON_CONNWORD = "connector word";
 	public static final String CON_MODIFIER = "modifier";
+	public static final String CON_QUAL = "qualifier";
 	public static final String CON_SRCHMOD = "search modifier";
 	public static final String CON_FILTMOD = "filter modifier";
 	public static final String CON_FUNCMOD = "function modifier";
@@ -68,7 +69,7 @@ public class CeNames {
 	public static final String CON_CONVCLAUSE = "conv clause";
 	public static final String CON_CONVSEN = "conv sentence";
 	public static final String CON_CONVWORD = "conv word";
-	public static final String[] CONLIST_HUDSON = { CON_QPHRASE, CON_QWORD, CON_COMWORD, CON_MODIFIER, CON_CONNWORD };
+	public static final String[] CONLIST_HUDSON = { CON_QPHRASE, CON_QWORD, CON_COMWORD, CON_MODIFIER, CON_QUAL, CON_CONNWORD };
 
 	//Properties: general property names
 	public static final String PROP_LABPN = "label property name";
@@ -169,6 +170,7 @@ public class CeNames {
 	public static final String PROP_AL1 = "line 1";
 	public static final String PROP_PC = "postcode";
 	public static final String PROP_CORRTO = "corresponds to";
+	public static final String PROP_MAPSTO = "maps to";
 	public static final String PROP_ISEXPBY = "is expressed by";
 	public static final String PROP_PASTTENSE = "past tense";
 	public static final String PROP_PLURAL = "plural form";
@@ -182,6 +184,8 @@ public class CeNames {
 	public static final String MOD_COUNT = "general:count";
 	public static final String MOD_LIST = "general:list";
 	public static final String MOD_SHOW = "general:show";
+	public static final String ABS_ASC = "a:ascending";
+	public static final String ABS_DESC = "a:descending";
 	
 	//Properties: "Special" property names (operators applied to values)
 	public static final String SPECIALNAME_CONTAINS = "contains";

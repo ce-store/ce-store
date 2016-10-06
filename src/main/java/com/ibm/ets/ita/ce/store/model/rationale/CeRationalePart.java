@@ -5,13 +5,11 @@ package com.ibm.ets.ita.ce.store.model.rationale;
  * All Rights Reserved
  *******************************************************************************/
 
-import java.util.concurrent.atomic.AtomicLong;
-
 public abstract class CeRationalePart {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
-	private static AtomicLong rationaleIdVal = new AtomicLong(0);
-	protected String id = null;
+//	private static AtomicLong rationaleIdVal = new AtomicLong(0);
+//	protected String id = null;
 	protected boolean isConceptNegated = false;
 	protected boolean isPropertyNegated = false;
 	protected String conceptName = "";
@@ -27,17 +25,17 @@ public abstract class CeRationalePart {
 		// the various static methods
 	}
 
-	public static void resetCounter() {
-		rationaleIdVal = new AtomicLong(0);
-	}
+//	public static void resetCounter() {
+//		rationaleIdVal = new AtomicLong(0);
+//	}
 
-	protected static long nextRationaleId() {
-		return rationaleIdVal.incrementAndGet();
-	}
+//	protected static long nextRationaleId() {
+//		return rationaleIdVal.incrementAndGet();
+//	}
 
-	public String getId() {
-		return this.id;
-	}
+//	public String getId() {
+//		return this.id;
+//	}
 
 	public boolean isConceptNegated() {
 		return this.isConceptNegated;

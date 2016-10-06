@@ -8,20 +8,18 @@ package com.ibm.ets.ita.ce.store.model;
  *******************************************************************************/
 
 import static com.ibm.ets.ita.ce.store.names.MiscNames.ES;
-import static com.ibm.ets.ita.ce.store.names.MiscNames.PREFIX_CONCAT;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_CONCAT;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_SQ;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.stripDelimitingQuotesFrom;
 
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicLong;
 
 public class CeConcatenatedValue {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
-	private static AtomicLong concatIdVal = new AtomicLong(0);
+//	private static AtomicLong concatIdVal = new AtomicLong(0);
 
-	private String id = null;
+//	private String id = null;
 	private String name = null;
 	private String rawConcatText = null;
 	private String parts[] = null;
@@ -34,7 +32,7 @@ public class CeConcatenatedValue {
 	public static CeConcatenatedValue createNewConcatenatedValue(String pName, String pConcatText) {
 		CeConcatenatedValue result = new CeConcatenatedValue();
 
-		result.id = PREFIX_CONCAT + nextConcatId();
+//		result.id = PREFIX_CONCAT + nextConcatId();
 		result.name = pName;
 		result.rawConcatText = pConcatText;
 		result.calculateParts();
@@ -42,17 +40,17 @@ public class CeConcatenatedValue {
 		return result;
 	}
 
-	public static void resetCounter() {
-		concatIdVal = new AtomicLong(0);
-	}
+//	public static void resetCounter() {
+//		concatIdVal = new AtomicLong(0);
+//	}
 
-	private static long nextConcatId() {
-		return concatIdVal.incrementAndGet();
-	}
+//	private static long nextConcatId() {
+//		return concatIdVal.incrementAndGet();
+//	}
 
-	public String getId() {
-		return this.id;
-	}
+//	public String getId() {
+//		return this.id;
+//	}
 
 	private void calculateParts() {
 		this.parts = this.rawConcatText.split(TOKEN_CONCAT);

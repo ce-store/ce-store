@@ -11,7 +11,7 @@ public class CeRationalePremise extends CeRationalePart {
 	public static CeRationalePremise createNew(boolean pConIsNegated, String pConName, String pInstName, boolean pPropIsNegated, String pPropName, String pRangeName, String pVal) {
 		CeRationalePremise newInst = new CeRationalePremise();
 
-		newInst.id = "prem_" + nextRationaleId();
+//		newInst.id = "prem_" + nextRationaleId();
 		newInst.isConceptNegated = pConIsNegated;
 		newInst.isPropertyNegated = pPropIsNegated;
 		newInst.conceptName = pConName;

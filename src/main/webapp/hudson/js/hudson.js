@@ -744,8 +744,8 @@ function Hudson(pJsDebug) {
 						var confText = '<i>confidence for this answer=<font color="green">' + answer.confidence + '</font></i>';
 
 						if (this.chattyAnswers) {
-							if ((answer.chatty_text != null) && (answer.chatty_text != '')) {
-								answerText += bullet + '<b>' + htmlFormat(answer.chatty_text) + '</b>';
+							if ((answer["chatty text"] != null) && (answer["chatty text"] != '')) {
+								answerText += bullet + '<b>' + htmlFormat(answer["chatty text"]) + '</b>';
 								answerText += '<br/>[' + confText  + ']';
 								answered = true;
 							}
@@ -1032,6 +1032,10 @@ function Hudson(pJsDebug) {
 		}
 
 		result += renderTable(hdrs, rows);
+
+		if (pAnswerSet.footer != null) {
+			result = 'Footer: ' + pAnswerSet.footer;
+		}
 
 		return result;
 	}

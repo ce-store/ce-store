@@ -38,12 +38,16 @@ import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportInfo;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportTiming;
 
 import java.text.DecimalFormat;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 
 import com.ibm.ets.ita.ce.store.core.ActionContext;
 import com.ibm.ets.ita.ce.store.core.ModelBuilder;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
+import com.ibm.ets.ita.ce.store.model.CeProperty;
 import com.ibm.ets.ita.ce.store.model.CePropertyInstance;
 
 public abstract class GeneralUtilities {
@@ -52,6 +56,59 @@ public abstract class GeneralUtilities {
 	private static final String CLASS_NAME = GeneralUtilities.class.getName();
 	private static final String PACKAGE_NAME = GeneralUtilities.class.getPackage().getName();
 	private static final Logger logger = Logger.getLogger(PACKAGE_NAME);
+
+	public static void sortInstancesByProperty(List<CeInstance> pList, final CeProperty pProp, final boolean pAscending) {
+		Comparator<CeInstance> comp = new Comparator<CeInstance>() {
+			@Override
+			public int compare(CeInstance pInst1, CeInstance pInst2) {
+				int result = 0;
+				CePropertyInstance propInst1 = pInst1.getPropertyInstanceForProperty(pProp);
+				CePropertyInstance propInst2 = pInst2.getPropertyInstanceForProperty(pProp);
+				
+				if (propInst1 == null) {
+					if (propInst2 == null) {
+						result = pInst1.getInstanceName().compareTo(pInst2.getInstanceName());
+					} else {
+						result = 1;
+					}
+				} else {
+					if (propInst2 == null) {
+						result = -1;
+					} else {
+						//TODO: This should handle multiple property values
+						String propVal1 = propInst1.getSingleOrFirstValue();
+						String propVal2 = propInst2.getSingleOrFirstValue();
+						
+						try {
+							double dVal1 = new Double(propVal1).doubleValue();
+							double dVal2 = new Double(propVal2).doubleValue();
+
+							if (pAscending) {
+								result = new Double(dVal2 - dVal1).intValue();
+							} else {
+								result = new Double(dVal1 - dVal2).intValue();
+							}
+							
+							if (result == 0) {
+								result = pInst1.getInstanceName().compareTo(pInst2.getInstanceName());
+							}
+						} catch (NumberFormatException e) {
+							//One or other is not a number so do string compare instead
+							if (pAscending) {
+								result = propVal2.compareTo(propVal1);
+							} else {
+								result = propVal1.compareTo(propVal2);
+							}
+						}
+					}
+				}
+
+				return result;
+			}
+		};
+
+		Collections.sort(pList, comp);
+	}
 
 	public static String handleSpecialMarkersAndDecode(ActionContext pAc, String pVal) {
 		String result = pVal;

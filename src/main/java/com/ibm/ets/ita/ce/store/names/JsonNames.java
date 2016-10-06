@@ -214,7 +214,13 @@ public class JsonNames {
 	public static final String JSON_ANSWERS = "answers";
 	public static final String JSON_ANSWER = "answer";
 	public static final String JSON_A_RESTEXT = "result text";
+	public static final String JSON_A_CHATTEXT = "chatty text";
+	public static final String JSON_A_RESSET = "result set";
 	public static final String JSON_A_CONF = "confidence";
+	public static final String JSON_A_RS_TITLE = "title";
+	public static final String JSON_A_RS_FTR = "footer";
+	public static final String JSON_A_RS_HDRS = "headers";
+	public static final String JSON_A_RS_ROWS = "rows";
 	public static final String JSON_INT = "interpretation";
 	public static final String JSON_INTS = "interpretations";
 	public static final String JSON_AL_ERRORS = "errors";

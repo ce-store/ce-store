@@ -28,26 +28,19 @@ import java.util.Properties;
 import java.util.TreeMap;
 
 import com.ibm.ets.ita.ce.store.client.web.ServletStateManager;
-import com.ibm.ets.ita.ce.store.model.CeAnnotation;
-import com.ibm.ets.ita.ce.store.model.CeClause;
-import com.ibm.ets.ita.ce.store.model.CeConcatenatedValue;
 import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.model.CeConceptualModel;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
-import com.ibm.ets.ita.ce.store.model.CeModelEntity;
 import com.ibm.ets.ita.ce.store.model.CeProperty;
 import com.ibm.ets.ita.ce.store.model.CePropertyInstance;
 import com.ibm.ets.ita.ce.store.model.CePropertyValue;
 import com.ibm.ets.ita.ce.store.model.CeQuery;
 import com.ibm.ets.ita.ce.store.model.CeRule;
 import com.ibm.ets.ita.ce.store.model.CeSentence;
-import com.ibm.ets.ita.ce.store.model.CeSequence;
-import com.ibm.ets.ita.ce.store.model.CeSequenceClause;
 import com.ibm.ets.ita.ce.store.model.CeSource;
 import com.ibm.ets.ita.ce.store.model.container.ContainerCeResult;
 import com.ibm.ets.ita.ce.store.model.container.ContainerSentenceLoadResult;
 import com.ibm.ets.ita.ce.store.model.rationale.CeRationaleConclusion;
-import com.ibm.ets.ita.ce.store.model.rationale.CeRationalePart;
 import com.ibm.ets.ita.ce.store.model.rationale.CeRationalePremise;
 import com.ibm.ets.ita.ce.store.model.rationale.CeRationaleReasoningStep;
 import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentence;
@@ -132,16 +125,16 @@ public class ModelBuilder {
 		this.cachedInstanceFragmentNames = new HashSet<String>();
 
 		// Reset all of the counters that are used when allocating objects
-		CeRationalePart.resetCounter();
-		CeAnnotation.resetCounter();
-		CeClause.resetCounter();
-		CeConcatenatedValue.resetCounter();
-		CeModelEntity.resetCounter();
-		CePropertyValue.resetCounter();
+//		CeRationalePart.resetCounter();
+//		CeAnnotation.resetCounter();
+//		CeClause.resetCounter();
+//		CeConcatenatedValue.resetCounter();
+//		CeModelEntity.resetCounter();
+//		CePropertyValue.resetCounter();
 		CeQuery.resetCounter();
 		CeSentence.resetCounter();
-		CeSequence.resetCounter();
-		CeSequenceClause.resetCounter();
+//		CeSequence.resetCounter();
+//		CeSequenceClause.resetCounter();
 		CeSource.resetCounter();
 	}
 

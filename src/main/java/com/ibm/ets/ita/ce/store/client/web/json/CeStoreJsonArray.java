@@ -50,6 +50,14 @@ public class CeStoreJsonArray extends CeStoreJsonProcessor {
 		this.innerList.addAll(pValues);
 	}
 
+	public void addAllArrays(ArrayList<ArrayList<String>> pValues) {
+		for (ArrayList<String> thisRow : pValues) {
+			CeStoreJsonArray jRow = new CeStoreJsonArray();
+			jRow.addAll(thisRow);
+			add(jRow);
+		}
+	}
+
 	public Object get(int index) {
 		return this.innerList.get(index);
 	}

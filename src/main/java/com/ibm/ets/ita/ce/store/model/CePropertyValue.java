@@ -6,19 +6,16 @@ package com.ibm.ets.ita.ce.store.model;
  *******************************************************************************/
 
 import static com.ibm.ets.ita.ce.store.names.MiscNames.NO_TS;
-import static com.ibm.ets.ita.ce.store.names.MiscNames.PREFIX_PROPVAL;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.timestampNow;
-
-import java.util.concurrent.atomic.AtomicLong;
 
 import com.ibm.ets.ita.ce.store.core.ActionContext;
 
 public class CePropertyValue {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
-	private static AtomicLong propvalIdVal = new AtomicLong(0);
+//	private static AtomicLong propvalIdVal = new AtomicLong(0);
 
-	private String id = null;
+//	private String id = null;
 	private String value = null;
 	private CeInstance valueInst = null;
 	private String rangeName = null;
@@ -33,7 +30,7 @@ public class CePropertyValue {
 
 	public static CePropertyValue createUsing(ActionContext pAc, String pValue, String pRangeName, boolean pHadQuotesOriginally, boolean pIsNegated, CeSentence pSen) {
 		CePropertyValue thisPv = new CePropertyValue();
-		thisPv.id = PREFIX_PROPVAL + nextPropvalId();
+//		thisPv.id = PREFIX_PROPVAL + nextPropvalId();
 
 		thisPv.setValue(pAc, pValue);
 		thisPv.rangeName = pAc.getModelBuilder().getCachedStringValueLevel1(pRangeName);
@@ -52,17 +49,17 @@ public class CePropertyValue {
 		return thisPv;
 	}
 	
-	public static void resetCounter() {
-		propvalIdVal = new AtomicLong(0);
-	}
+//	public static void resetCounter() {
+//		propvalIdVal = new AtomicLong(0);
+//	}
 
-	private static long nextPropvalId() {
-		return propvalIdVal.incrementAndGet();
-	}
+//	private static long nextPropvalId() {
+//		return propvalIdVal.incrementAndGet();
+//	}
 
-	public String getId() {
-		return this.id;
-	}
+//	public String getId() {
+//		return this.id;
+//	}
 
 	public String getValue() {
 		return this.value;

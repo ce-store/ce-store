@@ -1,18 +1,22 @@
 package com.ibm.ets.ita.ce.store.hudson.model.answer;
 
+import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
+
 /*******************************************************************************
  * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
  *******************************************************************************/
 
-public class AnswerMedia {
+public class AnswerMedia extends Answer {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private String id = null;
 	private String url = null;
 	private String credit = null;
 
-	public AnswerMedia(String pId, String pUrl, String pCredit) {
+	public AnswerMedia(String pId, String pUrl, String pCredit, int pConf) {
+		super (pConf);
+
 		this.id = pId;
 		this.url = pUrl;
 		this.credit = pCredit;
@@ -36,6 +40,13 @@ public class AnswerMedia {
 		
 		result = this.url + ", " + this.credit + " (" + this.id + ")";
 		
+		return result;
+	}
+
+	@Override
+	public CeStoreJsonObject specificJson() {
+		CeStoreJsonObject result = new CeStoreJsonObject();
+
 		return result;
 	}
 

@@ -9,21 +9,18 @@ package com.ibm.ets.ita.ce.store.model;
 
 import static com.ibm.ets.ita.ce.store.names.MiscNames.ES;
 import static com.ibm.ets.ita.ce.store.names.MiscNames.NO_TS;
-import static com.ibm.ets.ita.ce.store.names.MiscNames.PREFIX_ANNO;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.ANNO_TOKEN_MODEL;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_COLON;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.timestampNow;
-
-import java.util.concurrent.atomic.AtomicLong;
 
 import com.ibm.ets.ita.ce.store.core.ActionContext;
 
 public class CeAnnotation {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
-	private static AtomicLong annotationIdVal = new AtomicLong(0);
+//	private static AtomicLong annotationIdVal = new AtomicLong(0);
 
-	private String id = null;
+//	private String id = null;
 	private long creationDate = NO_TS;
 	private boolean metaModelGenerated = false;
 	private String label = null;
@@ -38,7 +35,7 @@ public class CeAnnotation {
 			CeSentence pAnnoSen) {
 		CeAnnotation newAnno = new CeAnnotation();
 
-		newAnno.id = PREFIX_ANNO + nextAnnotationId();
+//		newAnno.id = PREFIX_ANNO + nextAnnotationId();
 		newAnno.label = pAc.getModelBuilder().getCachedStringValueLevel3(pAnnoLabel);
 		newAnno.text = pAc.getModelBuilder().getCachedStringValueLevel3(pAnnoText);
 
@@ -49,17 +46,17 @@ public class CeAnnotation {
 		return newAnno;
 	}
 
-	public static void resetCounter() {
-		annotationIdVal = new AtomicLong(0);
-	}
+//	public static void resetCounter() {
+//		annotationIdVal = new AtomicLong(0);
+//	}
 
-	private static long nextAnnotationId() {
-		return annotationIdVal.incrementAndGet();
-	}
+//	private static long nextAnnotationId() {
+//		return annotationIdVal.incrementAndGet();
+//	}
 
-	public String getId() {
-		return this.id;
-	}
+//	public String getId() {
+//		return this.id;
+//	}
 
 	public long getCreationDate() {
 		return this.creationDate;

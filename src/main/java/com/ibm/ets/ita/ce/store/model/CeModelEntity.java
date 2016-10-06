@@ -11,21 +11,17 @@ import static com.ibm.ets.ita.ce.store.names.MiscNames.NO_TS;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.timestampNow;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 
 import com.ibm.ets.ita.ce.store.core.ActionContext;
 
 public abstract class CeModelEntity implements Comparable<CeModelEntity> {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
-	private static AtomicLong seqNumCtr = new AtomicLong(0);
+//	private static AtomicLong seqNumCtr = new AtomicLong(0);
 
 	protected String name = null;
-	private long seqNum = CeModelEntity.seqNumCtr.getAndIncrement();
+//	private long seqNum = CeModelEntity.seqNumCtr.getAndIncrement();
 	private long creationDate = NO_TS;
 	private boolean metaModelGenerated = false;
 	private CeAnnotation[] annotations = new CeAnnotation[0];
@@ -41,20 +37,20 @@ public abstract class CeModelEntity implements Comparable<CeModelEntity> {
 		this.creationDate = timestampNow();
 	}
 
-	public static void resetCounter() {
-		seqNumCtr = new AtomicLong(0);
-	}
+//	public static void resetCounter() {
+//		seqNumCtr = new AtomicLong(0);
+//	}
 
-	public static void sortInstancesBySequenceNumber(List<CeInstance> pList) {
-		Comparator<CeInstance> comp = new Comparator<CeInstance>() {
-			@Override
-			public int compare(CeInstance pInst1, CeInstance pInst2) {
-				return new Long(pInst1.getSequenceNumber() - pInst2.getSequenceNumber()).intValue();
-			}
-		};
-
-		Collections.sort(pList, comp);
-	}
+//	public static void sortInstancesBySequenceNumber(List<CeInstance> pList) {
+//		Comparator<CeInstance> comp = new Comparator<CeInstance>() {
+//			@Override
+//			public int compare(CeInstance pInst1, CeInstance pInst2) {
+//				return new Long(pInst1.getSequenceNumber() - pInst2.getSequenceNumber()).intValue();
+//			}
+//		};
+//
+//		Collections.sort(pList, comp);
+//	}
 
 	public boolean isConcept() {
 		return false;
@@ -84,9 +80,9 @@ public abstract class CeModelEntity implements Comparable<CeModelEntity> {
 		return false;
 	}
 
-	public long getSequenceNumber() {
-		return this.seqNum;
-	}
+//	public long getSequenceNumber() {
+//		return this.seqNum;
+//	}
 
 	public long getCreationDate() {
 		return this.creationDate;

@@ -34,6 +34,10 @@ public class Interpretation {
 		}
 	}
 
+	public int getConfidence() {
+		return this.confidence;
+	}
+
 	public ArrayList<ConceptPhrase> getConceptPhrases() {
 		return this.conceptPhrases;
 	}

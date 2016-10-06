@@ -1,5 +1,12 @@
 package com.ibm.ets.ita.ce.store.hudson.model.answer;
 
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_A_CONF;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_A_RESSET;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_A_RS_TITLE;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_A_RS_FTR;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_A_RS_HDRS;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_A_RS_ROWS;
+
 /*******************************************************************************
  * (C) Copyright IBM Corporation  2011, 2016
  * All Rights Reserved
@@ -7,19 +14,40 @@ package com.ibm.ets.ita.ce.store.hudson.model.answer;
 
 import java.util.ArrayList;
 
-public class AnswerResultSet {
+import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonArray;
+import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
+
+public class AnswerResultSet extends Answer {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private String title = null;
+	private String footer = null;
 	private ArrayList<String> headers = new ArrayList<String>();
 	private ArrayList<ArrayList<String>> rows = new ArrayList<ArrayList<String>>();
 
-	public AnswerResultSet(ArrayList<String> pHdrs) {
+	public AnswerResultSet(ArrayList<String> pHdrs, int pConf) {
+		super(pConf);
+
 		this.headers = pHdrs;
 	}
-	
+
+	public AnswerResultSet(ArrayList<String> pHdrs, ArrayList<ArrayList<String>> pRows, int pConf) {
+		super(pConf);
+
+		this.headers = pHdrs;
+		this.rows = pRows;
+	}
+
 	public String getTitle() {
 		return this.title;
+	}
+	
+	public String getFooter() {
+		return this.footer;
+	}
+
+	public void setFooter(String pVal) {
+		this.footer = pVal;
 	}
 	
 	public void applyTitle(String pTitleSingle, String pTitlePlural, String pFilterText) {
@@ -37,7 +65,7 @@ public class AnswerResultSet {
 			this.title = this.title.replace("%FILTER%", pFilterText);
 		}
 	}
-	
+
 	public ArrayList<String> getHeaders() {
 		return this.headers;
 	}
@@ -86,6 +114,33 @@ public class AnswerResultSet {
 		
 		result = this.headers + ", " + this.rows.size() + " rows";
 		
+		return result;
+	}
+
+	@Override
+	public CeStoreJsonObject specificJson() {
+		CeStoreJsonObject result = new CeStoreJsonObject();
+		CeStoreJsonObject jRes = new CeStoreJsonObject();
+		CeStoreJsonArray jHdrs = new CeStoreJsonArray();
+		CeStoreJsonArray jRows = new CeStoreJsonArray();
+
+		jHdrs.addAll(this.headers);
+		jRows.addAllArrays(this.rows);
+		
+		if (this.title != null) {
+			jRes.put(JSON_A_RS_TITLE, this.title);
+		}
+
+		jRes.put(JSON_A_RS_HDRS, jHdrs);
+		jRes.put(JSON_A_RS_ROWS, jRows);
+		
+		if (this.footer != null) {
+			jRes.put(JSON_A_RS_FTR, this.footer);
+		}
+
+		result.put(JSON_A_CONF, this.confidence); 
+		result.put(JSON_A_RESSET, jRes);
+
 		return result;
 	}
 
