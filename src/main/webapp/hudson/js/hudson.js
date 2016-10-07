@@ -1044,8 +1044,9 @@ function Hudson(pJsDebug) {
 		var result = '';
 		var hdrs = [ 'id', 'url', 'credit' ];
 		var rows = [ [ pMedia.id, pMedia.url, pMedia.credit ] ];
-
-		result = renderTable(hdrs, rows);
+		result = '<img src="' + pMedia.url + '"/>';		
+console.log(result);
+		result += renderTable(hdrs, rows);
 
 		return result;
 	}
@@ -1055,21 +1056,8 @@ function Hudson(pJsDebug) {
 		var hdrs = null;
 		var rows = null;
 
-		if (pCoords.lat != null) {
-			if (pCoords.postcode != null) {
-				//lat lon and postcode
-				hdrs = [ 'id', 'lat', 'lon' , 'postcode', 'address line 1'];
-				rows = [ [ pCoords.id, pCoords.lat, pCoords.lon, pCoords.postcode, , pCoords["address line 1"] ] ];
-			} else {
-				//lat lon only
-				hdrs = [ 'id', 'lat', 'lon' ];
-				rows = [ [ pCoords.id, pCoords.lat, pCoords.lon ] ];
-			}
-		} else {
-			//No lat lon
-			hdrs = [ 'id', 'postcode', 'address line 1' ];
-			rows = [ [ pCoords.id, pCoords.postcode, pCoords["address line 1"] ] ];
-		}
+		hdrs = [ 'id', 'lat', 'lon' ];
+		rows = [ [ pCoords.id, pCoords.lat, pCoords.lon ] ];
 
 		result = renderTable(hdrs, rows);
 

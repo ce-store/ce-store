@@ -1,5 +1,6 @@
 package com.ibm.ets.ita.ce.store.hudson.model.answer;
 
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_A_CONF;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_INSTS;
 
 import java.util.ArrayList;
@@ -47,6 +48,8 @@ public abstract class Answer implements Comparable<Answer> {
 
 	public CeStoreJsonObject toJson(ActionContext pAc, boolean pRetInsts) {
 		CeStoreJsonObject result = specificJson();
+
+		result.put(JSON_A_CONF, this.confidence);
 
 		if (pRetInsts) {
 			jsonAddAnswerInstances(pAc, result);

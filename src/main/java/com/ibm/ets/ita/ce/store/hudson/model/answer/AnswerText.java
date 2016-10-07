@@ -1,6 +1,5 @@
 package com.ibm.ets.ita.ce.store.hudson.model.answer;
 
-import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_A_CONF;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_A_RESTEXT;
 
 import java.util.ArrayList;
@@ -47,7 +46,6 @@ public class AnswerText extends Answer {
 	public CeStoreJsonObject specificJson() {
 		CeStoreJsonObject result = new CeStoreJsonObject();
 
-		result.put(JSON_A_CONF, this.confidence); 
 		result.put(JSON_A_RESTEXT, this.answerText);
 
 		if (this.chattyText != null) {

@@ -1,6 +1,5 @@
 package com.ibm.ets.ita.ce.store.hudson.model.answer;
 
-import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_A_CONF;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_A_RESSET;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_A_RS_TITLE;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_A_RS_FTR;
@@ -138,7 +137,6 @@ public class AnswerResultSet extends Answer {
 			jRes.put(JSON_A_RS_FTR, this.footer);
 		}
 
-		result.put(JSON_A_CONF, this.confidence); 
 		result.put(JSON_A_RESSET, jRes);
 
 		return result;

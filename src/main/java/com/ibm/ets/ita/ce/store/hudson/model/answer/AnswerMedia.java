@@ -1,5 +1,10 @@
 package com.ibm.ets.ita.ce.store.hudson.model.answer;
 
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_A_M_ID;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_A_M_CREDIT;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_A_M_URL;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_A_RESMEDIA;
+
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
 
 /*******************************************************************************
@@ -46,6 +51,13 @@ public class AnswerMedia extends Answer {
 	@Override
 	public CeStoreJsonObject specificJson() {
 		CeStoreJsonObject result = new CeStoreJsonObject();
+		CeStoreJsonObject jRes = new CeStoreJsonObject();
+
+		jRes.put(JSON_A_M_ID, this.id);
+		jRes.put(JSON_A_M_URL, this.url);
+		jRes.put(JSON_A_M_CREDIT, this.credit);
+
+		result.put(JSON_A_RESMEDIA, jRes);
 
 		return result;
 	}

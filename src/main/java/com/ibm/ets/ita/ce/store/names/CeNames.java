@@ -167,8 +167,8 @@ public class CeNames {
 	//Properties: Hudson
 	public static final String PROP_LAT = "latitude";
 	public static final String PROP_LON = "longitude";
-	public static final String PROP_AL1 = "line 1";
-	public static final String PROP_PC = "postcode";
+	public static final String PROP_URL = "url";
+	public static final String PROP_CREDIT = "credit";
 	public static final String PROP_CORRTO = "corresponds to";
 	public static final String PROP_MAPSTO = "maps to";
 	public static final String PROP_ISEXPBY = "is expressed by";

@@ -1,5 +1,10 @@
 package com.ibm.ets.ita.ce.store.hudson.model.answer;
 
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_A_C_ID;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_A_C_LAT;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_A_C_LON;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_A_RESCOORDS;
+
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
 
 /*******************************************************************************
@@ -46,7 +51,15 @@ public class AnswerCoords extends Answer {
 	@Override
 	public CeStoreJsonObject specificJson() {
 		CeStoreJsonObject result = new CeStoreJsonObject();
+		CeStoreJsonObject jRes = new CeStoreJsonObject();
+
+		jRes.put(JSON_A_C_ID, this.id);
+		jRes.put(JSON_A_C_LAT, this.lat);
+		jRes.put(JSON_A_C_LON, this.lon);
+
+		result.put(JSON_A_RESCOORDS, jRes);
 
 		return result;
 	}
+
 }

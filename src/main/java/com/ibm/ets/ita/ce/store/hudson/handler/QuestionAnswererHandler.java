@@ -3,8 +3,15 @@ package com.ibm.ets.ita.ce.store.hudson.handler;
 import static com.ibm.ets.ita.ce.store.names.CeNames.ABS_ASC;
 import static com.ibm.ets.ita.ce.store.names.CeNames.CONLIST_HUDSON;
 import static com.ibm.ets.ita.ce.store.names.CeNames.CON_CONFCON;
+import static com.ibm.ets.ita.ce.store.names.CeNames.CON_MEDIA;
+import static com.ibm.ets.ita.ce.store.names.CeNames.CON_SPATIAL;
 import static com.ibm.ets.ita.ce.store.names.CeNames.PROP_CORRTO;
+import static com.ibm.ets.ita.ce.store.names.CeNames.PROP_CREDIT;
+import static com.ibm.ets.ita.ce.store.names.CeNames.PROP_DESC;
+import static com.ibm.ets.ita.ce.store.names.CeNames.PROP_LAT;
+import static com.ibm.ets.ita.ce.store.names.CeNames.PROP_LON;
 import static com.ibm.ets.ita.ce.store.names.CeNames.PROP_MAPSTO;
+import static com.ibm.ets.ita.ce.store.names.CeNames.PROP_URL;
 import static com.ibm.ets.ita.ce.store.names.CeNames.MOD_COUNT;
 import static com.ibm.ets.ita.ce.store.names.CeNames.MOD_EXPAND;
 import static com.ibm.ets.ita.ce.store.names.CeNames.MOD_LINKSFROM;
@@ -18,8 +25,6 @@ import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_INTS;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_QUESTION;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_Q_TEXT;
 import static com.ibm.ets.ita.ce.store.names.MiscNames.NL;
-import static com.ibm.ets.ita.ce.store.names.CeNames.CON_SPATIAL;
-import static com.ibm.ets.ita.ce.store.names.CeNames.PROP_DESC;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.sortInstancesByProperty;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportDebug;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
@@ -37,6 +42,8 @@ import com.ibm.ets.ita.ce.store.hudson.model.Interpretation;
 import com.ibm.ets.ita.ce.store.hudson.model.PropertyPhrase;
 import com.ibm.ets.ita.ce.store.hudson.model.SpecialPhrase;
 import com.ibm.ets.ita.ce.store.hudson.model.answer.Answer;
+import com.ibm.ets.ita.ce.store.hudson.model.answer.AnswerCoords;
+import com.ibm.ets.ita.ce.store.hudson.model.answer.AnswerMedia;
 import com.ibm.ets.ita.ce.store.hudson.model.answer.AnswerResultSet;
 import com.ibm.ets.ita.ce.store.hudson.model.answer.AnswerText;
 import com.ibm.ets.ita.ce.store.hudson.model.special.SpMatchedTriple;
@@ -54,15 +61,14 @@ public class QuestionAnswererHandler extends GenericHandler {
 	private Interpretation interpretation = null;
 	private HashSet<CeInstance> domainInstances = null;
 	private HashSet<CeInstance> otherInstances = null;
-//	private String answerText = null;
-	private Answer answer = null;
-//	private ArrayList<CeInstance> answerInstances = new ArrayList<CeInstance>();
+	private ArrayList<Answer> answers = null;
 	private boolean returnInterpretation = false;
 	private boolean returnInstances = false;
 
 	public QuestionAnswererHandler(ActionContext pAc, String pIntJson, boolean pRetInt, boolean pRetInsts, long pStartTime) {
 		super(pAc, pStartTime);
 
+		this.answers = new ArrayList<Answer>();
 		this.returnInterpretation = pRetInt;
 		this.returnInstances = pRetInsts;
 
@@ -97,6 +103,18 @@ public class QuestionAnswererHandler extends GenericHandler {
 
 	private ArrayList<PropertyPhrase> listPropertyPhrases() {
 		return this.interpretation.getPropertyPhrases();
+	}
+
+	private ArrayList<PropertyPhrase> listObjectPropertyPhrases() {
+		ArrayList<PropertyPhrase> result = new ArrayList<PropertyPhrase>();
+
+		for (PropertyPhrase thisPp : listPropertyPhrases()) {
+			if (thisPp.getFirstProperty().isObjectProperty()) {
+				result.add(thisPp);
+			}
+		}
+
+		return result;
 	}
 
 	private ArrayList<SpecialPhrase> listSpecialPhrases() {
@@ -212,6 +230,7 @@ public class QuestionAnswererHandler extends GenericHandler {
 		CeProperty mProp = propPhrase.getFirstProperty();
 		CeConcept domCon = mProp.getDomainConcept();
 		ArrayList<String> answerValues = new ArrayList<String>();
+		ArrayList<CeInstance> matchedInsts = new ArrayList<CeInstance>();
 
 		if (mProp != null) {
 			for (InstancePhrase thisIp : pMt.getObjects()) {
@@ -222,7 +241,7 @@ public class QuestionAnswererHandler extends GenericHandler {
 							mProp.getPropertyName())) {
 						if (objInst.equals(mInst)) {
 							answerValues.add(subInst.getInstanceName());
-							this.answer.addInstance(subInst);
+							matchedInsts.add(subInst);
 						}
 					}
 				}
@@ -246,28 +265,42 @@ public class QuestionAnswererHandler extends GenericHandler {
 			sb.append(objPhrase.getPhraseText());
 		}
 
-		createStandardAnswerWith(sb.toString(), null);
+		createStandardAnswerWith(sb.toString(), null, matchedInsts);
 	}
 
 	private void matchedTripleSubjectAnswerFor(SpMatchedTriple pMt) {
 		PropertyPhrase propPhrase = pMt.getPredicate();
 		CeProperty mProp = propPhrase.getFirstProperty();
-		ArrayList<String> answerValues = new ArrayList<String>();
 
 		if (mProp != null) {
-			for (InstancePhrase thisIp : pMt.getSubjects()) {
-				CeInstance mInst = thisIp.getFirstInstance();
+			if (mProp.getRangeConcept().equalsOrHasParentNamed(this.ac, CON_MEDIA)) {
+				mediaMatchedTripleSubjectAnswerFor(pMt);
+			} else if (mProp.getRangeConcept().equalsOrHasParentNamed(this.ac, CON_SPATIAL)) {
+				spatialMatchedTripleSubjectAnswerFor(pMt);
+			} else {
+				textMatchedTripleSubjectAnswerFor(pMt);
+			}
+		}
+	}
+	
+	private void textMatchedTripleSubjectAnswerFor(SpMatchedTriple pMt) {
+		PropertyPhrase propPhrase = pMt.getPredicate();
+		CeProperty mProp = propPhrase.getFirstProperty();
+		ArrayList<String> answerValues = new ArrayList<String>();
+		ArrayList<CeInstance> matchedInsts = new ArrayList<CeInstance>();
 
-				if (mProp.isObjectProperty()) {
-					for (CeInstance thisInst : mInst.getInstanceListFromPropertyNamed(this.ac,
-							mProp.getPropertyName())) {
-						answerValues.add(thisInst.getInstanceName());
-						this.answer.addInstance(thisInst);
-					}
-				} else {
-					for (String thisVal : mInst.getValueListFromPropertyNamed(mProp.getPropertyName())) {
-						answerValues.add(thisVal);
-					}
+		for (InstancePhrase thisIp : pMt.getSubjects()) {
+			CeInstance mInst = thisIp.getFirstInstance();
+
+			if (mProp.isObjectProperty()) {
+				for (CeInstance thisInst : mInst.getInstanceListFromPropertyNamed(this.ac,
+						mProp.getPropertyName())) {
+					answerValues.add(thisInst.getInstanceName());
+					matchedInsts.add(thisInst);
+				}
+			} else {
+				for (String thisVal : mInst.getValueListFromPropertyNamed(mProp.getPropertyName())) {
+					answerValues.add(thisVal);
 				}
 			}
 		}
@@ -289,24 +322,54 @@ public class QuestionAnswererHandler extends GenericHandler {
 			sepVal = ", ";
 		}
 
-		createStandardAnswerWith(sb.toString(), null);
+		createStandardAnswerWith(sb.toString(), null, matchedInsts);
+	}
+
+	private void mediaMatchedTripleSubjectAnswerFor(SpMatchedTriple pMt) {
+		PropertyPhrase propPhrase = pMt.getPredicate();
+		CeProperty mProp = propPhrase.getFirstProperty();
+
+		for (InstancePhrase thisIp : pMt.getSubjects()) {
+			CeInstance mInst = thisIp.getFirstInstance();
+
+			if (mProp.isObjectProperty()) {
+				for (CeInstance thisInst : mInst.getInstanceListFromPropertyNamed(this.ac,
+						mProp.getPropertyName())) {
+					createMediaAnswerFor(thisInst);
+				}
+			}
+		}
+	}
+
+	private void spatialMatchedTripleSubjectAnswerFor(SpMatchedTriple pMt) {
+		PropertyPhrase propPhrase = pMt.getPredicate();
+		CeProperty mProp = propPhrase.getFirstProperty();
+
+		for (InstancePhrase thisIp : pMt.getSubjects()) {
+			CeInstance mInst = thisIp.getFirstInstance();
+
+			if (mProp.isObjectProperty()) {
+				for (CeInstance thisInst : mInst.getInstanceListFromPropertyNamed(this.ac,
+						mProp.getPropertyName())) {
+					createCoordsAnswerFor(thisInst);
+				}
+			}
+		}
 	}
 
 	private void multiMatchAnswerFor(SpMultiMatch pMm) {
 		CeInstance matchedInst = pMm.getMatchedInstance();
 
-		this.answer.addInstance(matchedInst);
-
 		if (matchedInst != null) {
 			String desc = matchedInst.getSingleValueFromPropertyNamed(PROP_DESC);
 
 			if ((desc != null) && (!desc.isEmpty())) {
-				createStandardAnswerWith(desc, null);
+				createStandardAnswerWith(desc, null, matchedInst);
 			} else {
-				createTbcAnswerWith("multiMatchAnswerFor (no description)");
+				createTbcAnswerWith("multiMatchAnswerFor (no description)", matchedInst);
 			}
 		} else {
-			createTbcAnswerWith("multiMatchAnswerFor (no matched instance)");
+			createTbcAnswerWith("multiMatchAnswerFor (no matched instance)", matchedInst);
 		}
 	}
 
@@ -340,8 +403,15 @@ public class QuestionAnswererHandler extends GenericHandler {
 				}
 			} else {
 				if (this.domainInstances.isEmpty()) {
-					// some concepts, some properties, no domain instances
-					handleSomeConceptsAndProperties();
+					if (!listObjectPropertyPhrases().isEmpty()) {
+						//TODO: This may be an over-simplification
+						//If the concepts and properties were related they would be matched triples
+						//Since they are not and we can just treat as concepts
+						handleJustConcepts();
+					} else {
+						// some concepts, some properties, no domain instances
+						handleSomeConceptsAndProperties();
+					}
 				} else {
 					// some concepts, some properties, some domain instances
 					handleSomeConceptsPropertiesAndInstances();
@@ -351,21 +421,69 @@ public class QuestionAnswererHandler extends GenericHandler {
 	}
 
 	private void createStandardAnswerWith(String pAnswerText, String pChattyText) {
-		this.answer = new AnswerText(pAnswerText, pChattyText, computeAnswerConfidence());
+		Answer ans = new AnswerText(pAnswerText, pChattyText, computeAnswerConfidence());
+
+		this.answers.add(ans);
 	}
 
-//	private void createStandardAnswerWith(String pAnswerText, String pChattyText, ArrayList<CeInstance> pInstList) {
-//		this.answer = new AnswerText(pAnswerText, pChattyText, computeAnswerConfidence(), pInstList);
-//	}
+	private void createStandardAnswerWith(String pAnswerText, String pChattyText, CeInstance pInst) {
+		Answer ans = new AnswerText(pAnswerText, pChattyText, computeAnswerConfidence());
+		ans.addInstance(pInst);
+
+		this.answers.add(ans);
+	}
+
+	private void createStandardAnswerWith(String pAnswerText, String pChattyText, ArrayList<CeInstance> pInstList) {
+		Answer ans = new AnswerText(pAnswerText, pChattyText, computeAnswerConfidence(), pInstList);
+
+		this.answers.add(ans);
+	}
 
 	private void createResultSetAnswerWith(ArrayList<String> pTitles, ArrayList<ArrayList<String>> pRows) {
-		this.answer = new AnswerResultSet(pTitles, pRows, computeAnswerConfidence());
+		Answer ans = new AnswerResultSet(pTitles, pRows, computeAnswerConfidence());
+
+		this.answers.add(ans);
 	}
 
 	private void createTbcAnswerWith(String pAnswerText) {
-		this.answer = new AnswerText("TBC - " + pAnswerText, null, 0);
+		Answer ans = new AnswerText("TBC - " + pAnswerText, null, 0);
+
+		this.answers.add(ans);
 	}
-	
+
+	private void createTbcAnswerWith(String pAnswerText, CeInstance pInst) {
+		Answer ans = new AnswerText("TBC - " + pAnswerText, null, 0);
+		ans.addInstance(pInst);
+
+		this.answers.add(ans);
+	}
+
+	private void createCoordsAnswerFor(CeInstance pInst) {
+		String name = pInst.getInstanceName();
+		String lat = pInst.getSingleValueFromPropertyNamed(PROP_LAT);
+		String lon = pInst.getSingleValueFromPropertyNamed(PROP_LON);
+
+		if ((!lat.isEmpty()) && (!lon.isEmpty())) {
+			Answer ans = new AnswerCoords(name, lat, lon, computeAnswerConfidence());
+			ans.addInstance(pInst);
+
+			this.answers.add(ans);
+		}
+	}
+
+	private void createMediaAnswerFor(CeInstance pInst) {
+		String name = pInst.getInstanceName();
+		String url = pInst.getSingleValueFromPropertyNamed(PROP_URL);
+		String credit = pInst.getSingleValueFromPropertyNamed(PROP_CREDIT);
+
+		if (!url.isEmpty()) {
+			Answer ans = new AnswerMedia(name, url, credit, computeAnswerConfidence());
+			ans.addInstance(pInst);
+
+			this.answers.add(ans);
+		}
+	}
+
 	private int computeAnswerConfidence() {
 		//TODO: Improve this
 		return this.interpretation.getConfidence();
@@ -390,11 +508,11 @@ public class QuestionAnswererHandler extends GenericHandler {
 
 	private void handlePropertiesFor(CeInstance pInst) {
 		StringBuilder sb = new StringBuilder();
+		HashSet<CeInstance> mediaInsts = null;
+		HashSet<CeInstance> spatialInsts = null;
 		String instName = null;
 		String propName = null;
 		String propVals = null;
-
-		this.answer.addInstance(pInst);
 
 		instName = pInst.getInstanceName();
 
@@ -408,16 +526,22 @@ public class QuestionAnswererHandler extends GenericHandler {
 					}
 
 					if (innerProp.equals(thisProp)) {
-						propName = thisPi.getPropertyName();
+						if (innerProp.getRangeConcept().equalsOrHasParentNamed(this.ac, CON_MEDIA)) {
+							mediaInsts = thisPi.getValueInstanceList(this.ac);
+						} else if (innerProp.getRangeConcept().equalsOrHasParentNamed(this.ac, CON_SPATIAL)) {
+							spatialInsts = thisPi.getValueInstanceList(this.ac);
+						} else {
+							propName = thisPi.getPropertyName();
 
-						for (String thisVal : thisPi.getValueList()) {
-							if (propVals == null) {
-								propVals = "";
-							} else {
-								propVals += ", ";
+							for (String thisVal : thisPi.getValueList()) {
+								if (propVals == null) {
+									propVals = "";
+								} else {
+									propVals += ", ";
+								}
+
+								propVals += thisVal;
 							}
-
-							propVals += thisVal;
 						}
 					}
 				}
@@ -428,7 +552,18 @@ public class QuestionAnswererHandler extends GenericHandler {
 					sb.append(instName + " " + propName + " " + propVals);
 				}
 
-				createStandardAnswerWith(sb.toString(), null);
+				if (mediaInsts != null) {
+					for (CeInstance relInst : mediaInsts) {
+						createMediaAnswerFor(relInst);
+					}
+				} else if (spatialInsts != null) {
+					for (CeInstance relInst : spatialInsts) {
+						createCoordsAnswerFor(relInst);
+					}
+				} else {
+					//Standard answer
+					createStandardAnswerWith(sb.toString(), null, pInst);
+				}
 			}
 		}
 	}
@@ -453,14 +588,10 @@ public class QuestionAnswererHandler extends GenericHandler {
 	private void handleSomeConceptsAndInstances() {
 		if (isLocate()) {
 			ArrayList<CeInstance> instList = filterInstancesByConcepts();
-			StringBuilder sb = new StringBuilder();
 
 			for (CeInstance thisInst : instList) {
-				sb.append(answerLocateFor(thisInst));
-				this.answer.addInstance(thisInst);
+				answerLocateFor(thisInst);
 			}
-
-			createStandardAnswerWith(sb.toString(), null);
 		} else {
 			// TODO: Complete this
 			createTbcAnswerWith("handleSomeConceptsAndInstances");
@@ -489,11 +620,15 @@ public class QuestionAnswererHandler extends GenericHandler {
 		} else {
 			for (ConceptPhrase thisCp : listConceptPhrases()) {
 				for (CeConcept thisCon : thisCp.getConcepts()) {
-					// TODO: Complete this
-					createTbcAnswerWith("handleSomeConceptsAndProperties");
+					handleSomeConceptsAndProperties(thisCon);
 				}
 			}
 		}
+	}
+
+	private void handleSomeConceptsAndProperties(CeConcept pCon) {
+		// TODO: Complete this
+		createTbcAnswerWith("handleSomeConceptsAndProperties");
 	}
 
 	private void handleSomeConceptsPropertiesAndInstances() {
@@ -509,7 +644,7 @@ public class QuestionAnswererHandler extends GenericHandler {
 		} else if (isLinksTo()) {
 			answerLinksToFor(pInst);
 		} else if (isLocate()) {
-			createStandardAnswerWith(answerLocateFor(pInst), null);
+			answerLocateFor(pInst);
 		} else if (isCount()) {
 			answerCountFor(pInst);
 		} else if (isList()) {
@@ -517,7 +652,7 @@ public class QuestionAnswererHandler extends GenericHandler {
 		} else if (isShow()) {
 			answerShowFor(pInst);
 		} else {
-			createStandardAnswerWith(answerSummaryFor(pInst), null);
+			createStandardAnswerWith(answerSummaryFor(pInst), null, pInst);
 		}
 	}
 
@@ -546,8 +681,6 @@ public class QuestionAnswererHandler extends GenericHandler {
 		
 		sb.append(answerSummaryFor(pInst));
 
-		this.answer.addInstance(pInst);
-
 		for (CePropertyInstance thisPi : pInst.getPropertyInstances()) {
 			sb.append(NL);
 			sb.append("  ");
@@ -566,13 +699,12 @@ public class QuestionAnswererHandler extends GenericHandler {
 			}
 		}
 
-		createStandardAnswerWith(sb.toString(), null);
+		createStandardAnswerWith(sb.toString(), null, pInst);
 	}
 
 	private void answerLinksFromFor(CeInstance pInst) {
 		// TODO: Complete this
-		this.answer.addInstance(pInst);
-		createTbcAnswerWith("answerLinksFromForInstance: " + pInst.getInstanceName());
+		createTbcAnswerWith("answerLinksFromForInstance: " + pInst.getInstanceName(), pInst);
 	}
 
 	private void answerLinksFromFor(CeConcept pCon) {
@@ -582,8 +714,7 @@ public class QuestionAnswererHandler extends GenericHandler {
 
 	private void answerLinksToFor(CeInstance pInst) {
 		// TODO: Complete this
-		this.answer.addInstance(pInst);
-		createTbcAnswerWith("answerLinksToForInstance: " + pInst.getInstanceName());
+		createTbcAnswerWith("answerLinksToForInstance: " + pInst.getInstanceName(), pInst);
 	}
 
 	private void answerLinksToFor(CeConcept pCon) {
@@ -591,27 +722,22 @@ public class QuestionAnswererHandler extends GenericHandler {
 		createTbcAnswerWith("answerLinksToForConcept: " + pCon.getConceptName());
 	}
 
-	private String answerLocateFor(CeInstance pInst) {
-		StringBuilder sb = new StringBuilder();
-		this.answer.addInstance(pInst);
-
+	private void answerLocateFor(CeInstance pInst) {
 		// TODO: Also check for related instances that are spatial things
 		if (pInst.isConceptNamed(this.ac, CON_SPATIAL)) {
-			sb.append(pInst.getInstanceName());
+			createCoordsAnswerFor(pInst);
 		}
-
-		return sb.toString();
 	}
 
 	private void answerLocateFor(CeConcept pCon) {
-		// TODO: Complete this
-		createTbcAnswerWith("answerLocateForConcept: " + pCon.getConceptName());
+		for (CeInstance thisInst : this.ac.getModelBuilder().getAllInstancesForConceptNamed(this.ac, pCon.getConceptName())) {
+			answerLocateFor(thisInst);
+		}
 	}
 
 	private void answerCountFor(CeInstance pInst) {
 		// TODO: Complete this
-		this.answer.addInstance(pInst);
-		createTbcAnswerWith("answerCountForInstance: " + pInst.getInstanceName());
+		createTbcAnswerWith("answerCountForInstance: " + pInst.getInstanceName(), pInst);
 	}
 
 	private void answerCountFor(CeConcept pCon) {
@@ -640,8 +766,7 @@ public class QuestionAnswererHandler extends GenericHandler {
 
 	private void answerListFor(CeInstance pInst) {
 		// TODO: Complete this
-		this.answer.addInstance(pInst);
-		createTbcAnswerWith("answerListForInstance: " + pInst.getInstanceName());
+		createTbcAnswerWith("answerListForInstance: " + pInst.getInstanceName(), pInst);
 	}
 
 	private void answerListFor(ArrayList<ConceptPhrase> pConList) {
@@ -661,28 +786,46 @@ public class QuestionAnswererHandler extends GenericHandler {
 	}
 
 	private void answerListFor(CeConcept pCon) {
-		StringBuilder sb = new StringBuilder();
-		ArrayList<CeInstance> conList = this.ac.getModelBuilder().listAllInstancesForConcept(pCon);
+		ArrayList<CeInstance> allInstList = this.ac.getModelBuilder().listAllInstancesForConcept(pCon);
+		ArrayList<CeInstance> mediaList = new ArrayList<CeInstance>();
+		ArrayList<CeInstance> spatialList = new ArrayList<CeInstance>();
+		ArrayList<CeInstance> normalList = new ArrayList<CeInstance>();
 
-		sb.append("There are ");
-		sb.append(conList.size());
-		sb.append(" ");
-		sb.append(pCon.pluralFormName(this.ac));
-		sb.append(":");
-		sb.append(NL);
-
-		for (CeInstance thisInst : conList) {
-			sb.append(thisInst.getInstanceName());
-			sb.append(NL);
+		for (CeInstance thisInst : allInstList) {
+			if (thisInst.isConceptNamed(this.ac, CON_SPATIAL)) {
+				spatialList.add(thisInst);
+			} else if (thisInst.isConceptNamed(this.ac, CON_MEDIA)) {
+				mediaList.add(thisInst);
+			} else {
+				normalList.add(thisInst);
+			}
 		}
 
-		createStandardAnswerWith(sb.toString(), null);
+		for (CeInstance medInst : mediaList) {
+			createMediaAnswerFor(medInst);
+		}
+
+		for (CeInstance spInst : spatialList) {
+			createCoordsAnswerFor(spInst);
+		}
+
+		if (!normalList.isEmpty()) {
+			ArrayList<String> titles = new ArrayList<String>();
+			ArrayList<ArrayList<String>> rows = new ArrayList<ArrayList<String>>();
+			titles.add(pCon.getConceptName());
+
+			for (CeInstance normInst : normalList) {
+				ArrayList<String> thisRow = new ArrayList<String>();
+
+				thisRow.add(normInst.getInstanceName());
+				rows.add(thisRow);
+			}
+
+			createResultSetAnswerWith(titles, rows);
+		}
 	}
 
 	private void answerListFor(CeConcept pCon, CeProperty pProp) {
-//		StringBuilder sb = new StringBuilder();
-//		ArrayList<CeInstance> valList = new ArrayList<CeInstance>();
-//		ArrayList<CeInstance> emptyList = new ArrayList<CeInstance>();
 		ArrayList<CeInstance> conList = this.ac.getModelBuilder().listAllInstancesForConcept(pCon);
 
 		ArrayList<String> titles = new ArrayList<String>();
@@ -709,49 +852,6 @@ public class QuestionAnswererHandler extends GenericHandler {
 		}
 
 		createResultSetAnswerWith(titles, rows);
-
-//		for (CeInstance thisInst : conList) {
-//			CePropertyInstance thisPi = thisInst.getPropertyInstanceForProperty(pProp);
-//
-//			if (thisPi != null) {
-//				valList.add(thisInst);
-//			} else {
-//				emptyList.add(thisInst);
-//			}
-//		}
-//
-//		sortInstancesByProperty(valList, pProp, isSortDescending()); 
-//
-//		sb.append("There are ");
-//		sb.append(valList.size());
-//		sb.append(" ");
-//		sb.append(pCon.pluralFormName(this.ac));
-//		sb.append(" with a stated ");
-//		sb.append(pProp.getPropertyName());
-//		sb.append(" (and ");
-//		sb.append(emptyList.size());
-//		sb.append(" with no stated ");
-//		sb.append(pProp.getPropertyName());
-//		sb.append("):");
-//
-//		sb.append(NL);
-//
-//		for (CeInstance thisInst : valList) {
-//			CePropertyInstance thisPi = thisInst.getPropertyInstanceForProperty(pProp);
-//			
-//			if (thisPi != null) {
-//				String propVal = thisPi.getSingleOrFirstValue();
-//
-//				sb.append(thisInst.getInstanceName());
-//				sb.append(", ");
-//				sb.append(propVal);
-//				sb.append(" ");
-//				sb.append(pProp.getPropertyName());
-//				sb.append(NL);
-//			}
-//		}
-//
-//		createStandardAnswerWith(sb.toString(), null, conList);
 	}
 
 	private boolean isSortDescending() {
@@ -778,8 +878,7 @@ public class QuestionAnswererHandler extends GenericHandler {
 
 	private void answerShowFor(CeInstance pInst) {
 		// TODO: Complete this
-		this.answer.addInstance(pInst);
-		createTbcAnswerWith("answerShowForInstance: " + pInst.getInstanceName());
+		createTbcAnswerWith("answerShowForInstance: " + pInst.getInstanceName(), pInst);
 	}
 
 	private void answerShowFor(CeConcept pCon) {
@@ -800,8 +899,6 @@ public class QuestionAnswererHandler extends GenericHandler {
 		} else {
 			result = pInst.getInstanceName() + textForConcepts(pInst);
 		}
-
-		this.answer.addInstance(pInst);
 
 		return result;
 	}
@@ -912,7 +1009,6 @@ public class QuestionAnswererHandler extends GenericHandler {
 	protected CeStoreJsonObject createJsonResponse() {
 		CeStoreJsonObject jResult = new CeStoreJsonObject();
 		CeStoreJsonArray jAnswers = new CeStoreJsonArray();
-		CeStoreJsonObject jFirstAnswer = this.answer.toJson(this.ac, this.returnInstances);
 		CeStoreJsonObject jQuestion = new CeStoreJsonObject();
 
 		CeStoreJsonObject jQues = (CeStoreJsonObject) this.interpretationJson.get(this.ac, JSON_QUESTION);
@@ -925,14 +1021,17 @@ public class QuestionAnswererHandler extends GenericHandler {
 			}
 		}
 
-		jAnswers.add(jFirstAnswer);
-
 		jResult.put(JSON_QUESTION, jQuestion);
-		
+
 		if (this.returnInterpretation) {
 			jResult.put(JSON_INT, this.interpretationJson);
 		}
 
+		for (Answer thisAns : this.answers) {
+			CeStoreJsonObject jAnswer = thisAns.toJson(this.ac, this.returnInstances);
+			jAnswers.add(jAnswer);			
+		}
+		
 		jResult.put(JSON_ANSWERS, jAnswers);
 
 		return jResult;
