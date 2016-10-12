@@ -1314,7 +1314,9 @@ public class ProcessedWord extends GeneralItem {
 			CeInstance matchedInst = pAc.getModelBuilder().getInstanceNamed(pAc, singForm);
 
 			if (matchedInst != null) {
-				addReferredExactInstancesPlural(pAc, singForm, matchedInst);
+				if (!listGroundedInstances().contains(matchedInst)) {
+					addReferredExactInstancesPlural(pAc, singForm, matchedInst);
+				}
 			}
 		}
 

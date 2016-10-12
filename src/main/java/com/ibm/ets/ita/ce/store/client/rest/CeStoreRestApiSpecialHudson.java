@@ -41,9 +41,13 @@ public class CeStoreRestApiSpecialHudson extends CeStoreRestApi {
 	}
 
 	/*
-	 * Supported requests: /special/hudson/helper /special/hudson/executor
-	 * /special/hudson/interpreter /special/hudson/answerer
-	 * /special/hudson/directory_list /special/hudson/directory_load
+	 * Supported requests:
+	 * /special/hudson/helper
+	 * /special/hudson/executor
+	 * /special/hudson/interpreter
+	 * /special/hudson/answerer
+	 * /special/hudson/directory_list
+	 * /special/hudson/directory_load
 	 * /special/hudson/directory_get_questions
 	 * /special/hudson/directory_get_answers
 	 */

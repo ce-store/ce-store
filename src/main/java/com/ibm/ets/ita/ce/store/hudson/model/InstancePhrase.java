@@ -61,6 +61,18 @@ public class InstancePhrase extends InterpretationPhrase {
 		return result;
 	}
 
+	public boolean isExactMatch() {
+		boolean result = false;
+
+		if (this.instances.size() == 1) {
+			CeInstance firstInst = this.instances.get(0);
+
+			result = (this.getPhraseText().toLowerCase().equals(firstInst.getInstanceName().toLowerCase()));
+		}
+
+		return result;
+	}
+
 	public ArrayList<CeInstance> getInstances() {
 		return this.instances;
 	}
@@ -92,6 +104,20 @@ public class InstancePhrase extends InterpretationPhrase {
 		result.put(JSON_ENTITIES, jArr);
 
 		return result;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+
+		sb.append("InstancePhrase:");
+
+		for (CeInstance thisInst : this.instances) {
+			sb.append(" ");
+			sb.append(thisInst.getInstanceName());
+		}
+
+		return sb.toString();
 	}
 
 }

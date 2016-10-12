@@ -61,18 +61,6 @@ function Tester(pJsDebug) {
 		return this.currentIteration;
 	};
 
-//	this.loadDefinitiveAnswers = function() {
-//		var cbf = function(pResponse) { gTester.handleDefinitiveAnswersResponse(pResponse); };
-//
-//		this.answers = {};
-//
-//		for (var i = 0; i < URL_ANSWERS_LIST.length; i++) {
-//			var thisUrl = URL_ANSWERS_LIST[i].url;
-//
-//			gHudson.sendJsonFileRequest(thisUrl, cbf);
-//		}
-//	};
-
 	this.handleDefinitiveAnswersResponse = function(pResponse) {
 		this.answers = {};
 
@@ -195,7 +183,11 @@ function Tester(pJsDebug) {
 		}
 
 		for (var i = startIdx; i <= endIdx; i++) {
-			this.selectedQuestions.push(gHudson.allQuestions[i]);
+			var thisQ = gHudson.allQuestions[i];
+			
+			if (thisQ != null) {
+				this.selectedQuestions.push(thisQ);
+			}
 		}
 
 		gHudson.sortQuestions(this.selectedQuestions);
@@ -360,9 +352,9 @@ function Tester(pJsDebug) {
 		setTimeout(function () {
 			var qIdx = gTester.getCurrentPos();
 			var qIt = gTester.getCurrentIteration();
-			var cbf = function(pResponse) { gTester.handleAnswer(pResponse, qIdx, qIt, pQ.id, TYPE_EXECUTE); };
+			var cbf = function(pResponse) { gTester.handleAnswer(pResponse, qIdx, qIt, pQ, TYPE_EXECUTE); };
 
-			gHudson.executeSpecificQuestion(pQ.question, cbf);
+			gHudson.executeSpecificQuestion(pQ.question, cbf, pQ.answerer_parameters);
 			gTester.processNextQuestion(TYPE_EXECUTE);
 		}, pMsDelay);
 	};
@@ -371,9 +363,9 @@ function Tester(pJsDebug) {
 		setTimeout(function () {
 			var qIdx = gTester.getCurrentPos();
 			var qIt = gTester.getCurrentIteration();
-			var cbf = function(pResponse) { gTester.handleUnsupported('answering not yet supported', qIdx, qIt, pQ.id, TYPE_ANSWER); };
+			var cbf = function(pResponse) { gTester.handleUnsupported('answering not yet supported', qIdx, qIt, pQ, TYPE_ANSWER); };
 
-			gHudson.answerSpecificQuestion(pQ.question, cbf);
+			gHudson.answerSpecificQuestion(pQ.question, cbf, pQ.answerer_parameters);
 			gTester.processNextQuestion(TYPE_ANSWER);
 		}, pMsDelay);
 	};
@@ -382,9 +374,9 @@ function Tester(pJsDebug) {
 		setTimeout(function () {
 			var qIdx = gTester.getCurrentPos();
 			var qIt = gTester.getCurrentIteration();
-			var cbf = function(pResponse) { gTester.handleAnswer(pResponse, qIdx, qIt, pQ.id, TYPE_INTERPRET); };
+			var cbf = function(pResponse) { gTester.handleAnswer(pResponse, qIdx, qIt, pQ, TYPE_INTERPRET); };
 
-			gHudson.interpretSpecificQuestion(pQ.question, cbf);
+			gHudson.interpretSpecificQuestion(pQ.question, cbf, pQ.interpreter_parameters);
 			gTester.processNextQuestion(TYPE_INTERPRET);
 		}, pMsDelay);
 	};
@@ -393,9 +385,9 @@ function Tester(pJsDebug) {
 		setTimeout(function () {
 			var qIdx = gTester.getCurrentPos();
 			var qIt = gTester.getCurrentIteration();
-			var cbf = function(pResponse) { gTester.handleUnsupported('analysing not yet supported', qIdx, qIt, pQ.id, TYPE_ANALYSE); };
+			var cbf = function(pResponse) { gTester.handleUnsupported('analysing not yet supported', qIdx, qIt, pQ, TYPE_ANALYSE); };
 
-			gHudson.analyseSpecificQuestion(pQ.question, cbf);
+			gHudson.analyseSpecificQuestion(pQ.question, cbf, pQ.analyser_parameters);
 			gTester.processNextQuestion(TYPE_ANALYSE);
 		}, pMsDelay);
 	};
@@ -430,11 +422,11 @@ function Tester(pJsDebug) {
 		setTextIn(DOM_TR, resultText);
 	};
 
-	this.handleUnsupported = function(pMsg, pIdx, pIteration, pKey, pType) {
+	this.handleUnsupported = function(pMsg, pIdx, pIteration, pQ, pType) {
 		var markerText = '<font color="red">Bad (' + pMsg + ')</font> ';
 		this.testErrors++;
 
-		this.answerText += this.answerTextFrom(null, pIdx, pIteration, markerText);
+		this.answerText += this.answerTextFrom(null, pIdx, pIteration, markerText, pQ);
 		this.answerText += '<br><br>';
 		updateAnswerText(this.answerText);
 
@@ -443,25 +435,25 @@ function Tester(pJsDebug) {
 		this.reportResults();
 	}
 
-	this.handleAnswer = function(pResponse, pIdx, pIteration, pKey, pType) {
+	this.handleAnswer = function(pResponse, pIdx, pIteration, pQ, pType) {
 		var dr = null;
 		var matchError = 0;
 		var markerText = null;
 
-		dr = this.getDefinitiveResponseFor(pKey);
+		dr = this.getDefinitiveResponseFor(pQ.id);
 
 		if (dr != null) {
 			var maxDepth = getMaxDepth();
 
 			if (dr.answer != null) {
 				if (pType == TYPE_EXECUTE) {
-					matchError = gChecker.compareExecuteReplies(dr[pType], pResponse, maxDepth);
+					matchError = gChecker.compareExecuteReplies(dr[TYPE_ANSWER], pResponse, maxDepth);
 				} else if (pType == TYPE_INTERPRET) {
-					matchError = gChecker.compareInterpretReplies(dr[pType], pResponse, maxDepth);
+					matchError = gChecker.compareInterpretReplies(dr[TYPE_INTERPRET], pResponse, maxDepth);
 				} else if (pType == TYPE_ANSWER) {
-					matchError = gChecker.compareAnswerReplies(dr[pType], pResponse, maxDepth);
+					matchError = gChecker.compareAnswerReplies(dr[TYPE_ANSWER], pResponse, maxDepth);
 				} else if (pType == TYPE_ANALYSE) {
-					matchError = gChecker.compareAnalyseReplies(dr[pType], pResponse, maxDepth);
+					matchError = gChecker.compareAnalyseReplies(dr[TYPE_ANALYSE], pResponse, maxDepth);
 				}
 
 				if (matchError === '') {
@@ -487,7 +479,7 @@ function Tester(pJsDebug) {
 			}
 		}
 
-		this.answerText += this.answerTextFrom(pResponse, pIdx, pIteration, markerText);
+		this.answerText += this.answerTextFrom(pResponse, pIdx, pIteration, markerText, pQ);
 
 		updateAnswerText(this.answerText);
 
@@ -576,7 +568,7 @@ function Tester(pJsDebug) {
 		}
 	};
 
-	this.answerTextFrom = function(pResponse, pIdx, pIteration, pMarker) {
+	this.answerTextFrom = function(pResponse, pIdx, pIteration, pMarker, pQ) {
 		var result = pMarker;
 		
 		result += '[' + pIteration + ':' + pIdx + '] ';
@@ -607,12 +599,24 @@ function Tester(pJsDebug) {
 			if (i != null) {
 				conf = i.confidence;
 				expText = i.explanation;
+
+				if (expText != '') {
+					result += ' (<a title="' + expText + '">' + conf + '</a>)';
+				} else {
+					result += ' (' + conf + ')';
+				}
 			}
-			
-			if (expText != '') {
-				result += ' (<a title="' + expText + '">' + conf + '</a>)';
-			} else {
-				result += ' (' + conf + ')';
+
+			if (pQ.answerer_parameters != null) {
+				result += "<br>" + pQ.answerer_parameters;
+			}
+
+			if (pQ.interpreter_parameters != null) {
+				result += "<br>" + pQ.interpreter_parameters;
+			}
+
+			if (pQ.analyser_parameters != null) {
+				result += "<br>" + pQ.analyser_parameters;
 			}
 
 			if (this.isShowingDetails()) {
@@ -621,19 +625,19 @@ function Tester(pJsDebug) {
 				if (a != null) {
 					for (var i = 0; i < a.length; i++) {
 						var thisA = a[i];
-						
+
 						result += '<li>';
 						
-						if (thisA.result_text != null) {
-							result += '"' + thisA.result_text + '"';
-						} else if (thisA.result_code != null) {
-							result += '[Code:' + thisA.result_code + ']: "' + thisA.chatty_text + '"';
-						} else if (thisA.result_media != null) {
-							var m = thisA.result_media;
+						if (thisA["result text"] != null) {
+							result += '"' + thisA["result text"] + '"';
+						} else if (thisA["result code"] != null) {
+							result += '[Code:' + thisA["result code"] + ']: "' + thisA["chatty text"] + '"';
+						} else if (thisA["result media"] != null) {
+							var m = thisA["result media"];
 
 							result += '[Media]: id="' + m.id + '", url="' + m.url + '", credit="' + m.credit + '"';
-						} else if (thisA.result_coords != null) {
-							var c = thisA.result_coords;
+						} else if (thisA["result coords"] != null) {
+							var c = thisA["result coords"];
 
 							var latBit = '';
 							if (c.lat != null) {
@@ -645,19 +649,9 @@ function Tester(pJsDebug) {
 								lonBit = ', lon="' + c.lon + '"';
 							}
 
-							var al1Bit = '';
-							if (c.address_line_1 != null) {
-								al1Bit = ', address line 1="' + c.address_line_1 + '"';
-							}
-
-							var pcBit = '';
-							if (c.postcode != null) {
-								pcBit = ', postcode="' + c.postcode + '"';
-							}
-
-							result += '[Coords]: id="' + c.id + '"' + latBit + lonBit + al1Bit + pcBit;
-						} else if (thisA.result_set != null) {
-							result += '[Table]: ' + formattedTableLineFor(thisA.result_set);
+							result += '[Coords]: id="' + c.id + '"' + latBit + lonBit;
+						} else if (thisA["result set"] != null) {
+							result += '[Table]: ' + formattedTableLineFor(thisA["result set"]);
 						} else {
 							result += '<font color="red">MISSING</font> ';
 							
@@ -665,7 +659,7 @@ function Tester(pJsDebug) {
 							gHudson.reportLog(a);
 						}
 						
-						result += ' (' + thisA.answer_confidence + ')';
+						result += ' (' + thisA.confidence + ')';
 						result += '</li>';
 					}
 				}
@@ -725,10 +719,4 @@ function Tester(pJsDebug) {
 		}
 	}
 
-	function ajaxErrorOther(pResponseText, pError, pCode, pUrl) {
-		gHudson.reportLog(pResponseText);
-		gHudson.reportLog(pCode);
-		gHudson.reportLog('Unknown server error [' + pError + '] for url ' + pUrl);
-	}
-	
 }

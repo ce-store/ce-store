@@ -270,5 +270,37 @@ public class MatchedItem {
 	public boolean isReferredInstancePlural() {
 		return this.context.equals(CONTEXT_REFINST_PLURAL);
 	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		
+		sb.append("MatchedItem: ");
+		sb.append("\"");
+		sb.append(this.phraseText);
+		sb.append("\"");
+		sb.append(" -> ");
+
+		if (this.instance != null) {
+			sb.append("instance: ");
+			sb.append(this.instance.getInstanceName());
+		}
+	
+		if (this.concept != null) {
+			sb.append("concept: ");
+			sb.append(this.concept.getConceptName());
+		}
+		
+		if (this.property != null) {
+			sb.append("property: ");
+			sb.append(this.property.formattedFullPropertyName());
+		}
+
+		sb.append(" [");
+		sb.append(this.context);
+		sb.append("]");
+
+		return sb.toString();
+	}
 
 }

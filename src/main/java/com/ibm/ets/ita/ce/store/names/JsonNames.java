@@ -218,7 +218,10 @@ public class JsonNames {
 	public static final String JSON_A_RESSET = "result set";
 	public static final String JSON_A_RESCOORDS = "result coords";
 	public static final String JSON_A_RESMEDIA = "result media";
+	public static final String JSON_A_RESCODE = "result code";
 	public static final String JSON_A_CONF = "confidence";
+	public static final String JSON_A_CO_CODE = "code";
+	public static final String JSON_A_CO_TEXT = "text";
 	public static final String JSON_A_RS_TITLE = "title";
 	public static final String JSON_A_RS_FTR = "footer";
 	public static final String JSON_A_RS_HDRS = "headers";

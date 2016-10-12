@@ -8,7 +8,7 @@ var gChecker = new Checker();
 function Checker() {
 	
 	this.compareExecuteReplies = function(pAr1, pAr2, pMaxDepth) {
-		return compareJson(pAr1, pAr2, pMaxDepth, "execute");
+		return compareJson(pAr1, pAr2, pMaxDepth, "answer");
 	};
 
 	this.compareAnswerReplies = function(pAr1, pAr2, pMaxDepth) {

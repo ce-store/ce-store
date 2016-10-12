@@ -15,6 +15,7 @@ import java.util.ArrayList;
 
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonArray;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
+import com.ibm.ets.ita.ce.store.model.CeInstance;
 
 public class AnswerResultSet extends Answer {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
@@ -30,8 +31,8 @@ public class AnswerResultSet extends Answer {
 		this.headers = pHdrs;
 	}
 
-	public AnswerResultSet(ArrayList<String> pHdrs, ArrayList<ArrayList<String>> pRows, int pConf) {
-		super(pConf);
+	public AnswerResultSet(ArrayList<String> pHdrs, ArrayList<ArrayList<String>> pRows, ArrayList<CeInstance> pInsts, int pConf) {
+		super(pConf, pInsts);
 
 		this.headers = pHdrs;
 		this.rows = pRows;

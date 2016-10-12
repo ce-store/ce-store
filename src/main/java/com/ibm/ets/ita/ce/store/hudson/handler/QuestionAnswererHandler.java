@@ -1,6 +1,7 @@
 package com.ibm.ets.ita.ce.store.hudson.handler;
 
-import static com.ibm.ets.ita.ce.store.names.CeNames.ABS_ASC;
+import static com.ibm.ets.ita.ce.store.names.CeNames.ABS_DESC;
+import static com.ibm.ets.ita.ce.store.names.CeNames.ABS_MERGE;
 import static com.ibm.ets.ita.ce.store.names.CeNames.CONLIST_HUDSON;
 import static com.ibm.ets.ita.ce.store.names.CeNames.CON_CONFCON;
 import static com.ibm.ets.ita.ce.store.names.CeNames.CON_MEDIA;
@@ -24,12 +25,15 @@ import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_INT;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_INTS;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_QUESTION;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_Q_TEXT;
+import static com.ibm.ets.ita.ce.store.names.HudsonCodes.AC_NOVAL;
+import static com.ibm.ets.ita.ce.store.names.HudsonCodes.AT_NOVAL;
 import static com.ibm.ets.ita.ce.store.names.MiscNames.NL;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.sortInstancesByProperty;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportDebug;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonArray;
@@ -42,6 +46,7 @@ import com.ibm.ets.ita.ce.store.hudson.model.Interpretation;
 import com.ibm.ets.ita.ce.store.hudson.model.PropertyPhrase;
 import com.ibm.ets.ita.ce.store.hudson.model.SpecialPhrase;
 import com.ibm.ets.ita.ce.store.hudson.model.answer.Answer;
+import com.ibm.ets.ita.ce.store.hudson.model.answer.AnswerCode;
 import com.ibm.ets.ita.ce.store.hudson.model.answer.AnswerCoords;
 import com.ibm.ets.ita.ce.store.hudson.model.answer.AnswerMedia;
 import com.ibm.ets.ita.ce.store.hudson.model.answer.AnswerResultSet;
@@ -226,46 +231,7 @@ public class QuestionAnswererHandler extends GenericHandler {
 	}
 
 	private void matchedTripleObjectAnswerFor(SpMatchedTriple pMt) {
-		PropertyPhrase propPhrase = pMt.getPredicate();
-		CeProperty mProp = propPhrase.getFirstProperty();
-		CeConcept domCon = mProp.getDomainConcept();
-		ArrayList<String> answerValues = new ArrayList<String>();
-		ArrayList<CeInstance> matchedInsts = new ArrayList<CeInstance>();
-
-		if (mProp != null) {
-			for (InstancePhrase thisIp : pMt.getObjects()) {
-				CeInstance mInst = thisIp.getFirstInstance();
-
-				for (CeInstance subInst : this.ac.getModelBuilder().listAllInstancesForConcept(domCon)) {
-					for (CeInstance objInst : subInst.getInstanceListFromPropertyNamed(this.ac,
-							mProp.getPropertyName())) {
-						if (objInst.equals(mInst)) {
-							answerValues.add(subInst.getInstanceName());
-							matchedInsts.add(subInst);
-						}
-					}
-				}
-			}
-		}
-		
-		StringBuilder sb = new StringBuilder();
-
-		String sepVal = "";
-		for (String thisVal : answerValues) {
-			sb.append(sepVal);
-			sb.append(thisVal);
-			sepVal = ", ";
-		}
-
-		sb.append(" ");
-		sb.append(pMt.getPredicate().getPhraseText());
-		sb.append(" ");
-
-		for (InstancePhrase objPhrase : pMt.getObjects()) {
-			sb.append(objPhrase.getPhraseText());
-		}
-
-		createStandardAnswerWith(sb.toString(), null, matchedInsts);
+		textMatchedTripleObjectAnswerFor(pMt);
 	}
 
 	private void matchedTripleSubjectAnswerFor(SpMatchedTriple pMt) {
@@ -273,11 +239,16 @@ public class QuestionAnswererHandler extends GenericHandler {
 		CeProperty mProp = propPhrase.getFirstProperty();
 
 		if (mProp != null) {
-			if (mProp.getRangeConcept().equalsOrHasParentNamed(this.ac, CON_MEDIA)) {
-				mediaMatchedTripleSubjectAnswerFor(pMt);
-			} else if (mProp.getRangeConcept().equalsOrHasParentNamed(this.ac, CON_SPATIAL)) {
-				spatialMatchedTripleSubjectAnswerFor(pMt);
+			if (mProp.isObjectProperty()) {
+				if (mProp.getRangeConcept().equalsOrHasParentNamed(this.ac, CON_MEDIA)) {
+					mediaMatchedTripleSubjectAnswerFor(pMt);
+				} else if (mProp.getRangeConcept().equalsOrHasParentNamed(this.ac, CON_SPATIAL)) {
+					spatialMatchedTripleSubjectAnswerFor(pMt);
+				} else {
+					textMatchedTripleSubjectAnswerFor(pMt);
+				}
 			} else {
+				//Datatype property
 				textMatchedTripleSubjectAnswerFor(pMt);
 			}
 		}
@@ -305,24 +276,109 @@ public class QuestionAnswererHandler extends GenericHandler {
 			}
 		}
 
+		if (answerValues.isEmpty()) {
+			noValueSubjectAnswerFor(pMt);
+		} else if (answerValues.size() == 1) {
+			singleValueSubjectAnswerFor(pMt, answerValues, matchedInsts);
+		} else {
+			multipleValueAnswerFor(pMt, answerValues, matchedInsts);
+		}
+	}
+	
+	private void textMatchedTripleObjectAnswerFor(SpMatchedTriple pMt) {
+		PropertyPhrase propPhrase = pMt.getPredicate();
+		CeProperty mProp = propPhrase.getFirstProperty();
+		CeConcept domCon = mProp.getDomainConcept();
+		ArrayList<String> answerValues = new ArrayList<String>();
+		ArrayList<CeInstance> matchedInsts = new ArrayList<CeInstance>();
+
+		if (mProp != null) {
+			for (InstancePhrase thisIp : pMt.getObjects()) {
+				CeInstance mInst = thisIp.getFirstInstance();
+
+				for (CeInstance subInst : this.ac.getModelBuilder().listAllInstancesForConcept(domCon)) {
+					for (CeInstance objInst : subInst.getInstanceListFromPropertyNamed(this.ac,
+							mProp.getPropertyName())) {
+						if (objInst.equals(mInst)) {
+							answerValues.add(subInst.getInstanceName());
+							matchedInsts.add(subInst);
+						}
+					}
+				}
+			}
+		}
+
+		if (answerValues.isEmpty()) {
+			noValueObjectAnswerFor(pMt);
+		} else if (answerValues.size() == 1) {
+			singleValueObjectAnswerFor(pMt, answerValues, matchedInsts);
+		} else {
+			multipleValueAnswerFor(pMt, answerValues, matchedInsts);
+		}
+	}
+
+	private void noValueSubjectAnswerFor(SpMatchedTriple pMt) {
+		createResultCodeAnswerWith(AC_NOVAL, AT_NOVAL);
+	}
+
+	private void noValueObjectAnswerFor(SpMatchedTriple pMt) {
+		createResultCodeAnswerWith(AC_NOVAL, AT_NOVAL);
+	}
+
+	private void singleValueSubjectAnswerFor(SpMatchedTriple pMt, ArrayList<String> pAnswerValues, ArrayList<CeInstance> pMatchedInsts) {
 		StringBuilder sb = new StringBuilder();
-		
+		String answerVal = pAnswerValues.get(0);
+
 		for (InstancePhrase subPhrase : pMt.getSubjects()) {
-			sb.append(subPhrase.getPhraseText());
-			sb.append("'s ");
+			String phraseText = subPhrase.getPhraseText();
+
+			if (subPhrase.isExactMatch()) {
+				phraseText += "'s";
+			}
+
+			sb.append(phraseText);
+			sb.append(" ");
 		}
 
 		sb.append(pMt.getPredicate().getPhraseText());
 		sb.append(" is ");
+		sb.append(answerVal);
 
-		String sepVal = "";
-		for (String thisVal : answerValues) {
-			sb.append(sepVal);
-			sb.append(thisVal);
-			sepVal = ", ";
+		createStandardAnswerWith(answerVal, sb.toString(), pMatchedInsts);
+	}
+	
+	private void singleValueObjectAnswerFor(SpMatchedTriple pMt, ArrayList<String> pAnswerValues, ArrayList<CeInstance> pMatchedInsts) {
+		StringBuilder sb = new StringBuilder();
+		String answerVal = pAnswerValues.get(0);
+
+		sb.append(answerVal);
+
+		sb.append(" ");
+		sb.append(pMt.getPredicate().getPhraseText());
+		sb.append(" ");
+
+		for (InstancePhrase objPhrase : pMt.getObjects()) {
+			sb.append(objPhrase.getPhraseText());
 		}
 
-		createStandardAnswerWith(sb.toString(), null, matchedInsts);
+		createStandardAnswerWith(answerVal, sb.toString(), pMatchedInsts);
+	}
+
+	private void multipleValueAnswerFor(SpMatchedTriple pMt, ArrayList<String> pAnswerValues, ArrayList<CeInstance> pMatchedInsts) {
+		ArrayList<String> titles = new ArrayList<String>();
+		ArrayList<ArrayList<String>> rows = new ArrayList<ArrayList<String>>();
+
+		titles.add(pMt.getPhraseText());
+		
+		Collections.sort(pAnswerValues);
+
+		for (String thisVal : pAnswerValues) {
+			ArrayList<String> thisRow = new ArrayList<String>();
+			thisRow.add(thisVal);
+			rows.add(thisRow);
+		}
+
+		createResultSetAnswerWith(titles, rows, pMatchedInsts);
 	}
 
 	private void mediaMatchedTripleSubjectAnswerFor(SpMatchedTriple pMt) {
@@ -366,13 +422,43 @@ public class QuestionAnswererHandler extends GenericHandler {
 			if ((desc != null) && (!desc.isEmpty())) {
 				createStandardAnswerWith(desc, null, matchedInst);
 			} else {
-				createTbcAnswerWith("multiMatchAnswerFor (no description)", matchedInst);
+				createMultiMatchDetailedAnswerFor(pMm);
 			}
 		} else {
 			createTbcAnswerWith("multiMatchAnswerFor (no matched instance)", matchedInst);
 		}
 	}
 
+	private void createMultiMatchDetailedAnswerFor(SpMultiMatch pMm) {
+		ArrayList<String> titles = new ArrayList<String>();
+		ArrayList<ArrayList<String>> rows = new ArrayList<ArrayList<String>>();
+		ArrayList<CeInstance> instList = new ArrayList<CeInstance>();
+
+		CeInstance matchedInst = pMm.getMatchedInstance();
+
+		if (matchedInst != null) {
+			if (!instList.contains(matchedInst)) {
+				instList.add(matchedInst);
+			}
+
+			for (CeInstance thisInst : pMm.getInstPhrase1().getInstances()) {
+				if (!instList.contains(thisInst)) {
+					instList.add(thisInst);
+				}				
+			}
+
+			for (CeInstance thisInst : pMm.getInstPhrase2().getInstances()) {
+				if (!instList.contains(thisInst)) {
+					instList.add(thisInst);
+				}				
+			}
+		}
+		
+		titles.add("tbc");
+		
+		createResultSetAnswerWith(titles, rows, instList);
+	}
+	
 	private void tryNormalAnswer() {
 		if (listConceptPhrases().isEmpty()) {
 			if (listPropertyPhrases().isEmpty()) {
@@ -439,8 +525,14 @@ public class QuestionAnswererHandler extends GenericHandler {
 		this.answers.add(ans);
 	}
 
-	private void createResultSetAnswerWith(ArrayList<String> pTitles, ArrayList<ArrayList<String>> pRows) {
-		Answer ans = new AnswerResultSet(pTitles, pRows, computeAnswerConfidence());
+	private void createResultSetAnswerWith(ArrayList<String> pTitles, ArrayList<ArrayList<String>> pRows, ArrayList<CeInstance> pInsts) {
+		Answer ans = new AnswerResultSet(pTitles, pRows, pInsts, computeAnswerConfidence());
+
+		this.answers.add(ans);
+	}
+
+	private void createResultCodeAnswerWith(String pCode, String pText) {
+		Answer ans = new AnswerCode(pCode, pText, computeAnswerConfidence());
 
 		this.answers.add(ans);
 	}
@@ -748,20 +840,19 @@ public class QuestionAnswererHandler extends GenericHandler {
 		if (count == 0) {
 			sb.append("there are no ");
 			sb.append(pluralName);
-			sb.append(" defined");
 		} else if (count == 1) {
 			sb.append("there is 1 ");
 			sb.append(pCon.getConceptName());
-			sb.append(" defined");
 		} else {
 			sb.append("there are ");
 			sb.append(count);
 			sb.append(" ");
 			sb.append(pluralName);
-			sb.append(" defined");
 		}
 
-		createStandardAnswerWith(sb.toString(), null);
+		sb.append(" defined");
+
+		createStandardAnswerWith(new Long(count).toString(), sb.toString());
 	}
 
 	private void answerListFor(CeInstance pInst) {
@@ -770,9 +861,13 @@ public class QuestionAnswererHandler extends GenericHandler {
 	}
 
 	private void answerListFor(ArrayList<ConceptPhrase> pConList) {
-		for (ConceptPhrase thisCp : pConList) {
-			for (CeConcept thisCon : thisCp.getConcepts()) {
-				answerListFor(thisCon);
+		if (isMerge()) {
+			mergedAnswerListFor(pConList);
+		} else {
+			for (ConceptPhrase thisCp : pConList) {
+				for (CeConcept thisCon : thisCp.getConcepts()) {
+					answerListFor(thisCon);
+				}
 			}
 		}
 	}
@@ -801,6 +896,16 @@ public class QuestionAnswererHandler extends GenericHandler {
 			}
 		}
 
+		if (isSortAscending()) {
+			Collections.sort(mediaList);
+			Collections.sort(spatialList);
+			Collections.sort(normalList);
+		} else {
+			Collections.reverse(mediaList);
+			Collections.reverse(spatialList);
+			Collections.reverse(normalList);
+		}
+
 		for (CeInstance medInst : mediaList) {
 			createMediaAnswerFor(medInst);
 		}
@@ -821,7 +926,50 @@ public class QuestionAnswererHandler extends GenericHandler {
 				rows.add(thisRow);
 			}
 
-			createResultSetAnswerWith(titles, rows);
+			createResultSetAnswerWith(titles, rows, normalList);
+		}
+	}
+
+	private void mergedAnswerListFor(ArrayList<ConceptPhrase> pConPhrases) {
+		ArrayList<CeInstance> instList = new ArrayList<CeInstance>();
+		String conNames = "";
+
+		for (ConceptPhrase thisCp : pConPhrases) {
+			for (CeConcept thisCon : thisCp.getConcepts()) {
+				if (!conNames.isEmpty()) {
+					conNames += " ";
+				}
+				conNames += thisCon.pluralFormName(this.ac);
+
+				for (CeInstance thisInst : this.ac.getModelBuilder().listAllInstancesForConcept(thisCon)) {
+					if (!instList.contains(thisInst)) {
+						instList.add(thisInst);
+					}
+				}
+			}
+		}
+
+		if (isSortAscending()) {
+			Collections.sort(instList);
+		} else {
+			Collections.reverse(instList);
+		}
+
+		if (!instList.isEmpty()) {
+			ArrayList<String> titles = new ArrayList<String>();
+			ArrayList<ArrayList<String>> rows = new ArrayList<ArrayList<String>>();
+			titles.add(conNames);
+
+			for (CeInstance thisInst : instList) {
+				ArrayList<String> thisRow = new ArrayList<String>();
+
+				thisRow.add(thisInst.getInstanceName());
+				rows.add(thisRow);
+			}
+
+			createResultSetAnswerWith(titles, rows, instList);
+		} else {
+			//TODO: Handle empty list here
 		}
 	}
 
@@ -834,7 +982,7 @@ public class QuestionAnswererHandler extends GenericHandler {
 		titles.add(pCon.getConceptName());
 		titles.add(pProp.getPropertyName());
 		
-		sortInstancesByProperty(conList, pProp, isSortDescending()); 
+		sortInstancesByProperty(conList, pProp, isSortAscending()); 
 
 		for (CeInstance thisInst : conList) {
 			CePropertyInstance thisPi = thisInst.getPropertyInstanceForProperty(pProp);
@@ -851,17 +999,32 @@ public class QuestionAnswererHandler extends GenericHandler {
 			rows.add(thisRow);
 		}
 
-		createResultSetAnswerWith(titles, rows);
+		createResultSetAnswerWith(titles, rows, conList);
 	}
 
-	private boolean isSortDescending() {
+	private boolean isSortAscending() {
 		boolean result = true;
 		
 		for (CeInstance thisInst : this.otherInstances) {
 			String mtVal = thisInst.getSingleValueFromPropertyNamed(PROP_MAPSTO);
 			
-			if (mtVal.equals(ABS_ASC)) {
+			if (mtVal.equals(ABS_DESC)) {
 				result = false;
+				break;
+			}
+		}
+
+		return result;
+	}
+
+	private boolean isMerge() {
+		boolean result = false;
+		
+		for (CeInstance thisInst : this.otherInstances) {
+			String mtVal = thisInst.getSingleValueFromPropertyNamed(PROP_MAPSTO);
+			
+			if (mtVal.equals(ABS_MERGE)) {
+				result = true;
 				break;
 			}
 		}

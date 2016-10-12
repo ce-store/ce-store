@@ -186,7 +186,8 @@ public class CeNames {
 	public static final String MOD_SHOW = "general:show";
 	public static final String ABS_ASC = "a:ascending";
 	public static final String ABS_DESC = "a:descending";
-	
+	public static final String ABS_MERGE = "a:merge";
+
 	//Properties: "Special" property names (operators applied to values)
 	public static final String SPECIALNAME_CONTAINS = "contains";
 	public static final String SPECIALNAME_NOTCONTAINS = "not-contains";

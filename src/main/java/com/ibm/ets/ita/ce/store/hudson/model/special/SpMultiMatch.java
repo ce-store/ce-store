@@ -44,6 +44,8 @@ public class SpMultiMatch extends SpThing {
 			} else if (pos == 1) {
 				this.inst2 = new InstancePhrase(pAc, jInst);
 			}
+
+			++pos;
 		}
 	}
 
@@ -80,6 +82,41 @@ public class SpMultiMatch extends SpThing {
 
 	public CeInstance getMatchedInstance() {
 		return this.matchedInst;
+	}
+
+	public InstancePhrase getInstPhrase1() {
+		return this.inst1;
+	}
+
+	public InstancePhrase getInstPhrase2() {
+		return this.inst2;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+
+		sb.append("SpMultiMatch: ");
+
+		sb.append("(");
+		if (this.matchedInst != null) {
+			sb.append(this.matchedInst.getInstanceName());
+			
+		}
+		sb.append(") ");
+
+		sb.append(" inst1={");
+		if (this.inst1 != null) {
+			sb.append(this.inst1.toString());
+		}
+
+		sb.append("}, inst2={");
+		if (this.inst2 != null) {
+			sb.append(this.inst2.toString());
+		}
+		sb.append("}");
+
+		return sb.toString();
 	}
 
 }

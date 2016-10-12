@@ -6,7 +6,6 @@
 var gHudson = new Hudson(false);
 var gTester = null;
 
-//gHudson.loadQuestions();
 gHudson.listDirectoryModels();
 
 window.onload = function(){
@@ -50,26 +49,6 @@ function Hudson(pJsDebug) {
 	this.lastInterpretation = null;
 	this.allQuestions = [];
 	this.questionCount = 0;
-
-//	this.sendJsonFileRequest = function(pUrl, pCbf) {
-//		var xhr = new XMLHttpRequest();
-//
-//		xhr.open('GET', pUrl, true);
-//
-//		xhr.onload = function(e) {
-//			if (this.status === 200) {
-//				pCbf(JSON.parse(xhr.response));
-//			} else {
-//				ajaxErrorOther(xhr.response, e, this.status, pUrl);
-//			}
-//		};
-//
-//		xhr.onerror = function(e) {
-//			ajaxErrorOther(xhr.response, e, this.status, pUrl);
-//		};
-//
-//		xhr.send();
-//	};
 
 	this.listDirectoryModels = function(){
 		var xhr = new XMLHttpRequest();
@@ -228,22 +207,6 @@ function Hudson(pJsDebug) {
 		document.getElementById('directory_answers_message').innerHTML = msgText;
 	};
 	
-//	this.loadQuestions = function(pCbf) {
-//		var cbf = null;
-//
-//		if (pCbf == null) {
-//			cbf = function(pResponse) { gHudson.handleLoadQuestions(pResponse); };
-//		} else {
-//			cbf = pCbf;
-//		}
-//
-//		for (var i = 0; i < URL_QUESTIONS_LIST.length; i++) {
-//			var thisUrl = URL_QUESTIONS_LIST[i];
-//
-//			this.sendJsonFileRequest(thisUrl, cbf);
-//		}
-//	};
-
 	this.sortQuestions = function(pList) {
 		pList.sort(sortById);
 	};
@@ -305,7 +268,16 @@ function Hudson(pJsDebug) {
 
 		setTextIn(DOM_QP, cqPos);
 
-		return this.allQuestions[cqPos].question;
+		var thisQ = this.allQuestions[cqPos];
+		var result = null;
+
+		if (thisQ != null) {
+			result = thisQ.question;
+		} else {
+			result = "";
+		}
+
+		return result;
 	};
 
 	this.getPreviousQuestion = function() {
@@ -329,7 +301,6 @@ function Hudson(pJsDebug) {
 
 			setTextIn(DOM_QT, qText);
 			this.clearHelpText();
-//			this.parseQuestionText();
 		}
 	};
 
@@ -340,7 +311,6 @@ function Hudson(pJsDebug) {
 
 		setTextIn(DOM_QT, qText);
 		this.clearHelpText();
-//		this.parseQuestionText();
 	};
 
 	this.loadNextQuestion = function() {
@@ -350,14 +320,7 @@ function Hudson(pJsDebug) {
 
 		setTextIn(DOM_QT, qText);
 		this.clearHelpText();
-//		this.parseQuestionText();
 	};
-
-//	this.resetCeStore = function() {
-//		var cbf = function(pResponse) {gHudson.updateAnswer(pResponse);};
-//
-//		sendResetRequest(cbf, false);
-//	};
 
 	this.getCeStoreStatus = function() {
 		var cbf = function(pResponse) {gHudson.updateAnswer(pResponse);};
@@ -443,7 +406,7 @@ function Hudson(pJsDebug) {
 
 		this.clearAnswerText();
 
-		this.executeSpecificQuestion(qText, cbf);
+		this.executeSpecificQuestion(qText, cbf, null);
 	};
 
 	this.clearHelpText = function() {
@@ -456,31 +419,34 @@ function Hudson(pJsDebug) {
 		setTextIn(DOM_ER, '');
 	};
 
-	this.executeSpecificQuestion = function(pQuestionText, pCbf) {
+	this.executeSpecificQuestion = function(pQuestionText, pCbf, pParms) {
 		var parmText = "";
 
-		if (this.isReturningInterpretation()) {
-			parmText += "?returnInterpretation=true";
-		}
+		if (pParms != null) {
+			parmText = pParms
+		} else {
+			if (this.isReturningInterpretation()) {
+				parmText += "?returnInterpretation=true";
+			}
 
-		if (this.isReturningInstances()) {
-			if (parmText == "") {
-				parmText += "?returnInstances=true";
-			} else {
-				parmText += "&returnInstances=true";
+			if (this.isReturningInstances()) {
+				if (parmText == "") {
+					parmText += "?returnInstances=true";
+				} else {
+					parmText += "&returnInstances=true";
+				}
 			}
 		}
 
 		sendExecuteRequest(pQuestionText, pCbf, parmText);
 	};
 
-	this.interpretSpecificQuestion = function(pQuestionText, pCbf) {
-		sendInterpretRequest(pQuestionText, pCbf, "");
+	this.interpretSpecificQuestion = function(pQuestionText, pCbf, pParms) {
+		sendInterpretRequest(pQuestionText, pCbf, pParms);
 	};
 
-	this.answerSpecificQuestion = function(pQuestionText, pCbf) {
-		pCbf();  // Temporary as not yet supported
-//		sendAnswerRequest(pQuestionText, pCbf);
+	this.answerSpecificQuestion = function(pQuestionText, pCbf, pParms) {
+		alert("Answer mode not yet supported");
 	};
 
 	this.interpretQuestion = function() {
@@ -489,7 +455,7 @@ function Hudson(pJsDebug) {
 
 		this.clearAnswerText();
 
-		this.interpretSpecificQuestion(qText, cbf);
+		this.interpretSpecificQuestion(qText, cbf, null);
 	};
 
 	this.answerInterpretation = function() {
@@ -720,89 +686,84 @@ function Hudson(pJsDebug) {
 		var answerText = '';
 
 		if (pResponse != null) {
-			if (pResponse.answer != null) {
-				//Remove this temporary code when temporary simple answers are removed
-				answerText = htmlFormat(pResponse.answer);
-			} else {
-				var question = pResponse.question;
-				var alerts = pResponse.alerts;
+			var question = pResponse.question;
+			var alerts = pResponse.alerts;
 
-				if (pResponse.answers != null) {
-					for (var idx in pResponse.answers) {
-						var answer = pResponse.answers[idx];
-						var bullet = '';
+			if (pResponse.answers != null) {
+				for (var idx in pResponse.answers) {
+					var answer = pResponse.answers[idx];
+					var bullet = '';
 
-						if (pResponse.answers.length > 1) {
-							bullet = (parseInt(idx) + 1) + ') ';
-						}
+					if (pResponse.answers.length > 1) {
+						bullet = (parseInt(idx) + 1) + ') ';
+					}
 
-						if (answerText !== '') {
-							answerText += '<br/><br/>';
-						}
+					if (answerText !== '') {
+						answerText += '<br/><br/>';
+					}
 
-						var answered = false;
-						var confText = '<i>confidence for this answer=<font color="green">' + answer.confidence + '</font></i>';
+					var answered = false;
+					var confText = '<i>confidence for this answer=<font color="green">' + answer.confidence + '</font></i>';
 
-						if (this.chattyAnswers) {
-							if ((answer["chatty text"] != null) && (answer["chatty text"] != '')) {
-								answerText += bullet + '<b>' + htmlFormat(answer["chatty text"]) + '</b>';
-								answerText += '<br/>[' + confText  + ']';
-								answered = true;
-							}
-						}
-
-						if (!answered) {
-							if (answer["result text"] != null) {
-								answerText += bullet + '<b>' + htmlFormat(answer["result text"]) + '</b>';
-							} else if (answer["result set"] != null) {
-								answerText += bullet + createHtmlForResultSet(answer["result set"]);
-							} else if (answer["result media"] != null) {
-								answerText += bullet + createHtmlForMedia(answer["result media"]);
-							} else if (answer["result coords"] != null) {
-								answerText += bullet + createHtmlForCoords(answer["result coords"]);
-							} else if (answer["result code"] != null) {
-								answerText += bullet + '<b>' + answer["result code"] + ': ' + answer["chatty text"] + '</b>';
-							} else {
-								answerText += bullet + '<b>NO ANSWER FOUND!</b>';
-							}
-
-							if (answer.source != null) {
-								answerText += '<br/>[<i>source:<a href="' + answer.source.url + '">' + answer.source.name + '</a>, ' + confText + '</i>]';
-							} else {
-								answerText += '<br/>[' + confText + ']';
-							}
+					if (this.chattyAnswers) {
+						if ((answer["chatty text"] != null) && (answer["chatty text"] != '')) {
+							answerText += bullet + '<b>' + htmlFormat(answer["chatty text"]) + '</b>';
+							answerText += '<br/>[' + confText  + ']';
+							answered = true;
 						}
 					}
-				} else {
-					if (pResponse["system message"] != null) {
-						answerText = '<font color="green">' + pResponse["system message"] + '</font>';
-						//Note that for management responses the execution time comes back in the root, not in the debug
-						answerText += '<br/>Execution time (ms): <font color="red">' + pResponse["execution time"] + '</font>';
+
+					if (!answered) {
+						if (answer["result text"] != null) {
+							answerText += bullet + '<b>' + htmlFormat(answer["result text"]) + '</b>';
+						} else if (answer["result set"] != null) {
+							answerText += bullet + createHtmlForResultSet(answer["result set"]);
+						} else if (answer["result media"] != null) {
+							answerText += bullet + createHtmlForMedia(answer["result media"]);
+						} else if (answer["result coords"] != null) {
+							answerText += bullet + createHtmlForCoords(answer["result coords"]);
+						} else if (answer["result code"] != null) {
+							answerText += bullet + '<b>' + answer["result code"] + ': ' + answer["chatty text"] + '</b>';
+						} else {
+							answerText += bullet + '<b>NO ANSWER FOUND!</b>';
+						}
+
+						if (answer.source != null) {
+							answerText += '<br/>[<i>source:<a href="' + answer.source.url + '">' + answer.source.name + '</a>, ' + confText + '</i>]';
+						} else {
+							answerText += '<br/>[' + confText + ']';
+						}
 					}
 				}
+			} else {
+				if (pResponse["system message"] != null) {
+					answerText = '<font color="green">' + pResponse["system message"] + '</font>';
+					//Note that for management responses the execution time comes back in the root, not in the debug
+					answerText += '<br/>Execution time (ms): <font color="red">' + pResponse["execution time"] + '</font>';
+				}
+			}
 
-				if (alerts != null) {
-					if (alerts.errors != null) {
-						answerText += '<br/><br/><hr/><u>Errors:</u><ul>';
-						for (var i = 0; i < alerts.errors.length; i++) {
-							var thisError = alerts.errors[i];
+			if (alerts != null) {
+				if (alerts.errors != null) {
+					answerText += '<br/><br/><hr/><u>Errors:</u><ul>';
+					for (var i = 0; i < alerts.errors.length; i++) {
+						var thisError = alerts.errors[i];
 
-							answerText += '<li>' + htmlFormat(thisError) + '</li>';
-						}
-
-						answerText += '</ul>';
+						answerText += '<li>' + htmlFormat(thisError) + '</li>';
 					}
 
-					if (alerts.warnings != null) {
-						answerText += '<br/><br/><hr/><u>Warnings:</u><ul>';
-						for (var i = 0; i < alerts.warnings.length; i++) {
-							var thisWarning = alerts.warnings[i];
+					answerText += '</ul>';
+				}
 
-							answerText += '<li>' + htmlFormat(thisWarning) + '</li>';
-						}
+				if (alerts.warnings != null) {
+					answerText += '<br/><br/><hr/><u>Warnings:</u><ul>';
+					for (var i = 0; i < alerts.warnings.length; i++) {
+						var thisWarning = alerts.warnings[i];
 
-						answerText += '</ul>';
+						answerText += '<li>' + htmlFormat(thisWarning) + '</li>';
 					}
+
+					answerText += '</ul>';
 				}
 			}
 
@@ -888,11 +849,6 @@ function Hudson(pJsDebug) {
 		sendAjaxPost(url, pQuestionJson, pCbf);
 	}
 
-//	function sendResetRequest(pCbf) {
-//		var url = getTextFrom(DOM_EP) + URL_QMR;
-//		sendAjaxGet(url, pCbf);
-//	}
-
 	function sendStatusRequest(pCbf) {
 		var url = getTextFrom(DOM_EP) + URL_QMS;
 		sendAjaxGet(url, pCbf);
@@ -972,8 +928,6 @@ function Hudson(pJsDebug) {
 				try {
 					jResponse = JSON.parse(xhr.response);
 				} catch(e) {
-//					gHudson.reportLog('Error parsing response:');
-//					gHudson.reportLog(e);
 					jResponse = xhr.response;
 				}
 
@@ -1045,7 +999,7 @@ function Hudson(pJsDebug) {
 		var hdrs = [ 'id', 'url', 'credit' ];
 		var rows = [ [ pMedia.id, pMedia.url, pMedia.credit ] ];
 		result = '<img src="' + pMedia.url + '"/>';		
-console.log(result);
+
 		result += renderTable(hdrs, rows);
 
 		return result;
