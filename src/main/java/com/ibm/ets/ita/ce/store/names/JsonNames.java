@@ -273,4 +273,17 @@ public class JsonNames {
 	public static final String SPEC_MULTIMATCH = "multi-match";
 	public static final String SPEC_NUMBER = "number";
 
+	public static final String JSON_CONNECTORS = "connectors";
+	public static final String JSON_NUM = "number";
+	public static final String JSON_MINST = "matched instance";
+	public static final String JSON_LINST = "linked instances";
+	public static final String JSON_PROP = "property";
+	public static final String JSON_PRED = "predicate";
+	public static final String JSON_SUBS = "subject instances";
+	public static final String JSON_OBJS = "object instances";
+	public static final String JSON_MI = "multi-match instance";
+	public static final String JSON_MATCHES = "matches";
+	public static final String JSON_INST = "instance";
+	public static final String JSON_PROPNAME = "property name";
+
 }

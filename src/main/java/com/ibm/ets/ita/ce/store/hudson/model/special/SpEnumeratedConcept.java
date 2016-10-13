@@ -5,6 +5,8 @@ package com.ibm.ets.ita.ce.store.hudson.model.special;
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_CONS;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_NUM;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.SPEC_ENUMCON;
 
 import java.util.ArrayList;
@@ -20,9 +22,6 @@ import com.ibm.ets.ita.ce.store.model.CeInstance;
 
 public class SpEnumeratedConcept extends SpThing {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
-
-	private static final String JSON_NUM = "number";
-	private static final String JSON_CONS = "concepts";
 
 	private String numberWordText = null;
 	private ArrayList<MatchedItem> conceptItems = null;

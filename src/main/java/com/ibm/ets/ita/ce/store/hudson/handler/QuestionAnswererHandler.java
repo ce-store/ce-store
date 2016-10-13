@@ -35,6 +35,7 @@ import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.TreeMap;
 
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonArray;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
@@ -204,14 +205,29 @@ public class QuestionAnswererHandler extends GenericHandler {
 	}
 
 	private void tryMultiMatchAnswer() {
-		for (SpecialPhrase thisSpecPhrase : listSpecialPhrases()) {
-			SpThing thisSp = thisSpecPhrase.getSpecial();
+		TreeMap<String, ArrayList<SpMultiMatch>> tm = new TreeMap<String, ArrayList<SpMultiMatch>>();
 
-			if (thisSp != null) {
-				if (thisSp.isMultiMatch()) {
-					multiMatchAnswerFor((SpMultiMatch) thisSp);
+		for (SpecialPhrase thisSp : listSpecialPhrases()) {
+			if (thisSp.isMultiMatch()) {
+				String key = thisSp.getPhraseText();
+				ArrayList<SpMultiMatch> values = tm.get(key);
+
+				if (values == null) {
+					values = new ArrayList<SpMultiMatch>();
+					tm.put(key, values);
+				}
+				
+				if (!values.contains(tm)) {
+					SpThing spt = thisSp.getSpecial();
+					values.add((SpMultiMatch)spt);
 				}
 			}
+		}
+
+		for (String key : tm.keySet()) {
+			ArrayList<SpMultiMatch> smList = tm.get(key);
+
+			createMultiMatchDetailedAnswerFor(smList);
 		}
 	}
 
@@ -412,53 +428,74 @@ public class QuestionAnswererHandler extends GenericHandler {
 			}
 		}
 	}
+	
+//	private void multiMatchAnswerFor(SpMultiMatch pSm) {
+//		CeInstance matchedInst = pSm.getMatchedInstance();
+//
+//		if (matchedInst != null) {
+//			String desc = matchedInst.getSingleValueFromPropertyNamed(PROP_DESC);
+//
+//			if ((desc != null) && (!desc.isEmpty())) {
+//				createStandardAnswerWith(desc, null, matchedInst);
+//			} else {
+//				ArrayList<SpMultiMatch> smList = new ArrayList<SpMultiMatch>();
+//				smList.add(pSm);
+//				createMultiMatchDetailedAnswerFor(smList);
+//			}
+//		} else {
+//			createTbcAnswerWith("multiMatchAnswerFor (no matched instance)", matchedInst);
+//		}
+//	}
 
-	private void multiMatchAnswerFor(SpMultiMatch pMm) {
-		CeInstance matchedInst = pMm.getMatchedInstance();
-
-		if (matchedInst != null) {
-			String desc = matchedInst.getSingleValueFromPropertyNamed(PROP_DESC);
-
-			if ((desc != null) && (!desc.isEmpty())) {
-				createStandardAnswerWith(desc, null, matchedInst);
-			} else {
-				createMultiMatchDetailedAnswerFor(pMm);
-			}
-		} else {
-			createTbcAnswerWith("multiMatchAnswerFor (no matched instance)", matchedInst);
-		}
-	}
-
-	private void createMultiMatchDetailedAnswerFor(SpMultiMatch pMm) {
+	private void createMultiMatchDetailedAnswerFor(ArrayList<SpMultiMatch> pSms) {
 		ArrayList<String> titles = new ArrayList<String>();
 		ArrayList<ArrayList<String>> rows = new ArrayList<ArrayList<String>>();
 		ArrayList<CeInstance> instList = new ArrayList<CeInstance>();
 
-		CeInstance matchedInst = pMm.getMatchedInstance();
+		titles.add("matched");
+		titles.add("property 1");
+		titles.add("instance 1");
+		titles.add("property 2");
+		titles.add("instance 2");
+		
+		for (SpMultiMatch thisSm : pSms) {
+			ArrayList<String> thisRow = new ArrayList<String>();
+			CeInstance matchedInst = thisSm.getMatchedInstance();
 
-		if (matchedInst != null) {
-			if (!instList.contains(matchedInst)) {
-				instList.add(matchedInst);
+			if (matchedInst != null) {
+				thisRow.add(matchedInst.getInstanceName());
+
+				if (!instList.contains(matchedInst)) {
+					instList.add(matchedInst);
+				}
+
+				thisRow.add(thisSm.getPropertyName1());
+				
+				for (CeInstance thisInst : thisSm.getInstPhrase1().getInstances()) {
+					thisRow.add(thisInst.getInstanceName());
+
+					if (!instList.contains(thisInst)) {
+						instList.add(thisInst);
+					}				
+				}
+
+				thisRow.add(thisSm.getPropertyName2());
+
+				for (CeInstance thisInst : thisSm.getInstPhrase2().getInstances()) {
+					thisRow.add(thisInst.getInstanceName());
+
+					if (!instList.contains(thisInst)) {
+						instList.add(thisInst);
+					}				
+				}
 			}
 
-			for (CeInstance thisInst : pMm.getInstPhrase1().getInstances()) {
-				if (!instList.contains(thisInst)) {
-					instList.add(thisInst);
-				}				
-			}
-
-			for (CeInstance thisInst : pMm.getInstPhrase2().getInstances()) {
-				if (!instList.contains(thisInst)) {
-					instList.add(thisInst);
-				}				
-			}
+			rows.add(thisRow);
 		}
-		
-		titles.add("tbc");
-		
+
 		createResultSetAnswerWith(titles, rows, instList);
 	}
-	
+
 	private void tryNormalAnswer() {
 		if (listConceptPhrases().isEmpty()) {
 			if (listPropertyPhrases().isEmpty()) {

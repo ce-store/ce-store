@@ -15,6 +15,7 @@ import static com.ibm.ets.ita.ce.store.names.RestNames.HDR_AC_AH;
 import static com.ibm.ets.ita.ce.store.names.RestNames.HDR_AC_AM;
 import static com.ibm.ets.ita.ce.store.names.RestNames.HDR_AC_AO;
 import static com.ibm.ets.ita.ce.store.names.RestNames.HDR_AC_RH;
+import static com.ibm.ets.ita.ce.store.names.RestNames.HDR_ALL_METHODS;
 import static com.ibm.ets.ita.ce.store.names.RestNames.HDR_AUTH;
 import static com.ibm.ets.ita.ce.store.names.RestNames.HDR_CEUSER;
 import static com.ibm.ets.ita.ce.store.names.RestNames.HDR_ORIGIN;
@@ -46,8 +47,6 @@ public class RestHandler extends HttpServlet {
 	private static final String CLASS_NAME = RestHandler.class.getName();
 	private static final String PACKAGE_NAME = RestHandler.class.getPackage().getName();
 	private static final Logger logger = Logger.getLogger(PACKAGE_NAME);
-
-	private static final String ALL_METHODS = "GET,POST,HEAD,OPTIONS,PUT,DELETE";
 
 	private static final long serialVersionUID = 1L;
 
@@ -149,11 +148,10 @@ public class RestHandler extends HttpServlet {
 	}
 
 	private static void setCorsResponseHeaders(HttpServletRequest pRequest, HttpServletResponse pResponse) {
-		// TODO: Abstract these
 		// Set headers to allow cross domain responses
 		pResponse.setHeader(HDR_AC_AO, pRequest.getHeader(HDR_ORIGIN));
 		pResponse.setHeader(HDR_AC_AC, TOKEN_TRUE);
-		pResponse.setHeader(HDR_AC_AM, ALL_METHODS);
+		pResponse.setHeader(HDR_AC_AM, HDR_ALL_METHODS);
 		pResponse.setHeader(HDR_AC_AH, HDR_AUTH + TOKEN_COMMA + pRequest.getHeader(HDR_AC_RH));
 
 		// IMPORTANT:

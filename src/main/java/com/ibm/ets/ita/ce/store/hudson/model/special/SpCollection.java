@@ -7,6 +7,7 @@ package com.ibm.ets.ita.ce.store.hudson.model.special;
 
 import static com.ibm.ets.ita.ce.store.names.JsonNames.SPEC_COLLECTION;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_CONS;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_CONNECTORS;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_INSTS;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_PROPS;
 
@@ -20,8 +21,6 @@ import com.ibm.ets.ita.ce.store.hudson.model.conversation.MatchedItem;
 
 public class SpCollection extends SpThing {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
-
-	private static final String JSON_CONNS = "connectors";
 
 	private ArrayList<MatchedItem> connectors = null;
 	private ArrayList<MatchedItem> items = null;
@@ -89,7 +88,7 @@ public class SpCollection extends SpThing {
 		}
 
 		if (!jConnectors.isEmpty()) {
-			jResult.put(JSON_CONNS, jConnectors);
+			jResult.put(JSON_CONNECTORS, jConnectors);
 		}
 
 		if (!jInsts.isEmpty()) {

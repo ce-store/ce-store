@@ -31,6 +31,7 @@ public class RestNames {
 	public static final String HDR_AC_AM = "Access-Control-Allow-Methods";
 	public static final String HDR_AC_AH = "Access-Control-Allow-Headers";
 	public static final String HDR_AC_RH = "Access-Control-Request-Headers";
+	public static final String HDR_ALL_METHODS = "GET,POST,HEAD,OPTIONS,PUT,DELETE";
 
 	public static final String CONTENT_TYPE_MULTIPART_FORM = "multipart/form-data";
 

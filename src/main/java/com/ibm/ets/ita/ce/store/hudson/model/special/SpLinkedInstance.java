@@ -5,6 +5,9 @@ package com.ibm.ets.ita.ce.store.hudson.model.special;
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_MINST;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_LINST;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_PROP;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.SPEC_LINKEDINST;
 
 import java.util.ArrayList;
@@ -18,10 +21,6 @@ import com.ibm.ets.ita.ce.store.model.CeProperty;
 
 public class SpLinkedInstance extends SpThing {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
-
-	private static final String JSON_MINST = "matched instance";
-	private static final String JSON_LINST = "linked instances";
-	private static final String JSON_PROP = "property";
 
 	private MatchedItem matchedInstance = null;
 	private CeProperty linkingProperty = null;

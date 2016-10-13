@@ -5,6 +5,9 @@ package com.ibm.ets.ita.ce.store.hudson.model.special;
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_PRED;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SUBS;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_OBJS;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.SPEC_MATCHTRIP;
 
 import java.util.ArrayList;
@@ -18,10 +21,6 @@ import com.ibm.ets.ita.ce.store.hudson.model.conversation.MatchedItem;
 
 public class SpMatchedTriple extends SpThing {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
-
-	private static final String JSON_PRED = "predicate";
-	private static final String JSON_SUBS = "subject instances";
-	private static final String JSON_OBJS = "object instances";
 
 	private ArrayList<InstancePhrase> subjects = null;
 	private PropertyPhrase predicate = null;

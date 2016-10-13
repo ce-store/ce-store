@@ -383,23 +383,29 @@ public class QuestionInterpreterHandler extends QuestionHandler {
 			for (MatchedItem mi1 : allInstMis) {
 				CeInstance inst1 = mi1.getInstance();
 
-				for (CePropertyInstance thisPi : inst1.getReferringPropertyInstances()) {
-					CeInstance relInst = thisPi.getRelatedInstance();
+				for (CePropertyInstance thisPi1 : inst1.getReferringPropertyInstances()) {
+					CeInstance relInst = thisPi1.getRelatedInstance();
 
 					if (relInst != null) {
 						if (relInst.isConceptNamed(this.ac, CON_MULTIMATCH)) {
-							for (CeInstance inst2 : relInst.getAllRelatedInstances(this.ac)) {
-								if (!inst2.equals(inst1)) {
-									for (MatchedItem mi2 : allInstMis) {
-										if (mi2.getInstance().equals(inst2)) {
-											int pos1 = mi1.getStartPos();
-											int pos2 = mi2.getEndPos();
-											
-											if (pos2 > pos1) {
-												String phraseText = mi1.getPhraseText() + " " + mi2.getPhraseText();
-												SpMultiMatch smm = new SpMultiMatch(phraseText, pos1, pos2, mi1, mi2, relInst);
-
-												this.multiMatches.add(smm);
+							for (CePropertyInstance thisPi2 : relInst.getPropertyInstances()) {
+								if (thisPi2.getRelatedProperty().isObjectProperty()) {
+									for (CeInstance inst2 : thisPi2.getValueInstanceList(this.ac)) {
+										if (!inst2.equals(inst1)) {
+											for (MatchedItem mi2 : allInstMis) {
+												if (mi2.getInstance().equals(inst2)) {
+													int pos1 = mi1.getStartPos();
+													int pos2 = mi2.getEndPos();
+													
+													if (pos2 > pos1) {
+														String phraseText = mi1.getPhraseText() + " ... " + mi2.getPhraseText();
+														String propName1 = thisPi1.getRelatedProperty().formattedFullPropertyName();
+														String propName2 = thisPi2.getRelatedProperty().formattedFullPropertyName();
+														SpMultiMatch smm = new SpMultiMatch(phraseText, pos1, pos2, mi1, mi2, propName1, propName2, relInst);
+	
+														this.multiMatches.add(smm);
+													}
+												}
 											}
 										}
 									}
