@@ -14,4 +14,7 @@ the property concept 'person:is closely related to:person'
 the property concept 'person:suffers from:disease'
   is expressed by 'suffering from'.
 
+the property concept 'person:suffers from:disease'
+  is expressed by 'suffer from'.
+
 the relation concept 'medical report:mentions:person' is a linked property.
