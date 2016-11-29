@@ -24,5 +24,9 @@ perform load sentences from url '/ce-store/ce/medicine/facts/med_scenario.ce'.
 perform load sentences from url '/ce-store/ce/medicine/facts/med_locations.ce'.
 perform load sentences from url '/ce-store/ce/medicine/facts/med_visits.ce'.
 
+-- Load Hudson
+perform load sentences from url './hudson/ce/core/cmd/load_core.cecmd'.
+perform load sentences from url './ce/medicine/cmd/med_load_hudson.cecmd'.
+
 -- Run the rules
 perform run the rule executor agent named 'med_rules'.
