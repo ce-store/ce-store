@@ -4,14 +4,14 @@
 -- --------------------------------------------------------------------------
 
 [sibling]
-if 
-  ( the person P1 is the sibling of the person P2 ) 
+if
+  ( the person P1 is the sibling of the person P2 )
 then
   ( the person P2 is the sibling of the person P1 )
 .
 
 [uncle]
-if 
+if
   ( the man M is the sibling of the person P1 ) and
   ( the person P1 is the parent of the person P2 )
 then
@@ -19,7 +19,7 @@ then
 .
 
 [aunt]
-if 
+if
   ( the woman W is the sibling of the person P1 ) and
   ( the person P1 is the parent of the person P2 )
 then
@@ -34,35 +34,35 @@ then
 .
 
 [closeRelationInverse]
-if 
+if
   ( the person P1 is closely related to the person P2 )
-then 
+then
   ( the person P2 is closely related to the person P1 )
 .
 
 [closeRelationParent]
-if 
+if
   ( the person P1 is the parent of the person P2 )
-then 
+then
   ( the person P1 is closely related to the person P2 )
 .
 
 [closeRelationUncle]
-if 
+if
   ( the person P1 is the uncle of the person P2 )
-then 
+then
   ( the person P1 is closely related to the person P2 )
 .
 
 [closeRelationAunt]
-if 
+if
   ( the person P1 is the aunt of the person P2 )
-then 
+then
   ( the person P1 is closely related to the person P2 )
 .
 
 [uncle]
-if 
+if
   ( the person U is a man and is the sibling of the person F ) and
   ( the person F is the parent of the person ME )
 then
@@ -70,7 +70,7 @@ then
 .
 
 [aunt]
-if 
+if
   ( the person U is a woman and is the sibling of the person F ) and
   ( the person F is the parent of the person ME )
 then
@@ -78,11 +78,11 @@ then
 .
 
 [recommendScan]
-if 
+if
   ( the patient PA presents with the lump L ) and
   ( the person P is closely related to the patient PA ) and
   ( the person P suffers from the cancer C ) and
-  ( there is a cancer scan named B ) 
+  ( there is a cancer scan named B )
 then
   ( the cancer scan B is recommended for the patient PA )
 .

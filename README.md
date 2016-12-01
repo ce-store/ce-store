@@ -6,9 +6,14 @@ We are an IBM initiated open source organisation focused on providing an experim
 
 ## Quick Guide
 
-* [Tutorials (See wiki)](https://github.com/ce-store/ce-store/wiki)
 * [Installation and Setup](https://github.com/ce-store/ce-store#installation-and-setup)
 * [Usage](https://github.com/ce-store/ce-store#usage)
+* [Tutorials](https://github.com/ce-store/ce-store/wiki#tutorials)
+* [API](https://github.com/ce-store/ce-store/wiki#api)
+* [Cheatsheet](https://github.com/ce-store/ce-store/wiki#cheatsheet)
+* [Command Syntax](https://github.com/ce-store/ce-store/wiki#command-syntax)
+* [Hudson](https://github.com/ce-store/ce-store/wiki#hudson)
+* [Other Projects](https://github.com/ce-store/ce-store/wiki#other-ce-projects)
 * [Contributing](https://github.com/ce-store/ce-store#contributing)
 * [License](https://github.com/ce-store/ce-store#license)
 
