@@ -15,6 +15,7 @@ import static com.ibm.ets.ita.ce.store.names.CeNames.PROP_MAPSTO;
 import static com.ibm.ets.ita.ce.store.names.CeNames.PROP_URL;
 import static com.ibm.ets.ita.ce.store.names.CeNames.MOD_COUNT;
 import static com.ibm.ets.ita.ce.store.names.CeNames.MOD_EXPAND;
+import static com.ibm.ets.ita.ce.store.names.CeNames.MOD_LINKSBET;
 import static com.ibm.ets.ita.ce.store.names.CeNames.MOD_LINKSFROM;
 import static com.ibm.ets.ita.ce.store.names.CeNames.MOD_LINKSTO;
 import static com.ibm.ets.ita.ce.store.names.CeNames.MOD_LIST;
@@ -65,8 +66,8 @@ public class QuestionAnswererHandler extends GenericHandler {
 
 	private CeStoreJsonObject interpretationJson = null;
 	private Interpretation interpretation = null;
-	private HashSet<CeInstance> domainInstances = null;
-	private HashSet<CeInstance> otherInstances = null;
+	private ArrayList<CeInstance> domainInstances = null;
+	private ArrayList<CeInstance> otherInstances = null;
 	private ArrayList<Answer> answers = null;
 	private boolean returnInterpretation = false;
 	private boolean returnInstances = false;
@@ -619,9 +620,63 @@ public class QuestionAnswererHandler extends GenericHandler {
 	}
 
 	private void handleJustInstances() {
-		for (CeInstance thisInst : this.domainInstances) {
-			answerInstanceQuestionFor(thisInst);
+		if (isLinksBetween()) {
+			answerLinksBetween();
+		} else {
+			for (CeInstance thisInst : this.domainInstances) {
+				answerInstanceQuestionFor(thisInst);
+			}
 		}
+	}
+	
+	private void answerLinksBetween() {
+		if (this.domainInstances.size() > 1) {
+			if (this.domainInstances.size() == 2) {
+				CeInstance inst1 = this.domainInstances.get(0);
+				CeInstance inst2 = this.domainInstances.get(1);
+
+				String answer = answerLinksBetween(inst1, inst2, true);
+				createTbcAnswerWith("answerLinksBetween: " + answer);
+			} else {
+				//TODO: Complete this
+				createTbcAnswerWith("answerLinksBetween with more than two instances");
+			}
+		} else {
+			//TODO: Complete this
+			createTbcAnswerWith("answerLinksBetween with only one instance");
+		}
+	}
+	
+	private String answerLinksBetween(CeInstance pInst1, CeInstance pInst2, boolean pIterate) {
+		String answer = "";
+
+		for (CePropertyInstance thisPi : pInst1.getPropertyInstances()) {
+			if (thisPi.getRelatedProperty().isObjectProperty()) {
+				for (CeInstance relInst : thisPi.getValueInstanceList(this.ac)) {
+					answer += pInst1.getInstanceName();
+					answer += " ";
+					answer += thisPi.getRelatedProperty().getPropertyName();
+
+					if (relInst.equals(pInst2)) {
+						answer += " ";
+						answer += pInst2.getInstanceName();
+					} else {
+						if (pIterate) {
+							String nextStep = "";
+							
+							nextStep = answerLinksBetween(pInst1, relInst, false);
+							
+							if (!nextStep.isEmpty()) {
+								answer += " ";
+								answer += nextStep;
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return answer;
 	}
 
 	private void handleEverythingEmpty() {
@@ -1139,6 +1194,10 @@ public class QuestionAnswererHandler extends GenericHandler {
 		return isModifierNamed(MOD_LINKSTO);
 	}
 
+	private boolean isLinksBetween() {
+		return isModifierNamed(MOD_LINKSBET);
+	}
+
 	private boolean isLocate() {
 		return isModifierNamed(MOD_LOCATE);
 	}
@@ -1175,8 +1234,8 @@ public class QuestionAnswererHandler extends GenericHandler {
 	}
 
 	private void filterInstances() {
-		this.domainInstances = new HashSet<CeInstance>();
-		this.otherInstances = new HashSet<CeInstance>();
+		this.domainInstances = new ArrayList<CeInstance>();
+		this.otherInstances = new ArrayList<CeInstance>();
 
 		for (InstancePhrase thisIp : listInstancePhrases()) {
 			for (CeInstance thisInst : thisIp.getInstances()) {
@@ -1184,12 +1243,16 @@ public class QuestionAnswererHandler extends GenericHandler {
 
 				if (!thisInst.isOnlyConceptNamed(this.ac, CON_CONFCON)) {
 					if (thisInst.isConceptNamed(this.ac, CONLIST_HUDSON)) {
-						this.otherInstances.add(thisInst);
-						alreadyProcessed = true;
+						if (!this.otherInstances.contains(thisInst)) {
+							this.otherInstances.add(thisInst);
+							alreadyProcessed = true;
+						}
 					}
 
 					if (!alreadyProcessed) {
-						this.domainInstances.add(thisInst);
+						if (!this.domainInstances.contains(thisInst)) {
+							this.domainInstances.add(thisInst);
+						}
 					}
 				}
 			}

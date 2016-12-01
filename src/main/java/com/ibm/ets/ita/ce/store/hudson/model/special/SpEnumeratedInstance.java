@@ -5,9 +5,9 @@ package com.ibm.ets.ita.ce.store.hudson.model.special;
  * All Rights Reserved
  *******************************************************************************/
 
-import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_CONS;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_INSTS;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_NUM;
-import static com.ibm.ets.ita.ce.store.names.JsonNames.SPEC_ENUMCON;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.SPEC_ENUMINST;
 
 import java.util.ArrayList;
 
@@ -17,29 +17,28 @@ import com.ibm.ets.ita.ce.store.core.ActionContext;
 import com.ibm.ets.ita.ce.store.hudson.handler.QuestionInterpreterHandler;
 import com.ibm.ets.ita.ce.store.hudson.model.conversation.MatchedItem;
 import com.ibm.ets.ita.ce.store.hudson.model.conversation.ProcessedWord;
-import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
 
-public class SpEnumeratedConcept extends SpThing {
+public class SpEnumeratedInstance extends SpThing {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
 	private String numberWordText = null;
-	private ArrayList<MatchedItem> conceptItems = null;
+	private ArrayList<MatchedItem> instanceItems = null;
 
-	public SpEnumeratedConcept(CeStoreJsonObject pJo) {
+	public SpEnumeratedInstance(CeStoreJsonObject pJo) {
 		super(pJo);
 		// TODO: Complete this
 	}
 
-	public SpEnumeratedConcept(String pPhraseText, int pEndPos, ProcessedWord pNumWord,
-			ArrayList<MatchedItem> pConItems) {
+	public SpEnumeratedInstance(String pPhraseText, int pEndPos, ProcessedWord pNumWord,
+			ArrayList<MatchedItem> pInstItems) {
 		super(pPhraseText, pNumWord.getWordPos(), pEndPos);
 
 		this.numberWordText = pNumWord.getWordText();
-		this.conceptItems = pConItems;
+		this.instanceItems = pInstItems;
 	}
 
-	public boolean isEnumeratedConcept() {
+	public boolean isEnumeratedInstance() {
 		return true;
 	}
 
@@ -47,25 +46,24 @@ public class SpEnumeratedConcept extends SpThing {
 		return this.numberWordText;
 	}
 
-	public ArrayList<MatchedItem> getConceptItems() {
-		return this.conceptItems;
+	public ArrayList<MatchedItem> getInstanceItems() {
+		return this.instanceItems;
 	}
 
 	public CeStoreJsonObject toJson(ActionContext pAc) {
 		CeStoreJsonObject jResult = new CeStoreJsonObject();
-		CeStoreJsonArray jConList = new CeStoreJsonArray();
+		CeStoreJsonArray jInstList = new CeStoreJsonArray();
 
-		for (MatchedItem thisConItem : getConceptItems()) {
-			CeConcept thisCon = thisConItem.getConcept();
-			CeInstance mmInst = thisCon.retrieveMetaModelInstance(pAc);
+		for (MatchedItem thisInstItem : getInstanceItems()) {
+			CeInstance thisInst = thisInstItem.getInstance();
 
-			jConList.add(QuestionInterpreterHandler.jsonFor(pAc, mmInst, thisConItem));
+			jInstList.add(QuestionInterpreterHandler.jsonFor(pAc, thisInst, thisInstItem));
 		}
 
-		addStandardFields(jResult, SPEC_ENUMCON);
+		addStandardFields(jResult, SPEC_ENUMINST);
 
 		jResult.put(JSON_NUM, getNumberWordText());
-		jResult.put(JSON_CONS, jConList);
+		jResult.put(JSON_INSTS, jInstList);
 
 		return jResult;
 	}

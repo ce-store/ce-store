@@ -178,8 +178,9 @@ public class CeNames {
 
 	//Values: Hudson
 	public static final String MOD_EXPAND = "general:expand";
-	public static final String MOD_LINKSFROM = "general:linksFrom";
-	public static final String MOD_LINKSTO = "general:linksTo";
+	public static final String MOD_LINKSFROM = "general:linksfrom";
+	public static final String MOD_LINKSTO = "general:linksto";
+	public static final String MOD_LINKSBET = "general:linksbetween";
 	public static final String MOD_LOCATE = "general:locate";
 	public static final String MOD_COUNT = "general:count";
 	public static final String MOD_LIST = "general:list";

@@ -569,7 +569,7 @@ public class ProcessedWord extends GeneralItem {
 					if (exact) {
 						CeProperty tgtProp = pAc.getModelBuilder().getPropertyFullyNamed(propFullName);
 						if (!alreadyMatchesRelation(tgtProp)) {
-							addReferredExactRelation(pAc, propFullName, tgtProp);
+							addReferredExactRelation(pAc, pDecText, tgtProp);
 						}
 					} else {
 						CeProperty tgtProp = pAc.getModelBuilder().getPropertyFullyNamed(propFullName);

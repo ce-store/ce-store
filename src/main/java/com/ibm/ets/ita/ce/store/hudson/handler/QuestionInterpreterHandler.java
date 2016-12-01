@@ -41,6 +41,7 @@ import com.ibm.ets.ita.ce.store.hudson.model.conversation.MatchedItem;
 import com.ibm.ets.ita.ce.store.hudson.model.conversation.ProcessedWord;
 import com.ibm.ets.ita.ce.store.hudson.model.special.SpCollection;
 import com.ibm.ets.ita.ce.store.hudson.model.special.SpEnumeratedConcept;
+import com.ibm.ets.ita.ce.store.hudson.model.special.SpEnumeratedInstance;
 import com.ibm.ets.ita.ce.store.hudson.model.special.SpLinkedInstance;
 import com.ibm.ets.ita.ce.store.hudson.model.special.SpMatchedTriple;
 import com.ibm.ets.ita.ce.store.hudson.model.special.SpMultiMatch;
@@ -59,6 +60,7 @@ public class QuestionInterpreterHandler extends QuestionHandler {
 
 	private ArrayList<SpNumber> numbers = new ArrayList<SpNumber>();
 	private ArrayList<SpEnumeratedConcept> enumeratedConcepts = new ArrayList<SpEnumeratedConcept>();
+	private ArrayList<SpEnumeratedInstance> enumeratedInstances = new ArrayList<SpEnumeratedInstance>();
 	private ArrayList<SpCollection> collections = new ArrayList<SpCollection>();
 	private ArrayList<SpLinkedInstance> linkedInstances = new ArrayList<SpLinkedInstance>();
 	private ArrayList<SpMatchedTriple> matchedTriples = new ArrayList<SpMatchedTriple>();
@@ -300,6 +302,7 @@ public class QuestionInterpreterHandler extends QuestionHandler {
 	private void analyseSpecialCases() {
 		analyseNumbers();
 		analyseEnumeratedConcepts();
+		analyseEnumeratedInstances();
 		analyseCollections();
 		analyseLinkedConcepts();
 		analyseMatchedTriples();
@@ -564,6 +567,30 @@ public class QuestionInterpreterHandler extends QuestionHandler {
 							SpEnumeratedConcept enCon = new SpEnumeratedConcept(wholePhrase, endPos, thisWord, conList);
 
 							this.enumeratedConcepts.add(enCon);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	private void analyseEnumeratedInstances() {
+		for (ProcessedWord thisWord : this.allWords) {
+			if (isNumberWord(thisWord)) {
+				ProcessedWord nextWord = thisWord.getNextProcessedWord();
+
+				if (nextWord != null) {
+					if (nextWord.isGroundedOnInstance()) {
+						TreeMap<String, ArrayList<MatchedItem>> instMap = nextWord.getMatchedItemInstanceMap();
+
+						for (String phraseText : instMap.keySet()) {
+							ArrayList<MatchedItem> instList = instMap.get(phraseText);
+							String wholePhrase = thisWord.getWordText() + " " + phraseText;
+							int endPos = instList.get(0).getLastWord().getWordPos();
+
+							SpEnumeratedInstance enInst = new SpEnumeratedInstance(wholePhrase, endPos, thisWord, instList);
+
+							this.enumeratedInstances.add(enInst);
 						}
 					}
 				}
@@ -892,6 +919,7 @@ public class QuestionInterpreterHandler extends QuestionHandler {
 		createJsonForNumberSpecials(result);
 		createJsonForCollectionSpecials(result);
 		createJsonForEnumeratedConceptSpecials(result);
+		createJsonForEnumeratedInstanceSpecials(result);
 		createJsonForLinkedInstanceSpecials(result);
 		createJsonForMatchedTripleSpecials(result);
 		createJsonForMultiMatchSpecials(result);
@@ -924,6 +952,16 @@ public class QuestionInterpreterHandler extends QuestionHandler {
 			for (SpEnumeratedConcept sec : this.enumeratedConcepts) {
 				if (thisWord.getWordPos() == sec.getStartPos()) {
 					pResult.add(sec.toJson(this.ac));
+				}
+			}
+		}
+	}
+
+	private void createJsonForEnumeratedInstanceSpecials(CeStoreJsonArray pResult) {
+		for (ProcessedWord thisWord : this.allWords) {
+			for (SpEnumeratedInstance sei : this.enumeratedInstances) {
+				if (thisWord.getWordPos() == sei.getStartPos()) {
+					pResult.add(sei.toJson(this.ac));
 				}
 			}
 		}

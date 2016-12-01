@@ -268,6 +268,7 @@ public class JsonNames {
 
 	public static final String SPEC_COLLECTION = "collection";
 	public static final String SPEC_ENUMCON = "enumerated-concept";
+	public static final String SPEC_ENUMINST = "enumerated-instance";
 	public static final String SPEC_LINKEDINST = "linked-instance";
 	public static final String SPEC_MATCHTRIP = "matched-triple";
 	public static final String SPEC_MULTIMATCH = "multi-match";
