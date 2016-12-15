@@ -397,9 +397,9 @@ public class QueryExecutionManagerMem extends QueryExecutionManager {
 				}
 			}
 			
-			for (CeConcatenatedValue thisConVal : concatVals) {
-				processForConcatenatedValue(pVarId, thisConVal);
-			}
+//			for (CeConcatenatedValue thisConVal : concatVals) {
+//				processForConcatenatedValue(pVarId, thisConVal);
+//			}
 		}
 		
 		if (hadProp) {
@@ -537,34 +537,34 @@ public class QueryExecutionManagerMem extends QueryExecutionManager {
 		return result;
 	}
 
-	private void processForConcatenatedValue(String pVarId, CeConcatenatedValue pConVal) {
-		for (String concatVar : pConVal.getAllVarNames()) {
-			for (String tgtVal : getLatestValuesForVariable(concatVar)) {
-				String concatVal = pConVal.doConcatenationWith(concatVar, tgtVal);
-
-				saveThisMatchedConcatValue(pVarId, concatVar, concatVal, tgtVal);
-				if (isReportMicroDebug()) {
-					reportMicroDebug("Successfully concatenated value '" + concatVar + "'->'" + pConVal.getRawConcatText() + "' (" + concatVal + " -> " + tgtVal + ")", this.ac);
-				}
-			}
-		}
-	}
+//	private void processForConcatenatedValue(String pVarId, CeConcatenatedValue pConVal) {
+//		for (String concatVar : pConVal.getAllVarNames()) {
+//			for (String tgtVal : getLatestValuesForVariable(concatVar)) {
+//				String concatVal = pConVal.doConcatenationWith(concatVar, tgtVal);
+//
+//				saveThisMatchedConcatValue(pVarId, concatVar, concatVal, tgtVal);
+//				if (isReportMicroDebug()) {
+//					reportMicroDebug("Successfully concatenated value '" + concatVar + "'->'" + pConVal.getRawConcatText() + "' (" + concatVal + " -> " + tgtVal + ")", this.ac);
+//				}
+//			}
+//		}
+//	}
 	
-	private HashSet<String> getLatestValuesForVariable(String pVarName) {
-		HashSet<String> result = new HashSet<String>();
-		
-		for (MatchedClauseList thisMcl : this.mcls.values()) {
-			if (pVarName.equals(thisMcl.getSrcVarId())) {
-				result.addAll(thisMcl.computeSourceValues());
-			}
-			if (pVarName.equals(thisMcl.getTgtVarId())) {
-				//Target variable matches
-				result.addAll(thisMcl.computeTargetValues());
-			}
-		}
-		
-		return result;
-	}
+//	private HashSet<String> getLatestValuesForVariable(String pVarName) {
+//		HashSet<String> result = new HashSet<String>();
+//		
+//		for (MatchedClauseList thisMcl : this.mcls.values()) {
+//			if (pVarName.equals(thisMcl.getSrcVarId())) {
+//				result.addAll(thisMcl.computeSourceValues());
+//			}
+//			if (pVarName.equals(thisMcl.getTgtVarId())) {
+//				//Target variable matches
+//				result.addAll(thisMcl.computeTargetValues());
+//			}
+//		}
+//		
+//		return result;
+//	}
 
 	private boolean doFilterProcessing(String pSrcVarId, String pPropName, ArrayList<CeInstance> pInsts, CePropertyInstance pObjPi) {
 		boolean result = true;
@@ -1248,13 +1248,13 @@ public class QueryExecutionManagerMem extends QueryExecutionManager {
 		saveCommonMatchedValues(pSrcVar, pTgtVar, pPropName, thisPair, true);
 	}
 
-	private void saveThisMatchedConcatValue(String pSrcVar, String pTgtVar, String pSrcVal, String pTgtVal) {
-		ArrayList<String> thisPair = new ArrayList<String>();
-		thisPair.add(pSrcVal);
-		thisPair.add(pTgtVal);
-
-		saveCommonMatchedValues(pSrcVar, pTgtVar, "(concat)", thisPair, true);
-	}
+//	private void saveThisMatchedConcatValue(String pSrcVar, String pTgtVar, String pSrcVal, String pTgtVal) {
+//		ArrayList<String> thisPair = new ArrayList<String>();
+//		thisPair.add(pSrcVal);
+//		thisPair.add(pTgtVal);
+//
+//		saveCommonMatchedValues(pSrcVar, pTgtVar, "(concat)", thisPair, true);
+//	}
 
 	private void saveCommonMatchedValues(String pSrcVar, String pTgtVar, String pPropName, ArrayList<String> pPair, boolean pIsSpecial) {
 		MatchedClauseList mcl = null;

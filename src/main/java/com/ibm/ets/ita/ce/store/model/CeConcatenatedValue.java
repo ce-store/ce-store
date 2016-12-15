@@ -9,17 +9,18 @@ package com.ibm.ets.ita.ce.store.model;
 
 import static com.ibm.ets.ita.ce.store.names.MiscNames.ES;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_CONCAT;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_DQ;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_SQ;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.stripDelimitingQuotesFrom;
 
 import java.util.ArrayList;
 
+import com.ibm.ets.ita.ce.store.query.CeConclusionRow;
+import com.ibm.ets.ita.ce.store.query.CeGeneratorConclusion;
+
 public class CeConcatenatedValue {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
 
-//	private static AtomicLong concatIdVal = new AtomicLong(0);
-
-//	private String id = null;
 	private String name = null;
 	private String rawConcatText = null;
 	private String parts[] = null;
@@ -32,25 +33,12 @@ public class CeConcatenatedValue {
 	public static CeConcatenatedValue createNewConcatenatedValue(String pName, String pConcatText) {
 		CeConcatenatedValue result = new CeConcatenatedValue();
 
-//		result.id = PREFIX_CONCAT + nextConcatId();
 		result.name = pName;
 		result.rawConcatText = pConcatText;
 		result.calculateParts();
 
 		return result;
 	}
-
-//	public static void resetCounter() {
-//		concatIdVal = new AtomicLong(0);
-//	}
-
-//	private static long nextConcatId() {
-//		return concatIdVal.incrementAndGet();
-//	}
-
-//	public String getId() {
-//		return this.id;
-//	}
 
 	private void calculateParts() {
 		this.parts = this.rawConcatText.split(TOKEN_CONCAT);
@@ -60,7 +48,6 @@ public class CeConcatenatedValue {
 		for (int i = 0; i < this.parts.length; i++) {
 			String trimmedPart = this.parts[i].trim();
 			this.parts[i] = trimmedPart;
-
 		}
 	}
 
@@ -80,9 +67,9 @@ public class CeConcatenatedValue {
 		ArrayList<String> result = new ArrayList<String>();
 
 		// The variable "parts" are those which do not start with a string
-		// delimiter (')
+		// delimiter (' or ")
 		for (String thisPart : this.parts) {
-			if (!thisPart.startsWith(TOKEN_SQ)) {
+			if (!(thisPart.startsWith(TOKEN_SQ) || thisPart.startsWith(TOKEN_DQ))) {
 				result.add(thisPart);
 			}
 		}
@@ -102,16 +89,18 @@ public class CeConcatenatedValue {
 		return result;
 	}
 
-	public String doConcatenationWith(String pVarId, String pValue) {
+	public String doConcatenationWith(CeConclusionRow pRow, CeGeneratorConclusion pCgc) {
 		String result = ES;
 
 		for (String thisPart : this.parts) {
-			if (thisPart.equals(pVarId)) {
-				// This is the variable to be replaced so substitute that
-				result += pValue;
+			String strippedVal = stripDelimitingQuotesFrom(thisPart);
+
+			if (strippedVal.equals(thisPart)) {
+				//This is a variable (no quotes were stripped)
+				result += pCgc.getValueForHeader(strippedVal, pRow);
 			} else {
-				// Remove the stand and end quote characters when concatenating
-				result += stripDelimitingQuotesFrom(thisPart);
+				//This is a fixed value (quotes were stripped)
+				result += strippedVal;
 			}
 		}
 

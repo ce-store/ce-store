@@ -446,8 +446,7 @@ public class CeGeneratorConclusion {
 
 							appendToSbNoNl(pSb, ceStartingDefinition(tgtCon.getConceptName(), thisNewInstId));
 
-							String concatVar = thisCv.getFirstVarName();
-							String concatVal = thisCv.doConcatenationWith(concatVar, getValueForHeader(concatVar, pRow));
+							String concatVal = thisCv.doConcatenationWith(pRow, this);
 							ceText = ceFnProperty("the value", concatVal, thisCv.getName());
 						}
 						appendToSbNoNl(pSb, ceText);
