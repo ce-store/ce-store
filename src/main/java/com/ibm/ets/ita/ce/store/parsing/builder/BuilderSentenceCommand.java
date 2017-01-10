@@ -15,6 +15,7 @@ import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_ID;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_INSTANCES;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_INTO;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_LOAD;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_LOCK;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_NAME;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_NAMED;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_QUERY;
@@ -150,6 +151,23 @@ public class BuilderSentenceCommand extends BuilderSentence {
 			if (result) {
 				this.isValid = true;
 				this.cmdTargetStore = stripDelimitingQuotesFrom(this.rawTokens.get(4));
+			}
+		} else {
+			result = false;
+		}
+
+		return result;
+	}
+
+	public boolean isCmdLockStore() {
+		boolean result = false;
+
+		if (this.rawTokens.size() == 3) {
+			//No need to check first token as it must be 'perform' for this to be a command sentence
+			result = (this.rawTokens.get(1).equals(TOKEN_LOCK)) && (this.rawTokens.get(2).equals(TOKEN_STORE));
+
+			if (result) {
+				this.isValid = true;
 			}
 		} else {
 			result = false;
@@ -416,6 +434,8 @@ public class BuilderSentenceCommand extends BuilderSentence {
 			pSenStats.updateFrom(sa.resetStore(getCmdStartingUid(), true), true);
 		} else if (isCmdSwitchStore()) {
 			pAc.switchToStoreNamed(getCmdTargetStore());
+		} else if (isCmdLockStore()) {
+			pAc.getModelBuilder().lockStore();
 		} else if (isCmdEmptyInstances()) {
 			pSenStats.updateFrom(sa.emptyInstances(), true);
 		} else if (isCmdLoadFromUrl()) {
@@ -464,6 +484,8 @@ public class BuilderSentenceCommand extends BuilderSentence {
 		isCmdDeleteSourceByName();
 		isCmdDeleteSourceById();
 		isCmdResetStore();
+		isCmdSwitchStore();
+		isCmdLockStore();
 		isCmdRunAgent();
 		isCmdSetValue();
 

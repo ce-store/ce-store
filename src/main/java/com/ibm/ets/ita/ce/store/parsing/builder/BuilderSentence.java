@@ -83,33 +83,43 @@ public abstract class BuilderSentence {
 
 	public static BuilderSentence createForSentenceText(ActionContext pAc, String pSentenceText, ArrayList<String> pTokens) {
 		BuilderSentence bs = null;
+		boolean ignoreRequest = false;
 
-		if ((pSentenceText != null) && (!pSentenceText.isEmpty())) {
-			if ((pTokens != null) && (!pTokens.isEmpty())) {
-				String firstWord = pTokens.get(0);
-				if (firstWord.equals(TOKEN_CONCEPTUALISE) || firstWord.equals(TOKEN_CONCEPTUALIZE) || firstWord.equals(TOKEN_DEFINE)) {
-					bs = new BuilderSentenceModel(pSentenceText);
-				} else if ((firstWord.equals(TOKEN_THE)) || (firstWord.equals(TOKEN_THERE)) || (firstWord.equals(TOKEN_NO))) {
-					bs = new BuilderSentenceFact(pSentenceText);
-				} else if (firstWord.equals(TOKEN_PERFORM)) {
-					bs = new BuilderSentenceCommand(pSentenceText);
-				} else if ((firstWord.equals(TOKEN_IF)) || (firstWord.equals(TOKEN_FOR)) || (firstWord.equals(TOKEN_OPENSQBR))) {
-					bs = new BuilderSentenceRuleOrQuery(pSentenceText);
-				} else if (firstWord.endsWith(TOKEN_COLON)) {
-					bs = new BuilderSentenceAnnotation(pSentenceText);
+		if (pAc.getModelBuilder().isLocked()) {
+			if (!pAc.isValidatingOnly()) {
+				ignoreRequest = true;
+				reportError("ce-store is locked.  Sentence has been ignored: " + pSentenceText, pAc);
+			}
+		}
+
+		if (!ignoreRequest) {
+			if ((pSentenceText != null) && (!pSentenceText.isEmpty())) {
+				if ((pTokens != null) && (!pTokens.isEmpty())) {
+					String firstWord = pTokens.get(0);
+					if (firstWord.equals(TOKEN_CONCEPTUALISE) || firstWord.equals(TOKEN_CONCEPTUALIZE) || firstWord.equals(TOKEN_DEFINE)) {
+						bs = new BuilderSentenceModel(pSentenceText);
+					} else if ((firstWord.equals(TOKEN_THE)) || (firstWord.equals(TOKEN_THERE)) || (firstWord.equals(TOKEN_NO))) {
+						bs = new BuilderSentenceFact(pSentenceText);
+					} else if (firstWord.equals(TOKEN_PERFORM)) {
+						bs = new BuilderSentenceCommand(pSentenceText);
+					} else if ((firstWord.equals(TOKEN_IF)) || (firstWord.equals(TOKEN_FOR)) || (firstWord.equals(TOKEN_OPENSQBR))) {
+						bs = new BuilderSentenceRuleOrQuery(pSentenceText);
+					} else if (firstWord.endsWith(TOKEN_COLON)) {
+						bs = new BuilderSentenceAnnotation(pSentenceText);
+					} else {
+						if (!pAc.isValidatingOnly()) {
+							reportError("Unable to detect sentence type when creating sentence builder for sentence:" + pSentenceText, pAc);
+						}
+					}
 				} else {
 					if (!pAc.isValidatingOnly()) {
-						reportError("Unable to detect sentence type when creating sentence builder for sentence:" + pSentenceText, pAc);
+						reportError("Unable to create sentence builder due to empty token list", pAc);
 					}
 				}
 			} else {
 				if (!pAc.isValidatingOnly()) {
-					reportError("Unable to create sentence builder due to empty token list", pAc);
+					reportError("Unable to create sentence builder for empty sentence", pAc);
 				}
-			}
-		} else {
-			if (!pAc.isValidatingOnly()) {
-				reportError("Unable to create sentence builder for empty sentence", pAc);	
 			}
 		}
 

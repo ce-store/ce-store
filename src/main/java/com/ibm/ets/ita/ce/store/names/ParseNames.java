@@ -132,6 +132,7 @@ public class ParseNames {
 	public static final String TOKEN_EMPTY = "empty";
 	public static final String TOKEN_INSTANCES = "instances";
 	public static final String TOKEN_LOAD = "load";
+	public static final String TOKEN_LOCK = "lock";
 	public static final String TOKEN_DELETE = "delete";
 	public static final String TOKEN_SENTENCES = "sentences";
 	public static final String TOKEN_FROM = "from";

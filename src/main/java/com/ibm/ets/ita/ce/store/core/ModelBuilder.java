@@ -52,10 +52,8 @@ public class ModelBuilder {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	// String caching levels (0 = No caching at all)
-	private static final int CACHELEVEL_1 = 1; // Caching of heavily repetitive
-												// strings
-	private static final int CACHELEVEL_2 = 2; // Caching of level 2 plus CE
-												// sentence text
+	private static final int CACHELEVEL_1 = 1; // Caching of heavily repetitive strings
+	private static final int CACHELEVEL_2 = 2; // CACHELEVEL_1 plus CE sentence text
 	private static final int CACHELEVEL_3 = 3; // Caching of all strings
 	private int cacheLevel = CACHELEVEL_1;
 
@@ -79,6 +77,7 @@ public class ModelBuilder {
 	private HashSet<String> cachedConceptFragmentNames = new HashSet<String>();
 	private HashSet<String> cachedPropertyFragmentNames = new HashSet<String>();
 	private HashSet<String> cachedInstanceFragmentNames = new HashSet<String>();
+	private boolean isLocked = false;
 
 	// TODO: Need to remove or rename this
 	private ArrayList<String> tempWarnings = null;
@@ -98,12 +97,15 @@ public class ModelBuilder {
 	}
 
 	public void reset(ActionContext pAc) {
+		this.isLocked = false;
+
 		// Create empty collections for each of the relevant properties
 		if (getCeConfig(pAc).isCaseSensitive()) {
 			this.allConcepts = new TreeMap<String, CeConcept>();
 		} else {
 			this.allConcepts = new TreeMap<String, CeConcept>(String.CASE_INSENSITIVE_ORDER);
 		}
+
 		this.allProperties = new HashSet<CeProperty>();
 		this.allSources = new LinkedHashMap<String, CeSource>();
 		this.allConceptualModels = new HashMap<String, CeConceptualModel>();
@@ -125,17 +127,17 @@ public class ModelBuilder {
 		this.cachedInstanceFragmentNames = new HashSet<String>();
 
 		// Reset all of the counters that are used when allocating objects
-//		CeRationalePart.resetCounter();
-//		CeAnnotation.resetCounter();
-//		CeClause.resetCounter();
-//		CeConcatenatedValue.resetCounter();
-//		CeModelEntity.resetCounter();
-//		CePropertyValue.resetCounter();
 		CeQuery.resetCounter();
 		CeSentence.resetCounter();
-//		CeSequence.resetCounter();
-//		CeSequenceClause.resetCounter();
 		CeSource.resetCounter();
+	}
+
+	public boolean isLocked() {
+		return this.isLocked;
+	}
+
+	public void lockStore() {
+		this.isLocked = true;
 	}
 
 	public String getCeStoreName() {
