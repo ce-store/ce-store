@@ -81,30 +81,33 @@ public abstract class BuilderSentence {
 		this.firstNonNameToken = "";
 	}
 
-	public static BuilderSentence createForSentenceText(ActionContext pAc, String pSentenceText, ArrayList<String> pTokens) {
+	public static BuilderSentence createForSentenceText(ActionContext pAc, String pSentenceText, ArrayList<String> pTokens, boolean pIsClause) {
 		BuilderSentence bs = null;
 		boolean ignoreRequest = false;
 
 		if (pAc.getModelBuilder().isLocked()) {
 			if (!pAc.isValidatingOnly()) {
-				ignoreRequest = true;
-				reportError("ce-store is locked.  Sentence has been ignored: " + pSentenceText, pAc);
+				if (!isQueryOrRule(pTokens)) {
+					if (!pIsClause) {
+						ignoreRequest = true;
+						reportError("ce-store is locked.  Sentence has been ignored: " + pSentenceText, pAc);
+					}
+				}
 			}
 		}
 
 		if (!ignoreRequest) {
 			if ((pSentenceText != null) && (!pSentenceText.isEmpty())) {
 				if ((pTokens != null) && (!pTokens.isEmpty())) {
-					String firstWord = pTokens.get(0);
-					if (firstWord.equals(TOKEN_CONCEPTUALISE) || firstWord.equals(TOKEN_CONCEPTUALIZE) || firstWord.equals(TOKEN_DEFINE)) {
+					if (isModel(pTokens)) {
 						bs = new BuilderSentenceModel(pSentenceText);
-					} else if ((firstWord.equals(TOKEN_THE)) || (firstWord.equals(TOKEN_THERE)) || (firstWord.equals(TOKEN_NO))) {
+					} else if (isFact(pTokens)) {
 						bs = new BuilderSentenceFact(pSentenceText);
-					} else if (firstWord.equals(TOKEN_PERFORM)) {
+					} else if (isCommand(pTokens)) {
 						bs = new BuilderSentenceCommand(pSentenceText);
-					} else if ((firstWord.equals(TOKEN_IF)) || (firstWord.equals(TOKEN_FOR)) || (firstWord.equals(TOKEN_OPENSQBR))) {
+					} else if (isQueryOrRule(pTokens)) {
 						bs = new BuilderSentenceRuleOrQuery(pSentenceText);
-					} else if (firstWord.endsWith(TOKEN_COLON)) {
+					} else if (isAnnotation(pTokens)) {
 						bs = new BuilderSentenceAnnotation(pSentenceText);
 					} else {
 						if (!pAc.isValidatingOnly()) {
@@ -128,6 +131,67 @@ public abstract class BuilderSentence {
 		}
 
 		return bs;
+	}
+
+	public static boolean isCommand(ArrayList<String> pTokens) {
+		boolean result = false;
+
+		if ((pTokens != null) && (!pTokens.isEmpty())) {
+			String firstWord = pTokens.get(0);
+			result = firstWord.equals(TOKEN_PERFORM);
+		}
+
+		return result;
+	}
+
+	public static boolean isModel(ArrayList<String> pTokens) {
+		boolean result = false;
+
+		if ((pTokens != null) && (!pTokens.isEmpty())) {
+			String firstWord = pTokens.get(0);
+			result = firstWord.equals(TOKEN_CONCEPTUALISE) ||
+						firstWord.equals(TOKEN_CONCEPTUALIZE) ||
+						firstWord.equals(TOKEN_DEFINE);
+		}
+
+		return result;
+	}
+
+	public static boolean isFact(ArrayList<String> pTokens) {
+		boolean result = false;
+
+		if ((pTokens != null) && (!pTokens.isEmpty())) {
+			String firstWord = pTokens.get(0);
+			result = firstWord.equals(TOKEN_THE) ||
+						firstWord.equals(TOKEN_THERE) ||
+						firstWord.equals(TOKEN_NO);
+		}
+
+		return result;		
+	}
+
+	public static boolean isQueryOrRule(ArrayList<String> pTokens) {
+		boolean result = false;
+
+		if ((pTokens != null) && (!pTokens.isEmpty())) {
+			String firstWord = pTokens.get(0);
+			result = firstWord.equals(TOKEN_IF) ||
+						firstWord.equals(TOKEN_FOR) ||
+						firstWord.equals(TOKEN_OPENSQBR);
+		}
+
+		return result;
+	}
+
+	private static boolean isAnnotation(ArrayList<String> pTokens) {
+		boolean result = false;
+
+		if ((pTokens != null) && (!pTokens.isEmpty())) {
+			String firstWord = pTokens.get(0);
+			result = firstWord.endsWith(TOKEN_COLON);
+		}
+
+		return result;
 	}
 
 	public static String formattedSentenceType(int pType) {

@@ -12,6 +12,7 @@ import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_ENDTS;
 import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_RETINSTS;
 import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_STARTTS;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REST_EXECUTE;
+import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -85,9 +86,13 @@ public class CeStoreRestApiQuery extends CeStoreRestApi {
 			//GET query details
 			handleGetQueryDetails(pTgtQuery);
 		} else if (isDelete()) {
-			//DELETE query
-			handleDeleteQuery(pTgtQuery);
-			statsInResponse = true;
+			if (!this.wc.getModelBuilder().isLocked()) {
+				//DELETE query
+				handleDeleteQuery(pTgtQuery);
+				statsInResponse = true;
+			} else {
+				reportError("ce-store is locked.  The delete request was ignored", this.wc);
+			}
 		} else {
 			reportUnsupportedMethodError();
 		}

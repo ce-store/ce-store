@@ -28,6 +28,7 @@ import static com.ibm.ets.ita.ce.store.names.RestNames.REST_SENTENCE;
 import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.appendNewLineToSb;
 import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.appendToSb;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportException;
+import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
 
 import java.util.ArrayList;
 import java.util.TreeMap;
@@ -203,9 +204,13 @@ public class CeStoreRestApiConcept extends CeStoreRestApi {
 			handleGetConceptDetails(pCon);
 			statsInResponse = false;
 		} else if (isDelete()) {
-			//DELETE concept
-			handleDeleteConcept(pCon);
-			statsInResponse = true;
+			if (!this.wc.getModelBuilder().isLocked()) {
+				//DELETE concept
+				handleDeleteConcept(pCon);
+				statsInResponse = true;
+			} else {
+				reportError("ce-store is locked.  The delete request was ignored", this.wc);
+			}
 		} else {
 			reportUnsupportedMethodError();
 		}
@@ -251,10 +256,14 @@ public class CeStoreRestApiConcept extends CeStoreRestApi {
 			//List all instances for concept
 			handleListAllInstancesForConcept(pCon);
 		} else if (isDelete()) {
-			//URL = /concepts/{name}/instances
-			//List all instances for concept
-			handleDeleteAllInstancesForConcept(pCon);
-			statsInResponse = true;
+			if (!this.wc.getModelBuilder().isLocked()) {
+				//URL = /concepts/{name}/instances
+				//List all instances for concept
+				handleDeleteAllInstancesForConcept(pCon);
+				statsInResponse = true;
+			} else {
+				reportError("ce-store is locked.  The delete request was ignored", this.wc);
+			}
 		} else {
 			reportUnsupportedMethodError();
 		}
@@ -365,9 +374,13 @@ public class CeStoreRestApiConcept extends CeStoreRestApi {
 				//URL = /concepts/{name}/instances/exact
 				handleListExactInstancesForConcept(pCon);
 			} else if (isDelete()) {
-				//Delete exact instances for concept
-				//URL = /concepts/{name}/instances/exact
-				handleDeleteExactInstancesForConcept(pCon);
+				if (!this.wc.getModelBuilder().isLocked()) {
+					//Delete exact instances for concept
+					//URL = /concepts/{name}/instances/exact
+					handleDeleteExactInstancesForConcept(pCon);
+				} else {
+					reportError("ce-store is locked.  The delete request was ignored", this.wc);
+				}
 			} else {
 				reportUnsupportedMethodError();
 			}

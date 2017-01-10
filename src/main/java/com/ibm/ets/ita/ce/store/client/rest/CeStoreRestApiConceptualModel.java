@@ -12,6 +12,7 @@ import static com.ibm.ets.ita.ce.store.names.RestNames.REST_SENTENCE;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REST_PROPERTY;
 import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.appendNewLineToSb;
 import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.appendToSb;
+import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -89,9 +90,13 @@ public class CeStoreRestApiConceptualModel extends CeStoreRestApi {
 			//Get conceptual model details
 			handleGetConceptualModelDetails(pCm);
 		} else if (isDelete()) {
-			//DELETE conceptual model
-			handleDeleteConceptualModel(pCm);
-			statsInResponse = true;
+			if (!this.wc.getModelBuilder().isLocked()) {
+				//DELETE conceptual model
+				handleDeleteConceptualModel(pCm);
+				statsInResponse = true;
+			} else {
+				reportError("ce-store is locked.  The delete request was ignored", this.wc);
+			}
 		} else {
 			reportUnsupportedMethodError();
 		}

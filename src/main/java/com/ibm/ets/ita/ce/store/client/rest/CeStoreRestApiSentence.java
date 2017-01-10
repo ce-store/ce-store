@@ -175,9 +175,13 @@ public class CeStoreRestApiSentence extends CeStoreRestApi {
 			//GET - Return sentence details
 			handleGetSentenceDetails(pTgtSen);
 		} else if (isDelete()) {
-			//DELETE - Delete this sentence
-			handleDeleteSentence(pTgtSen);
-			statsInResponse = true;
+			if (!this.wc.getModelBuilder().isLocked()) {
+				//DELETE - Delete this sentence
+				handleDeleteSentence(pTgtSen);
+				statsInResponse = true;
+			} else {
+				reportError("ce-store is locked.  The delete request was ignored", this.wc);
+			}
 		} else {
 			reportUnsupportedMethodError();
 		}

@@ -20,6 +20,7 @@ import static com.ibm.ets.ita.ce.store.names.RestNames.REST_SECONDARY;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REST_SENTENCE;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REST_RATIONALE;
 import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.appendToSb;
+import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
 
 import java.util.ArrayList;
 
@@ -86,10 +87,14 @@ public class CeStoreRestApiInstance extends CeStoreRestApi {
 			//List all instances
 			handleListAllInstances();
 		} else if (isDelete()) {
-			//URL = /instances
-			//DELETE all instances
-			handleDeleteAllInstances();
-			statsInResponse = true;
+			if (!this.wc.getModelBuilder().isLocked()) {
+				//URL = /instances
+				//DELETE all instances
+				handleDeleteAllInstances();
+				statsInResponse = true;
+			} else {
+				reportError("ce-store is locked.  The delete request was ignored", this.wc);
+			}
 		} else {
 			reportUnsupportedMethodError();
 		}
@@ -103,8 +108,14 @@ public class CeStoreRestApiInstance extends CeStoreRestApi {
 		if (isGet()) {
 			handleGetInstanceDetails(pTgtInst);
 		} else if (isDelete()) {
-			handleDeleteInstance(pTgtInst);
-			statsInResponse = true;
+			if (!this.wc.getModelBuilder().isLocked()) {
+				//URL = /instances/{name}
+				//DELETE this instances
+				handleDeleteInstance(pTgtInst);
+				statsInResponse = true;
+			} else {
+				reportError("ce-store is locked.  The delete request was ignored", this.wc);
+			}
 		} else {
 			reportUnsupportedMethodError();
 		}

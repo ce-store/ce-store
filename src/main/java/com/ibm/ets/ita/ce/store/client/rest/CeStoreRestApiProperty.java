@@ -229,8 +229,12 @@ public class CeStoreRestApiProperty extends CeStoreRestApi {
 		if (isGet()) {
 			handleGetPropertyDetails(pTgtProp);
 		} else if (isDelete()) {
-			handleDeleteProperty(pTgtProp);
-			result = true;
+			if (!this.wc.getModelBuilder().isLocked()) {
+				handleDeleteProperty(pTgtProp);
+				result = true;
+			} else {
+				reportError("ce-store is locked.  The delete request was ignored", this.wc);
+			}
 		} else {
 			reportUnsupportedMethodError();
 		}

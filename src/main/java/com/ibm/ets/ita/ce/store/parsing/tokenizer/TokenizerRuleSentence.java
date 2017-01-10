@@ -318,7 +318,7 @@ public class TokenizerRuleSentence extends TokenizerSentence {
 	private void processClause(CeClause pClause, boolean pFirstClause) {
 		String clauseText = pClause.terminatedClauseText();
 		if (!clauseText.isEmpty()) {
-			BuilderSentenceFact bsF = (BuilderSentenceFact)BuilderSentence.createForSentenceText(this.ac, clauseText, pClause.getRawTokens());
+			BuilderSentenceFact bsF = (BuilderSentenceFact)BuilderSentence.createForSentenceText(this.ac, clauseText, pClause.getRawTokens(), true);
 
 			if (bsF != null) {
 				bsF.markAsClause();

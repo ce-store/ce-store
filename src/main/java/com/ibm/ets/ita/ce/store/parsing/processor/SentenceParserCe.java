@@ -78,7 +78,7 @@ public class SentenceParserCe extends SentenceParser {
 
 	@Override
 	protected void saveSentenceExtra() {
-		BuilderSentence thisCeSentence = BuilderSentence.createForSentenceText(this.ac, this.thisSentence.toString(), this.tokens);
+		BuilderSentence thisCeSentence = BuilderSentence.createForSentenceText(this.ac, this.thisSentence.toString(), this.tokens, false);
 
 		if (thisCeSentence != null) {
 			thisCeSentence.categoriseSentence();

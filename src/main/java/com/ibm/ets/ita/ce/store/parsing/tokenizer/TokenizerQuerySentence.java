@@ -541,7 +541,7 @@ public class TokenizerQuerySentence extends TokenizerSentence {
 		String clauseText = pClause.terminatedClauseText();
 		if (!clauseText.isEmpty()) {
 			BuilderSentenceFact bsF = (BuilderSentenceFact) BuilderSentence.createForSentenceText(this.ac, clauseText,
-					pClause.getRawTokens());
+					pClause.getRawTokens(), true);
 
 			if (bsF != null) {
 				if (!pFirstClause) {
