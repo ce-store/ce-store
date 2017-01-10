@@ -1,7 +1,7 @@
 package com.ibm.ets.ita.ce.store.core;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
+ * (C) Copyright IBM Corporation  2011, 2017
  * All Rights Reserved
  *******************************************************************************/
 
@@ -28,7 +28,7 @@ import com.ibm.ets.ita.ce.store.model.CeSentence;
  * Is managing our own array really more efficient than just using ArrayList ?
  */
 public class SentenceList {
-  public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+  public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
   private static final String CLASS_NAME = SentenceList.class.getName();
   private static final String PACKAGE_NAME = SentenceList.class.getPackage().getName();

@@ -1,7 +1,7 @@
 package com.ibm.ets.ita.ce.store.core;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
+ * (C) Copyright IBM Corporation  2011, 2017
  * All Rights Reserved
  *******************************************************************************/
 
@@ -49,7 +49,7 @@ import com.ibm.ets.ita.ce.store.uid.UidManager;
 import com.ibm.ets.ita.ce.store.uid.UidManagerDefault;
 
 public class ModelBuilder {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	// String caching levels (0 = No caching at all)
 	private static final int CACHELEVEL_1 = 1; // Caching of heavily repetitive

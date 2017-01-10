@@ -1,7 +1,7 @@
 package com.ibm.ets.ita.ce.store.client.rest;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
+ * (C) Copyright IBM Corporation  2011, 2017
  * All Rights Reserved
  *******************************************************************************/
 
@@ -20,7 +20,7 @@ import com.ibm.ets.ita.ce.store.client.web.model.CeWebStore;
 import com.ibm.ets.ita.ce.store.core.ModelBuilder;
 
 public class CeStoreRestApiStore extends CeStoreRestApi {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	private boolean storeWasCreated = false;
 

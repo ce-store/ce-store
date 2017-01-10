@@ -1,7 +1,7 @@
 package com.ibm.ets.ita.ce.store.model;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
+ * (C) Copyright IBM Corporation  2011, 2017
  * All Rights Reserved
  *******************************************************************************/
 
@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import com.ibm.ets.ita.ce.store.core.ActionContext;
 
 public class CeSource extends CeModelEntity {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	//External types
 	private static final int SRCTYPE_ID_UNKNOWN = -1;

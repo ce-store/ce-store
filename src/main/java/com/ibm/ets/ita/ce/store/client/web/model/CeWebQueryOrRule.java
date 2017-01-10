@@ -1,7 +1,7 @@
 package com.ibm.ets.ita.ce.store.client.web.model;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
+ * (C) Copyright IBM Corporation  2011, 2017
  * All Rights Reserved
  *******************************************************************************/
 
@@ -51,7 +51,7 @@ import com.ibm.ets.ita.ce.store.model.CeQuery;
 import com.ibm.ets.ita.ce.store.model.CeRule;
 
 public class CeWebQueryOrRule extends CeWebObject {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	public CeWebQueryOrRule(ActionContext pAc) {
 		super(pAc);

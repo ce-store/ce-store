@@ -1,12 +1,12 @@
 package com.ibm.ets.ita.ce.store.hudson.model;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
+ * (C) Copyright IBM Corporation  2011, 2017
  * All Rights Reserved
  *******************************************************************************/
 
 public class Suggestion implements Comparable<Suggestion> {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	private String originalText = null;
 	private String beforeText = null;

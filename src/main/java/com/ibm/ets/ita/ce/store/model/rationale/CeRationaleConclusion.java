@@ -1,12 +1,12 @@
 package com.ibm.ets.ita.ce.store.model.rationale;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
+ * (C) Copyright IBM Corporation  2011, 2017
  * All Rights Reserved
  *******************************************************************************/
 
 public class CeRationaleConclusion extends CeRationalePart {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	public static CeRationaleConclusion createNew(boolean pConIsNegated, String pConName, String pInstName, boolean pPropIsNegated, String pPropName, String pRangeName, String pVal) {
 		CeRationaleConclusion newInst = new CeRationaleConclusion();

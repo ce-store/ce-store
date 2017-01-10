@@ -1,12 +1,17 @@
 package com.ibm.ets.ita.ce.store.parsing.builder;
 
+/*******************************************************************************
+ * (C) Copyright IBM Corporation  2011, 2017
+ * All Rights Reserved
+ *******************************************************************************/
+
 import com.ibm.ets.ita.ce.store.core.ActionContext;
 import com.ibm.ets.ita.ce.store.model.CeQuery;
 import com.ibm.ets.ita.ce.store.model.CeRule;
 import com.ibm.ets.ita.ce.store.model.CeSentence;
 
 public class BuilderSentenceRuleOrQuery extends BuilderSentence {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	private CeQuery query = null;
 	private CeRule rule = null;

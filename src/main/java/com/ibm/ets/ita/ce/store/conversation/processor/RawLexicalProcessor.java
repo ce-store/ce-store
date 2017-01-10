@@ -1,9 +1,7 @@
 package com.ibm.ets.ita.ce.store.conversation.processor;
 
-//ALL DONE
-
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2017
  * All Rights Reserved
  *******************************************************************************/
 
@@ -12,7 +10,7 @@ import com.ibm.ets.ita.ce.store.hudson.model.conversation.ConvPhrase;
 import com.ibm.ets.ita.ce.store.hudson.model.conversation.ConvSentence;
 
 public class RawLexicalProcessor {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	private SentenceProcessor sp = null;
 	private ActionContext ac = null;

@@ -1,7 +1,7 @@
 package com.ibm.ets.ita.ce.store.parsing.builder;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
+ * (C) Copyright IBM Corporation  2011, 2017
  * All Rights Reserved
  *******************************************************************************/
 
@@ -12,7 +12,7 @@ import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.model.CeProperty;
 
 public class BuilderSentenceModel extends BuilderSentence {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	private CeConcept newConcept = null;
 	private ArrayList<CeConcept> newParents = null;

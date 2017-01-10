@@ -1,16 +1,14 @@
 package com.ibm.ets.ita.ce.store.core;
 
-//ALL DONE
-
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
+ * (C) Copyright IBM Corporation  2011, 2017
  * All Rights Reserved
  *******************************************************************************/
 
 import com.ibm.ets.ita.ce.store.model.CeSource;
 
 public abstract class ActionContext {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	private long startTime = -1;
 	private String ceStoreName = null;

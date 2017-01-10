@@ -1,9 +1,7 @@
 package com.ibm.ets.ita.ce.store.core;
 
-//ALL DONE
-
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
+ * (C) Copyright IBM Corporation  2011, 2017
  * All Rights Reserved
  *******************************************************************************/
 
@@ -21,7 +19,7 @@ import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
 
 public class InstanceRepository {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	private ConcurrentHashMap<String, CeInstance> allInstances = null;
 	private ConcurrentHashMap<CeConcept, CopyOnWriteArrayList<CeInstance>> instancesByConcept = null;

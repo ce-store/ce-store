@@ -1,7 +1,7 @@
 package com.ibm.ets.ita.ce.store.uid;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
+ * (C) Copyright IBM Corporation  2011, 2017
  * All Rights Reserved
  *******************************************************************************/
 
@@ -14,7 +14,7 @@ import java.util.Properties;
 import java.util.concurrent.atomic.AtomicLong;
 
 public abstract class UidManager {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	private static final long DEFAULT_UIDSTART = 0;
 

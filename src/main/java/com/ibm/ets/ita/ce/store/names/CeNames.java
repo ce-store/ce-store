@@ -1,12 +1,12 @@
 package com.ibm.ets.ita.ce.store.names;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
+ * (C) Copyright IBM Corporation  2011, 2017
  * All Rights Reserved
  *******************************************************************************/
 
 public class CeNames {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	//Concepts: Meta model concept names
 	public static final String CON_CON = "concept";

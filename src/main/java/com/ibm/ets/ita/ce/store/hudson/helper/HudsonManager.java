@@ -1,5 +1,10 @@
 package com.ibm.ets.ita.ce.store.hudson.helper;
 
+/*******************************************************************************
+ * (C) Copyright IBM Corporation  2011, 2017
+ * All Rights Reserved
+ *******************************************************************************/
+
 import static com.ibm.ets.ita.ce.store.names.CeNames.CON_CC;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportDebug;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
@@ -13,7 +18,7 @@ import com.ibm.ets.ita.ce.store.hudson.model.ConvConfig;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
 
 public class HudsonManager {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	private ConvConfig cc = null;
 	private TreeMap<String, TreeMap<String, String>> inverseLists = null;

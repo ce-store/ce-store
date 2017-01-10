@@ -1,7 +1,7 @@
 package com.ibm.ets.ita.ce.store.parsing.tokenizer;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
+ * (C) Copyright IBM Corporation  2011, 2017
  * All Rights Reserved
  *******************************************************************************/
 
@@ -46,7 +46,7 @@ import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentence;
 import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentenceModel;
 
 public class TokenizerModelSentence extends TokenizerSentence {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	private static final int TEST_SKIP = 0;
 	private static final int TEST_SKIP_TORANGE = 1;

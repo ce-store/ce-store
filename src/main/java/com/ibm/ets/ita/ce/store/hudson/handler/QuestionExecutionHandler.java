@@ -1,13 +1,13 @@
 package com.ibm.ets.ita.ce.store.hudson.handler;
 
+/*******************************************************************************
+ * (C) Copyright IBM Corporation  2011, 2017
+ * All Rights Reserved
+ *******************************************************************************/
+
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_ALERTS;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_AL_ERRORS;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_AL_WARNINGS;
-
-/*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
- * All Rights Reserved
- *******************************************************************************/
 
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportException;
 
@@ -20,7 +20,7 @@ import com.ibm.ets.ita.ce.store.core.ActionContext;
 import com.ibm.ets.ita.ce.store.hudson.model.Question;
 
 public class QuestionExecutionHandler extends QuestionHandler {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	private static final String CLASS_NAME = QuestionHandler.class.getName();
 	private static final String PACKAGE_NAME = QuestionHandler.class.getPackage().getName();

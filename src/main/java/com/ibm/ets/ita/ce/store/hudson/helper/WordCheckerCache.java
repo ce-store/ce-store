@@ -1,5 +1,10 @@
 package com.ibm.ets.ita.ce.store.hudson.helper;
 
+/*******************************************************************************
+ * (C) Copyright IBM Corporation  2011, 2017
+ * All Rights Reserved
+ *******************************************************************************/
+
 import static com.ibm.ets.ita.ce.store.names.CeNames.CON_CONFCON;
 import static com.ibm.ets.ita.ce.store.names.CeNames.CON_UNINTCON;
 import static com.ibm.ets.ita.ce.store.names.CeNames.PROP_PLURAL;
@@ -20,7 +25,7 @@ import com.ibm.ets.ita.ce.store.model.CeInstance;
 import com.ibm.ets.ita.ce.store.model.CeProperty;
 
 public class WordCheckerCache {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	private HashMap<String, CeConcept> matchingConcepts = new HashMap<String, CeConcept>();
 	private HashMap<String, TreeMap<String, CeProperty>> matchingRelations = new HashMap<String, TreeMap<String, CeProperty>>();

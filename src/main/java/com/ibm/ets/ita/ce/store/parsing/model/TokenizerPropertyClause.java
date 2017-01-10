@@ -1,6 +1,7 @@
 package com.ibm.ets.ita.ce.store.parsing.model;
+
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
+ * (C) Copyright IBM Corporation  2011, 2017
  * All Rights Reserved
  *******************************************************************************/
 
@@ -19,7 +20,7 @@ import com.ibm.ets.ita.ce.store.model.CeSpecialProperty;
 import com.ibm.ets.ita.ce.store.parsing.tokenizer.TokenizerFactSentence;
 
 public abstract class TokenizerPropertyClause extends TokenizerNormalClause {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	private static String TOKEN_BRACKET_OPEN = "(";
 	private static String TOKEN_BRACKET_CLOSE = ")";

@@ -1,7 +1,7 @@
 package com.ibm.ets.ita.ce.store.client.web.model;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
+ * (C) Copyright IBM Corporation  2011, 2017
  * All Rights Reserved
  *******************************************************************************/
 
@@ -35,7 +35,7 @@ import com.ibm.ets.ita.ce.store.model.rationale.CeRationalePremise;
 import com.ibm.ets.ita.ce.store.model.rationale.CeRationaleReasoningStep;
 
 public class CeWebRationaleReasoningStep extends CeWebObject {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	public CeWebRationaleReasoningStep(ActionContext pAc) {
 		super(pAc);

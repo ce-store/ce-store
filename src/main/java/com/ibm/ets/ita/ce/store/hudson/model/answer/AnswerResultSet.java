@@ -1,15 +1,15 @@
 package com.ibm.ets.ita.ce.store.hudson.model.answer;
 
+/*******************************************************************************
+ * (C) Copyright IBM Corporation  2011, 2017
+ * All Rights Reserved
+ *******************************************************************************/
+
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_A_RESSET;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_A_RS_TITLE;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_A_RS_FTR;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_A_RS_HDRS;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_A_RS_ROWS;
-
-/*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
- * All Rights Reserved
- *******************************************************************************/
 
 import java.util.ArrayList;
 
@@ -18,7 +18,7 @@ import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
 
 public class AnswerResultSet extends Answer {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	private String title = null;
 	private String footer = null;

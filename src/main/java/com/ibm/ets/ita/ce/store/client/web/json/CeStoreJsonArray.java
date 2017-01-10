@@ -1,9 +1,7 @@
 package com.ibm.ets.ita.ce.store.client.web.json;
 
-//ALL DONE
-
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
+ * (C) Copyright IBM Corporation  2011, 2017
  * All Rights Reserved
  *******************************************************************************/
 
@@ -18,7 +16,7 @@ import java.util.ArrayList;
 import com.ibm.ets.ita.ce.store.core.ActionContext;
 
 public class CeStoreJsonArray extends CeStoreJsonProcessor {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	private ArrayList<Object> innerList = new ArrayList<Object>();
 

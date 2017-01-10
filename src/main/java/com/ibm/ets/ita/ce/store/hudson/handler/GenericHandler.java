@@ -1,12 +1,11 @@
 package com.ibm.ets.ita.ce.store.hudson.handler;
 
-import static com.ibm.ets.ita.ce.store.names.CeNames.CON_CC;
-
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
+ * (C) Copyright IBM Corporation  2011, 2017
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.CeNames.CON_CC;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportDebug;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
 
@@ -20,7 +19,7 @@ import com.ibm.ets.ita.ce.store.model.CeSource;
 import com.ibm.ets.ita.ce.store.model.container.ContainerSentenceLoadResult;
 
 public abstract class GenericHandler {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	protected static final int DEFAULT_CONF = 100;
 	protected static final int ERR_CONF = 0;

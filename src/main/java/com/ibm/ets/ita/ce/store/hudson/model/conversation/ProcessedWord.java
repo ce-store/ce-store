@@ -1,5 +1,10 @@
 package com.ibm.ets.ita.ce.store.hudson.model.conversation;
 
+/*******************************************************************************
+ * (C) Copyright IBM Corporation  2011, 2017
+ * All Rights Reserved
+ *******************************************************************************/
+
 import static com.ibm.ets.ita.ce.store.names.CeNames.CON_FILTMOD;
 import static com.ibm.ets.ita.ce.store.names.CeNames.CON_FUNCMOD;
 import static com.ibm.ets.ita.ce.store.names.CeNames.CON_MODIFIER;
@@ -27,7 +32,7 @@ import com.ibm.ets.ita.ce.store.model.CeInstance;
 import com.ibm.ets.ita.ce.store.model.CeProperty;
 
 public class ProcessedWord extends GeneralItem {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	private ConvWord convWord = null;
 	private String lcText = null;

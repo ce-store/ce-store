@@ -1,7 +1,7 @@
 package com.ibm.ets.ita.ce.store.query;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
+ * (C) Copyright IBM Corporation  2011, 2017
  * All Rights Reserved
  *******************************************************************************/
 
@@ -39,7 +39,7 @@ import com.ibm.ets.ita.ce.store.model.CeRule;
 import com.ibm.ets.ita.ce.store.model.container.ContainerCeResult;
 
 public class CeGeneratorConclusion {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	private ActionContext ac = null;
 	private ContainerCeResult ceResult = null;

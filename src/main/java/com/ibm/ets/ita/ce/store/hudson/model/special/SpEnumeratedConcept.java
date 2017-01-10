@@ -1,7 +1,7 @@
 package com.ibm.ets.ita.ce.store.hudson.model.special;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
+ * (C) Copyright IBM Corporation  2011, 2017
  * All Rights Reserved
  *******************************************************************************/
 
@@ -21,7 +21,7 @@ import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
 
 public class SpEnumeratedConcept extends SpThing {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	private String numberWordText = null;
 	private ArrayList<MatchedItem> conceptItems = null;

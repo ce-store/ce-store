@@ -1,7 +1,7 @@
 package com.ibm.ets.ita.ce.store.parsing.builder;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
+ * (C) Copyright IBM Corporation  2011, 2017
  * All Rights Reserved
  *******************************************************************************/
 
@@ -57,7 +57,7 @@ import com.ibm.ets.ita.ce.store.core.StoreActions;
 import com.ibm.ets.ita.ce.store.model.container.ContainerSentenceLoadResult;
 
 public class BuilderSentenceCommand extends BuilderSentence {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	private boolean isValid = false;
 	private String cmdTargetUrlOrFile = null;

@@ -1,5 +1,10 @@
 package com.ibm.ets.ita.ce.store.hudson.handler;
 
+/*******************************************************************************
+ * (C) Copyright IBM Corporation  2011, 2017
+ * All Rights Reserved
+ *******************************************************************************/
+
 import static com.ibm.ets.ita.ce.store.names.CeNames.CONLIST_HUDSON;
 import static com.ibm.ets.ita.ce.store.names.CeNames.CON_CONFCON;
 import static com.ibm.ets.ita.ce.store.names.CeNames.CON_CONNWORD;
@@ -21,11 +26,6 @@ import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_Q_WORDS;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_RES;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_SPECS;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_STARTPOS;
-
-/*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
- * All Rights Reserved
- *******************************************************************************/
 
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportDebug;
 
@@ -52,7 +52,7 @@ import com.ibm.ets.ita.ce.store.model.CeProperty;
 import com.ibm.ets.ita.ce.store.model.CePropertyInstance;
 
 public class QuestionInterpreterHandler extends QuestionHandler {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	private static final int TYPE_ALL = 0;
 	private static final int TYPE_BEFORE = 1;

@@ -1,9 +1,7 @@
 package com.ibm.ets.ita.ce.store.model;
 
-//ALL DONE
-
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
+ * (C) Copyright IBM Corporation  2011, 2017
  * All Rights Reserved
  *******************************************************************************/
 
@@ -19,7 +17,7 @@ import com.ibm.ets.ita.ce.store.query.CeConclusionRow;
 import com.ibm.ets.ita.ce.store.query.CeGeneratorConclusion;
 
 public class CeConcatenatedValue {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	private String name = null;
 	private String rawConcatText = null;

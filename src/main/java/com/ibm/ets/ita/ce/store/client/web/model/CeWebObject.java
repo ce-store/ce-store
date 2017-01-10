@@ -1,9 +1,7 @@
 package com.ibm.ets.ita.ce.store.client.web.model;
 
-//ALL DONE
-
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
+ * (C) Copyright IBM Corporation  2011, 2017
  * All Rights Reserved
  *******************************************************************************/
 
@@ -20,7 +18,7 @@ import com.ibm.ets.ita.ce.store.model.CeAnnotation;
 import com.ibm.ets.ita.ce.store.model.CeModelEntity;
 
 public abstract class CeWebObject {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	protected ActionContext ac = null;
 

@@ -1,7 +1,7 @@
 package com.ibm.ets.ita.ce.store.hudson.model.conversation;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
+ * (C) Copyright IBM Corporation  2011, 2017
  * All Rights Reserved
  *******************************************************************************/
 
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import com.ibm.ets.ita.ce.store.core.ActionContext;
 
 public class ConvPhrase extends ConvItem {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	private ArrayList<ConvWord> allWords = null;
 	private ArrayList<ConvSentence> childSentences = new ArrayList<ConvSentence>();

@@ -1,9 +1,7 @@
 package com.ibm.ets.ita.ce.store.client.web.json;
 
-//ALL DONE
-
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
+ * (C) Copyright IBM Corporation  2011, 2017
  * All Rights Reserved
  *******************************************************************************/
 
@@ -21,7 +19,7 @@ import java.util.Set;
 import com.ibm.ets.ita.ce.store.core.ActionContext;
 
 public class CeStoreJsonObject extends CeStoreJsonProcessor {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	private static final String MAP_STRING = "stringMap";
 	private static final String MAP_OBJECT = "objectMap";

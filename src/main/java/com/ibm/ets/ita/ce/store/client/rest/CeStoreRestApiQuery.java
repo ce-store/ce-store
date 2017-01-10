@@ -1,7 +1,7 @@
 package com.ibm.ets.ita.ce.store.client.rest;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
+ * (C) Copyright IBM Corporation  2011, 2017
  * All Rights Reserved
  *******************************************************************************/
 
@@ -27,7 +27,7 @@ import com.ibm.ets.ita.ce.store.model.CeQuery;
 import com.ibm.ets.ita.ce.store.model.container.ContainerCeResult;
 
 public class CeStoreRestApiQuery extends CeStoreRestApi {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	public CeStoreRestApiQuery(WebActionContext pWc, ArrayList<String> pRestParts, HttpServletRequest pRequest) {
 		super(pWc, pRestParts, pRequest);

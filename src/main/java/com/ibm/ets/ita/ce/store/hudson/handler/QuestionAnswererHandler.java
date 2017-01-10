@@ -1,5 +1,10 @@
 package com.ibm.ets.ita.ce.store.hudson.handler;
 
+/*******************************************************************************
+ * (C) Copyright IBM Corporation  2011, 2017
+ * All Rights Reserved
+ *******************************************************************************/
+
 import static com.ibm.ets.ita.ce.store.names.CeNames.ABS_DESC;
 import static com.ibm.ets.ita.ce.store.names.CeNames.ABS_MERGE;
 import static com.ibm.ets.ita.ce.store.names.CeNames.CONLIST_HUDSON;
@@ -62,7 +67,7 @@ import com.ibm.ets.ita.ce.store.model.CeProperty;
 import com.ibm.ets.ita.ce.store.model.CePropertyInstance;
 
 public class QuestionAnswererHandler extends GenericHandler {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	private CeStoreJsonObject interpretationJson = null;
 	private Interpretation interpretation = null;

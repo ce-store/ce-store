@@ -1,7 +1,7 @@
 package com.ibm.ets.ita.ce.store.conversation.agents;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
+ * (C) Copyright IBM Corporation  2011, 2017
  * All Rights Reserved
  *******************************************************************************/
 
@@ -43,7 +43,7 @@ import com.ibm.ets.ita.ce.store.model.CeSource;
 import com.ibm.ets.ita.ce.store.model.container.ContainerSentenceLoadResult;
 
 public abstract class GeneralConversationHandler extends CeNotifyHandler {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	private static final String CLASS_NAME = GeneralConversationHandler.class.getName();
 	private static final String PACKAGE_NAME = GeneralConversationHandler.class.getPackage().getName();

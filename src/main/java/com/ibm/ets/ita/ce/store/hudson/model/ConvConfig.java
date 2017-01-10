@@ -1,9 +1,7 @@
 package com.ibm.ets.ita.ce.store.hudson.model;
 
-//ALL DONE
-
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
+ * (C) Copyright IBM Corporation  2011, 2017
  * All Rights Reserved
  *******************************************************************************/
 
@@ -37,7 +35,7 @@ import com.ibm.ets.ita.ce.store.hudson.model.conversation.GeneralItem;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
 
 public class ConvConfig extends GeneralItem {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	private CeInstance ccInst = null;
 	private boolean isSplittingPhrases = false;

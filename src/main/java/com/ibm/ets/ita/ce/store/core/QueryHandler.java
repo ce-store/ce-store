@@ -1,7 +1,7 @@
 package com.ibm.ets.ita.ce.store.core;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
+ * (C) Copyright IBM Corporation  2011, 2017
  * All Rights Reserved
  *******************************************************************************/
 
@@ -40,7 +40,7 @@ import com.ibm.ets.ita.ce.store.parsing.processor.ProcessorCe;
 import com.ibm.ets.ita.ce.store.query.QueryExecutionManager;
 
 public class QueryHandler {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	// Mode parameter values
 	private static final String MODE_ALL = "all";

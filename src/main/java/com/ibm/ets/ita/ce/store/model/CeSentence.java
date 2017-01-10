@@ -1,7 +1,7 @@
 package com.ibm.ets.ita.ce.store.model;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
+ * (C) Copyright IBM Corporation  2011, 2017
  * All Rights Reserved
  *******************************************************************************/
 
@@ -28,7 +28,7 @@ import com.ibm.ets.ita.ce.store.model.rationale.CeRationaleReasoningStep;
 import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentence;
 
 public class CeSentence implements Comparable<CeSentence> {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	private static AtomicLong sentenceIdVal = new AtomicLong(0);
 

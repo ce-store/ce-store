@@ -1,7 +1,7 @@
 package com.ibm.ets.ita.ce.store.hudson.model.special;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
+ * (C) Copyright IBM Corporation  2011, 2017
  * All Rights Reserved
  *******************************************************************************/
 
@@ -21,7 +21,7 @@ import com.ibm.ets.ita.ce.store.hudson.model.conversation.MatchedItem;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
 
 public class SpMultiMatch extends SpThing {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	private InstancePhrase inst1 = null;
 	private InstancePhrase inst2 = null;

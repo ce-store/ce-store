@@ -1,7 +1,7 @@
 package com.ibm.ets.ita.ce.store.client.rest;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
+ * (C) Copyright IBM Corporation  2011, 2017
  * All Rights Reserved
  *******************************************************************************/
 
@@ -34,7 +34,7 @@ import com.ibm.ets.ita.ce.store.model.CeSentence;
 import com.ibm.ets.ita.ce.store.model.rationale.CeRationaleReasoningStep;
 
 public class CeStoreRestApiInstance extends CeStoreRestApi {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	public CeStoreRestApiInstance(WebActionContext pWc, ArrayList<String> pRestParts, HttpServletRequest pRequest) {
 		super(pWc, pRestParts, pRequest);

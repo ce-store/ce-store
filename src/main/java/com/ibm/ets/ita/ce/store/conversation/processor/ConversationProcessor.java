@@ -1,7 +1,7 @@
 package com.ibm.ets.ita.ce.store.conversation.processor;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2015
+ * (C) Copyright IBM Corporation  2011, 2017
  * All Rights Reserved
  *******************************************************************************/
 
@@ -49,7 +49,7 @@ import com.ibm.ets.ita.ce.store.model.CeInstance;
 import com.ibm.ets.ita.ce.store.model.container.ContainerSentenceLoadResult;
 
 public class ConversationProcessor {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2015";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	private ActionContext ac = null;
 	private ConversationTriggerHandler triggerHandler = null;

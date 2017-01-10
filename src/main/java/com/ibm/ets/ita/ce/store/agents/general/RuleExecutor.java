@@ -1,9 +1,7 @@
 package com.ibm.ets.ita.ce.store.agents.general;
 
-//ALL DONE (not messages)
-
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
+ * (C) Copyright IBM Corporation  2011, 2017
  * All Rights Reserved
  *******************************************************************************/
 
@@ -25,7 +23,7 @@ import com.ibm.ets.ita.ce.store.model.container.ContainerCeResult;
 import com.ibm.ets.ita.ce.store.query.QueryExecutionManager;
 
 public class RuleExecutor extends CeAgent {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	private static final String AGENT_NAME = "RuleExecutor";
 	private static final String AGENT_VERSION = "1.0.0";

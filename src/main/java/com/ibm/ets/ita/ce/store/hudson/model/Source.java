@@ -1,14 +1,14 @@
 package com.ibm.ets.ita.ce.store.hudson.model;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
+ * (C) Copyright IBM Corporation  2011, 2017
  * All Rights Reserved
  *******************************************************************************/
 
 import static com.ibm.ets.ita.ce.store.names.MiscNames.CESRC_NAME;
 
 public class Source {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	private String name = null;
 	private String url = null;

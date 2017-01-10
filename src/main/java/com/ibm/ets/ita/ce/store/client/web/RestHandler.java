@@ -1,9 +1,7 @@
 package com.ibm.ets.ita.ce.store.client.web;
 
-//ALL DONE
-
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
+ * (C) Copyright IBM Corporation  2011, 2017
  * All Rights Reserved
  *******************************************************************************/
 
@@ -42,7 +40,7 @@ import com.ibm.ets.ita.ce.store.core.ModelBuilder;
  */
 @MultipartConfig
 public class RestHandler extends HttpServlet {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	private static final String CLASS_NAME = RestHandler.class.getName();
 	private static final String PACKAGE_NAME = RestHandler.class.getPackage().getName();

@@ -1,7 +1,7 @@
 package com.ibm.ets.ita.ce.store.model;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
+ * (C) Copyright IBM Corporation  2011, 2017
  * All Rights Reserved
  *******************************************************************************/
 
@@ -22,7 +22,7 @@ import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
 import com.ibm.ets.ita.ce.store.core.ActionContext;
 
 public class CeSpecialProperty extends CeProperty {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	private CeSpecialProperty() {
 		// This is private to ensure that new instances can only be created via

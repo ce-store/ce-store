@@ -1,7 +1,7 @@
 package com.ibm.ets.ita.ce.store.hudson.model;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
+ * (C) Copyright IBM Corporation  2011, 2017
  * All Rights Reserved
  *******************************************************************************/
 
@@ -18,7 +18,7 @@ import com.ibm.ets.ita.ce.store.hudson.model.conversation.MatchedItem;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
 
 public class InstancePhrase extends InterpretationPhrase {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	private ArrayList<CeInstance> instances = new ArrayList<CeInstance>();
 

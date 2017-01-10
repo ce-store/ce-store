@@ -1,11 +1,11 @@
 package com.ibm.ets.ita.ce.store.names;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation 2011, 2016 All Rights Reserved
+ * (C) Copyright IBM Corporation 2011, 2017 All Rights Reserved
  *******************************************************************************/
 
 public class JsonNames {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	// JSON type values (returned in "type" element to signify the type of JSON
 	// object)

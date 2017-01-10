@@ -1,7 +1,7 @@
 package com.ibm.ets.ita.ce.store.core;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
+ * (C) Copyright IBM Corporation  2011, 2017
  * All Rights Reserved
  *******************************************************************************/
 
@@ -26,7 +26,7 @@ import java.io.File;
 import java.util.LinkedHashMap;
 
 public class StoreConfig {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	private boolean cacheCeText = true;
 	// Whether the CE text for a sentence is cached or computed from parts

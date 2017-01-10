@@ -1,7 +1,7 @@
 package com.ibm.ets.ita.ce.store.model;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
+ * (C) Copyright IBM Corporation  2011, 2017
  * All Rights Reserved
  *******************************************************************************/
 
@@ -13,7 +13,7 @@ import java.util.HashSet;
 import com.ibm.ets.ita.ce.store.core.ActionContext;
 
 public class CeConceptualModel extends CeModelEntity {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	// TODO: Need to populate primary sentences for this when creating (via
 	// meta-model)

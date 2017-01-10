@@ -1,7 +1,7 @@
 package com.ibm.ets.ita.ce.store.model.container;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
+ * (C) Copyright IBM Corporation  2011, 2017
  * All Rights Reserved
  *******************************************************************************/
 
@@ -14,7 +14,7 @@ import java.util.Collection;
 import com.ibm.ets.ita.ce.store.model.CeQuery;
 
 public abstract class ContainerQueryResult extends ContainerResult {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	private static final String TYPE_COUNT = "C";
 	private static final String TYPE_SUM = "S";

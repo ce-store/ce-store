@@ -1,7 +1,7 @@
 package com.ibm.ets.ita.ce.store.parsing.builder;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
+ * (C) Copyright IBM Corporation  2011, 2017
  * All Rights Reserved
  *******************************************************************************/
 
@@ -25,7 +25,7 @@ import com.ibm.ets.ita.ce.store.model.CeSequence;
 import com.ibm.ets.ita.ce.store.model.CeSpecialProperty;
 
 public class BuilderSentenceFact extends BuilderSentence {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	// TODO: Complete sequence implementation
 	private String instanceName = null;

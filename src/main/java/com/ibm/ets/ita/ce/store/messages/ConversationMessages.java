@@ -1,12 +1,12 @@
 package com.ibm.ets.ita.ce.store.messages;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
+ * (C) Copyright IBM Corporation  2011, 2017
  * All Rights Reserved
  *******************************************************************************/
 
 public class ConversationMessages {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	public static final String MSG_UNEXPECTEDTRIGGER = "Unexpected trigger type (%01) for %02";
 	public static final String MSG_IGNORINGMSG = "Ignoring message '%01' as it was not directed to me";

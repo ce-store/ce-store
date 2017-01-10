@@ -1,5 +1,10 @@
 package com.ibm.ets.ita.ce.store.hudson.handler;
 
+/*******************************************************************************
+ * (C) Copyright IBM Corporation  2011, 2017
+ * All Rights Reserved
+ *******************************************************************************/
+
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_ANSWERS;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_A_RESTEXT;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_ALERTS;
@@ -18,7 +23,7 @@ import com.ibm.ets.ita.ce.store.hudson.model.conversation.ConvWord;
 import com.ibm.ets.ita.ce.store.hudson.model.conversation.ProcessedWord;
 
 public abstract class QuestionHandler extends GenericHandler {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	protected Question question = null;
 	protected ConvPhrase phrase = null;

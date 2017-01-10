@@ -5,12 +5,12 @@ import java.util.ArrayList;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
+ * (C) Copyright IBM Corporation  2011, 2017
  * All Rights Reserved
  *******************************************************************************/
 
 public class Question {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	private String questionText = null;
 	private ArrayList<String> words = null;

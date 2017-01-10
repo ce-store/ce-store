@@ -1,7 +1,7 @@
 package com.ibm.ets.ita.ce.store.parsing.processor;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
+ * (C) Copyright IBM Corporation  2011, 2017
  * All Rights Reserved
  *******************************************************************************/
 
@@ -73,7 +73,7 @@ import com.ibm.ets.ita.ce.store.parsing.saver.SentenceSaver;
 import com.ibm.ets.ita.ce.store.parsing.tokenizer.TokenizerSentence;
 
 public class ProcessorCe {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	private static final String CLASS_NAME = ProcessorCe.class.getName();
 	private static final String PACKAGE_NAME = ProcessorCe.class.getPackage().getName();

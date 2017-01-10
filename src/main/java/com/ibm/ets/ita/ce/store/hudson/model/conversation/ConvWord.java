@@ -1,7 +1,7 @@
 package com.ibm.ets.ita.ce.store.hudson.model.conversation;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
+ * (C) Copyright IBM Corporation  2011, 2017
  * All Rights Reserved
  *******************************************************************************/
 
@@ -9,7 +9,7 @@ import static com.ibm.ets.ita.ce.store.names.CeNames.CON_CONVWORD;
 import com.ibm.ets.ita.ce.store.core.ActionContext;
 
 public class ConvWord extends ConvItem {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	private int wordIndex = -1;		//Relative to parent clause
 	private ConvClause parentClause = null;

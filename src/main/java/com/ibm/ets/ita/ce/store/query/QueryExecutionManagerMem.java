@@ -1,7 +1,7 @@
 package com.ibm.ets.ita.ce.store.query;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
+ * (C) Copyright IBM Corporation  2011, 2017
  * All Rights Reserved
  *******************************************************************************/
 
@@ -27,7 +27,7 @@ import com.ibm.ets.ita.ce.store.model.CeQuery;
 import com.ibm.ets.ita.ce.store.model.container.ContainerCeResult;
 
 public class QueryExecutionManagerMem extends QueryExecutionManager {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	private static final String CLASS_NAME = QueryExecutionManagerMem.class.getName();
 

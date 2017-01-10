@@ -1,5 +1,10 @@
 package com.ibm.ets.ita.ce.store.hudson.model;
 
+/*******************************************************************************
+ * (C) Copyright IBM Corporation  2011, 2017
+ * All Rights Reserved
+ *******************************************************************************/
+
 import static com.ibm.ets.ita.ce.store.names.JsonNames.SPEC_COLLECTION;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.SPEC_ENUMCON;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.SPEC_LINKEDINST;
@@ -18,7 +23,7 @@ import com.ibm.ets.ita.ce.store.hudson.model.special.SpNumber;
 import com.ibm.ets.ita.ce.store.hudson.model.special.SpThing;
 
 public class SpecialPhrase extends InterpretationPhrase {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	private String type = null;
 	private SpThing special = null;

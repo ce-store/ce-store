@@ -1,9 +1,7 @@
 package com.ibm.ets.ita.ce.store.client.rest;
 
-//ALL DONE (not messages)
-
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
+ * (C) Copyright IBM Corporation  2011, 2017
  * All Rights Reserved
  *******************************************************************************/
 
@@ -61,7 +59,7 @@ import com.ibm.ets.ita.ce.store.model.CeRule;
 import com.ibm.ets.ita.ce.store.model.container.ContainerSearchResult;
 
 public class CeStoreRestApiSpecial extends CeStoreRestApi {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	private CeStoreRestApiSpecial(WebActionContext pWc, ArrayList<String> pRestParts, HttpServletRequest pRequest) {
 		super(pWc, pRestParts, pRequest);

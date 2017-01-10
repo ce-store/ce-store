@@ -1,7 +1,7 @@
 package com.ibm.ets.ita.ce.store.agents.general;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
+ * (C) Copyright IBM Corporation  2011, 2017
  * All Rights Reserved
  *******************************************************************************/
 
@@ -36,7 +36,7 @@ import com.ibm.ets.ita.ce.store.model.CePropertyInstance;
 import com.ibm.ets.ita.ce.store.utilities.GeneralUtilities;
 
 public class DurationCalculator extends CeNotifyHandler {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
     /*  Example trigger:
 

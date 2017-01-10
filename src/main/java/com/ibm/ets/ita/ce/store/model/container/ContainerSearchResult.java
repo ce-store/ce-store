@@ -1,14 +1,14 @@
 package com.ibm.ets.ita.ce.store.model.container;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
+ * (C) Copyright IBM Corporation  2011, 2017
  * All Rights Reserved
  *******************************************************************************/
 
 import java.util.ArrayList;
 
 public class ContainerSearchResult implements Comparable<ContainerSearchResult> {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	private String idKey = null;
 	private ArrayList<String> conceptNames = new ArrayList<String>();

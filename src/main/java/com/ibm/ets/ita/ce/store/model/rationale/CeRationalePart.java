@@ -1,12 +1,12 @@
 package com.ibm.ets.ita.ce.store.model.rationale;
 
 /*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
+ * (C) Copyright IBM Corporation  2011, 2017
  * All Rights Reserved
  *******************************************************************************/
 
 public abstract class CeRationalePart {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 //	private static AtomicLong rationaleIdVal = new AtomicLong(0);
 //	protected String id = null;

@@ -1,5 +1,10 @@
 package com.ibm.ets.ita.ce.store.hudson.model.answer;
 
+/*******************************************************************************
+ * (C) Copyright IBM Corporation  2011, 2017
+ * All Rights Reserved
+ *******************************************************************************/
+
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_A_CONF;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_INSTS;
 
@@ -11,13 +16,8 @@ import com.ibm.ets.ita.ce.store.client.web.model.CeWebInstance;
 import com.ibm.ets.ita.ce.store.core.ActionContext;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
 
-/*******************************************************************************
- * (C) Copyright IBM Corporation  2011, 2016
- * All Rights Reserved
- *******************************************************************************/
-
 public abstract class Answer implements Comparable<Answer> {
-	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2016";
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	protected int confidence = -1;
 	protected ArrayList<CeInstance> instances = null;
