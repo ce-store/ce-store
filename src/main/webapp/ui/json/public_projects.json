@@ -3,7 +3,7 @@
         "title": "Public sentence sets",
         "links": [{
             "name": "Medicine (public)",
-            "root": "https://cdn.rawgit.com/ce-store/ce-store/f085dc5e/src/main/webapp",
+            "root": "https://rawgit.com/ce-store/ce-store/master/src/main/webapp",
             "url": "ce/medicine/cmd/med_load.cecmd"
         }]
     }
