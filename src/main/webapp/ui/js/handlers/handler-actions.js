@@ -18,7 +18,7 @@ function HandlerActions() {
 		ren = gEp.renderer.actions;
 	};
 
-	this.processCommandsRelative = function(pUrl, pFormName, pCbf, pUserParms) {
+	this.processCommandsRelative = function(pUrl, pFormName, pCbf, pUserParms, pRoot) {
 		var arr = gEp.autoRunRules;
 		var rc = gEp.returnCe;
 		var fullUrl = null;
@@ -33,10 +33,15 @@ function HandlerActions() {
 			fullUrl = gEp.currentServerAddress + pUrl;
 		}
 
+		var ceSetRoot = '';
+		if (pRoot) {
+			ceSetRoot = 'perform set \'ce root\' to \'' + pRoot + '\'. \n';
+		}
 		var ceLoadText = 'perform load sentences from url \'' + fullUrl + '\'.';
+		var ceText = ceSetRoot + ceLoadText;
 
 		var cbf = null;
-		var localUserParms = { url: pUrl, full_url: fullUrl, form_name: FORMNAME_PREFIX + pFormName, ce_text: ceLoadText, auto_run_rules: arr, return_ce: rc };
+		var localUserParms = { url: pUrl, full_url: fullUrl, form_name: FORMNAME_PREFIX + pFormName, ce_text: ceText, auto_run_rules: arr, return_ce: rc };
 
 		if (pCbf == null) {
 			cbf = function(pResponseObject, pUserParms) { gEp.handler.sentences.reportLoadResultsAndRefresh(pResponseObject, pUserParms); };
@@ -45,7 +50,7 @@ function HandlerActions() {
 		}
 
 		var userParms = gCe.api.mergeUserParms(pUserParms, localUserParms);
-		gCe.api.sentences.add(gEp.stdHttpParms(), cbf, ceLoadText, arr, rc, userParms);
+		gCe.api.sentences.add(gEp.stdHttpParms(), cbf, ceText, arr, rc, userParms);
 	};
 
 	this.processCommandsAbsolute = function(pUrl, pSrcName, pCbf, pUserParms) {
@@ -56,11 +61,11 @@ function HandlerActions() {
 		var localUserParms = { url: pUrl, ce_text: ceLoadText, auto_run_rules: arr };
 
 		if (pSrcName != null) {
-			ceLoadText += ' into source \'' + pSrcName + '\'';			
+			ceLoadText += ' into source \'' + pSrcName + '\'';
 		}
 
 		ceLoadText += '.';
-		
+
 		if (pCbf == null) {
 			cbf = function(pResponseObject, pUserParms) { gEp.handler.sentences.reportLoadResultsAndRefresh(pResponseObject, pUserParms); };
 		} else {
@@ -229,7 +234,7 @@ function HandlerActions() {
 
 	this.getUidBatch = function() {
 		var batchSize = prompt('How many UIDs do you want to get?', '100');
-		
+
 		if (!gCe.utils.isNullOrEmpty(batchSize)) {
 			var cbf = function(pResponseObject, userParms) { gEp.handler.stores.showUidResponse(pResponseObject, userParms); };
 
