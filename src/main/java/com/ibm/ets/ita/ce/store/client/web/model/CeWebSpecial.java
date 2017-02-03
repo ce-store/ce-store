@@ -121,7 +121,7 @@ public class CeWebSpecial extends CeWebObject {
         return jObj;
     }
 
-    public CeStoreJsonObject generateSentenceLoadResultsFrom(ContainerSentenceLoadResult pSenStats, String[] pOnlyProps, boolean pSuppPropTypes) {
+    public CeStoreJsonObject generateSentenceLoadResultsFrom(ContainerSentenceLoadResult pSenStats, String[] pOnlyProps, boolean pSuppPropTypes, boolean pIsSmartMode) {
         CeStoreJsonObject jObj = new CeStoreJsonObject();
         CeWebInstance instWeb = new CeWebInstance(this.ac);
         long execTime = System.currentTimeMillis() - this.ac.getStartTime();
@@ -132,7 +132,7 @@ public class CeWebSpecial extends CeWebObject {
         putLongValueIn(jObj, JSON_EXECTIME, execTime);
 
         if ((pSenStats.getNewInstances() != null) && (!pSenStats.getNewInstances().isEmpty())) {
-            putArrayValueIn(jObj, JSON_NEWINSTS, instWeb.generateSummaryListJsonFor(pSenStats.getNewInstances(), pOnlyProps, pSuppPropTypes));
+            putArrayValueIn(jObj, JSON_NEWINSTS, instWeb.generateSummaryListJsonFor(pSenStats.getNewInstances(), pOnlyProps, pSuppPropTypes, pIsSmartMode));
         }
 
         if (pSenStats.getCreatedSentences() != null) {
@@ -172,7 +172,7 @@ public class CeWebSpecial extends CeWebObject {
     // Generic multiple concept instance list response structure:
     // JSON_COUNT
     public static CeStoreJsonObject generateMultipleConceptInstanceListFrom(ActionContext pAc, ApiHandler pApiHandler,
-            TreeMap<String, ArrayList<CeInstance>> pList, String[] pOnlyProps, int pNumSteps, boolean pRelInsts, boolean pRefInsts, String[] pLimRels, boolean pSuppPropTypes) {
+            TreeMap<String, ArrayList<CeInstance>> pList, String[] pOnlyProps, int pNumSteps, boolean pRelInsts, boolean pRefInsts, String[] pLimRels, boolean pSuppPropTypes, boolean pIsSmartMode) {
         CeStoreJsonObject jObj = new CeStoreJsonObject();
 
         if (pList != null) {
@@ -185,11 +185,11 @@ public class CeWebSpecial extends CeWebObject {
                         CeWebInstance instWeb = new CeWebInstance(pAc);
 
                         if ((pApiHandler.isDefaultStyle()) || (pApiHandler.isSummaryStyle())) {
-                            jArr.add(instWeb.generateSummaryDetailsJsonFor(thisInst, pOnlyProps, pNumSteps, pRelInsts, pRefInsts, pLimRels, pSuppPropTypes));
+                            jArr.add(instWeb.generateSummaryDetailsJsonFor(thisInst, pOnlyProps, pNumSteps, pRelInsts, pRefInsts, pLimRels, pSuppPropTypes, pIsSmartMode));
                         } else if (pApiHandler.isFullStyle()) {
-                            jArr.add(instWeb.generateFullDetailsJsonFor(thisInst, pOnlyProps, pNumSteps, pRelInsts, pRefInsts, pLimRels, pSuppPropTypes));
+                            jArr.add(instWeb.generateFullDetailsJsonFor(thisInst, pOnlyProps, pNumSteps, pRelInsts, pRefInsts, pLimRels, pSuppPropTypes, pIsSmartMode));
                         } else {
-                            jArr.add(instWeb.generateMinimalDetailsJsonFor(thisInst, pOnlyProps, pNumSteps, pRelInsts, pRefInsts, pLimRels));
+                            jArr.add(instWeb.generateMinimalDetailsJsonFor(thisInst, pOnlyProps, pNumSteps, pRelInsts, pRefInsts, pLimRels, pIsSmartMode));
                         }
                     }
                 }

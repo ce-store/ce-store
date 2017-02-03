@@ -114,6 +114,7 @@ public class RestNames {
 	public static final String PARM_CETEXT = "ceText";
 	public static final String PARM_SHOWSTATS = "showStats";
 	public static final String PARM_STYLE = "style";
+	public static final String PARM_MODE = "mode";
 	public static final String PARM_RANGE = "range";
 	public static final String PARM_SINCE = "since";
 	public static final String PARM_PROPERTY = "property";
@@ -143,6 +144,8 @@ public class RestNames {
 	public static final String STYLE_SUMMARY = "summary";
 	public static final String STYLE_MINIMAL = "minimal";
 	public static final String STYLE_NORMALISED = "normalised";
+
+	public static final String MODE_SMART = "smart";
 
 	public static final String ACTION_SAVE = "save";
 	public static final String ACTION_VALIDATE = "validate";

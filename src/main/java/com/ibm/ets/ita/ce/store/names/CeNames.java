@@ -25,6 +25,7 @@ public class CeNames {
 	public static final String CON_SPATIAL = "spatial thing";
 	public static final String CON_SEQUENCE = "sequence";
 	public static final String CON_CTE= "CE triggered event";
+	public static final String CON_SVP = "single value property";
 
 	//Concepts: Conversation
 	public static final String CON_CARD = "card";

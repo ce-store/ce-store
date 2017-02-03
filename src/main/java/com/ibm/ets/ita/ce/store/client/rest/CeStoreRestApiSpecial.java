@@ -549,7 +549,7 @@ public class CeStoreRestApiSpecial extends CeStoreRestApi {
 		String[] onlyProps = getListParameterNamed(PARM_ONLYPROPS);
 
 		getWebActionResponse().setStructuredResult(CeWebSpecial.generateMultipleConceptInstanceListFrom(this.wc, this,
-				pList, onlyProps, pNumSteps, pRelInsts, pRefInsts, pLimRels, suppPropTypes));
+				pList, onlyProps, pNumSteps, pRelInsts, pRefInsts, pLimRels, suppPropTypes, isSmartMode()));
 	}
 
 	private void setDiverseConceptInstanceListAsStructuredResult(TreeMap<CeInstance, ArrayList<CeConcept>> pInstList) {

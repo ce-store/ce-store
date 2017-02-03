@@ -5,6 +5,7 @@ package com.ibm.ets.ita.ce.store.client.web.model;
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.CeNames.CON_SVP;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSONTYPE_INST;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_CONCEPT_NAMES;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_CREATED;
@@ -43,6 +44,7 @@ import com.ibm.ets.ita.ce.store.core.ActionContext;
 import com.ibm.ets.ita.ce.store.core.QueryHandler;
 import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
+import com.ibm.ets.ita.ce.store.model.CeProperty;
 import com.ibm.ets.ita.ce.store.model.CePropertyInstance;
 import com.ibm.ets.ita.ce.store.model.rationale.CeRationaleReasoningStep;
 
@@ -54,23 +56,23 @@ public class CeWebInstance extends CeWebObject {
 	}
 
 	public CeStoreJsonObject generateFullDetailsJsonFor(CeInstance pInst, String[] pOnlyProps, int pNumSteps,
-			boolean pRelInsts, boolean pRefInsts, String[] pLimRels, boolean pSuppPropTypes) {
+			boolean pRelInsts, boolean pRefInsts, String[] pLimRels, boolean pSuppPropTypes, boolean pIsSmartMode) {
 		CeStoreJsonObject mainObj = new CeStoreJsonObject();
 
 		if (pNumSteps <= 0) {
-			mainObj = normalFullDetailsJsonFor(pInst, pOnlyProps, pSuppPropTypes);
+			mainObj = normalFullDetailsJsonFor(pInst, pOnlyProps, pSuppPropTypes, pIsSmartMode);
 		} else {
-			mainObj.put(JSON_MAININST, normalFullDetailsJsonFor(pInst, pOnlyProps, pSuppPropTypes));
+			mainObj.put(JSON_MAININST, normalFullDetailsJsonFor(pInst, pOnlyProps, pSuppPropTypes, pIsSmartMode));
 
 			if (pRelInsts) {
 				CeStoreJsonObject relInsts = new CeStoreJsonObject();
-				relatedInstancesJsonFor(pInst, pNumSteps, 1, relInsts, pLimRels, pSuppPropTypes);
+				relatedInstancesJsonFor(pInst, pNumSteps, 1, relInsts, pLimRels, pSuppPropTypes, pIsSmartMode);
 				mainObj.put(JSON_RELINSTS, relInsts);
 			}
 
 			if (pRefInsts) {
 				CeStoreJsonObject refInsts = new CeStoreJsonObject();
-				referringInstancesJsonFor(pInst, pNumSteps, 1, refInsts, pLimRels, pSuppPropTypes);
+				referringInstancesJsonFor(pInst, pNumSteps, 1, refInsts, pLimRels, pSuppPropTypes, pIsSmartMode);
 				mainObj.put(JSON_REFINSTS, refInsts);
 			}
 		}
@@ -79,46 +81,46 @@ public class CeWebInstance extends CeWebObject {
 	}
 
 	private void relatedInstancesJsonFor(CeInstance pInst, int pNumSteps, int pDepth, CeStoreJsonObject pResult,
-			String[] pLimRels, boolean pSuppPropTypes) {
+			String[] pLimRels, boolean pSuppPropTypes, boolean pIsSmartMode) {
 		int thisDepth = pDepth + 1;
 
 		for (CeInstance relInst : pInst.getAllRelatedInstances(this.ac, pLimRels)) {
-			pResult.put(relInst.getInstanceName(), normalSummaryDetailsJsonFor(relInst, null, pSuppPropTypes));
+			pResult.put(relInst.getInstanceName(), normalSummaryDetailsJsonFor(relInst, null, pSuppPropTypes, pIsSmartMode));
 
 			if (thisDepth <= pNumSteps) {
-				relatedInstancesJsonFor(relInst, pNumSteps, thisDepth, pResult, pLimRels, pSuppPropTypes);
+				relatedInstancesJsonFor(relInst, pNumSteps, thisDepth, pResult, pLimRels, pSuppPropTypes, pIsSmartMode);
 			}
 		}
 	}
 
 	private void relatedInstancesMinimalJsonFor(CeInstance pInst, int pNumSteps, int pDepth, CeStoreJsonObject pResult,
-			String[] pLimRels, String[] pOnlyProps) {
+			String[] pLimRels, String[] pOnlyProps, boolean pIsSmartMode) {
 		int thisDepth = pDepth + 1;
 
 		for (CeInstance relInst : pInst.getAllRelatedInstances(this.ac, pLimRels)) {
-			pResult.put(relInst.getInstanceName(), normalMinimalDetailsJsonFor(relInst, pOnlyProps));
+			pResult.put(relInst.getInstanceName(), normalMinimalDetailsJsonFor(relInst, pOnlyProps, pIsSmartMode));
 
 			if (thisDepth <= pNumSteps) {
-				relatedInstancesMinimalJsonFor(relInst, pNumSteps, thisDepth, pResult, pLimRels, pOnlyProps);
+				relatedInstancesMinimalJsonFor(relInst, pNumSteps, thisDepth, pResult, pLimRels, pOnlyProps, pIsSmartMode);
 			}
 		}
 	}
 
 	private void relatedInstancesNormalisedJsonFor(CeInstance pInst, int pNumSteps, int pDepth,
-			CeStoreJsonObject pResult, String[] pLimRels, String[] pOnlyProps) {
+			CeStoreJsonObject pResult, String[] pLimRels, String[] pOnlyProps, boolean pIsSmartMode) {
 		int thisDepth = pDepth + 1;
 
 		for (CeInstance relInst : pInst.getAllRelatedInstances(this.ac, pLimRels)) {
-			pResult.put(relInst.getInstanceName(), normalNormalisedDetailsJsonFor(relInst, pOnlyProps));
+			pResult.put(relInst.getInstanceName(), normalNormalisedDetailsJsonFor(relInst, pOnlyProps, pIsSmartMode));
 
 			if (thisDepth <= pNumSteps) {
-				relatedInstancesNormalisedJsonFor(relInst, pNumSteps, thisDepth, pResult, pLimRels, pOnlyProps);
+				relatedInstancesNormalisedJsonFor(relInst, pNumSteps, thisDepth, pResult, pLimRels, pOnlyProps, pIsSmartMode);
 			}
 		}
 	}
 
 	private void referringInstancesJsonFor(CeInstance pInst, int pNumSteps, int pDepth, CeStoreJsonObject pResult,
-			String[] pLimRels, boolean pSuppPropTypes) {
+			String[] pLimRels, boolean pSuppPropTypes, boolean pIsSmartMode) {
 		int thisDepth = pDepth + 1;
 		QueryHandler qh = new QueryHandler(this.ac);
 		TreeMap<String, HashSet<CeInstance>> refResult = qh.listAllInstanceReferencesFor(pInst);
@@ -140,10 +142,10 @@ public class CeWebInstance extends CeWebObject {
 				}
 
 				for (CeInstance refInst : refInsts) {
-					refArray.add(normalSummaryDetailsJsonFor(refInst, null, pSuppPropTypes));
+					refArray.add(normalSummaryDetailsJsonFor(refInst, null, pSuppPropTypes, pIsSmartMode));
 
 					if (thisDepth <= pNumSteps) {
-						referringInstancesJsonFor(refInst, pNumSteps, thisDepth, pResult, pLimRels, pSuppPropTypes);
+						referringInstancesJsonFor(refInst, pNumSteps, thisDepth, pResult, pLimRels, pSuppPropTypes, pIsSmartMode);
 					}
 				}
 
@@ -153,7 +155,7 @@ public class CeWebInstance extends CeWebObject {
 	}
 
 	private void referringInstancesMinimalJsonFor(CeInstance pInst, int pNumSteps, int pDepth,
-			CeStoreJsonObject pResult, String[] pLimRels, String[] pOnlyProps) {
+			CeStoreJsonObject pResult, String[] pLimRels, String[] pOnlyProps, boolean pIsSmartMode) {
 		int thisDepth = pDepth + 1;
 		QueryHandler qh = new QueryHandler(this.ac);
 		TreeMap<String, HashSet<CeInstance>> refResult = qh.listAllInstanceReferencesFor(pInst);
@@ -175,10 +177,10 @@ public class CeWebInstance extends CeWebObject {
 				}
 
 				for (CeInstance refInst : refInsts) {
-					refArray.add(normalMinimalDetailsJsonFor(refInst, null));
+					refArray.add(normalMinimalDetailsJsonFor(refInst, null, pIsSmartMode));
 
 					if (thisDepth <= pNumSteps) {
-						referringInstancesMinimalJsonFor(refInst, pNumSteps, thisDepth, pResult, pLimRels, pOnlyProps);
+						referringInstancesMinimalJsonFor(refInst, pNumSteps, thisDepth, pResult, pLimRels, pOnlyProps, pIsSmartMode);
 					}
 				}
 
@@ -188,7 +190,7 @@ public class CeWebInstance extends CeWebObject {
 	}
 
 	private void referringInstancesNormalisedJsonFor(CeInstance pInst, int pNumSteps, int pDepth,
-			CeStoreJsonObject pResult, String[] pLimRels, String[] pOnlyProps) {
+			CeStoreJsonObject pResult, String[] pLimRels, String[] pOnlyProps, boolean pIsSmartMode) {
 		int thisDepth = pDepth + 1;
 		QueryHandler qh = new QueryHandler(this.ac);
 		TreeMap<String, HashSet<CeInstance>> refResult = qh.listAllInstanceReferencesFor(pInst);
@@ -210,11 +212,11 @@ public class CeWebInstance extends CeWebObject {
 				}
 
 				for (CeInstance refInst : refInsts) {
-					refArray.add(normalNormalisedDetailsJsonFor(refInst, null));
+					refArray.add(normalNormalisedDetailsJsonFor(refInst, null, pIsSmartMode));
 
 					if (thisDepth <= pNumSteps) {
 						referringInstancesNormalisedJsonFor(refInst, pNumSteps, thisDepth, pResult, pLimRels,
-								pOnlyProps);
+								pOnlyProps, pIsSmartMode);
 					}
 				}
 
@@ -223,7 +225,7 @@ public class CeWebInstance extends CeWebObject {
 		}
 	}
 
-	private CeStoreJsonObject normalFullDetailsJsonFor(CeInstance pInst, String[] pOnlyProps, boolean pSuppPropTypes) {
+	private CeStoreJsonObject normalFullDetailsJsonFor(CeInstance pInst, String[] pOnlyProps, boolean pSuppPropTypes, boolean pIsSmartMode) {
 		CeStoreJsonObject mainObj = new CeStoreJsonObject();
 		ArrayList<String> onlyPropList = null;
 
@@ -258,8 +260,22 @@ public class CeWebInstance extends CeWebObject {
 				if (thisPi.isSingleCardinality()) {
 					putStringValueIn(propValsObj, keyPropName, thisPi.getSingleOrFirstValue());
 				} else {
+					CeProperty thisProp = thisPi.getRelatedProperty();
 					HashSet<String> uvList = thisPi.getValueList();
-					putAllStringValuesIn(propValsObj, keyPropName, uvList);
+					boolean doneProp = false;
+
+					if (pIsSmartMode) {
+						CeInstance mmInst = thisProp.getMetaModelInstance(this.ac);
+						if (mmInst.isConceptNamed(this.ac, CON_SVP)) {
+							String latestVal = pInst.getLatestValueFromPropertyNamed(thisProp.getPropertyName());
+							putStringValueIn(mainObj, keyPropName, latestVal);
+							doneProp = true;
+						}
+					}
+
+					if (!doneProp) {
+						putAllStringValuesIn(propValsObj, keyPropName, uvList);
+					}
 
 					CeStoreJsonObject valRatObj = new CeStoreJsonObject();
 
@@ -304,23 +320,23 @@ public class CeWebInstance extends CeWebObject {
 	}
 
 	public CeStoreJsonObject generateSummaryDetailsJsonFor(CeInstance pInst, String[] pOnlyProps, int pNumSteps,
-			boolean pRelInsts, boolean pRefInsts, String[] pLimInsts, boolean pSuppPropTypes) {
+			boolean pRelInsts, boolean pRefInsts, String[] pLimInsts, boolean pSuppPropTypes, boolean pIsSmartMode) {
 		CeStoreJsonObject mainObj = new CeStoreJsonObject();
 
 		if (pNumSteps <= 0) {
-			mainObj = normalSummaryDetailsJsonFor(pInst, pOnlyProps, pSuppPropTypes);
+			mainObj = normalSummaryDetailsJsonFor(pInst, pOnlyProps, pSuppPropTypes, pIsSmartMode);
 		} else {
-			mainObj.put(JSON_MAININST, normalSummaryDetailsJsonFor(pInst, pOnlyProps, pSuppPropTypes));
+			mainObj.put(JSON_MAININST, normalSummaryDetailsJsonFor(pInst, pOnlyProps, pSuppPropTypes, pIsSmartMode));
 
 			if (pRelInsts) {
 				CeStoreJsonObject relInsts = new CeStoreJsonObject();
-				relatedInstancesJsonFor(pInst, pNumSteps, 1, relInsts, pLimInsts, pSuppPropTypes);
+				relatedInstancesJsonFor(pInst, pNumSteps, 1, relInsts, pLimInsts, pSuppPropTypes, pIsSmartMode);
 				mainObj.put(JSON_RELINSTS, relInsts);
 			}
 
 			if (pRefInsts) {
 				CeStoreJsonObject refInsts = new CeStoreJsonObject();
-				referringInstancesJsonFor(pInst, pNumSteps, 1, refInsts, pLimInsts, pSuppPropTypes);
+				referringInstancesJsonFor(pInst, pNumSteps, 1, refInsts, pLimInsts, pSuppPropTypes, pIsSmartMode);
 				mainObj.put(JSON_REFINSTS, refInsts);
 			}
 		}
@@ -329,23 +345,23 @@ public class CeWebInstance extends CeWebObject {
 	}
 
 	public CeStoreJsonObject generateMinimalDetailsJsonFor(CeInstance pInst, String[] pOnlyProps, int pNumSteps,
-			boolean pRelInsts, boolean pRefInsts, String[] pLimInsts) {
+			boolean pRelInsts, boolean pRefInsts, String[] pLimInsts, boolean pIsSmartMode) {
 		CeStoreJsonObject mainObj = new CeStoreJsonObject();
 
 		if (pNumSteps <= 0) {
-			mainObj = normalMinimalDetailsJsonFor(pInst, pOnlyProps);
+			mainObj = normalMinimalDetailsJsonFor(pInst, pOnlyProps, pIsSmartMode);
 		} else {
-			mainObj.put(JSON_MAININST, normalMinimalDetailsJsonFor(pInst, pOnlyProps));
+			mainObj.put(JSON_MAININST, normalMinimalDetailsJsonFor(pInst, pOnlyProps, pIsSmartMode));
 
 			if (pRelInsts) {
 				CeStoreJsonObject relInsts = new CeStoreJsonObject();
-				relatedInstancesMinimalJsonFor(pInst, pNumSteps, 1, relInsts, pLimInsts, pOnlyProps);
+				relatedInstancesMinimalJsonFor(pInst, pNumSteps, 1, relInsts, pLimInsts, pOnlyProps, pIsSmartMode);
 				mainObj.put(JSON_RELINSTS, relInsts);
 			}
 
 			if (pRefInsts) {
 				CeStoreJsonObject refInsts = new CeStoreJsonObject();
-				referringInstancesMinimalJsonFor(pInst, pNumSteps, 1, refInsts, pLimInsts, pOnlyProps);
+				referringInstancesMinimalJsonFor(pInst, pNumSteps, 1, refInsts, pLimInsts, pOnlyProps, pIsSmartMode);
 				mainObj.put(JSON_REFINSTS, refInsts);
 			}
 		}
@@ -354,23 +370,23 @@ public class CeWebInstance extends CeWebObject {
 	}
 
 	public CeStoreJsonObject generateNormalisedDetailsJsonFor(CeInstance pInst, String[] pOnlyProps, int pNumSteps,
-			boolean pRelInsts, boolean pRefInsts, String[] pLimInsts) {
+			boolean pRelInsts, boolean pRefInsts, String[] pLimInsts, boolean pIsSmartMode) {
 		CeStoreJsonObject mainObj = new CeStoreJsonObject();
 
 		if (pNumSteps <= 0) {
-			mainObj = normalNormalisedDetailsJsonFor(pInst, pOnlyProps);
+			mainObj = normalNormalisedDetailsJsonFor(pInst, pOnlyProps, pIsSmartMode);
 		} else {
-			mainObj.put(JSON_MAININST, normalNormalisedDetailsJsonFor(pInst, pOnlyProps));
+			mainObj.put(JSON_MAININST, normalNormalisedDetailsJsonFor(pInst, pOnlyProps, pIsSmartMode));
 
 			if (pRelInsts) {
 				CeStoreJsonObject relInsts = new CeStoreJsonObject();
-				relatedInstancesNormalisedJsonFor(pInst, pNumSteps, 1, relInsts, pLimInsts, pOnlyProps);
+				relatedInstancesNormalisedJsonFor(pInst, pNumSteps, 1, relInsts, pLimInsts, pOnlyProps, pIsSmartMode);
 				mainObj.put(JSON_RELINSTS, relInsts);
 			}
 
 			if (pRefInsts) {
 				CeStoreJsonObject refInsts = new CeStoreJsonObject();
-				referringInstancesNormalisedJsonFor(pInst, pNumSteps, 1, refInsts, pLimInsts, pOnlyProps);
+				referringInstancesNormalisedJsonFor(pInst, pNumSteps, 1, refInsts, pLimInsts, pOnlyProps, pIsSmartMode);
 				mainObj.put(JSON_REFINSTS, refInsts);
 			}
 		}
@@ -379,7 +395,7 @@ public class CeWebInstance extends CeWebObject {
 	}
 
 	private CeStoreJsonObject normalSummaryDetailsJsonFor(CeInstance pInst, String[] pOnlyProps,
-			boolean pSuppPropTypes) {
+			boolean pSuppPropTypes, boolean pIsSmartMode) {
 		CeStoreJsonObject mainObj = new CeStoreJsonObject();
 		ArrayList<String> onlyPropList = null;
 
@@ -414,7 +430,21 @@ public class CeWebInstance extends CeWebObject {
 				if (thisPi.isSingleCardinality()) {
 					putStringValueIn(propValsObj, keyPropName, thisPi.getSingleOrFirstValue());
 				} else {
-					putAllStringValuesIn(propValsObj, keyPropName, thisPi.getValueList());
+					CeProperty thisProp = thisPi.getRelatedProperty();
+					boolean doneProp = false;
+
+					if (pIsSmartMode) {
+						CeInstance mmInst = thisProp.getMetaModelInstance(this.ac);
+						if (mmInst.isConceptNamed(this.ac, CON_SVP)) {
+							String latestVal = pInst.getLatestValueFromPropertyNamed(thisProp.getPropertyName());
+							putStringValueIn(propValsObj, keyPropName, latestVal);
+							doneProp = true;
+						}
+					}
+
+					if (!doneProp) {
+						putAllStringValuesIn(propValsObj, keyPropName, thisPi.getValueList());
+					}
 				}
 
 				if (thisPi.getRelatedProperty().isDatatypeProperty()) {
@@ -437,7 +467,7 @@ public class CeWebInstance extends CeWebObject {
 		return mainObj;
 	}
 
-	private CeStoreJsonObject normalMinimalDetailsJsonFor(CeInstance pInst, String[] pOnlyProps) {
+	private CeStoreJsonObject normalMinimalDetailsJsonFor(CeInstance pInst, String[] pOnlyProps, boolean pIsSmartMode) {
 		CeStoreJsonObject mainObj = new CeStoreJsonObject();
 		ArrayList<String> onlyPropList = null;
 
@@ -467,7 +497,21 @@ public class CeWebInstance extends CeWebObject {
 				if (thisPi.isSingleCardinality()) {
 					putStringValueIn(propValsObj, keyPropName, thisPi.getSingleOrFirstValue());
 				} else {
-					putAllStringValuesIn(propValsObj, keyPropName, thisPi.getValueList());
+					CeProperty thisProp = thisPi.getRelatedProperty();
+					boolean doneProp = false;
+
+					if (pIsSmartMode) {
+						CeInstance mmInst = thisProp.getMetaModelInstance(this.ac);
+						if (mmInst.isConceptNamed(this.ac, CON_SVP)) {
+							String latestVal = pInst.getLatestValueFromPropertyNamed(thisProp.getPropertyName());
+							putStringValueIn(propValsObj, keyPropName, latestVal);
+							doneProp = true;
+						}
+					}
+
+					if (!doneProp) {
+						putAllStringValuesIn(propValsObj, keyPropName, thisPi.getValueList());
+					}
 				}
 			}
 		}
@@ -477,7 +521,7 @@ public class CeWebInstance extends CeWebObject {
 		return mainObj;
 	}
 
-	private CeStoreJsonObject normalNormalisedDetailsJsonFor(CeInstance pInst, String[] pOnlyProps) {
+	private CeStoreJsonObject normalNormalisedDetailsJsonFor(CeInstance pInst, String[] pOnlyProps, boolean pIsSmartMode) {
 		CeStoreJsonObject mainObj = new CeStoreJsonObject();
 		ArrayList<String> onlyPropList = null;
 
@@ -501,14 +545,28 @@ public class CeWebInstance extends CeWebObject {
 
 		for (CePropertyInstance thisPi : pInst.getPropertyInstances()) {
 			if (isValidProperty(thisPi, onlyPropList)) {
+				CeProperty thisProp = thisPi.getRelatedProperty();
 				String keyPropName = thisPi.getRelatedProperty().getPropertyName();
-				HashSet<String> vals = thisPi.getValueList();
+				boolean doneProp = false;
 
-				if (!vals.isEmpty()) {
-					if (vals.size() == 1) {
-						putStringValueIn(mainObj, keyPropName, vals.iterator().next());
-					} else {
-						putAllStringValuesIn(mainObj, keyPropName, vals);
+				if (pIsSmartMode) {
+					CeInstance mmInst = thisProp.getMetaModelInstance(this.ac);
+					if (mmInst.isConceptNamed(this.ac, CON_SVP)) {
+						String latestVal = pInst.getLatestValueFromPropertyNamed(thisProp.getPropertyName());
+						putStringValueIn(mainObj, keyPropName, latestVal);
+						doneProp = true;
+					}
+				}
+
+				if (!doneProp) {
+					HashSet<String> vals = thisPi.getValueList();
+
+					if (!vals.isEmpty()) {
+						if (vals.size() == 1) {
+							putStringValueIn(mainObj, keyPropName, vals.iterator().next());
+						} else {
+							putAllStringValuesIn(mainObj, keyPropName, vals);
+						}
 					}
 				}
 			}
@@ -528,42 +586,42 @@ public class CeWebInstance extends CeWebObject {
 	}
 
 	public CeStoreJsonArray generateFullListJsonFor(Collection<CeInstance> pInstList, String[] pOnlyProps,
-			boolean pSuppPropTypes) {
+			boolean pSuppPropTypes, boolean pIsSmartMode) {
 		CeStoreJsonArray jInsts = new CeStoreJsonArray();
 
 		for (CeInstance thisInst : pInstList) {
-			jInsts.add(normalFullDetailsJsonFor(thisInst, pOnlyProps, pSuppPropTypes));
+			jInsts.add(normalFullDetailsJsonFor(thisInst, pOnlyProps, pSuppPropTypes, pIsSmartMode));
 		}
 
 		return jInsts;
 	}
 
 	public CeStoreJsonArray generateSummaryListJsonFor(Collection<CeInstance> pInstList, String[] pOnlyProps,
-			boolean pSuppPropTypes) {
+			boolean pSuppPropTypes, boolean pIsSmartMode) {
 		CeStoreJsonArray jInsts = new CeStoreJsonArray();
 
 		for (CeInstance thisInst : pInstList) {
-			jInsts.add(normalSummaryDetailsJsonFor(thisInst, pOnlyProps, pSuppPropTypes));
+			jInsts.add(normalSummaryDetailsJsonFor(thisInst, pOnlyProps, pSuppPropTypes, pIsSmartMode));
 		}
 
 		return jInsts;
 	}
 
-	public CeStoreJsonArray generateMinimalListJsonFor(Collection<CeInstance> pInstList, String[] pOnlyProps) {
+	public CeStoreJsonArray generateMinimalListJsonFor(Collection<CeInstance> pInstList, String[] pOnlyProps, boolean pIsSmartMode) {
 		CeStoreJsonArray jInsts = new CeStoreJsonArray();
 
 		for (CeInstance thisInst : pInstList) {
-			jInsts.add(normalMinimalDetailsJsonFor(thisInst, pOnlyProps));
+			jInsts.add(normalMinimalDetailsJsonFor(thisInst, pOnlyProps, pIsSmartMode));
 		}
 
 		return jInsts;
 	}
 
-	public CeStoreJsonArray generateNormalisedListJsonFor(Collection<CeInstance> pInstList, String[] pOnlyProps) {
+	public CeStoreJsonArray generateNormalisedListJsonFor(Collection<CeInstance> pInstList, String[] pOnlyProps, boolean pIsSmartMode) {
 		CeStoreJsonArray jInsts = new CeStoreJsonArray();
 
 		for (CeInstance thisInst : pInstList) {
-			jInsts.add(normalNormalisedDetailsJsonFor(thisInst, pOnlyProps));
+			jInsts.add(normalNormalisedDetailsJsonFor(thisInst, pOnlyProps, pIsSmartMode));
 		}
 
 		return jInsts;

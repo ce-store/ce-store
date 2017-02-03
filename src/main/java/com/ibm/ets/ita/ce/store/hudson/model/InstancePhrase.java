@@ -96,7 +96,7 @@ public class InstancePhrase extends InterpretationPhrase {
 
 		for (CeInstance thisInst : this.instances) {
 			CeWebInstance webInst = new CeWebInstance(pAc);
-			CeStoreJsonObject jInst = webInst.generateNormalisedDetailsJsonFor(thisInst, null, 0, false, false, null);
+			CeStoreJsonObject jInst = webInst.generateNormalisedDetailsJsonFor(thisInst, null, 0, false, false, null, false);
 
 			jArr.add(jInst);
 		}

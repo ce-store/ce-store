@@ -78,7 +78,7 @@ public class PropertyPhrase extends InterpretationPhrase {
 
 			if (mmInst != null) {
 				CeWebInstance webInst = new CeWebInstance(pAc);
-				CeStoreJsonObject jInst = webInst.generateNormalisedDetailsJsonFor(mmInst, null, 0, false, false, null);
+				CeStoreJsonObject jInst = webInst.generateNormalisedDetailsJsonFor(mmInst, null, 0, false, false, null, false);
 
 				jArr.add(jInst);
 			}

@@ -174,7 +174,7 @@ public class CeWebConceptualModel extends CeWebObject {
 		if (mmInst != null) {
 			CeWebInstance webInst = new CeWebInstance(this.ac);
 			CeStoreJsonObject metaModelInstanceJSON = webInst.generateSummaryDetailsJsonFor(mmInst, null, 0, false,
-					false, null, false);
+					false, null, false, false);
 			putObjectValueIn(pJsonObj, JSON_META_INSTANCE, metaModelInstanceJSON);
 		} else {
 			reportWarning("No meta-model instance was found for conceptual model named '" + pCm.getModelName(),

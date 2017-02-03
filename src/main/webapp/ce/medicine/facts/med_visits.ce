@@ -30,7 +30,9 @@ there is a check up named 'visit_002' that
 
 there is a consultation named 'visit_003' that
   has '09/11/2013' as date string and
-  occurred at the hospital 'Andover War Memorial Hospital'.
+  occurred at the hospital 'Andover War Memorial Hospital' and
+  occurred at the hospital 'Royal Hampshire County Hospital' and
+  occurred at the hospital 'Basingstoke and North Hampshire Hospital'. 
 
 there is a check up named 'visit_004' that
   has '02/02/2014' as date string and

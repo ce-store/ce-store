@@ -28,6 +28,7 @@ import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_SHOWSTATS;
 import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_SPTS;
 import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_STEPS;
 import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_STYLE;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_MODE;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REQTYPE_ANY;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REQTYPE_JSON;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REQTYPE_TEXT;
@@ -47,6 +48,7 @@ import static com.ibm.ets.ita.ce.store.names.RestNames.STYLE_FULL;
 import static com.ibm.ets.ita.ce.store.names.RestNames.STYLE_MINIMAL;
 import static com.ibm.ets.ita.ce.store.names.RestNames.STYLE_NORMALISED;
 import static com.ibm.ets.ita.ce.store.names.RestNames.STYLE_SUMMARY;
+import static com.ibm.ets.ita.ce.store.names.RestNames.MODE_SMART;
 import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.appendToSb;
 import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.convertToString;
 import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.urlDecode;
@@ -110,6 +112,7 @@ public abstract class CeStoreRestApi extends ApiHandler {
 	private String reqMethod = null;
 
 	protected String parmStyle = null;
+	protected String parmMode = null;
 
 	public CeStoreRestApi(WebActionContext pWc, ArrayList<String> pRestParts, HttpServletRequest pRequest) {
 		this.wc = pWc;
@@ -120,6 +123,7 @@ public abstract class CeStoreRestApi extends ApiHandler {
 		this.reqMethod = this.request.getMethod();
 
 		this.parmStyle = pRequest.getParameter(PARM_STYLE);
+		this.parmMode = pRequest.getParameter(PARM_MODE);
 	}
 
 	public static String getCeStoreNameFrom(ArrayList<String> pRestParts) {
@@ -323,6 +327,10 @@ public abstract class CeStoreRestApi extends ApiHandler {
 	@Override
 	public boolean isNormalisedStyle() {
 		return (this.parmStyle != null) && (this.parmStyle.equals(STYLE_NORMALISED));
+	}
+
+	public boolean isSmartMode() {
+		return (this.parmMode != null) && (this.parmMode.equals(MODE_SMART));
 	}
 
 	protected String getParameterNamed(String pParmName) {
@@ -627,14 +635,14 @@ public abstract class CeStoreRestApi extends ApiHandler {
 
 		if (isDefaultStyle() || isSummaryStyle()) {
 			getWebActionResponse()
-					.setStructuredResult(instWeb.generateSummaryListJsonFor(pInstList, onlyProps, suppPropTypes));
+					.setStructuredResult(instWeb.generateSummaryListJsonFor(pInstList, onlyProps, suppPropTypes, isSmartMode()));
 		} else if (isMinimalStyle()) {
-			getWebActionResponse().setStructuredResult(instWeb.generateMinimalListJsonFor(pInstList, onlyProps));
+			getWebActionResponse().setStructuredResult(instWeb.generateMinimalListJsonFor(pInstList, onlyProps, isSmartMode()));
 		} else if (isNormalisedStyle()) {
-			getWebActionResponse().setStructuredResult(instWeb.generateNormalisedListJsonFor(pInstList, onlyProps));
+			getWebActionResponse().setStructuredResult(instWeb.generateNormalisedListJsonFor(pInstList, onlyProps, isSmartMode()));
 		} else {
 			getWebActionResponse()
-					.setStructuredResult(instWeb.generateFullListJsonFor(pInstList, onlyProps, suppPropTypes));
+					.setStructuredResult(instWeb.generateFullListJsonFor(pInstList, onlyProps, suppPropTypes, isSmartMode()));
 		}
 	}
 
@@ -649,7 +657,7 @@ public abstract class CeStoreRestApi extends ApiHandler {
 
 		CeWebSpecial webSpec = new CeWebSpecial(this.wc);
 		getWebActionResponse()
-				.setStructuredResult(webSpec.generateSentenceLoadResultsFrom(pSenStats, onlyProps, suppPropTypes));
+				.setStructuredResult(webSpec.generateSentenceLoadResultsFrom(pSenStats, onlyProps, suppPropTypes, isSmartMode()));
 	}
 
 	protected void setCeResultAsStructuredResult(ContainerCeResult pCeResult, boolean pSuppressResult,
@@ -667,13 +675,13 @@ public abstract class CeStoreRestApi extends ApiHandler {
 
 		if (isMinimalStyle()) {
 			jRes = CeWebContainerResult.generateMinimalCeQueryResultFrom(this.wc, pCeResult, pSuppressResult,
-					pReturnInstances, onlyProps, numSteps, relInsts, refInsts, limRels, suppPropTypes);
+					pReturnInstances, onlyProps, numSteps, relInsts, refInsts, limRels, suppPropTypes, isSmartMode());
 		} else if (isNormalisedStyle()) {
 			jRes = CeWebContainerResult.generateNormalisedCeQueryResultFrom(this.wc, pCeResult, pSuppressResult,
-					pReturnInstances, onlyProps, numSteps, relInsts, refInsts, limRels, suppPropTypes);
+					pReturnInstances, onlyProps, numSteps, relInsts, refInsts, limRels, suppPropTypes, isSmartMode());
 		} else {
 			jRes = CeWebContainerResult.generateNormalCeQueryResultFrom(this.wc, pCeResult, pSuppressResult,
-					pReturnInstances, onlyProps, numSteps, relInsts, refInsts, limRels, suppPropTypes);
+					pReturnInstances, onlyProps, numSteps, relInsts, refInsts, limRels, suppPropTypes, isSmartMode());
 		}
 
 		getWebActionResponse().setStructuredResult(jRes);

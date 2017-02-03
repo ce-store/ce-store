@@ -1,4 +1,4 @@
-# Contributing to CE Store Projects
+# Contributing to ce-store projects
 
 All contributions are welcome. Contributors are expected to conduct themselves in a professional and courteous manner. If you want to contribute code you will be required to sign an individual contributor agreement found here: ce-store/administration/ce-store-individual.pdf.  Corporate contributions will need to use the agreement found here: ce-store/administration/ce-store-corporate.pdf.
 

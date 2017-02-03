@@ -539,13 +539,13 @@ public class CeStoreRestApiInstance extends CeStoreRestApi {
 		onlyProps = mergedPropertyRestrictionsFor(onlyProps, limRels);
 
 		if (isDefaultStyle() || isFullStyle()) {
-			getWebActionResponse().setStructuredResult(instWeb.generateFullDetailsJsonFor(pInstance, onlyProps, numSteps, relInsts, refInsts, limRels, suppPropTypes));
+			getWebActionResponse().setStructuredResult(instWeb.generateFullDetailsJsonFor(pInstance, onlyProps, numSteps, relInsts, refInsts, limRels, suppPropTypes, isSmartMode()));
 		} else if (isSummaryStyle()) {
-			getWebActionResponse().setStructuredResult(instWeb.generateSummaryDetailsJsonFor(pInstance, onlyProps, numSteps, relInsts, refInsts, limRels, suppPropTypes));
+			getWebActionResponse().setStructuredResult(instWeb.generateSummaryDetailsJsonFor(pInstance, onlyProps, numSteps, relInsts, refInsts, limRels, suppPropTypes, isSmartMode()));
 		} else if (isMinimalStyle()){
-			getWebActionResponse().setStructuredResult(instWeb.generateMinimalDetailsJsonFor(pInstance, onlyProps, numSteps, relInsts, refInsts, limRels));
+			getWebActionResponse().setStructuredResult(instWeb.generateMinimalDetailsJsonFor(pInstance, onlyProps, numSteps, relInsts, refInsts, limRels, isSmartMode()));
 		} else {
-			getWebActionResponse().setStructuredResult(instWeb.generateNormalisedDetailsJsonFor(pInstance, onlyProps, numSteps, relInsts, refInsts, limRels));
+			getWebActionResponse().setStructuredResult(instWeb.generateNormalisedDetailsJsonFor(pInstance, onlyProps, numSteps, relInsts, refInsts, limRels, isSmartMode()));
 		}
 	}
 

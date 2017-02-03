@@ -146,7 +146,7 @@ public class QuestionInterpreterHandler extends QuestionHandler {
 
 	public static CeStoreJsonObject jsonFor(ActionContext pAc, CeInstance pInst) {
 		CeWebInstance webInst = new CeWebInstance(pAc);
-		CeStoreJsonObject result = webInst.generateNormalisedDetailsJsonFor(pInst, null, 0, false, false, null);
+		CeStoreJsonObject result = webInst.generateNormalisedDetailsJsonFor(pInst, null, 0, false, false, null, false);
 
 		return result;
 	}
@@ -155,7 +155,7 @@ public class QuestionInterpreterHandler extends QuestionHandler {
 		CeStoreJsonObject result = null;
 		CeStoreJsonArray jArr = new CeStoreJsonArray();
 		CeWebInstance webInst = new CeWebInstance(pAc);
-		CeStoreJsonObject jInst = webInst.generateNormalisedDetailsJsonFor(pInst, null, 0, false, false, null);
+		CeStoreJsonObject jInst = webInst.generateNormalisedDetailsJsonFor(pInst, null, 0, false, false, null, false);
 		
 		jArr.add(jInst);
 		

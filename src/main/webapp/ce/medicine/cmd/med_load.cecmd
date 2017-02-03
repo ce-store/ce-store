@@ -30,3 +30,5 @@ perform load sentences from url './ce/medicine/cmd/med_load_hudson.cecmd'.
 
 -- Run the rules
 perform run the rule executor agent named 'med_rules'.
+
+--perform lock store.

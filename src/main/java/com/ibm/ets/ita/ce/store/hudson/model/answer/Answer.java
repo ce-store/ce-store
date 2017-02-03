@@ -65,7 +65,7 @@ public abstract class Answer implements Comparable<Answer> {
 
 			for (CeInstance thisInst : this.instances) {
 				CeWebInstance webInst = new CeWebInstance(pAc);
-				CeStoreJsonObject jInst = webInst.generateNormalisedDetailsJsonFor(thisInst, null, 0, false, false, null);
+				CeStoreJsonObject jInst = webInst.generateNormalisedDetailsJsonFor(thisInst, null, 0, false, false, null, false);
 	
 				jArr.add(jInst);
 			}
