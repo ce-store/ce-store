@@ -73,7 +73,7 @@ function PaneCurrentProjects() {
 
 			for (var linkKey in thisSenSet.links) {
 				var thisLink = thisSenSet.links[linkKey];
-				var jsText = gEp.ui.links.jsTextFor(jsMethod, [ thisLink.url ]);
+				var jsText = gEp.ui.links.jsTextFor(jsMethod, [ thisLink.url, thisLink.name, thisLink.root ]);
 				var linkText = gEp.ui.links.hyperlinkFor(jsText, thisLink.name);
 				linkList.push(linkText);
 			}

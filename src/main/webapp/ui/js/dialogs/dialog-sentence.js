@@ -15,17 +15,17 @@ function DialogSentence() {
 		//Nothing needed
 	};
 
-	this.loadNewSentenceSet = function(pUrl, pName) {
+	this.loadNewSentenceSet = function(pUrl, pName, pRoot) {
 		var response = confirm('This will empty the contents of the CE store and all current data will be lost.  Are you sure?');
 
 		if (response) {
-			this.processCommandsRelative(pUrl, pName);
+			this.processCommandsRelative(pUrl, pName, pRoot);
 		}
 	};
 
 	this.useCeForInstance = function(pInstId, pConName) {
 		var tgtConName = null;
-		
+
 		if (pConName != null) {
 			var conParts = pConName.split(',');
 			tgtConName = conParts[0];
@@ -38,11 +38,11 @@ function DialogSentence() {
 		gEp.handler.sentences.updateAddCeFieldWith(ceText);
 	};
 
-	this.processCommandsRelative = function(pUrl, pName) {
+	this.processCommandsRelative = function(pUrl, pName, pRoot) {
 		if (gCe.utils.isNullOrEmpty(pUrl)) {
 			gCe.msg.error('You must specify a relative URL');
 		} else {
-			gEp.handler.actions.processCommandsRelative(pUrl, pName);
+			gEp.handler.actions.processCommandsRelative(pUrl, pName, null, null, pRoot);
 		}
 	};
 

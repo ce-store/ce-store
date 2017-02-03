@@ -1,8 +1,10 @@
 {
     "basic": {
         "title": "Public sentence sets",
-        "links": [
-            { "url": "./ce/medicine/cmd/med_load.cecmd", "name": "Medicine (public)" }
-        ]
+        "links": [{
+            "name": "Medicine (public)",
+            "root": "https://rawgit.com/ce-store/ce-store/master/src/main/webapp",
+            "url": "ce/medicine/cmd/med_load.cecmd"
+        }]
     }
 }
