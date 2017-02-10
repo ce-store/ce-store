@@ -137,10 +137,8 @@ public class CeGeneratorConclusion {
 
 		initialiseHeaders();
 
-		if (hasCountVariable()) {
-			collapseRowsForCounting();
-		} else if (hasSumVariable()) {
-			collapseRowsForSumming();
+		if (hasCountVariable() || hasSumVariable()) {
+			collapseRowsForCountingOrSumming();
 		}
 
 		//Calculate the correct CE results for the rule - based on the conclusion clauses
@@ -204,85 +202,18 @@ public class CeGeneratorConclusion {
 		return result;
 	}
 
-	private void collapseRowsForCounting() {
-		TreeMap<String, ArrayList<String>> newRowMap = new TreeMap<String, ArrayList<String>>();
-		TreeMap<String, Integer> countMap = new TreeMap<String, Integer>();
+	private void collapseRowsForCountingOrSumming() {
+		TreeMap<String, ArrayList<ArrayList<String>>> newRowMap = new TreeMap<String, ArrayList<ArrayList<String>>>();
+		TreeMap<String, Long> totalMap = new TreeMap<String, Long>();
 		int ceIndex = this.ceResult.getIndexForHeader(HDR_CE);
 		int countIndex = -1;
-
-		for (ArrayList<String> thisRow : this.ceResult.getResultRows()) {
-			StringBuilder sbMain = new StringBuilder();
-
-			for (String thisHdr : this.ceResult.getHeaders()) {
-				int hdrIndex = this.ceResult.getIndexForHeader(thisHdr);
-
-				if (thisHdr.startsWith(TOKEN_COUNT)) {
-					//This is the variable to be counted
-					countIndex = hdrIndex;
-				} else {
-					if (!thisHdr.equals(HDR_CE)) {
-						if (this.uniqueTgtVars.containsKey(thisHdr)) {
-							String thisVal = thisRow.get(hdrIndex);
-
-							if (sbMain.length() > 0) {
-								sbMain.append(TOKEN_BAR);
-							}
-
-							sbMain.append(thisVal);
-						}
-					}
-				}
-			}
-
-			int rowCount = 0;
-			String thisKey = sbMain.toString();
-			StringBuilder sbRat = new StringBuilder();
-			boolean newRowCreated = false;
-
-			if (!newRowMap.containsKey(thisKey)) {
-				newRowMap.put(thisKey, thisRow);
-				newRowCreated = true;
-			}
-
-			ArrayList<String> newRow = newRowMap.get(thisKey);
-
-			if (!newRowCreated) {
-				sbRat.append(newRow.get(ceIndex));
-				sbRat.append(TOKEN_SPACE);
-				sbRat.append(TOKEN_AND);
-				sbRat.append(NL);
-			}
-
-			sbRat.append(thisRow.get(ceIndex));
-
-			newRow.set(ceIndex, sbRat.toString());
-
-			if (countMap.containsKey(thisKey)) {
-				rowCount = countMap.get(thisKey).intValue();
-			}
-
-			countMap.put(thisKey, new Integer(++rowCount));
-		}
-
-		for (String thisKey : newRowMap.keySet()) {
-			ArrayList<String> thisRow = newRowMap.get(thisKey);
-
-			thisRow.set(countIndex, countMap.get(thisKey).toString());
-		}
-
-		this.ceResult.replaceResultRowsWith(newRowMap.values());
-	}
-
-	private void collapseRowsForSumming() {
-		TreeMap<String, ArrayList<String>> newRowMap = new TreeMap<String, ArrayList<String>>();
-		TreeMap<String, Long> sumMap = new TreeMap<String, Long>();
-		int ceIndex = this.ceResult.getIndexForHeader(HDR_CE);
 		int sumIndex = -1;
 		String sumText = null;
 		long sumVal = 0;
 
 		for (ArrayList<String> thisRow : this.ceResult.getResultRows()) {
 			StringBuilder sbMain = new StringBuilder();
+			long rowSum = 0;
 
 			for (String thisHdr : this.ceResult.getHeaders()) {
 				int hdrIndex = this.ceResult.getIndexForHeader(thisHdr);
@@ -297,11 +228,15 @@ public class CeGeneratorConclusion {
 					} catch (NumberFormatException e) {
 						reportWarning("Unable to sum '" + sumText + "' during rule processing", this.ac);
 					}
+				} else if (thisHdr.startsWith(TOKEN_COUNT)) {
+					//This is the variable to be counted
+					countIndex = hdrIndex;
 				} else {
-					if (!thisHdr.equals(HDR_CE)) {
-						if (this.uniqueTgtVars.containsKey(thisHdr)) {
-							String thisVal = thisRow.get(hdrIndex);
+					String thisVal = thisRow.get(hdrIndex);
 
+					if (!thisHdr.equals(HDR_CE)) {
+						int thisIdx = this.hdrIndexes.get(thisHdr).intValue();
+						if (thisIdx > 0) {
 							if (sbMain.length() > 0) {
 								sbMain.append(TOKEN_BAR);
 							}
@@ -312,43 +247,41 @@ public class CeGeneratorConclusion {
 				}
 			}
 
-			long rowSum = 0;
 			String thisKey = sbMain.toString();
 			StringBuilder sbRat = new StringBuilder();
-			boolean newRowCreated = false;
 
-			if (!newRowMap.containsKey(thisKey)) {
-				newRowMap.put(thisKey, thisRow);
-				newRowCreated = true;
+			ArrayList<ArrayList<String>> newEntry = newRowMap.get(thisKey);
+
+			if (newEntry == null) {
+				newEntry = new ArrayList<ArrayList<String>>();
+				newRowMap.put(thisKey, newEntry);
 			}
-
-			ArrayList<String> newRow = newRowMap.get(thisKey);
-
-			if (!newRowCreated) {
-				sbRat.append(newRow.get(ceIndex));
-				sbRat.append(TOKEN_SPACE);
-				sbRat.append(TOKEN_AND);
-				sbRat.append(NL);
-			}
+			newEntry.add(thisRow);
 
 			sbRat.append(thisRow.get(ceIndex));
 
-			newRow.set(ceIndex, sbRat.toString());
-
-			if (sumMap.containsKey(thisKey)) {
-				rowSum = sumMap.get(thisKey).longValue();
+			if (totalMap.containsKey(thisKey)) {
+				rowSum = totalMap.get(thisKey).longValue();
 			}
 
-			sumMap.put(thisKey, new Long(rowSum + sumVal));
+			if (sumIndex > -1) {
+				totalMap.put(thisKey, new Long(rowSum + sumVal));
+			} else {
+				totalMap.put(thisKey, new Long(rowSum + 1));
+			}
 		}
 
 		for (String thisKey : newRowMap.keySet()) {
-			ArrayList<String> thisRow = newRowMap.get(thisKey);
+			ArrayList<ArrayList<String>> theseRows = newRowMap.get(thisKey);
 
-			thisRow.set(sumIndex, sumMap.get(thisKey).toString());
+			for (ArrayList<String> thisRow : theseRows) {
+				if (sumIndex > -1) {
+					thisRow.set(sumIndex, totalMap.get(thisKey).toString());
+				} else {
+					thisRow.set(countIndex, totalMap.get(thisKey).toString());
+				}
+			}
 		}
-
-		this.ceResult.replaceResultRowsWith(newRowMap.values());
 	}
 
 	private void initialiseHeaders() {
