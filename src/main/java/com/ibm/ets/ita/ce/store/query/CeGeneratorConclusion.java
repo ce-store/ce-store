@@ -205,7 +205,6 @@ public class CeGeneratorConclusion {
 	private void collapseRowsForCountingOrSumming() {
 		TreeMap<String, ArrayList<ArrayList<String>>> newRowMap = new TreeMap<String, ArrayList<ArrayList<String>>>();
 		TreeMap<String, Long> totalMap = new TreeMap<String, Long>();
-		int ceIndex = this.ceResult.getIndexForHeader(HDR_CE);
 		int countIndex = -1;
 		int sumIndex = -1;
 		String sumText = null;
@@ -248,7 +247,6 @@ public class CeGeneratorConclusion {
 			}
 
 			String thisKey = sbMain.toString();
-			StringBuilder sbRat = new StringBuilder();
 
 			ArrayList<ArrayList<String>> newEntry = newRowMap.get(thisKey);
 
@@ -257,8 +255,6 @@ public class CeGeneratorConclusion {
 				newRowMap.put(thisKey, newEntry);
 			}
 			newEntry.add(thisRow);
-
-			sbRat.append(thisRow.get(ceIndex));
 
 			if (totalMap.containsKey(thisKey)) {
 				rowSum = totalMap.get(thisKey).longValue();
@@ -279,6 +275,41 @@ public class CeGeneratorConclusion {
 					thisRow.set(sumIndex, totalMap.get(thisKey).toString());
 				} else {
 					thisRow.set(countIndex, totalMap.get(thisKey).toString());
+				}
+			}
+
+			if (theseRows.size() > 1) {
+				doRationaleCorrection(theseRows);
+			}
+		}
+	}
+
+	private void doRationaleCorrection(ArrayList<ArrayList<String>> pRows) {
+		int ceIndex = this.ceResult.getIndexForHeader(HDR_CE);
+
+		TreeMap<String, ArrayList<String>> ceRows = new TreeMap<String, ArrayList<String>>();
+
+		for (ArrayList<String> thisRow : pRows) {
+			String ceText = thisRow.get(ceIndex);
+
+			ceRows.put(ceText, thisRow);
+		}
+
+		for (String ceTextA : ceRows.keySet()) {
+			ArrayList<String> rowA = ceRows.get(ceTextA);
+
+			for (String ceTextB : ceRows.keySet()) {
+				if (ceTextA != ceTextB) {
+					StringBuilder sbRat1 = new StringBuilder();
+
+					sbRat1.append(rowA.get(ceIndex));
+					sbRat1.append(TOKEN_SPACE);
+					sbRat1.append(TOKEN_AND);
+					sbRat1.append(NL);
+
+					sbRat1.append(ceTextB);
+
+					rowA.set(ceIndex, sbRat1.toString());
 				}
 			}
 		}
