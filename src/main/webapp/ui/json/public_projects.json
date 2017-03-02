@@ -5,6 +5,11 @@
             "name": "Medicine (public)",
             "root": "https://rawgit.com/ce-store/ce-store/master/src/main/webapp",
             "url": "ce/medicine/cmd/med_load.cecmd"
-        }]
+        }, {
+            "name": "CrisisHack",
+            "root": "https://rawgit.com/ce-store/crisishack/master/src/main/webapp",
+            "url": "ce/crisishack/cmd/ch_load.cecmd"
+        }
+      ]
     }
 }
