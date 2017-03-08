@@ -103,3 +103,7 @@ the medical report 'report 4'
   mentions the person 'Jean' and
   mentions the person 'James' and
   has 'A medical report about Jean and James' as text.
+
+
+the person David has the person James as friend.
+the person James has the person David as friend.

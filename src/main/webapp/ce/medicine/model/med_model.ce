@@ -22,7 +22,9 @@ conceptualise a ~ person ~ P that
   ~ is the aunt of ~ the person P5 and
   ~ is the brother of ~ the person P6 and
   ~ is closely related to ~ the person P7 and
-  has the value NB as ~ number of brothers ~.
+  has the value NB as ~ number of brothers ~ and
+  has the value NF as ~ number of friends ~ and
+  has the person P8 as ~ friend ~.
 
 conceptualise a ~ man ~ M that is a person.
 conceptualise a ~ woman ~ F that is a person.
