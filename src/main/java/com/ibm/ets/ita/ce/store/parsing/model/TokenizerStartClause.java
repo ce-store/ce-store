@@ -121,7 +121,9 @@ public class TokenizerStartClause extends TokenizerNormalClause {
 				result = appendReason(result, "No concept found for concept name '" + this.conceptName + "'");
 			} else {
 				if (this.instanceName == null) {
-					result = appendReason(result, "No instance name was identified");
+					if (!isNegatedDomain()) {
+						result = appendReason(result, "No instance name was identified");
+					}
 				} else {
 					//TODO: Eventually remove this test
 					if (this.instanceName.equals(TOKEN_NAMED)) {
@@ -240,24 +242,33 @@ public class TokenizerStartClause extends TokenizerNormalClause {
 
 	private void extractInstance() {
 		if (!reachedEndOfTokens()) {
-			String thisWord = getCurrentToken();
+			if ((this.sen.isFactSentence()) && (!this.sen.isClause()) && (isNegatedDomain())) {
+				//A non-clause fact sentence that starts "no" will hot have an instance id
+				//after the domain concept
+				//e.g. "no person has the brother fred".
+				//This is not true for model sentences as they still need the variable to
+				//build the clauses correctly
+				this.instanceName = null;
+			} else {
+				String thisWord = getCurrentToken();
 
-			if ((this.preambleType == TYPE_THEREISA) || (this.preambleType == TYPE_THEREISAN)) {
-				if (thisWord.equals(TOKEN_NAMED)) {
-					thisWord = getCurrentToken();
-				} else {
-					reportError("Expected word 'named' between domain concept and instance name was missing");
+				if ((this.preambleType == TYPE_THEREISA) || (this.preambleType == TYPE_THEREISAN)) {
+					if (thisWord.equals(TOKEN_NAMED)) {
+						thisWord = getCurrentToken();
+					} else {
+						reportError("Expected word 'named' between domain concept and instance name was missing");
+					}
 				}
-			}
-			
-			String strippedInst = stripQuotesFrom(thisWord);
 
-			//If the length changed then it did have delimiters so store which character was used
-			if ((thisWord.length() != strippedInst.length())) {
-				this.quoteType = thisWord.substring(0, 1);
-			}
+				String strippedInst = stripQuotesFrom(thisWord);
 
-			this.instanceName = handleSpecialMarkersAndDecode(this.ac, strippedInst);
+				//If the length changed then it did have delimiters so store which character was used
+				if ((thisWord.length() != strippedInst.length())) {
+					this.quoteType = thisWord.substring(0, 1);
+				}
+
+				this.instanceName = handleSpecialMarkersAndDecode(this.ac, strippedInst);
+			}
 		}
 	}
 	

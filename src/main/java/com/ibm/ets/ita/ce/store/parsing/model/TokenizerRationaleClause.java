@@ -154,7 +154,12 @@ public class TokenizerRationaleClause extends TokenizerClause {
 			//Test all the clauses and compile descriptions for any that are incomplete
 			for (TokenizerClause thisClause : allClauses) {
 				if (!thisClause.isComplete()) {
-					incompleteClauseText += "\n" + thisClause.explainIncompleteness() + " [" + thisClause + "]";
+					//TODO: Remove this temporary hack to stop reporting of incomplete negation clauses
+					String explanation = thisClause.explainIncompleteness();
+
+					if (explanation != null) {
+						incompleteClauseText += "\n" + explanation + " [" + thisClause + "]";
+					}
 				}
 			}
 

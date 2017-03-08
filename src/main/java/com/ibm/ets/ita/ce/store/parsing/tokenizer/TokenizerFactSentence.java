@@ -210,7 +210,12 @@ public class TokenizerFactSentence {
 			// incomplete
 			for (TokenizerClause thisClause : allClauses) {
 				if (!thisClause.isComplete()) {
-					incompleteClauseText += NL + thisClause.explainIncompleteness() + " [" + thisClause + "]";
+					//TODO: Remove this temporary hack to stop reporting of incomplete negation clauses
+					String explanation = thisClause.explainIncompleteness();
+
+					if (explanation != null) {
+						incompleteClauseText += NL + explanation + " [" + thisClause + "]";
+					}
 				}
 			}
 
