@@ -8,7 +8,7 @@
         }, {
             "name": "CrisisHack",
             "root": "https://rawgit.com/ce-store/crisishack/master/src/main/webapp",
-            "url": "ce/crisishack/cmd/ch_load.cecmd"
+            "url": "ce/cmd/ch_load.cecmd"
         }
       ]
     }
