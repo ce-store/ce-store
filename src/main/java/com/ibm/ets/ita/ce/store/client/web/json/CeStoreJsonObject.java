@@ -67,6 +67,11 @@ public class CeStoreJsonObject extends CeStoreJsonProcessor {
 		this.objectMap.put(pKey, new Integer(pValue));
 	}
 
+	public void put(String pKey, float pValue) {
+		this.keyMap.put(pKey, MAP_OBJECT);
+		this.objectMap.put(pKey, new Float(pValue));
+	}
+
 	public void put(String pKey, long pValue) {
 		this.keyMap.put(pKey, MAP_OBJECT);
 		this.objectMap.put(pKey, new Long(pValue));
@@ -87,8 +92,8 @@ public class CeStoreJsonObject extends CeStoreJsonProcessor {
 		this.jsonMap.put(pKey, pValue);
 	}
 
-	public Integer getInt(String pKey) {
-		return (Integer) this.objectMap.get(pKey);
+	public Float getNumber(String pKey) {
+		return (Float) this.objectMap.get(pKey);
 	}
 
 	public String getString(String pKey) {

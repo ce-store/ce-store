@@ -1141,7 +1141,13 @@ public class StoreActions {
 			}
 		} else {
 			reportWarning("No CE text was specified for saving to the specified source", this.ac);
-			senStats = ContainerSentenceLoadResult.createWithZeroValues("saveCeText:" + pTgtSrc.getId());	//TODO: Abstract this
+			String srcId = null;
+
+			if (pTgtSrc != null) {
+				srcId = pTgtSrc.getId();
+			}
+
+			senStats = ContainerSentenceLoadResult.createWithZeroValues("saveCeText:" + srcId);	//TODO: Abstract this
 		}
 
 		if (this.ac.getSessionCreations().getNewInstances() != null) {

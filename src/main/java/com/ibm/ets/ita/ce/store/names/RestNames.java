@@ -53,6 +53,7 @@ public class RestNames {
 	public static final String REST_EXACT = "exact";
 	public static final String REST_PROPERTY = "properties";
 	public static final String REST_DATATYPE = "datatype";
+	public static final String REST_NEARBY = "nearby";
 	public static final String REST_OBJECT = "object";
 	public static final String REST_RATIONALE = "rationale";
 	public static final String REST_EXECUTE = "execute";
@@ -73,6 +74,8 @@ public class RestNames {
 	public static final String REST_DIVCONINST = "diverse-concept-instances";
 	public static final String REST_MULTINSTS = "instances-for-multiple-concepts";
 	public static final String REST_HUDSON = "hudson";
+	public static final String REST_IMPORT = "import";
+	public static final String REST_JSON = "json";
 	public static final String REST_BATCH = "batch";
 	public static final String REST_SEN_MODEL = "model";
 	public static final String REST_SEN_FACT = "fact";
@@ -106,6 +109,7 @@ public class RestNames {
 	public static final String PARM_REFINSTS = "referringInstances";
 	public static final String PARM_LIMRELS = "limitRelationships";
 	public static final String PARM_ONLYPROPS = "onlyProperties";
+	public static final String PARM_CONFIG = "config";
 	public static final String PARM_SPTS = "suppressPropertyTypes";
 	public static final String PARM_STARTTS = "startTimestamp";
 	public static final String PARM_ENDTS = "endTimestamp";
@@ -118,6 +122,10 @@ public class RestNames {
 	public static final String PARM_RANGE = "range";
 	public static final String PARM_SINCE = "since";
 	public static final String PARM_PROPERTY = "property";
+	public static final String PARM_DISTANCE = "distance";
+	public static final String PARM_UNITS = "units";
+	public static final String PARM_LAT = "latitude";
+	public static final String PARM_LON = "longitude";
 	public static final String PARM_BUCKETS = "buckets";
 	public static final String PARM_SUPPCE = "suppressCe";
 	public static final String PARM_SUPPRES = "suppressResult";

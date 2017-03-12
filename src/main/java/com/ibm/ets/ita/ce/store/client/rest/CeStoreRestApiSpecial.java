@@ -28,6 +28,7 @@ import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_STEPS;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REST_CONFIG;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REST_DIVCONINST;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REST_HUDSON;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_IMPORT;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REST_MULTINSTS;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REST_PATTERN;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REST_RATIONALE;
@@ -66,11 +67,22 @@ public class CeStoreRestApiSpecial extends CeStoreRestApi {
 	}
 
 	/*
-	 * Supported requests: /special/statistics /special/patterns
-	 * /special/rationale /special/config /special/config/{key} /special/uid
-	 * /special/uid/batch /special/uid/reset /special/keyword-search
-	 * /special/shadow-concepts /special/shadow-instances
-	 * /special/diverse-concept-instances /special/data /special/hudson
+	 * Supported requests:
+	 *   /special/statistics
+	 *   /special/patterns
+	 *   /special/rationale
+	 *   /special/config
+	 *   /special/config/{key}
+	 *   /special/uid
+	 *   /special/uid/batch
+	 *   /special/uid/reset
+	 *   /special/keyword-search
+	 *   /special/shadow-concepts
+	 *   /special/shadow-instances
+	 *   /special/diverse-concept-instances
+	 *   /special/data
+	 *   /special/hudson
+	 *   /special/import
 	 */
 	public static boolean processRequest(WebActionContext pWc, ArrayList<String> pRestParts,
 			HttpServletRequest pRequest) {
@@ -93,6 +105,9 @@ public class CeStoreRestApiSpecial extends CeStoreRestApi {
 			} else if (specialType.equals(REST_HUDSON)) {
 				CeStoreRestApiSpecialHudson hudsonHandler = new CeStoreRestApiSpecialHudson(pWc, pRestParts, pRequest);
 				statsInResponse = hudsonHandler.processRequest();
+			} else if (specialType.equals(REST_IMPORT)) {
+				CeStoreRestApiSpecialImport importHandler = new CeStoreRestApiSpecialImport(pWc, pRestParts, pRequest);
+				statsInResponse = importHandler.processRequest();
 			} else if (specialType.equals(REST_UID)) {
 				CeStoreRestApiSpecialUid uidHandler = new CeStoreRestApiSpecialUid(pWc, pRestParts, pRequest);
 				uidHandler.processRequest();

@@ -100,6 +100,9 @@ public class MiscNames {
 	public static final String JSONFILE_QUESTIONS = "questions_core.json";
 	public static final String JSONFILE_ANSWERS = "answers_core.json";
 
+	public static final String UNIT_KMS = "kilometres";
+	public static final String UNIT_MILES = "miles";
+
 	//TO BE REMOVED
 	public static final String CESEN_SEPARATOR = "{|}";
 	public static final String LABEL_PREFIX = "{";

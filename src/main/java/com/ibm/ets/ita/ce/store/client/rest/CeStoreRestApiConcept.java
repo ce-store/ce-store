@@ -8,9 +8,13 @@ package com.ibm.ets.ita.ce.store.client.rest;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSONTYPE_CON;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.VAL_UNDEFINED;
 import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_BUCKETS;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_DISTANCE;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_LAT;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_LON;
 import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_PROPERTY;
 import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_RANGE;
 import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_SINCE;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_UNITS;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REST_CHILDREN;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REST_COUNT;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REST_DATATYPE;
@@ -18,6 +22,7 @@ import static com.ibm.ets.ita.ce.store.names.RestNames.REST_DIRECT;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REST_EXACT;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REST_FREQUENCY;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REST_INSTANCE;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_NEARBY;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REST_OBJECT;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REST_PARENTS;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REST_PRIMARY;
@@ -25,13 +30,17 @@ import static com.ibm.ets.ita.ce.store.names.RestNames.REST_PROPERTY;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REST_RATIONALE;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REST_SECONDARY;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REST_SENTENCE;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.UNIT_KMS;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.UNIT_MILES;
 import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.appendNewLineToSb;
 import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.appendToSb;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportException;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
 
 import java.util.ArrayList;
+import java.util.SortedSet;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -40,6 +49,7 @@ import com.ibm.ets.ita.ce.store.client.web.WebActionContext;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonArray;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
 import com.ibm.ets.ita.ce.store.client.web.model.CeWebConcept;
+import com.ibm.ets.ita.ce.store.client.web.model.CeWebInstance;
 import com.ibm.ets.ita.ce.store.client.web.model.CeWebSpecial;
 import com.ibm.ets.ita.ce.store.core.ActionContext;
 import com.ibm.ets.ita.ce.store.core.ModelBuilder;
@@ -365,6 +375,14 @@ public class CeStoreRestApiConcept extends CeStoreRestApi {
 				//Get frequency of instances for concept
 				//URL = /concepts/{name}/instances/frequency
 				handleFrequencyInstancesForConcept(pCon);
+			} else {
+				reportUnsupportedMethodError();
+			}
+		} else if (qualifier.equals(REST_NEARBY)) {
+			if (isGet()) {
+				//Get proximity of instances for concept
+				//URL = /concepts/{name}/instances/nearby
+				handleNearbyInstancesForConcept(pCon);
 			} else {
 				reportUnsupportedMethodError();
 			}
@@ -842,6 +860,16 @@ public class CeStoreRestApiConcept extends CeStoreRestApi {
 		}
 	}
 
+	private void handleNearbyInstancesForConcept(CeConcept pCon) {
+		if (isJsonRequest()) {
+			jsonGetNearbyInstancesForConcept(pCon);
+		} else if (isTextRequest()) {
+			textGetNearbyInstancesForConcept(pCon);
+		} else {
+			reportUnsupportedFormatError();
+		}
+	}
+
 	private void jsonGetFrequencyOfInstancesForConcept(CeConcept pCon) {
 		ArrayList<CeInstance> instList = makeInstanceListRequestFor(this.wc, pCon, null);
 
@@ -856,6 +884,123 @@ public class CeStoreRestApiConcept extends CeStoreRestApi {
 	private void textGetFrequencyOfInstancesForConcept(CeConcept pCon) {
 		//TODO: Implement this
 		reportNotYetImplementedError("Get frequency of instances for concept '" + pCon.getConceptName() + "'");
+	}
+
+	private void jsonGetNearbyInstancesForConcept(CeConcept pCon) {
+		ArrayList<CeInstance> instList = makeInstanceListRequestFor(this.wc, pCon, null);
+		CeStoreJsonObject jRoot = new CeStoreJsonObject();
+		CeStoreJsonObject jCent = new CeStoreJsonObject();
+		CeStoreJsonObject jDist = new CeStoreJsonObject();
+		CeStoreJsonArray jArr = new CeStoreJsonArray();
+
+		String distanceParm = getUrlParameterValueNamed(PARM_DISTANCE);
+		String unitsParm = getUrlParameterValueNamed(PARM_UNITS);
+		String latParm = getUrlParameterValueNamed(PARM_LAT);
+		String lonParm = getUrlParameterValueNamed(PARM_LON);
+
+		jRoot.put("centre", jCent);
+		jRoot.put("distance", jDist);
+
+		if ((distanceParm != null) && (!distanceParm.isEmpty())) {
+			if ((latParm != null) && (!latParm.isEmpty())) {
+				if ((lonParm != null) && (!lonParm.isEmpty())) {
+					String units = null;
+					double distance = -1;
+					double centreLat = -1;
+					double centreLon = -1;
+
+					if ((unitsParm != null) && (!unitsParm.isEmpty())) {
+						units = unitsParm.trim().toLowerCase();
+					} else {
+						units = UNIT_KMS;
+					}
+
+					if (units.equals(UNIT_KMS) || units.equals(UNIT_MILES)) {
+						try {
+							distance = new Double(distanceParm).doubleValue();
+
+							jDist.put("value", distance);
+							jDist.put("unit", units);
+
+							if (distance <= 0) {
+								reportError("Invalid distance '" + distanceParm + "' specified.  Must be a value positive number", this.wc);
+							} else {
+								try {
+									centreLat = new Double(latParm).doubleValue();
+
+									try {
+										Double highest = null;
+										Double lowest = null;
+										centreLon = new Double(lonParm).doubleValue();
+
+										jCent.put("latitude", centreLat);
+										jCent.put("longitude", centreLon);
+
+										TreeMap<Double, ArrayList<CeInstance>> nearbyInsts = CeWebSpecial.generateNearbyInstancesFrom(this.wc, pCon, instList, distance, units, centreLat, centreLon);
+										SortedSet<Double> keys = new TreeSet<Double>(nearbyInsts.keySet());
+
+										for (Double thisDist : keys) {
+											if ((highest == null) || (thisDist > highest)) {
+												highest = thisDist;
+											}
+
+											if ((lowest == null) || (thisDist < lowest)) {
+												lowest = thisDist;
+											}
+
+											for (CeInstance thisInst : nearbyInsts.get(thisDist)) {
+						                        CeWebInstance instWeb = new CeWebInstance(this.wc);
+						                        CeStoreJsonObject jWrap = new CeStoreJsonObject();
+						                        CeStoreJsonObject jInst = null;
+
+						                        if ((isDefaultStyle()) || (isSummaryStyle())) {
+						                            jInst = instWeb.generateSummaryDetailsJsonFor(thisInst, null, 0, false, false, null, false, false);
+						                        } else if (isFullStyle()) {
+						                            jInst = instWeb.generateFullDetailsJsonFor(thisInst, null, 0, false, false, null, false, false);
+						                        } else {
+						                            jInst = instWeb.generateMinimalDetailsJsonFor(thisInst, null, 0, false, false, null, false);
+						                        }
+
+						                        jWrap.put("distance", thisDist.doubleValue());
+						                        jWrap.put("instance", jInst);
+
+						                        jArr.add(jWrap);
+											}
+										}
+
+										jRoot.put("nearest", lowest);
+										jRoot.put("farthest", highest);
+										jRoot.put("count", jArr.length());
+										jRoot.put("result", jArr);
+									} catch (NumberFormatException e) {
+										reportError("Invalid longitude '" + lonParm + "' specified.  Must be a value longitude value", this.wc);
+									}
+								} catch (NumberFormatException e) {
+									reportError("Invalid latitude '" + latParm + "' specified.  Must be a value latitude value", this.wc);
+								}
+							}
+						} catch (NumberFormatException e) {
+							reportError("Invalid distance '" + distanceParm + "' specified.  Must be a value positive number", this.wc);
+						}
+					} else {
+						reportError("Invalid distance unit '" + units + "' specified.  Must be either '" + UNIT_KMS + "' (default) or '" + UNIT_MILES + "'", this.wc);
+					}
+				} else {
+					reportError("Longitude parameter (" + PARM_LON + ") must be specified", this.wc);
+				}
+			} else {
+				reportError("Latitude parameter (" + PARM_LAT + ") must be specified", this.wc);
+			}
+		} else {
+			reportError("Distance parameter (" + PARM_DISTANCE + ") must be specified", this.wc);
+		}
+
+		getWebActionResponse().setStructuredResult(jRoot);
+	}
+
+	private void textGetNearbyInstancesForConcept(CeConcept pCon) {
+		//TODO: Implement this
+		reportNotYetImplementedError("Get nearby instances for concept '" + pCon.getConceptName() + "'");
 	}
 
 	private void handleCountInstancesForConcept(CeConcept pCon) {

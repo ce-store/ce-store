@@ -97,19 +97,19 @@ public class RestHandler extends HttpServlet {
 	}
 
 	private static void doStandardProcessing(HttpServletRequest pRequest, HttpServletResponse pResponse) {
-		final String METHOD_NAME = "doStandardProcessing";
+//		final String METHOD_NAME = "doStandardProcessing";
 		WebActionContext wc = null;
 		boolean statsInResponse = false;
 
-		try {
+//		try {
 			ServletStateManager.retainDefaultUrl(pRequest);
 			wc = createWebActionContext(pRequest);
 			extractCredentials(wc, pRequest);
 			initialiseHttpRequest(pRequest, wc);
 			statsInResponse = CeStoreRestApi.processRestRequest(wc, pRequest);
-		} catch (Exception e) {
-			reportException(e, wc, logger, CLASS_NAME, METHOD_NAME);
-		}
+//		} catch (Exception e) {
+//			reportException(e, wc, logger, CLASS_NAME, METHOD_NAME);
+//		}
 
 		wrapUpAndReturn(wc, pRequest, pResponse, statsInResponse);
 	}

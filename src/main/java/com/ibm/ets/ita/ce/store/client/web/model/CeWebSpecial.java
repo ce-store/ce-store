@@ -5,6 +5,8 @@ package com.ibm.ets.ita.ce.store.client.web.model;
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.CeNames.PROP_LAT;
+import static com.ibm.ets.ita.ce.store.names.CeNames.PROP_LON;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_UID_PREFIX;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_UID_BATCHSTART;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_UID_BATCHEND;
@@ -23,6 +25,7 @@ import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_CMDCOUNT;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_VALCOUNT;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_INVCOUNT;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_NEWINSTS;
+import static com.ibm.ets.ita.ce.store.names.MiscNames.UNIT_KMS;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
 
 import java.text.ParseException;
@@ -231,6 +234,86 @@ public class CeWebSpecial extends CeWebObject {
         return property;
     }
 
+    public static TreeMap<Double, ArrayList<CeInstance>> generateNearbyInstancesFrom(ActionContext pAc, CeConcept pCon, ArrayList<CeInstance> pInstList, double pDistance, String pUnits, double pCentreLat, double pCentreLon) {
+		TreeMap<Double, ArrayList<CeInstance>> result = new TreeMap<Double, ArrayList<CeInstance>>();
+
+		for (CeInstance thisInst : pInstList) {
+			double thisLat = -1;
+			double thisLon = -1;
+			String thisLatVal = thisInst.getSingleValueFromPropertyNamed(PROP_LAT);
+			String thisLonVal = thisInst.getSingleValueFromPropertyNamed(PROP_LON);
+
+			if ((thisLatVal != null) && (!thisLatVal.isEmpty())) {
+				if ((thisLonVal != null) && (!thisLonVal.isEmpty())) {
+					try {
+						thisLat = new Double(thisLatVal).doubleValue();
+
+						try {
+							thisLon = new Double(thisLonVal).doubleValue();
+
+							Double distance = calcDistance(pCentreLat, pCentreLon, thisLat, thisLon, pUnits);
+
+							if (distance <= pDistance) {
+								ArrayList<CeInstance> distList = null;
+
+								if (!result.containsKey(distance)) {
+									distList = new ArrayList<CeInstance>();
+									result.put(distance, distList);
+								} else {
+									distList = result.get(distance);
+								}
+
+								if (!distList.contains(thisInst)) {
+									distList.add(thisInst);
+								}
+							}
+						} catch (NumberFormatException e) {
+							//No need to report anything
+						}
+					} catch (NumberFormatException e) {
+						//No need to report anything
+					}
+				}
+			}
+		}
+
+		return result;
+    }
+
+	private static double calcDistance(double pLat1, double pLon1, double pLat2, double pLon2, String pUnits) {
+		double result = 0;
+		double constVal = 0;
+
+		if (pUnits.equals(UNIT_KMS)) {
+			//Earth radius in kilometers
+			constVal = 6378.137;
+		} else {
+			//Earth radius in miles
+			constVal = 3963.191;
+		}
+
+		result = constVal
+					* Math.acos(
+						Math.cos(
+							Math.toRadians(pLat1)
+						)
+						* Math.cos(
+							Math.toRadians(pLat2)
+						)
+						* Math.cos(
+							Math.toRadians(pLon2) - Math.toRadians(pLon1)
+						)
+						+ Math.sin(
+							Math.toRadians(pLat1)
+						)
+						* Math.sin(
+							Math.toRadians(pLat2)
+						)
+					);
+
+		return result;
+	}
+
     // Generate JSON array frequency response:
     // JSON_FREQUENCY
     public static CeStoreJsonArray generateFrequencyArrayFrom(ActionContext pAc, CeConcept pCon,
@@ -422,7 +505,7 @@ public class CeWebSpecial extends CeWebObject {
 
                     CeStoreJsonObject pObj = (CeStoreJsonObject) jArr.get(bucket);
 
-                    int frequency = (pObj.getInt(JSON_FREQUENCY)) + 1;
+                    float frequency = (pObj.getNumber(JSON_FREQUENCY)) + 1;
                     pObj.put(JSON_FREQUENCY, frequency);
                 }
             }

@@ -86,6 +86,9 @@ public class CeStoreJsonArray extends CeStoreJsonProcessor {
 					sb.append(((CeStoreJsonObject) thisVal).serialize(pAc));
 				} else if (thisVal instanceof CeStoreJsonArray) {
 					sb.append(((CeStoreJsonArray) thisVal).serialize(pAc));
+				} else if (thisVal instanceof Float) {
+					String floatVal = ((Float)thisVal).toString();
+					sb.append(encodeJsonValue(floatVal));
 				} else {
 					sb.append(encodeJsonValue((String) thisVal));
 				}

@@ -328,6 +328,11 @@ public class CeStoreJsonParser {
 	}
 
 	private void doExitQuote() {
+		//It was an empty quote, so should be an empty string rather than null
+		if (this.currentItem == null) {
+			this.currentItem = new StringBuilder();
+		}
+
 		this.wasQuoted = true;
 		saveCurrentItem();
 		this.wasQuoted = false;
@@ -402,7 +407,7 @@ public class CeStoreJsonParser {
 			} else if (elemVal.equalsIgnoreCase(TOKEN_FALSE)) {
 				jObj.put(this.elemName, false);
 			} else {
-				jObj.put(this.elemName, new Integer(elemVal).intValue());
+				jObj.put(this.elemName, new Float(elemVal).floatValue());
 			}
 		}
 
@@ -424,7 +429,7 @@ public class CeStoreJsonParser {
 			} else if (elemVal.equalsIgnoreCase(TOKEN_FALSE)) {
 				jArr.add(false);
 			} else {
-				jArr.add(new Integer(elemVal).intValue());
+				jArr.add(new Float(elemVal).floatValue());
 			}
 		}
 	}

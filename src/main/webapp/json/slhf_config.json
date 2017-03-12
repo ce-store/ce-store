@@ -1,0 +1,99 @@
+{
+	"depluralisePropertyNames": true,
+	"forceLowerCase": true,
+	"splitCamelCase": true,
+	"replaceSeparators": true,
+	"startingId": 1,
+	"ceStyle": "normalised",
+	"generateModel": true,
+	"generateInstances": true,
+	"saveCE": true,
+	"showCE": false,
+	"properties": {	
+		"type": {
+			"typeProperty": true
+		},
+		"id": {
+			"idProperty": true
+		},
+		"Facility_T": {
+			"typeProperty": true
+		},
+		"Facility_N": {
+			"targetProperty": "local name"
+		},
+		"Latitude": {
+			"ignoreProperty": true
+		},
+		"code": {
+			"ignoreProperty": true
+		},
+		"cr": {
+			"ignoreProperty": true
+		},
+		"Long": {
+			"ignoreProperty": true
+		},
+		"Lat": {
+			"ignoreProperty": true
+		},
+		"geometry_name": {
+			"ignoreProperty": true
+		},
+		"geometry": {
+			"suppressProperty": true
+		},
+		"coordinates": {
+			"arrayAsNamedProperties": true
+		},
+		"coordinates 0": {
+			"targetProperty": "longitude",
+			"moveToParent": true
+		},
+		"coordinates 1": {
+			"targetProperty": "latitude",
+			"moveToParent": true
+		},
+		"properties": {
+			"suppressProperty": true,
+			"moveToParent": true
+		},
+		"district": {
+			"rangeConcept": "district"
+		},
+		"chiefdom": {
+			"rangeConcept": "chiefdom"
+		},
+		"ownership": {
+			"rangeConcept": "owner"
+		}
+	},
+	"concepts": {
+		"clinic": {
+			"parentConcept": "health centre",
+			"moveToParent": true
+		},
+		"community health centre": {
+			"parentConcept": "health centre",
+			"moveToParent": true
+		},
+		"community health post": {
+			"parentConcept": "health centre",
+			"moveToParent": true
+		},
+		"hospital": {
+			"parentConcept": "health centre",
+			"moveToParent": true
+		},
+		"maternal and child health post": {
+			"parentConcept": "health centre",
+			"moveToParent": true
+		},
+		"feature collection": {
+			"ignoreConcept": true
+		},
+		"epsg": {
+			"ignoreConcept": true
+		}
+	}
+}

@@ -1,0 +1,202 @@
+[
+	{
+		"id": "95f8dc8f.44be4",
+		"type": "function",
+		"z": "7887ae13.171b",
+		"name": "set up input url",
+		"func": "msg.urls = {};\nmsg.urls.inputUrl = msg.payload.inputUrl;\nmsg.urls.configUrl = msg.payload.configUrl;\n\nmsg.url = msg.urls.inputUrl;\n\nreturn msg;",
+		"outputs": 1,
+		"noerr": 0,
+		"x": 200,
+		"y": 149,
+		"wires": [
+			[
+				"4c644807.fcdd58"
+			]
+		]
+	},
+	{
+		"id": "4c644807.fcdd58",
+		"type": "http request",
+		"z": "7887ae13.171b",
+		"name": "Get input JSON",
+		"method": "GET",
+		"ret": "obj",
+		"url": "",
+		"x": 296,
+		"y": 211,
+		"wires": [
+			[
+				"5c6460e0.54f85"
+			]
+		]
+	},
+	{
+		"id": "269c71b.d923a8e",
+		"type": "debug",
+		"z": "7887ae13.171b",
+		"name": "",
+		"active": true,
+		"console": "false",
+		"complete": "payload",
+		"x": 900,
+		"y": 420,
+		"wires": [
+		]
+	},
+	{
+		"id": "18258537.22ee3b",
+		"type": "http request",
+		"z": "7887ae13.171b",
+		"name": "POST to ce-store",
+		"method": "POST",
+		"ret": "txt",
+		"url": "http://localhost:8080/ce-store/special/import/json?config={{{configPayload}}}",
+		"x": 804,
+		"y": 346,
+		"wires": [
+			[
+				"269c71b.d923a8e"
+			]
+		]
+	},
+	{
+		"id": "47191259.2aaf0c",
+		"type": "debug",
+		"z": "7887ae13.171b",
+		"name": "",
+		"active": false,
+		"console": "true",
+		"complete": "payload",
+		"x": 866,
+		"y": 116,
+		"wires": [
+		]
+	},
+	{
+		"id": "c68cdaf0.4eef18",
+		"type": "function",
+		"z": "7887ae13.171b",
+		"name": "set up config url",
+		"func": "msg.headers = null;\nmsg.inputPayload = msg.payload;\n\nmsg.url = msg.urls.configUrl;\n\nreturn msg;",
+		"outputs": 1,
+		"noerr": 0,
+		"x": 510.5,
+		"y": 124,
+		"wires": [
+			[
+				"4b222604.6fadb8"
+			]
+		]
+	},
+	{
+		"id": "4b222604.6fadb8",
+		"type": "http request",
+		"z": "7887ae13.171b",
+		"name": "Get config JSON",
+		"method": "GET",
+		"ret": "obj",
+		"url": "",
+		"x": 610.5,
+		"y": 177,
+		"wires": [
+			[
+				"fb66033b.bf63f"
+			]
+		]
+	},
+	{
+		"id": "fb66033b.bf63f",
+		"type": "function",
+		"z": "7887ae13.171b",
+		"name": "set up for ce-store",
+		"func": "msg.url = null;\nmsg.headers = null;\nmsg.configPayload = encodeURI(JSON.stringify(msg.payload));\nmsg.payload = msg.inputPayload;\n\nreturn msg;",
+		"outputs": 1,
+		"noerr": 0,
+		"x": 721.5,
+		"y": 234,
+		"wires": [
+			[
+				"18258537.22ee3b",
+				"47191259.2aaf0c"
+			]
+		]
+	},
+	{
+		"id": "5c6460e0.54f85",
+		"type": "switch",
+		"z": "7887ae13.171b",
+		"name": "getConfig?",
+		"property": "urls.configUrl",
+		"propertyType": "msg",
+		"rules": [
+			{
+				"t": "nnull"
+			},
+			{
+				"t": "else"
+			}
+		],
+		"checkall": "true",
+		"outputs": 2,
+		"x": 395,
+		"y": 289,
+		"wires": [
+			[
+				"c68cdaf0.4eef18"
+			],
+			[
+				"15ec119c.4fd53e"
+			]
+		]
+	},
+	{
+		"id": "15ec119c.4fd53e",
+		"type": "function",
+		"z": "7887ae13.171b",
+		"name": "set up for ce-store",
+		"func": "msg.headers = null;\nmsg.configPayload = null;\nmsg.url = null;\n\nreturn msg;",
+		"outputs": 1,
+		"noerr": 0,
+		"x": 538.5,
+		"y": 378,
+		"wires": [
+			[
+				"18258537.22ee3b",
+				"d1a28475.b110a8"
+			]
+		]
+	},
+	{
+		"id": "d1a28475.b110a8",
+		"type": "debug",
+		"z": "7887ae13.171b",
+		"name": "",
+		"active": false,
+		"console": "false",
+		"complete": "true",
+		"x": 653.5,
+		"y": 464,
+		"wires": [
+		]
+	},
+	{
+		"id": "ab7e2c05.beaf4",
+		"type": "inject",
+		"z": "7887ae13.171b",
+		"name": "sierra-leone-health-facilities",
+		"topic": "",
+		"payload": "{ \"inputUrl\": \"http://ebolageonode.org/geoserver/wfs?srsName=EPSG%3A4326&typename=geonode%3Asle_heal_pt_cdc_healthfacilities&outputFormat=json&version=1.0.0&service=WFS&request=GetFeature\", \"configUrl\": \"http://localhost:8080/ce-store/json/slhf_config.json\" }",
+		"payloadType": "json",
+		"repeat": "",
+		"crontab": "",
+		"once": false,
+		"x": 159.5,
+		"y": 33,
+		"wires": [
+			[
+				"95f8dc8f.44be4"
+			]
+		]
+	}
+]

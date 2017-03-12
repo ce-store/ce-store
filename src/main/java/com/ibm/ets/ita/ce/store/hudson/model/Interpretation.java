@@ -24,7 +24,7 @@ public class Interpretation {
 	public Interpretation(ActionContext pAc, CeStoreJsonObject pJo) {
 		CeStoreJsonObject jResult = pJo.getJsonObject("result");
 
-		this.confidence = pJo.getInt("confidence");
+		this.confidence = pJo.getNumber("confidence").intValue();
 
 		if (jResult != null) {
 			this.instancePhrases = populateInstancePhrases(pAc, jResult.getJsonArray("instances"));

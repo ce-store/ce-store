@@ -23,8 +23,8 @@ public abstract class SpThing {
 
 	protected SpThing(CeStoreJsonObject pJo) {
 		this.phraseText = pJo.getString(JSON_PHRASE);
-		this.startPos = pJo.getInt(JSON_STARTPOS);
-		this.endPos = pJo.getInt(JSON_ENDPOS);
+		this.startPos = pJo.getNumber(JSON_STARTPOS).intValue();
+		this.endPos = pJo.getNumber(JSON_ENDPOS).intValue();
 	}
 
 	protected SpThing(MatchedItem pMi) {
