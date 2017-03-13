@@ -5,10 +5,13 @@ package com.ibm.ets.ita.ce.store.client.rest;
  * All Rights Reserved
  *******************************************************************************/
 
+import static com.ibm.ets.ita.ce.store.names.CeNames.PROP_LAT;
+import static com.ibm.ets.ita.ce.store.names.CeNames.PROP_LON;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSONTYPE_CON;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.VAL_UNDEFINED;
 import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_BUCKETS;
 import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_DISTANCE;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_INST;
 import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_LAT;
 import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_LON;
 import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_PROPERTY;
@@ -895,8 +898,19 @@ public class CeStoreRestApiConcept extends CeStoreRestApi {
 
 		String distanceParm = getUrlParameterValueNamed(PARM_DISTANCE);
 		String unitsParm = getUrlParameterValueNamed(PARM_UNITS);
-		String latParm = getUrlParameterValueNamed(PARM_LAT);
-		String lonParm = getUrlParameterValueNamed(PARM_LON);
+		String instParm = getUrlParameterValueNamed(PARM_INST);
+		String latParm = null;
+		String lonParm = null;
+
+		if ((instParm != null) && (!instParm.isEmpty())) {
+			CeInstance thisInst = this.wc.getModelBuilder().getInstanceNamed(this.wc, instParm);
+
+			latParm = thisInst.getSingleValueFromPropertyNamed(PROP_LAT);
+			lonParm = thisInst.getSingleValueFromPropertyNamed(PROP_LON);
+		} else {
+			latParm = getUrlParameterValueNamed(PARM_LAT);
+			lonParm = getUrlParameterValueNamed(PARM_LON);
+		}
 
 		jRoot.put("centre", jCent);
 		jRoot.put("distance", jDist);

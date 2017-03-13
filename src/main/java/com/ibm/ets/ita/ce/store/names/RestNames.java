@@ -124,6 +124,7 @@ public class RestNames {
 	public static final String PARM_PROPERTY = "property";
 	public static final String PARM_DISTANCE = "distance";
 	public static final String PARM_UNITS = "units";
+	public static final String PARM_INST = "instance";
 	public static final String PARM_LAT = "latitude";
 	public static final String PARM_LON = "longitude";
 	public static final String PARM_BUCKETS = "buckets";
