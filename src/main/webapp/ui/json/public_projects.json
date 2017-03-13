@@ -6,9 +6,13 @@
             "root": "https://rawgit.com/ce-store/ce-store/master/src/main/webapp",
             "url": "ce/medicine/cmd/med_load.cecmd"
         }, {
-            "name": "CrisisHack",
+            "name": "CrisisHack - basic",
             "root": "https://rawgit.com/ce-store/crisishack/master/src/main/webapp",
             "url": "ce/cmd/ch_load.cecmd"
+        }, {
+            "name": "CrisisHack - extra",
+            "root": "https://rawgit.com/ce-store/crisishack/master/src/main/webapp",
+            "url": "ce/cmd/ch_load_cached.cecmd"
         }
       ]
     }
