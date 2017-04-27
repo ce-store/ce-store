@@ -98,6 +98,10 @@ public class ServletStateManager {
 		return new TreeMap<String, ModelBuilder>(this.mbs);
 	}
 
+	public ConcurrentHashMap<String, ModelBuilder> getModelBuilderMap() {
+		return this.mbs;
+	}
+	
 	public ModelBuilder getModelBuilder(String pCeStoreName) {
 		String csnKey = keyForCeStoreName(pCeStoreName);
 		ModelBuilder result = this.mbs.get(csnKey);

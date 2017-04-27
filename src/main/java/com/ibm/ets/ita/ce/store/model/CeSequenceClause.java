@@ -1,11 +1,18 @@
 package com.ibm.ets.ita.ce.store.model;
 
+import java.io.Serializable;
+
 /*******************************************************************************
  * (C) Copyright IBM Corporation  2011, 2017
  * All Rights Reserved
  *******************************************************************************/
 
-public class CeSequenceClause {
+public class CeSequenceClause implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 //	private static AtomicLong sequenceIdVal = new AtomicLong(0);

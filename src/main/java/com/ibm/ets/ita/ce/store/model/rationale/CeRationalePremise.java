@@ -1,11 +1,17 @@
 package com.ibm.ets.ita.ce.store.model.rationale;
 
+import java.io.Serializable;
+
 /*******************************************************************************
  * (C) Copyright IBM Corporation  2011, 2017
  * All Rights Reserved
  *******************************************************************************/
 
-public class CeRationalePremise extends CeRationalePart {
+public class CeRationalePremise extends CeRationalePart implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	public static CeRationalePremise createNew(boolean pConIsNegated, String pConName, String pInstName, boolean pPropIsNegated, String pPropName, String pRangeName, String pVal) {

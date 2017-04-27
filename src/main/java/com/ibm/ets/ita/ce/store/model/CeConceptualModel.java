@@ -7,12 +7,18 @@ package com.ibm.ets.ita.ce.store.model;
 
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportWarning;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 
 import com.ibm.ets.ita.ce.store.core.ActionContext;
 
-public class CeConceptualModel extends CeModelEntity {
+public class CeConceptualModel extends CeModelEntity implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	// TODO: Need to populate primary sentences for this when creating (via

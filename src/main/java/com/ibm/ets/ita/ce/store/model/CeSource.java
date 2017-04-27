@@ -10,13 +10,19 @@ import static com.ibm.ets.ita.ce.store.names.MiscNames.FORMAT_SRC;
 import static com.ibm.ets.ita.ce.store.names.MiscNames.PREFIX_SRC;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.ibm.ets.ita.ce.store.core.ActionContext;
 
-public class CeSource extends CeModelEntity {
+public class CeSource extends CeModelEntity implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	//External types

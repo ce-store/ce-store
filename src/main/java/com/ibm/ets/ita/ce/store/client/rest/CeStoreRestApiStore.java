@@ -29,8 +29,7 @@ public class CeStoreRestApiStore extends CeStoreRestApi {
 	}
 
 	/*
-	 * Supported requests:
-	 * 		/stores/
+	 * Supported requests: /stores/
 	 */
 	public boolean processRequest() {
 		boolean statsInResponse = false;
@@ -41,8 +40,10 @@ public class CeStoreRestApiStore extends CeStoreRestApi {
 			String storeName = this.restParts.get(1);
 			ModelBuilder tgtMb = getNamedModelBuilder(this.wc, storeName);
 
-			if ((tgtMb == null) && (isPost()) && (this.restParts.size() == 2)) {
-				//This is a 2 element POST request, so a CE Store should be created
+			if ((tgtMb == null) && ((isPost() && (this.restParts.size() == 2))
+					|| (isPut() && (this.restParts.size() == 3) && (this.restParts.get(2).equalsIgnoreCase("restore"))))) {
+				// This is a 2 element POST request, so a CE Store should be
+				// created; or it's a restore to a new CE Store
 				tgtMb = ServletStateManager.getServletStateManager().createModelBuilder(this.wc, storeName);
 				this.storeWasCreated = true;
 			}
@@ -53,12 +54,14 @@ public class CeStoreRestApiStore extends CeStoreRestApi {
 				if (this.restParts.size() == 2) {
 					processTwoElementRequest(storeName, tgtMb);
 				} else {
-					//Strip the first two rest parameters and send the request again, using the target store
+					// Strip the first two rest parameters and send the request
+					// again, using the target store
 					ArrayList<String> modifiedRestParts = new ArrayList<String>();
 					modifiedRestParts.addAll(this.restParts);
 					modifiedRestParts.remove(1);
 					modifiedRestParts.remove(0);
-					statsInResponse = CeStoreRestApi.processModifiedRestRequest(this.wc, this.request, modifiedRestParts);
+					statsInResponse = CeStoreRestApi.processModifiedRestRequest(this.wc, this.request,
+							modifiedRestParts);
 				}
 			} else {
 				reportNotFoundError(storeName);
@@ -72,8 +75,8 @@ public class CeStoreRestApiStore extends CeStoreRestApi {
 
 	private void processOneElementRequest() {
 		if (isGet()) {
-			//URL = /stores
-			//List all stores
+			// URL = /stores
+			// List all stores
 			handleListAllStores();
 		} else {
 			reportUnsupportedMethodError();
@@ -82,14 +85,14 @@ public class CeStoreRestApiStore extends CeStoreRestApi {
 
 	private void processTwoElementRequest(String pStoreName, ModelBuilder pMb) {
 		if (isGet()) {
-			//URL = /stores/{name}
-			//Get store details
+			// URL = /stores/{name}
+			// Get store details
 			handleGetStoreDetails(pStoreName, pMb);
 		} else if (isPost()) {
-			//Create new store
+			// Create new store
 			handleCreateNewCeStore(pStoreName, pMb);
 		} else if (isDelete()) {
-			//Create new store
+			// Create new store
 			handleDeleteCeStore(pStoreName, pMb);
 		} else {
 			reportUnsupportedMethodError();
@@ -156,12 +159,13 @@ public class CeStoreRestApiStore extends CeStoreRestApi {
 	}
 
 	private void jsonCreateNewCeStore(String pStoreName, ModelBuilder pMb) {
-		//Just return the model builder... it had to be created earlier (in processRequest())
+		// Just return the model builder... it had to be created earlier (in
+		// processRequest())
 		setStoreDetailsAsStructuredResult(pStoreName, pMb);
 	}
 
 	private void textCreateNewCeStore(String pStoreName) {
-		//Return text to say whether this store was created
+		// Return text to say whether this store was created
 		String msgText = null;
 
 		if (this.storeWasCreated) {
@@ -183,7 +187,7 @@ public class CeStoreRestApiStore extends CeStoreRestApi {
 	}
 
 	private static String generateTextForStore(String pStoreName) {
-		//TODO: Complete this
+		// TODO: Complete this
 		return "-- Not yet implemented (" + pStoreName + ")\n\n";
 	}
 

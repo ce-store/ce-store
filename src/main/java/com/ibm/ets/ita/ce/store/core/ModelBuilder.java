@@ -18,6 +18,7 @@ import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportMicroD
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportWarning;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -48,7 +49,12 @@ import com.ibm.ets.ita.ce.store.query.QueryExecutionManager;
 import com.ibm.ets.ita.ce.store.uid.UidManager;
 import com.ibm.ets.ita.ce.store.uid.UidManagerDefault;
 
-public class ModelBuilder {
+public class ModelBuilder implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	// String caching levels (0 = No caching at all)
@@ -142,6 +148,10 @@ public class ModelBuilder {
 
 	public String getCeStoreName() {
 		return this.ceStoreName;
+	}
+	
+	public void setCeStoreName(String pCeStoreName) {
+		this.ceStoreName = pCeStoreName;
 	}
 
 	public long getCreationTime() {

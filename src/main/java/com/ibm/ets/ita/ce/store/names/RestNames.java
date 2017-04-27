@@ -19,6 +19,7 @@ public class RestNames {
 	public static final String REQTYPE_TEXT = "text/plain";
 	public static final String REQTYPE_WEAKTEXT = "text";
 
+	public static final String RESPONSE_GZIP = "application/gzip";
 	public static final String RESPONSE_JSON = "application/json";
 	public static final String RESPONSE_TEXT = "application/text";
 
@@ -36,6 +37,8 @@ public class RestNames {
 	public static final String CONTENT_TYPE_MULTIPART_FORM = "multipart/form-data";
 
 	//REST request names
+	public static final String REST_BACKUP = "backup";
+	public static final String REST_RESTORE = "restore";
 	public static final String REST_STORE = "stores";
 	public static final String REST_SOURCE = "sources";
 	public static final String REST_CONCEPT = "concepts";
@@ -133,12 +136,14 @@ public class RestNames {
 	public static final String PARM_ACTION = "action";
 	public static final String PARM_RUNRULES = "runRules";
 	public static final String PARM_TYPE = "type";
+	public static final String PARM_TS = "timestamp";
 	public static final String PARM_VALIDITY = "validity";
 	public static final String PARM_AGENTINSTNAME = "filterByAgentInstanceName";
 	public static final String PARM_DETAIL = "filterByDetail";
 	public static final String PARM_SIZE = "size";
 	public static final String PARM_MODEL = "model";
 	public static final String PARM_RETINTER = "returnInterpretation";
+	public static final String PARM_NEWNAME = "newname";
 
 	public static final String PARM_SEARCHTERMS = "keywords";
 	public static final String PARM_CASESEN = "caseSensitive";

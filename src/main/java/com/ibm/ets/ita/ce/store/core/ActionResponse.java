@@ -19,13 +19,24 @@ import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_TXN_CODEVERSION;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_WARNINGS;
 import static com.ibm.ets.ita.ce.store.names.MiscNames.VERSION;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.timestampNow;
+import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportException;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.logging.Logger;
+
+import javax.servlet.http.HttpServletResponse;
+
+import com.ibm.ets.ita.ce.store.client.web.RestHandler;
 
 public abstract class ActionResponse {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
+
+	private static final String CLASS_NAME = RestHandler.class.getName();
+	private static final String PACKAGE_NAME = RestHandler.class.getPackage().getName();
+	private static final Logger logger = Logger.getLogger(PACKAGE_NAME);
 
 	// The structure of this response class is:
 	// payload
@@ -51,6 +62,7 @@ public abstract class ActionResponse {
 	private ArrayList<String> errors = null;
 	private long timeStart = -1;
 	private boolean plainResponse = false;
+	private boolean gzipResponse = false;
 
 	public ActionResponse() {
 		initialiseFields();
@@ -86,12 +98,22 @@ public abstract class ActionResponse {
 
 	public abstract void plainTextResponse(PrintWriter pOut);
 
+	public abstract void gzipResponse(ActionContext pAc, HttpServletResponse pResponse);
+
 	public boolean isPlainTextResponse() {
 		return this.plainResponse;
 	}
 
 	public void setIsPlainTextResponse(boolean pValue) {
 		this.plainResponse = pValue;
+	}
+
+	public boolean isGzipResponse() {
+		return this.gzipResponse;
+	}
+
+	public void setIsGzipResponse(boolean pValue) {
+		this.gzipResponse = pValue;
 	}
 
 	public ArrayList<String> getMessageLines() {
@@ -182,13 +204,22 @@ public abstract class ActionResponse {
 		return result.toString();
 	}
 
-	public void returnInResponse(ActionContext pAc, PrintWriter pOut, boolean pWrapResponse) {
-		if (isPlainTextResponse()) {
-			// This is a special plain response so no JSON encoding is required
-			plainTextResponse(pOut);
-		} else {
-			// This is a normal (JSON) response
-			convertAndRespond(pAc, pOut, pWrapResponse);
+	public void returnInResponse(ActionContext pAc, HttpServletResponse pResponse, boolean pWrapResponse) {
+		final String METHOD_NAME = "returnInResponse";
+		try {
+			if (isPlainTextResponse()) {
+				// This is a special plain response so no JSON encoding is
+				// required
+				plainTextResponse(pResponse.getWriter());
+			} else if (isGzipResponse()) {
+				gzipResponse(pAc, pResponse);
+			} else {
+				// This is a normal (JSON) response
+				convertAndRespond(pAc, pResponse.getWriter(), pWrapResponse);
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			reportException(e, pAc, logger, CLASS_NAME, METHOD_NAME);
 		}
 	}
 

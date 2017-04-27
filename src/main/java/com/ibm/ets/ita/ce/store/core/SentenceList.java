@@ -8,6 +8,7 @@ package com.ibm.ets.ita.ce.store.core;
 import static com.ibm.ets.ita.ce.store.names.MiscNames.PREFIX_SEN;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportWarning;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -27,8 +28,13 @@ import com.ibm.ets.ita.ce.store.model.CeSentence;
  * 
  * Is managing our own array really more efficient than just using ArrayList ?
  */
-public class SentenceList {
-  public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
+public class SentenceList implements Serializable {
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
   private static final String CLASS_NAME = SentenceList.class.getName();
   private static final String PACKAGE_NAME = SentenceList.class.getPackage().getName();

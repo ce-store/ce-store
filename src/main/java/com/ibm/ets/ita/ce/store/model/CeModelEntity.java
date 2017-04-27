@@ -8,12 +8,18 @@ package com.ibm.ets.ita.ce.store.model;
 import static com.ibm.ets.ita.ce.store.names.MiscNames.NO_TS;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.timestampNow;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 
 import com.ibm.ets.ita.ce.store.core.ActionContext;
 
-public abstract class CeModelEntity implements Comparable<CeModelEntity> {
+public abstract class CeModelEntity implements Comparable<CeModelEntity>, Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 //	private static AtomicLong seqNumCtr = new AtomicLong(0);
