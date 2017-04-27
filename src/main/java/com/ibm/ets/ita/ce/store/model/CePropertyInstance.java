@@ -13,6 +13,7 @@ import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportDebug;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportWarning;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -20,7 +21,12 @@ import java.util.TreeMap;
 
 import com.ibm.ets.ita.ce.store.core.ActionContext;
 
-public class CePropertyInstance implements Comparable<CePropertyInstance> {
+public class CePropertyInstance implements Comparable<CePropertyInstance>, Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	private String id = null;

@@ -9,11 +9,17 @@ import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.timestampNow;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.isReportDebug;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportDebug;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import com.ibm.ets.ita.ce.store.core.ActionContext;
 
-public class CeSequence {
+public class CeSequence implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 //	private static final String SEQ_PREFIX = "seq_";

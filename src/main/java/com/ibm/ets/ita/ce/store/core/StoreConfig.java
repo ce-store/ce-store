@@ -23,9 +23,15 @@ import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.setDebugOff;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.setDebugOn;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.LinkedHashMap;
 
-public class StoreConfig {
+public class StoreConfig implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	private boolean cacheCeText = true;

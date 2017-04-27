@@ -1,5 +1,7 @@
 package com.ibm.ets.ita.ce.store.model.rationale;
 
+import java.io.Serializable;
+
 /*******************************************************************************
  * (C) Copyright IBM Corporation  2011, 2017
  * All Rights Reserved
@@ -10,7 +12,12 @@ import java.util.ArrayList;
 import com.ibm.ets.ita.ce.store.core.ActionContext;
 import com.ibm.ets.ita.ce.store.model.CeSentence;
 
-public class CeRationaleReasoningStep {
+public class CeRationaleReasoningStep implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	private static final String PREFIX_RS = "rs_";

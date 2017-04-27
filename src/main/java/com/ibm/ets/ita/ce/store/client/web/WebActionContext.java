@@ -1,5 +1,7 @@
 package com.ibm.ets.ita.ce.store.client.web;
 
+import javax.servlet.http.HttpServletRequest;
+
 /*******************************************************************************
  * (C) Copyright IBM Corporation  2011, 2017
  * All Rights Reserved
@@ -10,6 +12,8 @@ import com.ibm.ets.ita.ce.store.core.ModelBuilder;
 
 public class WebActionContext extends ActionContext {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
+	
+	protected HttpServletRequest request = null;
 
 	protected WebActionContext(String pUserName, WebActionResponse pAr) {
 		super(pUserName, pAr);
@@ -30,4 +34,11 @@ public class WebActionContext extends ActionContext {
 		setModelBuilderAndCeStoreName(tgtMb);
 	}
 
+	public void setRequest(HttpServletRequest pRequest) {
+		this.request = pRequest ;
+	}
+	
+	public HttpServletRequest getRequest() {
+		return request ;
+	}
 }

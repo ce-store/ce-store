@@ -11,13 +11,19 @@ import static com.ibm.ets.ita.ce.store.names.CeNames.RANGE_VALUE;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_COLON;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.encodeForCe;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 
 import com.ibm.ets.ita.ce.store.core.ActionContext;
 import com.ibm.ets.ita.ce.store.core.ModelBuilder;
 
-public class CeProperty extends CeModelEntity {
+public class CeProperty extends CeModelEntity  implements Serializable  {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	// TODO: Need to link property to sentence

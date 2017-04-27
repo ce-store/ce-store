@@ -19,9 +19,15 @@ import static com.ibm.ets.ita.ce.store.names.CeNames.SPECIALNAME_NOTSTARTSWITH;
 import static com.ibm.ets.ita.ce.store.names.CeNames.SPECIALNAME_STARTSWITH;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
 
+import java.io.Serializable;
+
 import com.ibm.ets.ita.ce.store.core.ActionContext;
 
-public class CeSpecialProperty extends CeProperty {
+public class CeSpecialProperty extends CeProperty implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	private CeSpecialProperty() {

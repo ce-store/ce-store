@@ -33,12 +33,14 @@ import static com.ibm.ets.ita.ce.store.names.RestNames.REQTYPE_ANY;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REQTYPE_JSON;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REQTYPE_TEXT;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REQTYPE_WEAKTEXT;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_BACKUP;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REST_CONCEPT;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REST_CONMODEL;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REST_HEADLINE;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REST_INSTANCE;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REST_PROPERTY;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REST_QUERY;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_RESTORE;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REST_RULE;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REST_SENTENCE;
 import static com.ibm.ets.ita.ce.store.names.RestNames.REST_SOURCE;
@@ -189,6 +191,12 @@ public abstract class CeStoreRestApi extends ApiHandler {
 					statsInResponse = restHandler.processRequest();
 				} else if (firstPart.equals(REST_SENTENCE)) {
 					CeStoreRestApiSentence restHandler = new CeStoreRestApiSentence(pWc, pRestParts, pRequest);
+					statsInResponse = restHandler.processRequest();
+				} else if (firstPart.equals(REST_BACKUP)) {
+					CeStoreRestApiBackup restHandler = new CeStoreRestApiBackup(pWc, pRestParts, pRequest);
+					statsInResponse = restHandler.processRequest();
+				} else if (firstPart.equals(REST_RESTORE)) {
+					CeStoreRestApiRestore restHandler = new CeStoreRestApiRestore(pWc, pRestParts, pRequest);
 					statsInResponse = restHandler.processRequest();
 				} else if (firstPart.equals(REST_CONMODEL)) {
 					CeStoreRestApiConceptualModel restHandler = new CeStoreRestApiConceptualModel(pWc, pRestParts,

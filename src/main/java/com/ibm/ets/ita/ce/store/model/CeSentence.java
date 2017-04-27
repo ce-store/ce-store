@@ -19,6 +19,7 @@ import static com.ibm.ets.ita.ce.store.names.MiscNames.PROPDEF_SUFFIX;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.encodeForCe;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.timestampNow;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicLong;
@@ -27,7 +28,12 @@ import com.ibm.ets.ita.ce.store.core.ActionContext;
 import com.ibm.ets.ita.ce.store.model.rationale.CeRationaleReasoningStep;
 import com.ibm.ets.ita.ce.store.parsing.builder.BuilderSentence;
 
-public class CeSentence implements Comparable<CeSentence> {
+public class CeSentence implements Comparable<CeSentence>, Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	private static AtomicLong sentenceIdVal = new AtomicLong(0);

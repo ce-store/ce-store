@@ -12,6 +12,7 @@ import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_COUNT;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_SUM;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportWarning;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.TreeMap;
@@ -19,7 +20,12 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import com.ibm.ets.ita.ce.store.core.ActionContext;
 
-public class CeQuery extends CeModelEntity {
+public class CeQuery extends CeModelEntity implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	private static AtomicLong patternIdVal = new AtomicLong(0);

@@ -9,12 +9,18 @@ import static com.ibm.ets.ita.ce.store.names.MiscNames.NL;
 import static com.ibm.ets.ita.ce.store.names.MiscNames.PREFIX_TEMP;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportWarning;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 
 import com.ibm.ets.ita.ce.store.core.ActionContext;
 
-public class CeRule extends CeQuery {
+public class CeRule extends CeQuery implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	private CeSentence[] inferredSentences = new CeSentence[0];

@@ -7,6 +7,7 @@ package com.ibm.ets.ita.ce.store.core;
 
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -18,7 +19,12 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
 
-public class InstanceRepository {
+public class InstanceRepository implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	private ConcurrentHashMap<String, CeInstance> allInstances = null;

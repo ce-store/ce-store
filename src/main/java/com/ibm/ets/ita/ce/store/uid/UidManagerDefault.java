@@ -10,10 +10,16 @@ import static com.ibm.ets.ita.ce.store.names.MiscNames.DEFAULT_UIDSTART;
 import static com.ibm.ets.ita.ce.store.names.MiscNames.DEFAULT_UIDPREFIX;
 import static com.ibm.ets.ita.ce.store.names.MiscNames.DEFAULT_UIDPADFORMAT;
 import static com.ibm.ets.ita.ce.store.names.MiscNames.UID_USEPADDING;
+
+import java.io.Serializable;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class UidManagerDefault extends UidManager {
+public class UidManagerDefault extends UidManager implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	@Override

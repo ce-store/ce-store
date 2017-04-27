@@ -6,14 +6,22 @@ package com.ibm.ets.ita.ce.store.client.web;
  *******************************************************************************/
 
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_STRUCTURED;
+import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_TS;
+import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.urlDecode;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportException;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportWarning;
 
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.logging.Logger;
+import java.util.zip.GZIPOutputStream;
+
+import javax.servlet.http.HttpServletResponse;
 
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonProcessor;
@@ -106,6 +114,32 @@ public class WebActionResponse extends ActionResponse {
 	public void plainTextResponse(PrintWriter pOut) {
 		// This is the special response type which is plain text
 		pOut.append(this.sbPayload.toString());
+	}
+	
+	@Override
+	public void gzipResponse(ActionContext pAc, HttpServletResponse pResponse) {
+		// This is the special response type which is a gzip archive file
+		GZIPOutputStream gz;
+		ObjectOutputStream oos;
+		StringBuffer fileName = new StringBuffer(pAc.getModelBuilder().getCeStoreName().toLowerCase()) ;
+		String appTS = urlDecode(pAc, ((WebActionContext) pAc).getRequest().getParameter(PARM_TS));
+		if (appTS != null && "true".equalsIgnoreCase(appTS)) {
+			fileName.append("_" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())) ;
+		}
+		pResponse.setHeader("Content-Disposition", "attachment; filename="+ fileName + ".gz;");
+		try {
+			
+			gz = new GZIPOutputStream(pResponse.getOutputStream());
+			oos = new ObjectOutputStream(gz);
+			oos.writeObject(pAc.getModelBuilder());
+			oos.flush();
+			oos.close();
+			gz.close();
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override

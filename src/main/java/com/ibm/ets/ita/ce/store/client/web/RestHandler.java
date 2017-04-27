@@ -17,6 +17,7 @@ import static com.ibm.ets.ita.ce.store.names.RestNames.HDR_ALL_METHODS;
 import static com.ibm.ets.ita.ce.store.names.RestNames.HDR_AUTH;
 import static com.ibm.ets.ita.ce.store.names.RestNames.HDR_CEUSER;
 import static com.ibm.ets.ita.ce.store.names.RestNames.HDR_ORIGIN;
+import static com.ibm.ets.ita.ce.store.names.RestNames.RESPONSE_GZIP;
 import static com.ibm.ets.ita.ce.store.names.RestNames.RESPONSE_JSON;
 import static com.ibm.ets.ita.ce.store.names.RestNames.RESPONSE_TEXT;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportDebug;
@@ -97,19 +98,19 @@ public class RestHandler extends HttpServlet {
 	}
 
 	private static void doStandardProcessing(HttpServletRequest pRequest, HttpServletResponse pResponse) {
-//		final String METHOD_NAME = "doStandardProcessing";
+		// final String METHOD_NAME = "doStandardProcessing";
 		WebActionContext wc = null;
 		boolean statsInResponse = false;
 
-//		try {
-			ServletStateManager.retainDefaultUrl(pRequest);
-			wc = createWebActionContext(pRequest);
-			extractCredentials(wc, pRequest);
-			initialiseHttpRequest(pRequest, wc);
-			statsInResponse = CeStoreRestApi.processRestRequest(wc, pRequest);
-//		} catch (Exception e) {
-//			reportException(e, wc, logger, CLASS_NAME, METHOD_NAME);
-//		}
+		// try {
+		ServletStateManager.retainDefaultUrl(pRequest);
+		wc = createWebActionContext(pRequest);
+		extractCredentials(wc, pRequest);
+		initialiseHttpRequest(pRequest, wc);
+		statsInResponse = CeStoreRestApi.processRestRequest(wc, pRequest);
+		// } catch (Exception e) {
+		// reportException(e, wc, logger, CLASS_NAME, METHOD_NAME);
+		// }
 
 		wrapUpAndReturn(wc, pRequest, pResponse, statsInResponse);
 	}
@@ -117,6 +118,7 @@ public class RestHandler extends HttpServlet {
 	private static synchronized WebActionContext createWebActionContext(HttpServletRequest pRequest) {
 		WebActionResponse wr = new WebActionResponse();
 		WebActionContext wc = new WebActionContext(pRequest.getHeader(HDR_CEUSER), wr);
+		wc.setRequest(pRequest);
 		ModelBuilder mb = ServletStateManager.getServletStateManager().getDefaultModelBuilder(wc);
 		wc.setModelBuilderAndCeStoreName(mb);
 
@@ -176,6 +178,9 @@ public class RestHandler extends HttpServlet {
 
 		if (pWc.getActionResponse().isPlainTextResponse()) {
 			pResponse.setContentType(RESPONSE_TEXT);
+		} else if (pWc.getActionResponse().isGzipResponse()) {
+			pResponse.setContentType(RESPONSE_GZIP);
+
 		} else {
 			pResponse.setContentType(RESPONSE_JSON);
 		}
@@ -213,13 +218,9 @@ public class RestHandler extends HttpServlet {
 
 	private static void returnNormalResponse(WebActionContext pWc, HttpServletResponse pResponse,
 			boolean pWrapResponse) {
-		final String METHOD_NAME = "returnNormalResponse";
+//		final String METHOD_NAME = "returnNormalResponse";
+		pWc.getActionResponse().returnInResponse(pWc, pResponse, pWrapResponse);
 
-		try {
-			pWc.getActionResponse().returnInResponse(pWc, pResponse.getWriter(), pWrapResponse);
-		} catch (IOException e) {
-			reportException(e, pWc, logger, CLASS_NAME, METHOD_NAME);
-		}
 	}
 
 }

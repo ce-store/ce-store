@@ -16,9 +16,15 @@ import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_SPACE;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_SQ;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_THE;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class CeClause {
+public class CeClause implements Serializable  {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	private static final int MODE_PREMISE = 1;

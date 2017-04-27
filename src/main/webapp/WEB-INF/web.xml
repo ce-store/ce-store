@@ -26,5 +26,7 @@
     <url-pattern>/queries/*</url-pattern>
     <url-pattern>/rules/*</url-pattern>
     <url-pattern>/special/*</url-pattern>
+    <url-pattern>/backup/*</url-pattern>
+    <url-pattern>/restore/*</url-pattern>
   </servlet-mapping>
 </web-app>

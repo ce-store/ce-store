@@ -11,12 +11,18 @@ import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_DQ;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_SQ;
 import static com.ibm.ets.ita.ce.store.utilities.GeneralUtilities.stripDelimitingQuotesFrom;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import com.ibm.ets.ita.ce.store.query.CeConclusionRow;
 import com.ibm.ets.ita.ce.store.query.CeGeneratorConclusion;
 
-public class CeConcatenatedValue {
+public class CeConcatenatedValue implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	private String name = null;
