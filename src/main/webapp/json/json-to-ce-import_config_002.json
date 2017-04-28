@@ -1,0 +1,65 @@
+{
+	"depluralisePropertyNames": true,
+	"forceLowerCase": true,
+	"splitCamelCase": true,
+	"replaceSeparators": true,
+	"ignoreBlankValues": true,
+	"startingId": 100,
+	"ceStyle": "normalised",
+	"generateModel": true,
+	"generateInstances": true,
+	"maxInstances": 2,
+	"saveCE": true,
+	"properties": {
+		"type": {
+			"typeProperty": true
+		},
+		"name": {
+			"idProperty": true
+		},
+		"id": {
+			"targetProperty": "geojson id"
+		},
+		"coordinates": {
+			"arrayAsNamedProperties": true
+		},
+		"coordinates 0": {
+			"targetProperty": "longitude",
+			"moveToParent": true
+		},
+		"coordinates 1": {
+			"targetProperty": "latitude",
+			"moveToParent": true
+		},
+		"geometry": {
+			"suppressProperty": true
+		},
+		"properties": {
+			"suppressProperty": true,
+			"moveToParent": true
+		}
+	},
+	"concepts": {
+		"heliport": {
+			"parentConcept": "airport",
+			"moveToParent": true
+		},
+		"small_airport": {
+			"parentConcept": "airport",
+			"moveToParent": true
+		},
+		"medium_airport": {
+			"parentConcept": "airport",
+			"moveToParent": true
+		},
+		"feature": {
+			"ignoreConcept": true
+		},
+		"feature collection": {
+			"ignoreConcept": true
+		},
+		"point": {
+			"ignoreConcept": true
+		}
+	}
+}

@@ -1,0 +1,19 @@
+-- --------------------------------------------------------------------------
+-- (C) Copyright IBM Corporation  2011, 2017
+-- All Rights Reserved
+-- --------------------------------------------------------------------------
+
+there is a general function named 'general:locate'.
+there is a general function named 'general:count'.
+there is a general function named 'general:count'.
+there is a general function named 'general:list'.
+there is a general function named 'general:linksfrom'.
+there is a general function named 'general:linksto'.
+there is a general function named 'general:linksbetween'.
+there is a general function named 'general:show'.
+there is a general function named 'general:show'.
+there is a general function named 'general:expand'.
+there is a general function named 'general:reset'.
+there is a general function named 'general:clearcache'.
+there is a general function named 'ce:save'.
+there is a general function named 'general:stats'.

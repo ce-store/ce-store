@@ -17,8 +17,8 @@ there is a conversation config named 'cc' that
   has the config list 'clause_puncs' as clause punctuation and
   has the config list 'qsms' as question start markers and
   has the config list 'qems' as question end markers and
-  has the config list 'cws' as common words and
-  has the config list 'nws' as negation words.
+  has the config list 'cws' as common words.
+--  has the config list 'nws' as negation words.
   
 there is a config list named 'sen_delims' that
   has ':' as marker and
