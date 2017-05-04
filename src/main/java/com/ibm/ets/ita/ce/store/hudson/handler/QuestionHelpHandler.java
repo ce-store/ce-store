@@ -250,7 +250,6 @@ public class QuestionHelpHandler extends QuestionHandler {
 			ArrayList<CeInstance> mmList = dirCon.retrieveMetaModelInstances(pAc, null);
 
 			for (CeInstance mmInst : mmList) {
-				//TODO: Anonymise this concept name
 				if (mmInst.isConceptNamed(pAc, CON_SEPIDCON)) {
 					result = true;
 					break;

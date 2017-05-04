@@ -234,7 +234,7 @@ public class CeGeneratorConclusion {
 					String thisVal = thisRow.get(hdrIndex);
 
 					if (!thisHdr.equals(HDR_CE)) {
-						int thisIdx = this.hdrIndexes.get(thisHdr).intValue();
+//						int thisIdx = this.hdrIndexes.get(thisHdr).intValue();
 //						if (thisIdx > 0) {
 							if (sbMain.length() > 0) {
 								sbMain.append(TOKEN_BAR);

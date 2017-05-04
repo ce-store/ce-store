@@ -1094,7 +1094,7 @@ public class StoreActions {
 		String ceText = FileUtilities.sendHttpGetRequest(this.ac, tgtUrl, null, true);
 
 		if (!ceText.isEmpty()) {
-			result = saveCeText(ceText, null);
+			result = saveCeText(ceText, null, false);
 		}
 
 		return result;
@@ -1127,7 +1127,7 @@ public class StoreActions {
 	}	
 
 
-	public ContainerSentenceLoadResult saveCeText(String pCeText, CeSource pTgtSrc) {
+	public ContainerSentenceLoadResult saveCeText(String pCeText, CeSource pTgtSrc, boolean pReturnInstances) {
 		final String METHOD_NAME = "saveCeText";
 
 		long startTime = System.currentTimeMillis();
@@ -1150,8 +1150,10 @@ public class StoreActions {
 			senStats = ContainerSentenceLoadResult.createWithZeroValues("saveCeText:" + srcId);	//TODO: Abstract this
 		}
 
-		if (this.ac.getSessionCreations().getNewInstances() != null) {
-			senStats.setNewInstances(this.ac.getSessionCreations().getNewInstances());
+		if (pReturnInstances) {
+			if (this.ac.getSessionCreations().getTotalInstances() != null) {
+				senStats.setNewInstances(this.ac.getSessionCreations().getTotalInstances());
+			}
 		}
 
 		String srcName = "";

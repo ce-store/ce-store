@@ -19,13 +19,13 @@ public abstract class CeNotifyHandler {
 	public static ContainerSentenceLoadResult saveCeText(ActionContext pAc, String pCeText, CeSource pSrc) {
 		StoreActions sa = StoreActions.createUsingDefaultConfig(pAc);
 
-		return sa.saveCeText(pCeText, pSrc);
+		return sa.saveCeText(pCeText, pSrc, false);
 	}
 
 	public static ContainerSentenceLoadResult saveCeText(ActionContext pAc, String pCeText) {
 		StoreActions sa = StoreActions.createUsingDefaultConfig(pAc);
 
-		return sa.saveCeText(pCeText, null);
+		return sa.saveCeText(pCeText, null, false);
 	}
 
 }

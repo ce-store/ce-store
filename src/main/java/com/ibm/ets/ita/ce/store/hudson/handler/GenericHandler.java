@@ -57,7 +57,7 @@ public abstract class GenericHandler {
 
 	public static ContainerSentenceLoadResult saveCeText(ActionContext pAc, String pCeText, CeSource pSrc) {
 		StoreActions sa = StoreActions.createUsingDefaultConfig(pAc);
-		ContainerSentenceLoadResult result = sa.saveCeText(pCeText, null);
+		ContainerSentenceLoadResult result = sa.saveCeText(pCeText, null, false);
 
 		//Clear the various caches
 		ServletStateManager.getHudsonManager().clearCaches(pAc);

@@ -196,23 +196,23 @@ public abstract class GeneralConversationHandler extends CeNotifyHandler {
 	}
 
 	public ContainerSentenceLoadResult saveCeText(String pCeText, CeInstance pConvInst) {
-		return saveCeTextWithFlag(pCeText, FORM_CONVFACT, this.runRulesOnSave);
+		return saveCeTextWithFlag(pCeText, FORM_CONVFACT, this.runRulesOnSave, false);
 	}
 
 	protected ContainerSentenceLoadResult saveCeCardText(String pCeText, String pSrcName) {
 		// No need to call all the rules and triggers if we are just saving CE
 		// card sentences
-		return saveCeTextWithFlag(pCeText, pSrcName, false);
+		return saveCeTextWithFlag(pCeText, pSrcName, false, false);
 	}
 
-	private ContainerSentenceLoadResult saveCeTextWithFlag(String pCeText, String pSrcName, boolean pRunRules) {
+	private ContainerSentenceLoadResult saveCeTextWithFlag(String pCeText, String pSrcName, boolean pRunRules, boolean pRetInsts) {
 		StoreActions sa = StoreActions.createUsingDefaultConfig(this.ac);
 
 		boolean oldExecRules = this.ac.isAutoExecutingRules();
 		this.ac.markAsAutoExecuteRules(pRunRules);
 
 		CeSource tgtSrc = CeSource.createNewFormSource(this.ac, pSrcName, pSrcName);
-		ContainerSentenceLoadResult result = sa.saveCeText(pCeText, tgtSrc);
+		ContainerSentenceLoadResult result = sa.saveCeText(pCeText, tgtSrc, pRetInsts);
 
 		this.ac.markAsAutoExecuteRules(oldExecRules);
 

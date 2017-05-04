@@ -382,11 +382,11 @@ public class CeStoreRestApiSpecialImport extends CeStoreRestApi {
 			StoreActions sa = StoreActions.createUsingDefaultConfig(this.wc);
 
 			if ((sbModel != null) && (sbModel.length() > 0)) {
-				sa.saveCeText(this.sbModel.toString(), null);
+				sa.saveCeText(this.sbModel.toString(), null, false);
 			}
 
 			if ((sbFacts != null) && (sbFacts.length() > 0)) {
-				sa.saveCeText(this.sbFacts.toString(), null);
+				sa.saveCeText(this.sbFacts.toString(), null, false);
 			}
 		}
 

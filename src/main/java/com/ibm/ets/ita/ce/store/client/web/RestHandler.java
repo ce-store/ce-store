@@ -98,19 +98,14 @@ public class RestHandler extends HttpServlet {
 	}
 
 	private static void doStandardProcessing(HttpServletRequest pRequest, HttpServletResponse pResponse) {
-		// final String METHOD_NAME = "doStandardProcessing";
 		WebActionContext wc = null;
 		boolean statsInResponse = false;
 
-		// try {
 		ServletStateManager.retainDefaultUrl(pRequest);
 		wc = createWebActionContext(pRequest);
 		extractCredentials(wc, pRequest);
 		initialiseHttpRequest(pRequest, wc);
 		statsInResponse = CeStoreRestApi.processRestRequest(wc, pRequest);
-		// } catch (Exception e) {
-		// reportException(e, wc, logger, CLASS_NAME, METHOD_NAME);
-		// }
 
 		wrapUpAndReturn(wc, pRequest, pResponse, statsInResponse);
 	}
@@ -180,7 +175,6 @@ public class RestHandler extends HttpServlet {
 			pResponse.setContentType(RESPONSE_TEXT);
 		} else if (pWc.getActionResponse().isGzipResponse()) {
 			pResponse.setContentType(RESPONSE_GZIP);
-
 		} else {
 			pResponse.setContentType(RESPONSE_JSON);
 		}
@@ -218,7 +212,6 @@ public class RestHandler extends HttpServlet {
 
 	private static void returnNormalResponse(WebActionContext pWc, HttpServletResponse pResponse,
 			boolean pWrapResponse) {
-//		final String METHOD_NAME = "returnNormalResponse";
 		pWc.getActionResponse().returnInResponse(pWc, pResponse, pWrapResponse);
 
 	}

@@ -78,7 +78,7 @@ public class ModelDirectoryHandler extends GenericHandler {
 		}
 
 		StoreActions sa = StoreActions.createUsingDefaultConfig(this.ac);
-		sa.saveCeText(ceText, null);
+		sa.saveCeText(ceText, null, false);
 
 //		//Just reset the store and clear the config
 //		ServletStateManager ssm = ServletStateManager.getServletStateManager();

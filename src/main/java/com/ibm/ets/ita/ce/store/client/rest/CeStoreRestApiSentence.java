@@ -377,6 +377,7 @@ public class CeStoreRestApiSentence extends CeStoreRestApi {
 		String ceText = getCeTextFromRequest();
 		String startTs = getUrlParameterValueNamed(PARM_STARTTS);
 		String endTs = getUrlParameterValueNamed(PARM_ENDTS);
+		boolean returnInsts = getBooleanUrlParameterValueNamed(PARM_RETINSTS, false);
 		boolean returnCe = getBooleanUrlParameterValueNamed(PARM_RETCE, false);
 
 		if (returnCe) {
@@ -393,7 +394,7 @@ public class CeStoreRestApiSentence extends CeStoreRestApi {
 			boolean runRules = getBooleanUrlParameterValueNamed(PARM_RUNRULES, this.wc.getCeConfig().getAutoRunRules());
 			this.wc.markAsAutoExecuteRules(runRules);
 
-			result = sa.saveCeText(ceText, newSrc);
+			result = sa.saveCeText(ceText, newSrc, returnInsts);
 		} else if (actionParm.equals(ACTION_VALIDATE)) {
 			//Validate sentences
 			StoreActions sa = StoreActions.createUsingDefaultConfig(this.wc);
