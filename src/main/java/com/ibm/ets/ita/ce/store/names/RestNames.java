@@ -27,6 +27,7 @@ public class RestNames {
 	public static final String HDR_CEUSER = "CE_User";
 	public static final String HDR_AUTH = "Authorization";
 	public static final String HDR_ORIGIN = "Origin";
+	public static final String HDR_CONDISP = "Content-Disposition";
 	public static final String HDR_AC_AO = "Access-Control-Allow-Origin";
 	public static final String HDR_AC_AC = "Access-Control-Allow-Credentials";
 	public static final String HDR_AC_AM = "Access-Control-Allow-Methods";
@@ -143,7 +144,6 @@ public class RestNames {
 	public static final String PARM_SIZE = "size";
 	public static final String PARM_MODEL = "model";
 	public static final String PARM_RETINTER = "returnInterpretation";
-	public static final String PARM_NEWNAME = "newname";
 
 	public static final String PARM_SEARCHTERMS = "keywords";
 	public static final String PARM_CASESEN = "caseSensitive";

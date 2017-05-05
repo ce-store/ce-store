@@ -6,6 +6,7 @@ package com.ibm.ets.ita.ce.store.client.web;
  *******************************************************************************/
 
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_STRUCTURED;
+import static com.ibm.ets.ita.ce.store.names.RestNames.HDR_CONDISP;
 import static com.ibm.ets.ita.ce.store.names.RestNames.PARM_TS;
 import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.urlDecode;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportException;
@@ -118,6 +119,8 @@ public class WebActionResponse extends ActionResponse {
 	
 	@Override
 	public void gzipResponse(ActionContext pAc, HttpServletResponse pResponse) {
+		final String METHOD_NAME = "gzipResponse";
+
 		// This is the special response type which is a gzip archive file
 		GZIPOutputStream gz;
 		ObjectOutputStream oos;
@@ -126,19 +129,19 @@ public class WebActionResponse extends ActionResponse {
 		if (appTS != null && "true".equalsIgnoreCase(appTS)) {
 			fileName.append("_" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())) ;
 		}
-		pResponse.setHeader("Content-Disposition", "attachment; filename="+ fileName + ".gz;");
+
+		pResponse.setHeader(HDR_CONDISP, "attachment; filename=" + fileName + ".gz;");
+
 		try {
-			
 			gz = new GZIPOutputStream(pResponse.getOutputStream());
 			oos = new ObjectOutputStream(gz);
 			oos.writeObject(pAc.getModelBuilder());
 			oos.flush();
 			oos.close();
+			gz.flush();
 			gz.close();
-			
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			reportException(e, "Unhandled IOException", pAc, logger, CLASS_NAME, METHOD_NAME);
 		}
 	}
 

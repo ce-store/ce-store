@@ -697,6 +697,12 @@ function CeStoreApi(pCe) {
 
 		xhr.open(pType, pUrl, true);
 		xhr.withCredentials = true;
+
+		if (pUserParms.blob) {
+			xhr.responseType = 'blob';
+			pUserParms.accept = '';
+		}
+
 		xhr.setRequestHeader(HDR_ACCEPT, pStdVals.accept);
 		xhr.setRequestHeader(HDR_CEUSER, ce.utils.getLoggedInUserId());
 		// HDR_CONTYPE must be set-up by caller if desired.
@@ -716,7 +722,7 @@ function CeStoreApi(pCe) {
 				}
 
 				if (processedResponse != null) {
-					ajaxSuccess(processedResponse, pCallbackFunction, pUserParms);
+					ajaxSuccess(processedResponse, pCallbackFunction, pUserParms, xhr);
 				}
 			} else if (this.status === 404) {
 				ajaxError404(pUrl, pUserParms);
@@ -763,13 +769,20 @@ function CeStoreApi(pCe) {
 		xhr.send(formData);
 	};
 
-	function ajaxSuccess(pResponseObject, pCallbackFunction, pUserParms) {
+	this.sendAjaxFormPut = function(pUrl, pStdVals, pCallbackFunction, pForm, pUserParms) {
+		var xhr = setUpAjaxRequest(AJAX_PUT, pUrl, pStdVals, pCallbackFunction, pUserParms);
+		// HDR_CONTYPE will be automatically set to multipart/form-data
+		var formData = new FormData(pForm);
+		xhr.send(formData);
+	};
+
+	function ajaxSuccess(pResponseObject, pCallbackFunction, pUserParms, pXhr) {
 		if (pResponseObject != null) {
 			cbfAjaxSuccess(pResponseObject, pUserParms);
 
 			if (pCallbackFunction != null) {
 				if (typeof(pCallbackFunction) === 'function') {
-					pCallbackFunction(pResponseObject, pUserParms);
+					pCallbackFunction(pResponseObject, pUserParms, pXhr);
 				} else {
 					console.error('Callback function cannot be run as it is not a function:');
 					console.error(pCallbackFunction);
@@ -1323,7 +1336,7 @@ function CeStoreApiSentence(pCe) {
 
 	this.uploadToSource = function(pStdVals, pCallbackFunction, pForm, pRunRules, pRetCe, pUserParms) {
 		var restPart = REST_SOURCES + '/' + encodeURIComponent(pForm.id);
-		performUploadSentences(pStdVals, pCallbackFunction, pForm, pRunRules, pRetCe, pUserParms, restPart);		
+		performUploadSentences(pStdVals, pCallbackFunction, pForm, pRunRules, pRetCe, pUserParms, restPart);
 	};
 	
 	this.validate = function(pStdVals, pCallbackFunction, pText, pUserParms) {
@@ -1625,6 +1638,8 @@ function CeStoreApiSpecial(pCe) {
 
 function CeStoreApiStore(pCe) {
 	var REST_STORES = 'stores';
+	var REST_BACKUP = 'backup';
+	var REST_RESTORE = 'restore';
 
 	var ce = pCe;
 
@@ -1653,6 +1668,22 @@ function CeStoreApiStore(pCe) {
 		var httpParms = ce.api.defaultHttpParms(pStdVals);
 		var targetUrl = ce.api.constructUrlFrom(pStdVals.address, pCeStoreName, '', httpParms);
 		ce.api.sendAjaxPost(targetUrl, pStdVals, pCallbackFunction, true, pUserParms);
+	};
+
+	this.backup = function(pStdVals, pCallbackFunction, pCeStoreName, pUserParms) {
+		var httpParms = ce.api.defaultHttpParms(pStdVals);
+		var targetUrl = ce.api.constructUrlFrom(pStdVals.address, pCeStoreName, REST_BACKUP, httpParms);
+
+		pUserParms.blob = true;
+
+		ce.api.sendAjaxGet(targetUrl, pStdVals, pCallbackFunction, pUserParms);
+	};
+
+	this.restore = function(pStdVals, pCallbackFunction, pCeStoreName, pForm, pUserParms) {
+		var httpParms = ce.api.defaultHttpParms(pStdVals);
+		var targetUrl = ce.api.constructUrlFrom(pStdVals.address, pCeStoreName, REST_RESTORE, httpParms);
+
+		ce.api.sendAjaxFormPut(targetUrl, pStdVals, pCallbackFunction, pForm, pUserParms);
 	};
 
 	this.deleteStore = function(pStdVals, pCallbackFunction, pCeStoreName, pUserParms) {

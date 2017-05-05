@@ -93,6 +93,28 @@ function HandlerStores() {
 		gCe.api.stores.deleteStore(gEp.stdHttpParms(), cbf, pStoreName, userParms);
 	};
 
+	this.backupStore = function(pCbf, pUserParms) {
+		var cbf = null;
+		var localUserParms = {};
+
+		if (pCbf == null) {
+			cbf = function(pResponseObject, pUserParms, pXhr) { gEp.handler.stores.processBackedUpCeStore(pResponseObject, pUserParms, pXhr); };
+		} else {
+			cbf = pCbf;
+		}
+
+		var userParms = gCe.api.mergeUserParms(pUserParms, localUserParms);
+		gCe.api.stores.backup(gEp.stdHttpParms(), cbf, gEp.currentCeStore, userParms);
+	};
+
+	this.restoreStoreFromForm = function(pForm) {
+	    var formName = pForm.id;
+		var localUserParms = {};
+
+		var cbf = function(pResponseObject, pUserParms) { gEp.handler.stores.processRestoredCeStore(pResponseObject, pUserParms); };
+		gCe.api.stores.restore(gEp.stdHttpParms(), cbf, gEp.currentCeStore, pForm, localUserParms);
+	};
+
 	this.switchToStore = function(pStoreId) {
 		gEp.currentCeStore = pStoreId;
 
@@ -177,6 +199,37 @@ function HandlerStores() {
 
 	this.processCreatedCeStore = function(pResponse, pUserParms) {
 		//Nothing needs to be done here
+	};
+
+	this.processBackedUpCeStore = function(pResponse, pUserParms, pXhr) {
+		var cd = pXhr.getResponseHeader('content-disposition');
+		var ct = pXhr.getResponseHeader('content-type');
+		var regex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+		var match = regex.exec(cd);
+		var fn = match[1];
+
+		try {
+			var blob = new Blob([pResponse], {type: ct});
+
+			if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+				window.navigator.msSaveOrOpenBlob(blob, fn);
+			} else {
+				// TODO Find some way of setting the filename
+				var objectUrl = URL.createObjectURL(blob);
+				window.open(objectUrl);
+			}
+		} catch (e) {
+			console.error('Error saving backed up ce-store');
+			console.error(e);
+		}
+
+	};
+
+	this.processRestoredCeStore = function(pResponse, pUserParms, pXhr) {
+		//Just do a standard refresh
+		gEp.listAllCoreItems();
+
+		gCe.msg.alert('ce-store has been restored from backup');
 	};
 
 	this.processDeletedCeStore = function(pResponse, pUserParms) {

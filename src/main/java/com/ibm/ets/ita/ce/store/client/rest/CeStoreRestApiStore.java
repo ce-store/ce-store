@@ -6,6 +6,7 @@ package com.ibm.ets.ita.ce.store.client.rest;
  *******************************************************************************/
 
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSONTYPE_STORE;
+import static com.ibm.ets.ita.ce.store.names.RestNames.REST_RESTORE;
 import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.appendNewLineToSb;
 import static com.ibm.ets.ita.ce.store.utilities.FileUtilities.appendToSb;
 
@@ -41,7 +42,7 @@ public class CeStoreRestApiStore extends CeStoreRestApi {
 			ModelBuilder tgtMb = getNamedModelBuilder(this.wc, storeName);
 
 			if ((tgtMb == null) && ((isPost() && (this.restParts.size() == 2))
-					|| (isPut() && (this.restParts.size() == 3) && (this.restParts.get(2).equalsIgnoreCase("restore"))))) {
+					|| (isPut() && (this.restParts.size() == 3) && (this.restParts.get(2).equalsIgnoreCase(REST_RESTORE))))) {
 				// This is a 2 element POST request, so a CE Store should be
 				// created; or it's a restore to a new CE Store
 				tgtMb = ServletStateManager.getServletStateManager().createModelBuilder(this.wc, storeName);

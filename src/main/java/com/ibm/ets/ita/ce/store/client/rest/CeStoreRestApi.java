@@ -61,6 +61,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.SequenceInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -472,6 +473,40 @@ public abstract class CeStoreRestApi extends ApiHandler {
 		}
 
 		return result;
+	}
+
+	protected InputStream getBinaryFromRequest() {
+		final String METHOD_NAME = "getTextFromRequest";
+
+		ArrayList<InputStream> partStreams = new ArrayList<InputStream>();
+
+		try {
+			if (this.request.getContentType() != null) {
+				if (this.request.getContentType().startsWith(CONTENT_TYPE_MULTIPART_FORM)) {
+					// multipart form, i.e. file upload request, currently
+					// single file only.
+					Collection<Part> parts = this.request.getParts();
+					Iterator<Part> partsIterator = parts.iterator();
+					if (partsIterator.hasNext()) {
+						Part part = partsIterator.next();
+						InputStream partInputStream = part.getInputStream();
+						partStreams.add(partInputStream);
+					}
+				} else {
+					// normal request.
+					partStreams.add(this.request.getInputStream());
+				}
+			} else {
+				// normal request.
+				partStreams.add(this.request.getInputStream());
+			}
+		} catch (IOException e) {
+			reportException(e, this.wc, logger, CLASS_NAME, METHOD_NAME);
+		} catch (ServletException e) {
+			reportException(e, this.wc, logger, CLASS_NAME, METHOD_NAME);
+		}
+
+		return new SequenceInputStream(Collections.enumeration(partStreams));
 	}
 
 	protected String getCeTextFromRequest() {

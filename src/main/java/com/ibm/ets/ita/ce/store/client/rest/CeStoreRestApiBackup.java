@@ -1,20 +1,19 @@
 package com.ibm.ets.ita.ce.store.client.rest;
 
+/*******************************************************************************
+ * (C) Copyright IBM Corporation  2011, 2017
+ * All Rights Reserved
+ *******************************************************************************/
+
 import java.util.ArrayList;
-
 import javax.servlet.http.HttpServletRequest;
-
 import com.ibm.ets.ita.ce.store.client.web.WebActionContext;
-import com.ibm.ets.ita.ce.store.core.ModelBuilder;
-
-import static com.ibm.ets.ita.ce.store.names.JsonNames.JSONTYPE_STORE;
-import static com.ibm.ets.ita.ce.store.names.MiscNames.CESTORENAME_DEFAULT;
 
 public class CeStoreRestApiBackup extends CeStoreRestApi {
+	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	public CeStoreRestApiBackup(WebActionContext pWc, ArrayList<String> pRestParts, HttpServletRequest pRequest) {
 		super(pWc, pRestParts, pRequest);
-		// TODO Auto-generated constructor stub
 	}
 
 	/*

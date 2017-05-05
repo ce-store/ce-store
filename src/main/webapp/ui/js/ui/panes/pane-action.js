@@ -48,10 +48,36 @@ function PaneAction() {
 			linkList.push(thisLink);
 		}
 
-		html += '<h3>CE Store links:</h3>';
+		html += '<h3>ce-store links:</h3>';
 		html += gEp.ui.htmlUnorderedListFor(linkList);
 
-		return html;
+		var brLinks = getBackupRestoreLinks();
+		linkList = [];
+
+		for (var key in brLinks) {
+			var thisLink = brLinks[key];
+
+			var jsMethod = thisLink[0];
+			var hrefText = thisLink[1];
+
+			var jsText = gEp.ui.links.jsTextFor(jsMethod);
+			var thisLink = gEp.ui.links.hyperlinkFor(jsText, hrefText);
+
+			linkList.push(thisLink);
+		}
+
+		html += '<h3>backup/restore:</h3>';
+		html += gEp.ui.htmlUnorderedListFor(linkList);
+
+		html += 'Restore ce-store:<br>';
+        html += '<form id="restoreForm" method="post" enctype="multipart/form-data" action="/">';
+        html += '  <div style="display:flex; flex-wrap:wrap;">';
+        html += '    <input style="border:1px solid #DDDDDD;" id="upload-form-input-id2" name="file" type="file" />';
+		html += '    <button type="button" onclick="' + 'gEp.handler.stores.restoreStoreFromForm(this.parentNode.parentNode)' + '">Upload</button>';
+        html += '  </div>';
+        html += '</form>';
+
+        return html;
 	}
     
 	function getGeneralCeStoreLinks() {
@@ -72,6 +98,14 @@ function PaneAction() {
 		list.push([ 'gEp.handler.actions.listUnreferencedInstances', 'List unreferenced instances' ]);
 		list.push([ 'gEp.handler.actions.listUnreferencedInstancesNoMetaModel', 'List unreferenced non-metamodel instances' ]);
 		list.push([ 'gEp.handler.actions.listDiverseConceptInstances', 'List diverse concept instances' ]);
+
+		return list;
+	}
+
+	function getBackupRestoreLinks() {
+		var list = [];
+
+		list.push([ 'gEp.handler.stores.backupStore', 'Backup ce-store' ]);
 
 		return list;
 	}
