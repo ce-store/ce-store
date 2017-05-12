@@ -42,6 +42,13 @@ The CE Store will be available at the following URL [http://localhost:8080/ce-st
 
 ### Using Docker
 
+```
+docker pull cestore/ce-store
+docker run --rm -it -p 8080:8080 cestore/ce-store
+```
+
+### Building With Docker
+
 Use Apache Maven to build a WAR file for the project with the following command.
 
 ```
