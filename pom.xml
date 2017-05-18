@@ -5,6 +5,9 @@
   <artifactId>ce-store</artifactId>
   <packaging>war</packaging>
   <version>1.0-SNAPSHOT</version>
+  <configuration>
+    <path>/</path>
+  </configuration>
   <name>CE Store</name>
   <url>http://maven.apache.org</url>
   <dependencies>
