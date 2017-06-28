@@ -605,12 +605,12 @@ public class CeInstance extends CeModelEntity implements Serializable {
 		return getRenderablePropertyValue(pAc, PROP_ICOPN);
 	}
 
-	private String getIconFileName(ActionContext pAc){
-		return getRenderablePropertyValue(pAc, PROP_ICOFN);
+	private String getIconFileName(ActionContext pAc, CeConcept pCon){
+		return getRenderablePropertyValue(pAc, PROP_ICOFN, pCon);
 	}
 
 	private String getRenderablePropertyValue(ActionContext pAc, String propertyName){
-		ArrayList<String> resultList = getRenderablePropertyValues(pAc, propertyName);
+		ArrayList<String> resultList = getRenderablePropertyValues(pAc, propertyName, null);
 		String result = null;
 
 		if (resultList != null && resultList.size() > 0){
@@ -620,7 +620,18 @@ public class CeInstance extends CeModelEntity implements Serializable {
 		return result;
 	}
 
-	private ArrayList<String> getRenderablePropertyValues(ActionContext pAc, String propertyName){
+	private String getRenderablePropertyValue(ActionContext pAc, String propertyName, CeConcept pCon){
+		ArrayList<String> resultList = getRenderablePropertyValues(pAc, propertyName, pCon);
+		String result = null;
+
+		if (resultList != null && resultList.size() > 0){
+			result = resultList.get(0);
+		}
+
+		return result;
+	}
+
+	private ArrayList<String> getRenderablePropertyValues(ActionContext pAc, String propertyName, CeConcept pCon){
 		// try to get the instance property first
 		CePropertyInstance property = getPropertyInstanceNamed(propertyName);
 		if (property != null){
@@ -630,19 +641,12 @@ public class CeInstance extends CeModelEntity implements Serializable {
 			}
 		}
 
-		// if no instance property try the meta-model by looking at all
-		// concepts for this instance. take the value from the 
-		// first concept that has it
-		// TODO - what happens if more than one concept has the values
-		//		set and they conflict? Really need to take the most
-		//		derived concept values first so here am looking
-		//		at derived concepts first. 
-		for (CeConcept concept : this.directConcepts){
-			CeInstance conceptMetaModel = concept.retrieveMetaModelInstance(pAc);
+		if (pCon != null) {
+			CeInstance conceptMetaModel = pCon.retrieveMetaModelInstance(pAc);
 
-			if ( conceptMetaModel != null){
+			if (conceptMetaModel != null){
 				property = conceptMetaModel.getPropertyInstanceNamed(propertyName);
-				
+
 				if (property != null){
 					ArrayList<String> valueList = new ArrayList<String>(property.getValueList());
 					if (valueList != null && valueList.size() > 0){
@@ -650,18 +654,40 @@ public class CeInstance extends CeModelEntity implements Serializable {
 					}
 				}
 			}
-		}
+		} else {
+			// if no instance property try the meta-model by looking at all
+			// concepts for this instance. take the value from the
+			// first concept that has it
+			// TODO - what happens if more than one concept has the values
+			//		set and they conflict? Really need to take the most
+			//		derived concept values first so here am looking
+			//		at derived concepts first.
+			for (CeConcept concept : this.directConcepts){
+				CeInstance conceptMetaModel = concept.retrieveMetaModelInstance(pAc);
 
-		for (CeConcept concept : getInheritedConcepts()){
-			CeInstance conceptMetaModel = concept.retrieveMetaModelInstance(pAc);
-			
-			if ( conceptMetaModel != null){
-				property = conceptMetaModel.getPropertyInstanceNamed(propertyName);
-				
-				if (property != null){
-					ArrayList<String> valueList = new ArrayList<String>(property.getValueList());
-					if (valueList != null && valueList.size() > 0){
-						return valueList;
+				if (conceptMetaModel != null){
+					property = conceptMetaModel.getPropertyInstanceNamed(propertyName);
+
+					if (property != null){
+						ArrayList<String> valueList = new ArrayList<String>(property.getValueList());
+						if (valueList != null && valueList.size() > 0){
+							return valueList;
+						}
+					}
+				}
+			}
+
+			for (CeConcept concept : getInheritedConcepts()){
+				CeInstance conceptMetaModel = concept.retrieveMetaModelInstance(pAc);
+
+				if ( conceptMetaModel != null){
+					property = conceptMetaModel.getPropertyInstanceNamed(propertyName);
+
+					if (property != null){
+						ArrayList<String> valueList = new ArrayList<String>(property.getValueList());
+						if (valueList != null && valueList.size() > 0){
+							return valueList;
+						}
 					}
 				}
 			}
@@ -717,7 +743,7 @@ public class CeInstance extends CeModelEntity implements Serializable {
 		return result;
 	}
 
-	public String calculateIconFilename(ActionContext pAc) {
+	public String calculateIconFilename(ActionContext pAc, CeConcept pCon) {
 		String result = "";
 		String iconPropName = getIconPropertyName(pAc);
 
@@ -725,7 +751,7 @@ public class CeInstance extends CeModelEntity implements Serializable {
 			result = getSingleValueFromPropertyNamed(iconPropName);
 		} else {
 			//If the icon property name was not set try a hardcoded icon filename for the instance
-			result = getIconFileName(pAc);
+			result = getIconFileName(pAc, pCon);
 		}
 
 		return result;

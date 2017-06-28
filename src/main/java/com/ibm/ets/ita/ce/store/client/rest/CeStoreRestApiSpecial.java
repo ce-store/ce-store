@@ -446,14 +446,14 @@ public class CeStoreRestApiSpecial extends CeStoreRestApi {
 		StoreActions sa = StoreActions.createUsingDefaultConfig(this.wc);
 		ArrayList<CeInstance> shadowInstances = sa.listShadowInstances();
 
-		setInstanceListAsStructuredResult(shadowInstances);
+		setInstanceListAsStructuredResult(shadowInstances, null);
 	}
 
 	private void jsonListUnreferencedInstances(boolean pIgnoreMetaModel) {
 		StoreActions sa = StoreActions.createUsingDefaultConfig(this.wc);
 		ArrayList<CeInstance> unrefInstances = sa.listUnreferencedInstances(pIgnoreMetaModel);
 
-		setInstanceListAsStructuredResult(unrefInstances);
+		setInstanceListAsStructuredResult(unrefInstances, null);
 	}
 
 	private void textListShadowInstances() {

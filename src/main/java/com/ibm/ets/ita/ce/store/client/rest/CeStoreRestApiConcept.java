@@ -800,7 +800,7 @@ public class CeStoreRestApiConcept extends CeStoreRestApi {
 	private void jsonListAllInstancesForConcept(CeConcept pCon, String pSince) {
 		ArrayList<CeInstance> instList = makeInstanceListRequestFor(this.wc, pCon, pSince);
 
-		setInstanceListAsStructuredResult(instList);
+		setInstanceListAsStructuredResult(instList, pCon);
 	}
 
 	private void textListAllInstancesForConcept(CeConcept pCon, String pSince) {
@@ -1059,7 +1059,7 @@ public class CeStoreRestApiConcept extends CeStoreRestApi {
 
 	private void jsonListExactInstancesForConcept(CeConcept pCon) {
 		ArrayList<CeInstance> instList = getModelBuilder().retrieveAllExactInstancesForConcept(pCon);
-		setInstanceListAsStructuredResult(instList);
+		setInstanceListAsStructuredResult(instList, pCon);
 	}
 
 	private void textListExactInstancesForConcept(CeConcept pCon) {

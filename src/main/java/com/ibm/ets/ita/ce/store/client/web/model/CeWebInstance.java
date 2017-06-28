@@ -85,7 +85,7 @@ public class CeWebInstance extends CeWebObject {
 		int thisDepth = pDepth + 1;
 
 		for (CeInstance relInst : pInst.getAllRelatedInstances(this.ac, pLimRels)) {
-			pResult.put(relInst.getInstanceName(), normalSummaryDetailsJsonFor(relInst, null, pSuppPropTypes, pIsSmartMode));
+			pResult.put(relInst.getInstanceName(), normalSummaryDetailsJsonFor(relInst, null, pSuppPropTypes, pIsSmartMode, null));
 
 			if (thisDepth <= pNumSteps) {
 				relatedInstancesJsonFor(relInst, pNumSteps, thisDepth, pResult, pLimRels, pSuppPropTypes, pIsSmartMode);
@@ -142,7 +142,7 @@ public class CeWebInstance extends CeWebObject {
 				}
 
 				for (CeInstance refInst : refInsts) {
-					refArray.add(normalSummaryDetailsJsonFor(refInst, null, pSuppPropTypes, pIsSmartMode));
+					refArray.add(normalSummaryDetailsJsonFor(refInst, null, pSuppPropTypes, pIsSmartMode, null));
 
 					if (thisDepth <= pNumSteps) {
 						referringInstancesJsonFor(refInst, pNumSteps, thisDepth, pResult, pLimRels, pSuppPropTypes, pIsSmartMode);
@@ -244,7 +244,7 @@ public class CeWebInstance extends CeWebObject {
 
 		processAnnotations(pInst, mainObj);
 
-		putStringValueIn(mainObj, JSON_ICON, pInst.calculateIconFilename(this.ac));
+		putStringValueIn(mainObj, JSON_ICON, pInst.calculateIconFilename(this.ac, null));
 
 		ArrayList<String> dirConNames = pInst.calculateAllDirectConceptNames();
 		putAllStringValuesIn(mainObj, JSON_DIR_CONCEPT_NAMES, dirConNames);
@@ -324,9 +324,9 @@ public class CeWebInstance extends CeWebObject {
 		CeStoreJsonObject mainObj = new CeStoreJsonObject();
 
 		if (pNumSteps <= 0) {
-			mainObj = normalSummaryDetailsJsonFor(pInst, pOnlyProps, pSuppPropTypes, pIsSmartMode);
+			mainObj = normalSummaryDetailsJsonFor(pInst, pOnlyProps, pSuppPropTypes, pIsSmartMode, null);
 		} else {
-			mainObj.put(JSON_MAININST, normalSummaryDetailsJsonFor(pInst, pOnlyProps, pSuppPropTypes, pIsSmartMode));
+			mainObj.put(JSON_MAININST, normalSummaryDetailsJsonFor(pInst, pOnlyProps, pSuppPropTypes, pIsSmartMode, null));
 
 			if (pRelInsts) {
 				CeStoreJsonObject relInsts = new CeStoreJsonObject();
@@ -395,7 +395,7 @@ public class CeWebInstance extends CeWebObject {
 	}
 
 	private CeStoreJsonObject normalSummaryDetailsJsonFor(CeInstance pInst, String[] pOnlyProps,
-			boolean pSuppPropTypes, boolean pIsSmartMode) {
+			boolean pSuppPropTypes, boolean pIsSmartMode, CeConcept pCon) {
 		CeStoreJsonObject mainObj = new CeStoreJsonObject();
 		ArrayList<String> onlyPropList = null;
 
@@ -414,7 +414,7 @@ public class CeWebInstance extends CeWebObject {
 
 		processAnnotations(pInst, mainObj);
 
-		putStringValueIn(mainObj, JSON_ICON, pInst.calculateIconFilename(this.ac));
+		putStringValueIn(mainObj, JSON_ICON, pInst.calculateIconFilename(this.ac, pCon));
 
 		ArrayList<String> dirConNames = pInst.calculateAllDirectConceptNames();
 
@@ -597,11 +597,11 @@ public class CeWebInstance extends CeWebObject {
 	}
 
 	public CeStoreJsonArray generateSummaryListJsonFor(Collection<CeInstance> pInstList, String[] pOnlyProps,
-			boolean pSuppPropTypes, boolean pIsSmartMode) {
+			boolean pSuppPropTypes, boolean pIsSmartMode, CeConcept pCon) {
 		CeStoreJsonArray jInsts = new CeStoreJsonArray();
 
 		for (CeInstance thisInst : pInstList) {
-			jInsts.add(normalSummaryDetailsJsonFor(thisInst, pOnlyProps, pSuppPropTypes, pIsSmartMode));
+			jInsts.add(normalSummaryDetailsJsonFor(thisInst, pOnlyProps, pSuppPropTypes, pIsSmartMode, pCon));
 		}
 
 		return jInsts;

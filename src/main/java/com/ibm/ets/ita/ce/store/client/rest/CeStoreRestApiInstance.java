@@ -203,7 +203,7 @@ public class CeStoreRestApiInstance extends CeStoreRestApi {
 	}
 
 	private void jsonListAllInstances() {
-		setInstanceListAsStructuredResult(getModelBuilder().listAllInstances());
+		setInstanceListAsStructuredResult(getModelBuilder().listAllInstances(), null);
 	}
 
 	private void textListAllInstances() {

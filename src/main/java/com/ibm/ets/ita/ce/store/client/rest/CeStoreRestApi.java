@@ -671,14 +671,14 @@ public abstract class CeStoreRestApi extends ApiHandler {
 		}
 	}
 
-	protected void setInstanceListAsStructuredResult(Collection<CeInstance> pInstList) {
+	protected void setInstanceListAsStructuredResult(Collection<CeInstance> pInstList, CeConcept pCon) {
 		CeWebInstance instWeb = new CeWebInstance(this.wc);
 		boolean suppPropTypes = getBooleanParameterNamed(PARM_SPTS, false);
 		String[] onlyProps = getListParameterNamed(PARM_ONLYPROPS);
 
 		if (isDefaultStyle() || isSummaryStyle()) {
 			getWebActionResponse()
-					.setStructuredResult(instWeb.generateSummaryListJsonFor(pInstList, onlyProps, suppPropTypes, isSmartMode()));
+					.setStructuredResult(instWeb.generateSummaryListJsonFor(pInstList, onlyProps, suppPropTypes, isSmartMode(), pCon));
 		} else if (isMinimalStyle()) {
 			getWebActionResponse().setStructuredResult(instWeb.generateMinimalListJsonFor(pInstList, onlyProps, isSmartMode()));
 		} else if (isNormalisedStyle()) {

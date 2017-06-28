@@ -135,7 +135,7 @@ public class CeWebSpecial extends CeWebObject {
         putLongValueIn(jObj, JSON_EXECTIME, execTime);
 
         if ((pSenStats.getNewInstances() != null) && (!pSenStats.getNewInstances().isEmpty())) {
-            putArrayValueIn(jObj, JSON_NEWINSTS, instWeb.generateSummaryListJsonFor(pSenStats.getNewInstances(), pOnlyProps, pSuppPropTypes, pIsSmartMode));
+            putArrayValueIn(jObj, JSON_NEWINSTS, instWeb.generateSummaryListJsonFor(pSenStats.getNewInstances(), pOnlyProps, pSuppPropTypes, pIsSmartMode, null));
         }
 
         if (pSenStats.getCreatedSentences() != null) {
