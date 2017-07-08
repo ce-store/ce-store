@@ -6,6 +6,10 @@
             "root": "https://rawgit.com/ce-store/ce-store/master/src/main/webapp",
             "url": "ce/medicine/cmd/med_load.cecmd"
         }, {
+            "name": "Conversational Homes",
+            "root": "https://rawgit.com/ce-store/conv-homes/master",
+            "url": "ce/cmd/load_all.cecmd"
+        }, {
             "name": "CrisisHack - basic",
             "root": "https://rawgit.com/ce-store/crisishack/master/src/main/webapp",
             "url": "ce/cmd/ch_load.cecmd"
