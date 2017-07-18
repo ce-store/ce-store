@@ -8,7 +8,7 @@
         }, {
             "name": "Conversational Homes",
             "root": "https://rawgit.com/ce-store/conv-homes/master",
-            "url": "ce/cmd/load_all.cecmd"
+            "url": "ce/latest/cmd/load_all.cecmd"
         }, {
             "name": "CrisisHack - basic",
             "root": "https://rawgit.com/ce-store/crisishack/master/src/main/webapp",
