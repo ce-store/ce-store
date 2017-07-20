@@ -2,7 +2,9 @@
 
 Controlled English is a form of structured English that allows you to define models of concepts, their properities and relationships that is both Human and machine readable.
 
-<EXAMPLE APPLICATIONS OF CE>
+ - EXAMPLE APPLICATIONS OF CE
+
+ - SUPER SIMPLE EXAMPLE - LINK TO DETAILED TUTORIAL - GRAB THE ATTENTION OF IT'S SIMPLICITY AND SHOW IT IN ACTION?
 
 The CE Store contains everything you need to get started with a Controlled English environment.
 
@@ -21,18 +23,14 @@ We are an IBM initiated open source organisation focused on providing an experim
 * [Contributing](https://github.com/ce-store/ce-store#contributing)
 * [License](https://github.com/ce-store/ce-store#license)
 
-## What is Controlled English & How can I use it?
-
-<SUPER SIMPLE EXAMPLE - LEAD INTO DETAILED TUTORIAL - GRAB THE ATTENTION OF IT'S SIMPLICITY AND SHOW IT IN ACTION?>
-
-## Deploy To IBM Bluemix
+## Installation and Setup - Deploy to the Cloud 
 
 [![Deploy to IBM Bluemix](https://bluemix.net/deploy/button.png)](https://bluemix.net/deploy?repository=https://github.com/ce-store/ce-store)
 
 An easy way to get started with Controlled English is through IBM Bluemix. You can [sign up to Bluemix for free](https://console.bluemix.net/), and once you've got an account, clicking the button below will automatically deploy a Cloud-hosted instance of your very own CE Store.
 
 
-## Installation and Setup
+## Installation and Setup - Run on your own machine
 
 Clone the code
 
