@@ -1,6 +1,10 @@
-# ITA Controlled English (CE)
+# Controlled English (CE)
 
-The CE Store contains everything you need to get started with the ITA Controlled English environment.
+Controlled English is a ____ that allows you to define models of concepts, their properities and their relationships using a form of structure English.
+
+<EXAMPLE USE CASE HERE - GRAB THE ATTENTION OF IT'S SIMPLICITY AND SHOW IT IN ACTION?>
+
+The CE Store contains everything you need to get started with a Controlled English environment.
 
 We are an IBM initiated open source organisation focused on providing an experimental research environment for the ITA Controlled English language.
 
