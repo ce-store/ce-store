@@ -1,6 +1,6 @@
 # Controlled English (CE)
 
-Controlled English is a ____ that allows you to define models of concepts, their properities and their relationships using a form of structure English.
+Controlled English is a ____ that allows you to define models of concepts, their properities and relationships using a form of structured English that is both Human and machine readable.
 
 <EXAMPLE USE CASE HERE - GRAB THE ATTENTION OF IT'S SIMPLICITY AND SHOW IT IN ACTION?>
 
