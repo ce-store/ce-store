@@ -23,7 +23,7 @@ We are an IBM initiated open source organisation focused on providing an experim
 * [Contributing](https://github.com/ce-store/ce-store#contributing)
 * [License](https://github.com/ce-store/ce-store#license)
 
-## Installation and Setup - Deploy to the Cloud 
+## Installation and Setup - Run on the Cloud 
 
 [![Deploy to IBM Bluemix](https://bluemix.net/deploy/button.png)](https://bluemix.net/deploy?repository=https://github.com/ce-store/ce-store)
 
