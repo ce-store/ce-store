@@ -2,6 +2,12 @@
 
 Controlled English is a form of structured English that allows you to define models of concepts, their properities and relationships that is both Human and machine readable.
 
+The CE Store contains everything you need to get started with a Controlled English environment.
+
+We are an IBM initiated open source organisation focused on providing an experimental research environment for the ITA Controlled English language.
+
+## A Quick Example
+
 An example of defining a concept in CE, in this case a planet, is as follows:
 
 `conceptualise a ~ planet ~ P that has the value M as ~ mass ~ and has the value R as ~ radius ~.`
@@ -12,9 +18,6 @@ We can then define an instance of a planet called 'Earth':
 
 For more detailed examples you can go to the [Tutorials](https://github.com/ce-store/ce-store/wiki#tutorials) section of the Wiki.
 
-The CE Store contains everything you need to get started with a Controlled English environment.
-
-We are an IBM initiated open source organisation focused on providing an experimental research environment for the ITA Controlled English language.
 
 ## Quick Guide
 
