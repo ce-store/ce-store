@@ -2,9 +2,15 @@
 
 Controlled English is a form of structured English that allows you to define models of concepts, their properities and relationships that is both Human and machine readable.
 
- - EXAMPLE APPLICATIONS OF CE
+An example of defining a concept in CE, in this case a planet, is as follows:
 
- - SUPER SIMPLE EXAMPLE - LINK TO DETAILED TUTORIAL - GRAB THE ATTENTION OF IT'S SIMPLICITY AND SHOW IT IN ACTION?
+`conceptualise a ~ planet ~ P that has the value M as ~ mass ~ and has the value R as ~ radius ~.`
+
+We can then define an instance of a planet called 'Earth':
+
+`there is a planet named 'Earth' that has '5.972 × 10^24' as mass and has 6371 as radius`
+
+For more detailed examples you can go to the [Tutorials](https://github.com/ce-store/ce-store/wiki#tutorials) section of the Wiki.
 
 The CE Store contains everything you need to get started with a Controlled English environment.
 
