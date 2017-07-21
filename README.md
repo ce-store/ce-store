@@ -8,7 +8,7 @@ An example of defining a concept in CE, in this case a planet, is as follows:
 
 We can then define an instance of a planet called 'Earth':
 
-`there is a planet named 'Earth' that has '5.972 × 10^24' as mass and has 6371 as radius`
+`there is a planet named 'Earth' that has '5.972 × 10^24' as mass and has 6371 as radius.`
 
 For more detailed examples you can go to the [Tutorials](https://github.com/ce-store/ce-store/wiki#tutorials) section of the Wiki.
 
