@@ -6,7 +6,7 @@ The CE Store contains everything you need to get started with a Controlled Engli
 
 We are an IBM initiated open source organisation focused on providing an experimental research environment for the ITA Controlled English language.
 
-## A Quick Example
+## Quick Example
 
 An example of defining a concept in CE, in this case a planet, is as follows:
 
