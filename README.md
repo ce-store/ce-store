@@ -1,6 +1,6 @@
 # Controlled English (CE)
 
-Controlled English is a form of structured English that allows you to define models of concepts, their properities and relationships that is both Human and machine readable.
+Controlled English is a form of structured English that allows you to define models of concepts, their properities and relationships, that is both Human and machine readable.
 
 The CE Store contains everything you need to get started with a Controlled English environment.
 
@@ -10,9 +10,9 @@ We are an IBM initiated open source organisation focused on providing an experim
 
 A CE model contains all of the information about the data loaded into the CE Store. It is built from **sentences** which contain **concepts** and **instances**.
 
-A **sentence** always ends with a full stop.
-A **concept** defines a thing.
-An **instance** is a single occurrence of that concept/thing.
+- A **sentence** always ends with a full stop.
+- A **concept** defines a thing.
+- An **instance** is a single occurrence of that concept/thing.
 
 An example of CE **sentence** defining a **concept** in CE is as follows:
 
