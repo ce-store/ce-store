@@ -8,11 +8,17 @@ We are an IBM initiated open source organisation focused on providing an experim
 
 ## Quick Example
 
-An example of defining a concept in CE, in this case a planet, is as follows:
+A CE model contains all of the information about the data loaded into the CE Store. It is built from **sentences** which contain **concepts** and **instances**.
+
+A **sentence** always ends with a full stop.
+A **concept** defines a thing.
+An **instance** is a single occurrence of that concept/thing.
+
+An example of CE **sentence** defining a **concept** in CE is as follows:
 
 `conceptualise a ~ planet ~ P that has the value M as ~ mass ~ and has the value R as ~ radius ~.`
 
-We can then define an instance of a planet called 'Earth':
+We can then define an **instance** of a planet called 'Earth' using another CE **sentence**:
 
 `there is a planet named 'Earth' that has '5.972 × 10^24' as mass and has 6371 as radius.`
 
