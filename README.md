@@ -14,7 +14,7 @@ A CE model contains all of the information about the data loaded into the CE Sto
 - A **concept** defines a thing.
 - An **instance** is a single occurrence of that concept/thing.
 
-An example of CE **sentence** defining a **concept** in CE is as follows:
+An example of **sentence** that defines a **concept** in CE is as follows:
 
 `conceptualise a ~ planet ~ P that has the value M as ~ mass ~ and has the value R as ~ radius ~.`
 
