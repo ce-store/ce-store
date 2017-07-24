@@ -1,4 +1,4 @@
-# Controlled English (CE)
+# ITA Controlled English (CE)
 
 Controlled English is a form of structured English that allows you to define models of concepts, their properities and relationships, that is both Human and machine readable.
 
