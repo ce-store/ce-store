@@ -37,6 +37,12 @@ conceptualise a ~ CE triggered event ~ T that
   has the value AQ as ~ affected query name ~ and
   has the value AR as ~ affected rule name ~.
 
+conceptualise a ~ maths event ~ ME that
+  is a CE triggered event and
+  has the value IP as ~ input property name ~ and
+  has the value OP as ~ output property name ~ and
+  has the value A as ~ algorithm ~.
+
 conceptualise a ~ rule executor agent ~ A that
   is a CE agent and
   has the value RN as ~ rule name ~ and

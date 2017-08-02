@@ -23,10 +23,11 @@ perform load sentences from url './ce/medicine/agents/med_agent_instances.ce'.
 perform load sentences from url './ce/medicine/facts/med_scenario.ce'.
 perform load sentences from url './ce/medicine/facts/med_locations.ce'.
 perform load sentences from url './ce/medicine/facts/med_visits.ce'.
+perform load sentences from url './ce/medicine/facts/med_equipment.ce'.
 
--- Load Hudson
-perform load sentences from url './hudson/ce/core/cmd/load_core.cecmd'.
-perform load sentences from url './ce/medicine/cmd/med_load_hudson.cecmd'.
+---- Load Hudson
+--perform load sentences from url './hudson/ce/core/cmd/load_core.cecmd'.
+--perform load sentences from url './ce/medicine/cmd/med_load_hudson.cecmd'.
 
 -- Run the rules
 perform run the rule executor agent named 'med_rules'.

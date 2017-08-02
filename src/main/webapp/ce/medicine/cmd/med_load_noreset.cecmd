@@ -21,6 +21,7 @@ perform load sentences from url './ce/medicine/agents/med_agent_instances.ce'.
 perform load sentences from url './ce/medicine/facts/med_scenario.ce'.
 perform load sentences from url './ce/medicine/facts/med_locations.ce'.
 perform load sentences from url './ce/medicine/facts/med_visits.ce'.
+perform load sentences from url './ce/medicine/facts/med_equipment.ce'.
 
 -- Run the rules
 perform run the rule executor agent named 'med_rules'.

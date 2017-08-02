@@ -1,0 +1,12 @@
+-- --------------------------------------------------------------------------
+-- (C) Copyright IBM Corporation  2011, 2017
+-- All Rights Reserved
+-- --------------------------------------------------------------------------
+
+there is a bed named 'item_001' that
+  has '53' as weight and
+  has '1200' as cost.
+
+there is a scanner named 'item_002' that
+  has '22' as weight and
+  has '25000' as cost.
