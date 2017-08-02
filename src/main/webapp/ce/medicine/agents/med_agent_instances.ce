@@ -24,5 +24,5 @@ there is a maths event named 'trig_maths’ that
   has 'equipment' as concept name and
   has 'cost' as input property name and
   has 'weight' as input property name and
-  has '[1] * [2]' as algorithm and
+  has '[1] / [2]' as algorithm and
   has 'cost per weight' as output property name.
