@@ -1,8 +1,29 @@
 # ITA Controlled English (CE)
 
-The CE Store contains everything you need to get started with the ITA Controlled English environment.
+Controlled English is a form of structured English that allows you to define models of concepts, their properities and relationships, that is both Human and machine readable.
+
+The CE Store contains everything you need to get started with a Controlled English environment.
 
 We are an IBM initiated open source organisation focused on providing an experimental research environment for the ITA Controlled English language.
+
+## Quick Example
+
+A CE model contains all of the information about the data loaded into the CE Store. It is built from **sentences** which contain **concepts** and **instances**.
+
+- A **sentence** always ends with a full stop.
+- A **concept** defines a thing.
+- An **instance** is a single occurrence of that concept/thing.
+
+An example of **sentence** that defines a **concept** in CE is as follows:
+
+`conceptualise a ~ planet ~ P that has the value M as ~ mass ~ and has the value R as ~ radius ~.`
+
+We can then define an **instance** of a planet called 'Earth' using another CE **sentence**:
+
+`there is a planet named 'Earth' that has '5.972 × 10^24' as mass and has 6371 as radius.`
+
+For more detailed examples you can go to the [Tutorials](https://github.com/ce-store/ce-store/wiki#tutorials) section of the Wiki.
+
 
 ## Quick Guide
 
@@ -17,11 +38,14 @@ We are an IBM initiated open source organisation focused on providing an experim
 * [Contributing](https://github.com/ce-store/ce-store#contributing)
 * [License](https://github.com/ce-store/ce-store#license)
 
-## Deploy To Bluemix
+## Installation and Setup - Use CE in the Cloud 
 
-[![Deploy to Bluemix](https://bluemix.net/deploy/button.png)](https://bluemix.net/deploy?repository=https://github.com/ce-store/ce-store)
+[![Deploy to IBM Bluemix](https://bluemix.net/deploy/button.png)](https://bluemix.net/deploy?repository=https://github.com/ce-store/ce-store)
 
-## Installation and Setup
+An easy way to get started with Controlled English is through IBM Bluemix. You can [sign up to Bluemix for free](https://console.bluemix.net/), and once you've got an account, clicking the button above will automatically deploy a Cloud-hosted instance of your very own CE Store.
+
+
+## Installation and Setup - Run CE on your own machine
 
 Clone the code
 
