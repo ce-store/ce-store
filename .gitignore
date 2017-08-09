@@ -3,3 +3,4 @@
 
 .DS_Store
 .vagrant
+src/main/webapp/ui/json/local_projects.json

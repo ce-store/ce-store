@@ -18,3 +18,16 @@ there is a rule executor agent named 'med_rules' that
   has 'sibling' as rule name and
   has 'recommendScan' as rule name and
   has 'rules_med' as target source.
+
+there is a maths event named 'trig_maths’ that
+  has 'com.ibm.ets.ita.ce.store.agents.general.MathsCalculator' as class to notify and
+  has 'equipment' as concept name and
+  has 'cost' as input property name and
+  has 'weight' as input property name and
+  has '[1] / [2]' as algorithm and
+  has 'cost per weight' as output property name.
+
+--there is a triggered HTTP request named 'trig_http’ that
+--  has 'com.ibm.ets.ita.ce.store.agents.general.HttpRequester' as class to notify and
+--  has 'equipment' as concept name and
+--  has 'http://localhost:1880/catch' as target url.

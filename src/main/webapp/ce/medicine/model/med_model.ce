@@ -78,3 +78,11 @@ conceptualise an ~ operation ~ O that is an event.
 conceptualise a ~ medical report ~ R that
   ~ mentions ~ the person P and
   has the value T as ~ text ~.
+
+conceptualise an ~ equipment ~ E that
+  has the value W as ~ weight ~ and
+  has the value C as ~ cost ~ and
+  has the value CPW as ~ cost per weight ~.
+
+conceptualise a ~ bed ~ B that is an equipment.
+conceptualise a ~ scanner ~ S that is an equipment.
