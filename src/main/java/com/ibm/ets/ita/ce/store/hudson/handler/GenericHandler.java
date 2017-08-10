@@ -6,15 +6,22 @@ package com.ibm.ets.ita.ce.store.hudson.handler;
  *******************************************************************************/
 
 import static com.ibm.ets.ita.ce.store.names.CeNames.CON_CC;
+import static com.ibm.ets.ita.ce.store.names.CeNames.CON_IDPROPCON;
+import static com.ibm.ets.ita.ce.store.names.CeNames.CON_SEPIDCON;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportDebug;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportError;
+
+import java.util.ArrayList;
 
 import com.ibm.ets.ita.ce.store.client.web.ServletStateManager;
 import com.ibm.ets.ita.ce.store.core.ActionContext;
 import com.ibm.ets.ita.ce.store.core.ModelBuilder;
 import com.ibm.ets.ita.ce.store.core.StoreActions;
 import com.ibm.ets.ita.ce.store.hudson.model.ConvConfig;
+import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.model.CeInstance;
+import com.ibm.ets.ita.ce.store.model.CeProperty;
+import com.ibm.ets.ita.ce.store.model.CePropertyInstance;
 import com.ibm.ets.ita.ce.store.model.CeSource;
 import com.ibm.ets.ita.ce.store.model.container.ContainerSentenceLoadResult;
 
@@ -61,6 +68,50 @@ public abstract class GenericHandler {
 
 		//Clear the various caches
 		ServletStateManager.getHudsonManager().clearCaches(pAc);
+
+		return result;
+	}
+
+	public ArrayList<String> getInstanceIdentifiersFor(CeInstance pInst, ActionContext pAc) {
+		ArrayList<String> result = new ArrayList<String>();
+
+		//Only add the instance name if no other identifiers found
+		if (!isSeparatelyIdentified(pInst, pAc)) {
+			result.add(pInst.getInstanceName());
+		}
+
+		for (CePropertyInstance thisPi : pInst.getPropertyInstances()) {
+			CeProperty relProp = thisPi.getRelatedProperty();
+			CeInstance mmInst = relProp.getMetaModelInstance(pAc);
+
+			if (mmInst.isConceptNamed(pAc, CON_IDPROPCON)) {
+				for (String thisVal : thisPi.getValueList()) {
+					result.add(thisVal);
+				}
+			}
+		}
+
+		//If there are no identifiers found then add the instance name
+		if (result.isEmpty()) {
+			result.add(pInst.getInstanceName());
+		}
+
+		return result;
+	}
+
+	private boolean isSeparatelyIdentified(CeInstance pInst, ActionContext pAc) {
+		boolean result = false;
+
+		for (CeConcept dirCon : pInst.getDirectConcepts()) {
+			ArrayList<CeInstance> mmList = dirCon.retrieveMetaModelInstances(pAc, null);
+
+			for (CeInstance mmInst : mmList) {
+				if (mmInst.isConceptNamed(pAc, CON_SEPIDCON)) {
+					result = true;
+					break;
+				}
+			}
+		}
 
 		return result;
 	}

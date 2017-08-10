@@ -66,7 +66,8 @@ conceptualise a ~ hospital ~ H that
 
 conceptualise a ~ event ~ E that
   is a temporal thing and
-  ~ occurred at ~ the place P.
+  ~ occurred at ~ the place P and
+  has the value L as ~ label ~.
 
 the property concept 'event:occurred at:place' is a single value property.
 
