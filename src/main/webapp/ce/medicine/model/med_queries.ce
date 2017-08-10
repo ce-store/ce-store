@@ -4,115 +4,115 @@
 -- --------------------------------------------------------------------------
 
 [ parent ]
-for which P1 and P2 is it true that 
+for which P1 and P2 is it true that
     ( the person P1 is the parent of the person P2 )
 .
 
 [ grandparent ]
-for which P1, P2 and P3 is it true that 
+for which P1, P2 and P3 is it true that
     ( the person P1 is the parent of the person P2 ) and
     ( the person P2 is the parent of the person P3 )
 .
 
 [ grandparent of patient ]
-for which P1, P2 and P3 is it true that 
+for which P1, P2 and P3 is it true that
     ( the patient P1 is the parent of the person P2 ) and
     ( the person P2 is the parent of the person P3 )
 .
 
 [ grandparent of patient - long ]
-for which P1, P2 and P3 is it true that 
+for which P1, P2 and P3 is it true that
     ( the person P1 is the parent of the person P2 ) and
     ( the person P2 is the parent of the person P3 ) and
     ( the person P1 is a patient )
 .
 
 [ close relation to patient ]
-for which P and PA is it true that 
+for which P and PA is it true that
     ( the person P is closely related to the patient PA )
 .
 
 [ close relation to patient - long ]
-for which P1 and P2 is it true that 
+for which P1 and P2 is it true that
     ( the person P1 is closely related to the person P2 ) and
     ( the person P2 is a patient )
 .
 
 [ patient presents with lump ]
-for which PA and L is it true that 
+for which PA and L is it true that
     ( the patient PA presents with the lump L )
 .
 
 [ person suffers from cancer ]
-for which P and C is it true that 
+for which P and C is it true that
     ( the person P suffers from the cancer C )
 .
 
 [ patient lump close relation ]
-for which PA, L and P is it true that 
+for which PA, L and P is it true that
     ( the patient PA presents with the lump L ) and
     ( the person P is closely related to the patient PA )
 .
 
 [ brother of ]
-for which P1 and P2 is it true that 
+for which P1 and P2 is it true that
     ( the person P1 is the brother of the person P2 )
 .
 
 [ brotherless 1 ]
-for which P1 is it true that 
+for which P1 is it true that
     ( the person P1 is the brother of no person P2 )
 .
 
 [ brotherless 2 ]
-for which P2 is it true that 
+for which P2 is it true that
     ( no person P1 is the brother of the person P2 )
 .
 
 [ older brothers 65 ]
-for which P1, P2 and _A is it true that 
+for which P1, P2 and A is it true that
     ( the person P1 is the brother of the person P2 ) and
-    ( the person P2 has the value _A as age ) and ( the value _A >= '65' )
+    ( the person P2 has the integer A as age ) and ( the value A >= '65' )
 .
 
 [ older brothers 30 ]
-for which P1, P2 and _A is it true that 
+for which P1, P2 and A is it true that
     ( the person P1 is the brother of the person P2 ) and
-    ( the person P2 has the value _A as age ) and ( the value _A >= '30' )
+    ( the person P2 has the integer A as age ) and ( the value A >= '30' )
 .
 
 [ older brothers 5 ]
-for which P1, P2 and _A is it true that 
+for which P1, P2 and A is it true that
     ( the person P1 is the brother of the person P2 ) and
-    ( the person P2 has the value _A as age ) and ( the value _A >= '5' )
+    ( the person P2 has the integer A as age ) and ( the value A >= '5' )
 .
 
 [ younger brothers ]
-for which P1, P2 and _A is it true that 
+for which P1, P2 and A is it true that
     ( the person P1 is the brother of the person P2 ) and
-    ( the person P2 has the value _A as age ) and ( the value _A <= '18' )
+    ( the person P2 has the integer A as age ) and ( the value A <= '18' )
 .
 
 [ = test ]
-for which V1 and V2 is it true that 
+for which V1 and V2 is it true that
     ( the person V1 is the brother of the person V2 ) and
     ( the person V4 has the value _F1 as social security number ) and ( the value _F1 = 'abc123' ) and
     ( the person V2 = the person V4 )
 .
 
 [ != test ]
-for which V1 and V2 is it true that 
+for which V1 and V2 is it true that
     ( the person V1 is the brother of the person V2 ) and
     ( the person V4 has the value _F1 as social security number ) and ( the value _F1 = 'abc123' ) and
     ( the person V2 != the person V4 )
 .
 
 [ temporary ]
-for which W, S, _SSN, _AW, M and _AM is it true that 
+for which W, S, _SSN, AW, M and AM is it true that
     ( the woman W is the sibling of the person S ) and
     ( the woman W has the value _SSN as social security number ) and
-    ( the woman W has the value _AW as age ) and ( the value _AW >= '21' ) and
-    ( the man M has the value _AM as age ) and ( the value _AM >= '21' )
+    ( the woman W has the integer AW as age ) and ( the value AW >= '21' ) and
+    ( the man M has the integer AM as age ) and ( the value AM >= '21' )
 .
 
 [ reports about Jean and Fred ]
@@ -137,7 +137,7 @@ for which R and T is it true that
 .
 
 [ equipment ]
-for which I, C and W is it true that 
+for which I, C and W is it true that
   ( the equipment I has the value C as cost ) and
   ( the equipment I has the value W as weight )
 .

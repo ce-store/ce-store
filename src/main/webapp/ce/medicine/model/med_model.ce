@@ -11,8 +11,7 @@ Author:  Dave Braines
 
 
 conceptualise a ~ person ~ P that
-  is a multimatch thing and
-  has the value V as ~ age ~ and
+  has the integer I as ~ age ~ and
   has the value S as ~ social security number ~ and
   has the sequence MH as ~ medical procedures ~ and
   ~ is the sibling of ~ the person P1 and

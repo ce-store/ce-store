@@ -6,19 +6,29 @@ package com.ibm.ets.ita.ce.store.client.web.model;
  *******************************************************************************/
 
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_ANNOTATIONS;
+import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportException;
+import static com.ibm.ets.ita.ce.store.names.CeNames.CON_INT;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.logging.Logger;
 
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonArray;
 import com.ibm.ets.ita.ce.store.client.web.json.CeStoreJsonObject;
 import com.ibm.ets.ita.ce.store.core.ActionContext;
 import com.ibm.ets.ita.ce.store.model.CeAnnotation;
+import com.ibm.ets.ita.ce.store.model.CeConcept;
 import com.ibm.ets.ita.ce.store.model.CeModelEntity;
+import com.ibm.ets.ita.ce.store.model.CePropertyInstance;
 
 public abstract class CeWebObject {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
+
+	private static final String CLASS_NAME = CeWebObject.class.getName();
+	private static final String PACKAGE_NAME = CeWebObject.class.getPackage().getName();
+	private static final Logger logger = Logger.getLogger(PACKAGE_NAME);
 
 	protected ActionContext ac = null;
 
@@ -50,6 +60,22 @@ public abstract class CeWebObject {
 	protected static void putStringValueIn(CeStoreJsonObject pObj, String pKey, String pVal) {
 		if ((pVal != null) && (!pVal.isEmpty())) {
 			pObj.put(pKey, pVal);
+		}
+	}
+
+	protected static void putAppropriateValueIn(ActionContext pAc, CePropertyInstance pPi, CeStoreJsonObject pObj, String pKey, String pVal, boolean pIsSmartMode) {
+		final String METHOD_NAME = "putAppropriateValueIn";
+
+		if (pIsSmartMode && isInteger(pAc, pPi)) {
+			try {
+				int intVal = new Integer(pVal).intValue();
+
+				putIntValueIn(pObj, pKey, intVal);
+			} catch (NumberFormatException e) {
+				reportException(e, pAc, logger, CLASS_NAME, METHOD_NAME);
+			}
+		} else {
+			putStringValueIn(pObj, pKey, pVal);
 		}
 	}
 
@@ -96,6 +122,17 @@ public abstract class CeWebObject {
 		}
 	}
 
+	protected static void putAllIntValuesIn(CeStoreJsonObject pObj, String pKey, Collection<Integer> pVals) {
+		if ((pVals != null)) {
+			CeStoreJsonArray jArr = new CeStoreJsonArray();
+
+			for (Integer thisVal : pVals) {
+				jArr.add(thisVal.intValue());
+			}
+			pObj.put(pKey, jArr);
+		}
+	}
+
 	protected static void putAllStringValuesIn(CeStoreJsonObject pObj, String pKey, String[] pVals) {
 		if ((pVals != null)) {
 			CeStoreJsonArray jArr = new CeStoreJsonArray();
@@ -104,6 +141,63 @@ public abstract class CeWebObject {
 				jArr.add(thisVal);
 			}
 			pObj.put(pKey, jArr);
+		}
+	}
+
+	private static boolean isInteger(ActionContext pAc, CePropertyInstance pPi) {
+		boolean result = false;
+		CeConcept rangeCon = pPi.getRelatedProperty().getRangeConcept();
+
+		if (rangeCon != null) {
+			if (rangeCon.equalsOrHasParentNamed(pAc, CON_INT)) {
+				result = true;
+			}
+		}
+
+		return result;
+	}
+
+	protected static void putAllAppropriateValuesIn(ActionContext pAc, CePropertyInstance pPi, CeStoreJsonObject pObj, String pKey, String[] pVals, boolean pIsSmartMode) {
+		final String METHOD_NAME = "putAllAppropriateValuesIn";
+
+		if (pIsSmartMode && isInteger(pAc, pPi)) {
+			ArrayList<Integer> intVals = new ArrayList<Integer>();
+
+			for (String thisVal : pVals) {
+				try {
+					Integer intVal = new Integer(thisVal);
+
+					intVals.add(intVal);
+				} catch (NumberFormatException e) {
+					reportException(e, pAc, logger, CLASS_NAME, METHOD_NAME);
+				}
+			}
+
+			putAllIntValuesIn(pObj, pKey, intVals);
+		} else {
+			putAllStringValuesIn(pObj, pKey, pVals);
+		}
+	}
+
+	protected static void putAllAppropriateValuesIn(ActionContext pAc, CePropertyInstance pPi, CeStoreJsonObject pObj, String pKey, HashSet<String> pVals, boolean pIsSmartMode) {
+		final String METHOD_NAME = "putAllAppropriateValuesIn";
+
+		if (pIsSmartMode && isInteger(pAc, pPi)) {
+			ArrayList<Integer> intVals = new ArrayList<Integer>();
+
+			for (String thisVal : pVals) {
+				try {
+					Integer intVal = new Integer(thisVal);
+
+					intVals.add(intVal);
+				} catch (NumberFormatException e) {
+					reportException(e, pAc, logger, CLASS_NAME, METHOD_NAME);
+				}
+			}
+
+			putAllIntValuesIn(pObj, pKey, intVals);
+		} else {
+			putAllStringValuesIn(pObj, pKey, pVals);
 		}
 	}
 

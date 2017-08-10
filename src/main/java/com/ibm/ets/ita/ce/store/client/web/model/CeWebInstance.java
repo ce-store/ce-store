@@ -258,7 +258,7 @@ public class CeWebInstance extends CeWebObject {
 			if (isValidProperty(thisPi, onlyPropList)) {
 				String keyPropName = thisPi.getRelatedProperty().getPropertyName();
 				if (thisPi.isSingleCardinality()) {
-					putStringValueIn(propValsObj, keyPropName, thisPi.getSingleOrFirstValue());
+					putAppropriateValueIn(this.ac, thisPi, propValsObj, keyPropName, thisPi.getSingleOrFirstValue(), pIsSmartMode);
 				} else {
 					CeProperty thisProp = thisPi.getRelatedProperty();
 					HashSet<String> uvList = thisPi.getValueList();
@@ -268,13 +268,13 @@ public class CeWebInstance extends CeWebObject {
 						CeInstance mmInst = thisProp.getMetaModelInstance(this.ac);
 						if (mmInst.isConceptNamed(this.ac, CON_SVP)) {
 							String latestVal = pInst.getLatestValueFromPropertyNamed(thisProp.getPropertyName());
-							putStringValueIn(mainObj, keyPropName, latestVal);
+							putAppropriateValueIn(this.ac, thisPi, mainObj, keyPropName, latestVal, pIsSmartMode);
 							doneProp = true;
 						}
 					}
 
 					if (!doneProp) {
-						putAllStringValuesIn(propValsObj, keyPropName, uvList);
+						putAllAppropriateValuesIn(this.ac, thisPi, propValsObj, keyPropName, uvList, pIsSmartMode);
 					}
 
 					CeStoreJsonObject valRatObj = new CeStoreJsonObject();
@@ -428,7 +428,7 @@ public class CeWebInstance extends CeWebObject {
 			if (isValidProperty(thisPi, onlyPropList)) {
 				String keyPropName = thisPi.getRelatedProperty().getPropertyName();
 				if (thisPi.isSingleCardinality()) {
-					putStringValueIn(propValsObj, keyPropName, thisPi.getSingleOrFirstValue());
+					putAppropriateValueIn(this.ac, thisPi, propValsObj, keyPropName, thisPi.getSingleOrFirstValue(), pIsSmartMode);
 				} else {
 					CeProperty thisProp = thisPi.getRelatedProperty();
 					boolean doneProp = false;
@@ -437,13 +437,13 @@ public class CeWebInstance extends CeWebObject {
 						CeInstance mmInst = thisProp.getMetaModelInstance(this.ac);
 						if (mmInst.isConceptNamed(this.ac, CON_SVP)) {
 							String latestVal = pInst.getLatestValueFromPropertyNamed(thisProp.getPropertyName());
-							putStringValueIn(propValsObj, keyPropName, latestVal);
+							putAppropriateValueIn(this.ac, thisPi, propValsObj, keyPropName, latestVal, pIsSmartMode);
 							doneProp = true;
 						}
 					}
 
 					if (!doneProp) {
-						putAllStringValuesIn(propValsObj, keyPropName, thisPi.getValueList());
+						putAllAppropriateValuesIn(this.ac, thisPi, propValsObj, keyPropName, thisPi.getValueList(), pIsSmartMode);
 					}
 				}
 
@@ -495,7 +495,7 @@ public class CeWebInstance extends CeWebObject {
 			if (isValidProperty(thisPi, onlyPropList)) {
 				String keyPropName = thisPi.getRelatedProperty().getPropertyName();
 				if (thisPi.isSingleCardinality()) {
-					putStringValueIn(propValsObj, keyPropName, thisPi.getSingleOrFirstValue());
+					putAppropriateValueIn(this.ac, thisPi, propValsObj, keyPropName, thisPi.getSingleOrFirstValue(), pIsSmartMode);
 				} else {
 					CeProperty thisProp = thisPi.getRelatedProperty();
 					boolean doneProp = false;
@@ -504,13 +504,13 @@ public class CeWebInstance extends CeWebObject {
 						CeInstance mmInst = thisProp.getMetaModelInstance(this.ac);
 						if (mmInst.isConceptNamed(this.ac, CON_SVP)) {
 							String latestVal = pInst.getLatestValueFromPropertyNamed(thisProp.getPropertyName());
-							putStringValueIn(propValsObj, keyPropName, latestVal);
+							putAppropriateValueIn(this.ac, thisPi, propValsObj, keyPropName, latestVal, pIsSmartMode);
 							doneProp = true;
 						}
 					}
 
 					if (!doneProp) {
-						putAllStringValuesIn(propValsObj, keyPropName, thisPi.getValueList());
+						putAllAppropriateValuesIn(this.ac, thisPi, propValsObj, keyPropName, thisPi.getValueList(), pIsSmartMode);
 					}
 				}
 			}
@@ -553,7 +553,7 @@ public class CeWebInstance extends CeWebObject {
 					CeInstance mmInst = thisProp.getMetaModelInstance(this.ac);
 					if (mmInst.isConceptNamed(this.ac, CON_SVP)) {
 						String latestVal = pInst.getLatestValueFromPropertyNamed(thisProp.getPropertyName());
-						putStringValueIn(mainObj, keyPropName, latestVal);
+						putAppropriateValueIn(this.ac, thisPi, mainObj, keyPropName, latestVal, pIsSmartMode);
 						doneProp = true;
 					}
 				}
@@ -563,9 +563,9 @@ public class CeWebInstance extends CeWebObject {
 
 					if (!vals.isEmpty()) {
 						if (vals.size() == 1) {
-							putStringValueIn(mainObj, keyPropName, vals.iterator().next());
+							putAppropriateValueIn(this.ac, thisPi, mainObj, keyPropName, vals.iterator().next(), pIsSmartMode);
 						} else {
-							putAllStringValuesIn(mainObj, keyPropName, vals);
+							putAllAppropriateValuesIn(this.ac, thisPi, mainObj, keyPropName, vals, pIsSmartMode);
 						}
 					}
 				}

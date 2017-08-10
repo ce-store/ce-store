@@ -3,6 +3,10 @@
 -- All Rights Reserved
 -- --------------------------------------------------------------------------
 
-perform load sentences from url './ce/medicine/cmd/med_load_noreset.cecmd'.
-perform load sentences from url './ce/medicine/model/med_hudson_model.ce'.
-perform load sentences from url './ce/medicine/facts/med_hudson.ce'.
+Model:   Type
+Title:   Type model
+Version: 1.0
+Date:    10th August 2017
+Author:  Dave Braines
+
+conceptualise an ~ integer ~ I.

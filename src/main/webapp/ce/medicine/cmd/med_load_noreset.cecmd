@@ -8,6 +8,7 @@ perform load sentences from url './ce/general/agents/agent_model.ce'.
 perform load sentences from url './ce/general/model/misc_model.ce'.
 perform load sentences from url './ce/general/model/spatial_model.ce'.
 perform load sentences from url './ce/general/model/temporal_model.ce'.
+perform load sentences from url './ce/general/model/type_model.ce'.
 
 -- Load the medical model
 perform load sentences from url './ce/medicine/model/med_model.ce'.

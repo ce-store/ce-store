@@ -7,19 +7,19 @@
 -- The people
 
 there is a man named John that
-  has '53' as age and
+  has the integer 'unknown' as age and
   has 'abc123' as social security number.
 
 there is a man named James that
-  has '49' as age and
+  has the integer '49' as age and
   has 'def456' as social security number.
 
 there is a woman named Jean that
-  has '21' as age and
+  has the integer '21' as age and
   has 'ghi789' as social security number.
 
 there is a man named David that
-  has '17' as age and
+  has the integer '17' as age and
   has 'jkl012' as social security number.
 
 the person John
@@ -33,17 +33,17 @@ the person David
 
 the person Maggie
   is the parent of the person John and
-  has '77' as age and
+  has the integer '77' as age and
   has 'mno345' as social security number.
 
 the person Bill
   is the parent of the person John and
-  has '80' as age and
+  has the integer '80' as age and
   has 'pqr678' as social security number.
 
 the person Fred
   is the brother of the person John and
-  has '45' as age and
+  has the integer '45' as age and
   has 'stu901' as social security number.
 
 the person James is the brother of the person John.
@@ -54,11 +54,11 @@ the person Jean is the aunt of the person Nellie.
 the person Jean is the aunt of the person Max.
 
 the person Nellie
-  has '7' as age and
+  has the integer '7' as age and
   has 'vwx234' as social security number.
 
 the person Max
-  has '4' as age and
+  has the integer '4' as age and
   has 'yza567' as social security number.
 
 the person Bill is closely related to the person Maggie.
@@ -91,7 +91,7 @@ the medical report 'report 1'
 
 the medical report 'report 2'
   mentions the person 'Jean' and
-  mentions the person 'Jane' and
+  mentions the person 'John' and
   has 'A medical report about Jean and Jane' as text.
 
 the medical report 'report 3'
