@@ -266,7 +266,6 @@ public class CeWebInstance extends CeWebObject {
 
 					if (pIsSmartMode) {
 						CeInstance mmInst = thisProp.getMetaModelInstance(this.ac);
-						System.out.println(mmInst);
 						if (mmInst.isConceptNamed(this.ac, CON_SVP)) {
 							String latestVal = pInst.getLatestValueFromPropertyNamed(thisProp.getPropertyName());
 							putAppropriateValueIn(this.ac, thisPi, mainObj, keyPropName, latestVal, pIsSmartMode);
