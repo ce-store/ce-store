@@ -9,4 +9,15 @@ Version: 1.0
 Date:    10th August 2017
 Author:  Dave Braines
 
-conceptualise an ~ integer ~ I.
+conceptualise a ~ number ~ N.
+
+conceptualise an ~ integer ~ I that
+  is a number.
+
+conceptualise a ~ float ~ F that
+  is a number.
+
+conceptualise a ~ double ~ D that
+  is a number.
+
+conceptualise a ~ boolean ~ B.
