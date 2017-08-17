@@ -27,9 +27,6 @@ public class CeNames {
 	public static final String CON_CTE= "CE triggered event";
 	public static final String CON_SVP = "single value property";
 	public static final String CON_INT = "integer";
-	public static final String CON_FLT = "float";
-	public static final String CON_DBL = "double";
-	public static final String CON_BLN = "boolean";
 
 	//Concepts: Conversation
 	public static final String CON_CARD = "card";
@@ -68,7 +65,7 @@ public class CeNames {
 	public static final String CON_LOCATION = "location";
 	public static final String CON_MEDIA = "media";
 	public static final String CON_NUMWORD = "number word";
-	public static final String CON_LINKEDPROP = "linked property";
+	public static final String CON_LINKEDPROP = "linked property";	
 	public static final String CON_MULTIMATCH = "multimatch thing";
 	public static final String CON_CONVPHRASE = "conv phrase";
 	public static final String CON_CONVCLAUSE = "conv clause";
@@ -97,7 +94,7 @@ public class CeNames {
 	public static final String PROP_SRC_PROP = "source property";
 	public static final String PROP_SRC_RANGE = "source range";
 	public static final String PROP_TGT_CONCEPT = "target concept";
-	public static final String PROP_TGT_PROP = "target property";
+	public static final String PROP_TGT_PROP = "target property";	
 	public static final String PROP_TGT_RANGE = "target range";
 	public static final String PROP_TGT_SOURCE = "target source";
 	public static final String PROP_GENRAT = "generate rationale";
