@@ -1019,7 +1019,14 @@ public class QuestionAnswererHandler extends GenericHandler {
 			for (CeInstance normInst : normalList) {
 				ArrayList<String> thisRow = new ArrayList<String>();
 
-				thisRow.add(normInst.getInstanceName());
+				ArrayList<String> temp = getInstanceIdentifiersFor(normInst, this.ac);
+
+				if (!temp.isEmpty()) {
+					thisRow.add(temp.get(0));
+				} else {
+					thisRow.add(normInst.getInstanceName());
+				}
+
 				rows.add(thisRow);
 			}
 

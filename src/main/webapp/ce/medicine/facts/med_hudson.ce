@@ -18,3 +18,7 @@ the property concept 'person:suffers from:disease'
   is expressed by 'suffer from'.
 
 the relation concept 'medical report:mentions:person' is a linked property.
+
+the entity concept 'event' is a separately identified concept.
+
+the property concept 'event:label:value' is an identification property concept.

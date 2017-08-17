@@ -3,6 +3,7 @@
 -- All Rights Reserved
 -- --------------------------------------------------------------------------
 
+perform load sentences from url './hudson/ce/cmd/load_hudson.cecmd'.
 perform load sentences from url './ce/medicine/cmd/med_load_noreset.cecmd'.
 perform load sentences from url './ce/medicine/model/med_hudson_model.ce'.
 perform load sentences from url './ce/medicine/facts/med_hudson.ce'.

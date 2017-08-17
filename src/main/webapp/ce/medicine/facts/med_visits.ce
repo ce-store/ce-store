@@ -22,42 +22,52 @@ the formatted property 'operation:date string:value'
 
 there is a check up named 'visit_001' that
   has '12/02/2013' as date string and
+  has 'Royal Hampshire County Hospital check up on 12th February 2013' as label and
   occurred at the hospital 'Royal Hampshire County Hospital'.
 
 there is a check up named 'visit_002' that
   has '14/07/2013' as date string and
+  has 'Royal Hampshire County Hospital check up on 14th July 2013' as label and
   occurred at the hospital 'Royal Hampshire County Hospital'.
 
 there is a consultation named 'visit_003' that
   has '09/11/2013' as date string and
+  has 'Multi Hospital consultation on 9th November 2013' as label and
   occurred at the hospital 'Andover War Memorial Hospital' and
   occurred at the hospital 'Royal Hampshire County Hospital' and
   occurred at the hospital 'Basingstoke and North Hampshire Hospital'. 
 
 there is a check up named 'visit_004' that
   has '02/02/2014' as date string and
+  has 'Royal Hampshire County Hospital check up on 2nd Feb 2014' as label and
   occurred at the hospital 'Royal Hampshire County Hospital'.
 
 there is a check up named 'visit_005' that
   has '18/04/2014' as date string and
+  has 'Royal Hampshire County Hospital check up on 18th April 2014' as label and
   occurred at the hospital 'Royal Hampshire County Hospital'. 
 
 there is an operation named 'visit_006' that
   has '30/05/2014' as date string and
+  has 'Basingstoke and North Hampshire Hospital operation on 30th May 2014' as label and
   occurred at the hospital 'Basingstoke and North Hampshire Hospital'. 
 
 there is a consultation named 'visit_007' that
   has '21/09/2014' as date string and
+  has 'Andover War Memorial Hospital consultation on 21st September 2014' as label and
   occurred at the hospital 'Andover War Memorial Hospital'. 
 
 there is a consultation named 'visit_008' that
   has '10/10/2014' as date string and
+  has 'Andover War Memorial Hospital consultation on 10th October 2014' as label and
   occurred at the hospital 'Andover War Memorial Hospital'. 
 
 there is an operation named 'visit_009' that
   has '07/01/2015' as date string and
+  has 'Basingstoke and North Hampshire Hospital operation on 7th January 2015' as label and
   occurred at the hospital 'Basingstoke and North Hampshire Hospital'. 
 
 there is a check up named 'visit_010' that
   has '09/03/2015' as date string and
+  has 'Royal Hampshire County Hospital check up on 9th March 2015' as label and
   occurred at the hospital 'Royal Hampshire County Hospital'. 
