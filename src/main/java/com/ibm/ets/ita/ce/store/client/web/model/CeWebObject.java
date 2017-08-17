@@ -8,6 +8,9 @@ package com.ibm.ets.ita.ce.store.client.web.model;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_ANNOTATIONS;
 import static com.ibm.ets.ita.ce.store.utilities.ReportingUtilities.reportException;
 import static com.ibm.ets.ita.ce.store.names.CeNames.CON_INT;
+import static com.ibm.ets.ita.ce.store.names.CeNames.CON_FLT;
+import static com.ibm.ets.ita.ce.store.names.CeNames.CON_DBL;
+import static com.ibm.ets.ita.ce.store.names.CeNames.CON_BLN;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -66,13 +69,41 @@ public abstract class CeWebObject {
 	protected static void putAppropriateValueIn(ActionContext pAc, CePropertyInstance pPi, CeStoreJsonObject pObj, String pKey, String pVal, boolean pIsSmartMode) {
 		final String METHOD_NAME = "putAppropriateValueIn";
 
-		if (pIsSmartMode && isInteger(pAc, pPi)) {
-			try {
-				int intVal = new Integer(pVal).intValue();
+		if (pIsSmartMode) {
+			if (isInteger(pAc, pPi)) {
+				try {
+					int intVal = new Integer(pVal).intValue();
 
-				putIntValueIn(pObj, pKey, intVal);
-			} catch (NumberFormatException e) {
-				reportException(e, pAc, logger, CLASS_NAME, METHOD_NAME);
+					putIntValueIn(pObj, pKey, intVal);
+				} catch (NumberFormatException e) {
+					reportException(e, pAc, logger, CLASS_NAME, METHOD_NAME);
+				}
+			} else if (isFloat(pAc, pPi)) {
+				try {
+					float floatVal = new Float(pVal).floatValue();
+
+					putFloatValueIn(pObj, pKey, floatVal);
+				} catch (NumberFormatException e) {
+					reportException(e, pAc, logger, CLASS_NAME, METHOD_NAME);
+				}
+			} else if (isDouble(pAc, pPi)) {
+				try {
+					double doubleVal = new Double(pVal).doubleValue();
+
+					putDoubleValueIn(pObj, pKey, doubleVal);
+				} catch (NumberFormatException e) {
+					reportException(e, pAc, logger, CLASS_NAME, METHOD_NAME);
+				}
+			} else if (isBoolean(pAc, pPi)) {
+				try {
+					boolean boolVal = new Boolean(pVal).booleanValue();
+
+					putBooleanValueIn(pObj, pKey, boolVal);
+				} catch (NumberFormatException e) {
+					reportException(e, pAc, logger, CLASS_NAME, METHOD_NAME);
+				}
+			} else {
+				putStringValueIn(pObj, pKey, pVal);
 			}
 		} else {
 			putStringValueIn(pObj, pKey, pVal);
@@ -92,6 +123,10 @@ public abstract class CeWebObject {
 	}
 
 	protected static void putLongValueIn(CeStoreJsonObject pObj, String pKey, long pVal) {
+		pObj.put(pKey, pVal);
+	}
+
+	protected static void putFloatValueIn(CeStoreJsonObject pObj, String pKey, float pVal) {
 		pObj.put(pKey, pVal);
 	}
 
@@ -133,6 +168,39 @@ public abstract class CeWebObject {
 		}
 	}
 
+	protected static void putAllFloatValuesIn(CeStoreJsonObject pObj, String pKey, Collection<Float> pVals) {
+		if ((pVals != null)) {
+			CeStoreJsonArray jArr = new CeStoreJsonArray();
+
+			for (Float thisVal : pVals) {
+				jArr.add(thisVal.floatValue());
+			}
+			pObj.put(pKey, jArr);
+		}
+	}
+
+	protected static void putAllDoubleValuesIn(CeStoreJsonObject pObj, String pKey, Collection<Double> pVals) {
+		if ((pVals != null)) {
+			CeStoreJsonArray jArr = new CeStoreJsonArray();
+
+			for (Double thisVal : pVals) {
+				jArr.add(thisVal.doubleValue());
+			}
+			pObj.put(pKey, jArr);
+		}
+	}
+
+	protected static void putAllBooleanValuesIn(CeStoreJsonObject pObj, String pKey, Collection<Boolean> pVals) {
+		if ((pVals != null)) {
+			CeStoreJsonArray jArr = new CeStoreJsonArray();
+
+			for (Boolean thisVal : pVals) {
+				jArr.add(thisVal.booleanValue());
+			}
+			pObj.put(pKey, jArr);
+		}
+	}
+
 	protected static void putAllStringValuesIn(CeStoreJsonObject pObj, String pKey, String[] pVals) {
 		if ((pVals != null)) {
 			CeStoreJsonArray jArr = new CeStoreJsonArray();
@@ -157,23 +225,108 @@ public abstract class CeWebObject {
 		return result;
 	}
 
+	private static boolean isFloat(ActionContext pAc, CePropertyInstance pPi) {
+		boolean result = false;
+		CeConcept rangeCon = pPi.getRelatedProperty().getRangeConcept();
+
+		if (rangeCon != null) {
+			if (rangeCon.equalsOrHasParentNamed(pAc, CON_FLT)) {
+				result = true;
+			}
+		}
+
+		return result;
+	}
+
+	private static boolean isDouble(ActionContext pAc, CePropertyInstance pPi) {
+		boolean result = false;
+		CeConcept rangeCon = pPi.getRelatedProperty().getRangeConcept();
+
+		if (rangeCon != null) {
+			if (rangeCon.equalsOrHasParentNamed(pAc, CON_DBL)) {
+				result = true;
+			}
+		}
+
+		return result;
+	}
+
+	private static boolean isBoolean(ActionContext pAc, CePropertyInstance pPi) {
+		boolean result = false;
+		CeConcept rangeCon = pPi.getRelatedProperty().getRangeConcept();
+
+		if (rangeCon != null) {
+			if (rangeCon.equalsOrHasParentNamed(pAc, CON_BLN)) {
+				result = true;
+			}
+		}
+
+		return result;
+	}
+
 	protected static void putAllAppropriateValuesIn(ActionContext pAc, CePropertyInstance pPi, CeStoreJsonObject pObj, String pKey, String[] pVals, boolean pIsSmartMode) {
 		final String METHOD_NAME = "putAllAppropriateValuesIn";
 
-		if (pIsSmartMode && isInteger(pAc, pPi)) {
-			ArrayList<Integer> intVals = new ArrayList<Integer>();
+		if (pIsSmartMode) {
+			if(isInteger(pAc, pPi)) {
+				ArrayList<Integer> intVals = new ArrayList<Integer>();
 
-			for (String thisVal : pVals) {
-				try {
-					Integer intVal = new Integer(thisVal);
+				for (String thisVal : pVals) {
+					try {
+						Integer intVal = new Integer(thisVal);
 
-					intVals.add(intVal);
-				} catch (NumberFormatException e) {
-					reportException(e, pAc, logger, CLASS_NAME, METHOD_NAME);
+						intVals.add(intVal);
+					} catch (NumberFormatException e) {
+						reportException(e, pAc, logger, CLASS_NAME, METHOD_NAME);
+					}
 				}
-			}
 
-			putAllIntValuesIn(pObj, pKey, intVals);
+				putAllIntValuesIn(pObj, pKey, intVals);
+			} else if(isFloat(pAc, pPi)) {
+				ArrayList<Float> floatVals = new ArrayList<Float>();
+
+				for (String thisVal : pVals) {
+					try {
+						float floatVal = new Float(thisVal);
+
+						floatVals.add(floatVal);
+					} catch (NumberFormatException e) {
+						reportException(e, pAc, logger, CLASS_NAME, METHOD_NAME);
+					}
+				}
+
+				putAllFloatValuesIn(pObj, pKey, floatVals);
+			} else if(isDouble(pAc, pPi)) {
+				ArrayList<Double> doubleVals = new ArrayList<Double>();
+
+				for (String thisVal : pVals) {
+					try {
+						double doubleVal = new Double(thisVal);
+
+						doubleVals.add(doubleVal);
+					} catch (NumberFormatException e) {
+						reportException(e, pAc, logger, CLASS_NAME, METHOD_NAME);
+					}
+				}
+
+				putAllDoubleValuesIn(pObj, pKey, doubleVals);
+			} else if(isBoolean(pAc, pPi)) {
+				ArrayList<Boolean> boolVals = new ArrayList<Boolean>();
+
+				for (String thisVal : pVals) {
+					try {
+						boolean boolVal = new Boolean(thisVal);
+
+						boolVals.add(boolVal);
+					} catch (NumberFormatException e) {
+						reportException(e, pAc, logger, CLASS_NAME, METHOD_NAME);
+					}
+				}
+
+				putAllBooleanValuesIn(pObj, pKey, boolVals);
+			} else {
+				putAllStringValuesIn(pObj, pKey, pVals);
+			}
 		} else {
 			putAllStringValuesIn(pObj, pKey, pVals);
 		}
@@ -182,20 +335,66 @@ public abstract class CeWebObject {
 	protected static void putAllAppropriateValuesIn(ActionContext pAc, CePropertyInstance pPi, CeStoreJsonObject pObj, String pKey, HashSet<String> pVals, boolean pIsSmartMode) {
 		final String METHOD_NAME = "putAllAppropriateValuesIn";
 
-		if (pIsSmartMode && isInteger(pAc, pPi)) {
-			ArrayList<Integer> intVals = new ArrayList<Integer>();
+		if (pIsSmartMode) {
+			if (isInteger(pAc, pPi)) {
+				ArrayList<Integer> intVals = new ArrayList<Integer>();
 
-			for (String thisVal : pVals) {
-				try {
-					Integer intVal = new Integer(thisVal);
+				for (String thisVal : pVals) {
+					try {
+						Integer intVal = new Integer(thisVal);
 
-					intVals.add(intVal);
-				} catch (NumberFormatException e) {
-					reportException(e, pAc, logger, CLASS_NAME, METHOD_NAME);
+						intVals.add(intVal);
+					} catch (NumberFormatException e) {
+						reportException(e, pAc, logger, CLASS_NAME, METHOD_NAME);
+					}
 				}
-			}
 
-			putAllIntValuesIn(pObj, pKey, intVals);
+				putAllIntValuesIn(pObj, pKey, intVals);
+			} else if (isFloat(pAc, pPi)) {
+				ArrayList<Float> floatVals = new ArrayList<Float>();
+
+				for (String thisVal : pVals) {
+					try {
+						float floatVal = new Float(thisVal);
+
+						floatVals.add(floatVal);
+					} catch (NumberFormatException e) {
+						reportException(e, pAc, logger, CLASS_NAME, METHOD_NAME);
+					}
+				}
+
+				putAllFloatValuesIn(pObj, pKey, floatVals);
+			} else if (isDouble(pAc, pPi)) {
+				ArrayList<Double> doubleVals = new ArrayList<Double>();
+
+				for (String thisVal : pVals) {
+					try {
+						double doubleVal = new Double(thisVal);
+
+						doubleVals.add(doubleVal);
+					} catch (NumberFormatException e) {
+						reportException(e, pAc, logger, CLASS_NAME, METHOD_NAME);
+					}
+				}
+
+				putAllDoubleValuesIn(pObj, pKey, doubleVals);
+			} else if (isBoolean(pAc, pPi)) {
+				ArrayList<Boolean> boolVals = new ArrayList<Boolean>();
+
+				for (String thisVal : pVals) {
+					try {
+						boolean boolVal = new Boolean(thisVal);
+
+						boolVals.add(boolVal);
+					} catch (NumberFormatException e) {
+						reportException(e, pAc, logger, CLASS_NAME, METHOD_NAME);
+					}
+				}
+
+				putAllBooleanValuesIn(pObj, pKey, boolVals);
+			} else {
+				putAllStringValuesIn(pObj, pKey, pVals);
+			}
 		} else {
 			putAllStringValuesIn(pObj, pKey, pVals);
 		}
