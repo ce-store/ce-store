@@ -105,6 +105,8 @@ public abstract class CeWebObject {
 			} else {
 				putStringValueIn(pObj, pKey, pVal);
 			}
+		} else {
+			putStringValueIn(pObj, pKey, pVal);
 		}
 	}
 
@@ -325,6 +327,8 @@ public abstract class CeWebObject {
 			} else {
 				putAllStringValuesIn(pObj, pKey, pVals);
 			}
+		} else {
+			putAllStringValuesIn(pObj, pKey, pVals);
 		}
 	}
 
@@ -332,7 +336,7 @@ public abstract class CeWebObject {
 		final String METHOD_NAME = "putAllAppropriateValuesIn";
 
 		if (pIsSmartMode) {
-			if(isInteger(pAc, pPi)) {
+			if (isInteger(pAc, pPi)) {
 				ArrayList<Integer> intVals = new ArrayList<Integer>();
 
 				for (String thisVal : pVals) {
@@ -346,7 +350,7 @@ public abstract class CeWebObject {
 				}
 
 				putAllIntValuesIn(pObj, pKey, intVals);
-			} else if(isFloat(pAc, pPi)) {
+			} else if (isFloat(pAc, pPi)) {
 				ArrayList<Float> floatVals = new ArrayList<Float>();
 
 				for (String thisVal : pVals) {
@@ -360,7 +364,7 @@ public abstract class CeWebObject {
 				}
 
 				putAllFloatValuesIn(pObj, pKey, floatVals);
-			} else if(isDouble(pAc, pPi)) {
+			} else if (isDouble(pAc, pPi)) {
 				ArrayList<Double> doubleVals = new ArrayList<Double>();
 
 				for (String thisVal : pVals) {
@@ -374,7 +378,7 @@ public abstract class CeWebObject {
 				}
 
 				putAllDoubleValuesIn(pObj, pKey, doubleVals);
-			} else if(isBoolean(pAc, pPi)) {
+			} else if (isBoolean(pAc, pPi)) {
 				ArrayList<Boolean> boolVals = new ArrayList<Boolean>();
 
 				for (String thisVal : pVals) {
@@ -391,6 +395,8 @@ public abstract class CeWebObject {
 			} else {
 				putAllStringValuesIn(pObj, pKey, pVals);
 			}
+		} else {
+			putAllStringValuesIn(pObj, pKey, pVals);
 		}
 	}
 
