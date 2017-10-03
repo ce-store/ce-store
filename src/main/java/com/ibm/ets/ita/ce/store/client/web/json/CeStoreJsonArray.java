@@ -89,9 +89,15 @@ public class CeStoreJsonArray extends CeStoreJsonProcessor {
 				} else if (thisVal instanceof Float) {
 					String floatVal = ((Float)thisVal).toString();
 					sb.append(floatVal);
+				} else if (thisVal instanceof Double) {
+					String doubleVal = ((Double)thisVal).toString();
+					sb.append(doubleVal);
 				} else if (thisVal instanceof Integer) {
 					String intVal = ((Integer)thisVal).toString();
 					sb.append(intVal);
+				} else if (thisVal instanceof Boolean) {
+					String boolVal = ((Boolean)thisVal).toString();
+					sb.append(boolVal);
 				} else {
 					sb.append(encodeJsonValue((String) thisVal));
 				}
