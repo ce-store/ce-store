@@ -321,8 +321,12 @@ public class QueryExecutionManagerMem extends QueryExecutionManager {
 			for (CePropertyInstance datPi : dataProps) {
 				if (datPi.isSpecialOperatorPropertyInstance()) {
 					if (!isEmpty) {
-						ArrayList<String> latestInsts = getAllMatchingValuesForVariable(datPi.getClauseVariableId(), pQuery);
-						isEmpty = secondaryProcessForDatatypeProperty(latestInsts, thisClause.getTargetVariable(), datPi, pQuery);
+						if (bothVariablesOnSameClause(datPi)) {
+							//No extra processing needed - both variables are on a single clause
+						} else {
+							ArrayList<String> latestInsts = getAllMatchingValuesForVariable(datPi.getClauseVariableId(), pQuery);
+							isEmpty = secondaryProcessForDatatypeProperty(latestInsts, thisClause.getTargetVariable(), datPi, pQuery);
+						}
 					}
 				}
 			}
@@ -331,6 +335,21 @@ public class QueryExecutionManagerMem extends QueryExecutionManager {
 		reportExecutionTiming(this.ac, sTime, "[3] processAllDatatypeClauses", CLASS_NAME, METHOD_NAME);
 
 		return isEmpty;
+	}
+
+	private boolean bothVariablesOnSameClause(CePropertyInstance pDatPi) {
+		boolean result = false;
+
+		String srcVarId = pDatPi.getClauseVariableId();
+		String tgtVarId = pDatPi.getSingleOrFirstValue();
+
+		for (MatchedClauseList thisMcl : getMcls().values()) {
+			if (thisMcl.hasVariables(srcVarId, tgtVarId)) {
+				result = true;
+			}
+		}
+
+		return result;
 	}
 
 	private ArrayList<String> getAllMatchingValuesForVariable(String pVarId, CeQuery pQuery) {
@@ -755,7 +774,14 @@ public class QueryExecutionManagerMem extends QueryExecutionManager {
 
 						CeInstance matchedInst = getModelBuilder().getInstanceNamed(this.ac, thisInstIdOrValue);
 						if (doesRangeConceptMatchTarget(matchedInst, pTargetRange)) {
-							saveThisMatchedInstance(pSrcVarId, pInst, pObjPi.getSingleOrFirstValue(), matchedInst, pPropName);
+							if (pSrcVarId.equals(pTgtVarId)) {
+								//Special case - the source and target variables are the same so the source must match the target
+								if (pInst.equals(matchedInst)) {
+									saveThisMatchedInstance(pSrcVarId, pInst, pObjPi.getSingleOrFirstValue(), matchedInst, pPropName);
+								}
+							} else {
+								saveThisMatchedInstance(pSrcVarId, pInst, pObjPi.getSingleOrFirstValue(), matchedInst, pPropName);
+							}
 						}
 					} else {
 						saveThisMatchedNormalValue(pSrcVarId, pInst, pObjPi.getSingleOrFirstValue(), thisInstIdOrValue, pPropName);
