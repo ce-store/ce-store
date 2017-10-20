@@ -398,6 +398,7 @@ function HandlerSentences() {
 		var genMsg = 'Result of CE sentence loading:\n';
 
 		genMsg += '   ' + result.command_count + ' commands executed' + summariseSentenceCounts(result);
+		genMsg += '\n   ' + result.execution_time + ' ms execution time';
 
 		var errs = gEp.handler.messages.hasErrors(pResponse);
 		var warns = gEp.handler.messages.hasWarnings(pResponse);
