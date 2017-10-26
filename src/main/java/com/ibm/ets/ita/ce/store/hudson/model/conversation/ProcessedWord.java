@@ -667,6 +667,8 @@ public class ProcessedWord extends GeneralItem {
 
 					this.matchedText = concatText;
 				}
+			} else {
+				this.matchedText = concatText;
 			}
 		} else {
 			result = false;
