@@ -44,6 +44,7 @@ For more detailed examples you can go to the [Tutorials](https://github.com/ce-s
 
 An easy way to get started with Controlled English is through IBM Bluemix. You can [sign up to Bluemix for free](https://console.bluemix.net/), and once you've got an account, clicking the button above will automatically deploy a Cloud-hosted instance of your very own CE Store.
 
+**Important Note:** After deployment to bluemix you will find your ce-store running in http://(your bluemix url)/ce-store/ rather than in the root of the bluemix url.  Therefore, to access the ce-store via the engineering panel you would navigate to http://(your bluemix url)/ce-store/ui/
 
 ## Installation and Setup - Run CE on your own machine
 
