@@ -583,7 +583,7 @@ function Hudson(pJsDebug) {
 				result += ", ";
 			}
 
-			result = "<a title='" + JSON.stringify(entity) + "'><font color='blue'>" + entity._id + "</font></a> (";
+			result += "<a title='" + JSON.stringify(entity) + "'><font color='blue'>" + entity._id + "</font></a> (";
 			result += htmlPropertySummary(entity) + ")<br>";
 		}
 
@@ -600,7 +600,7 @@ function Hudson(pJsDebug) {
 				result += ", ";
 			}
 
-			result = "<a title='" + JSON.stringify(entity) + "'><font color='blue'>" + entity._id + "</font></a> (";
+			result += "<a title='" + JSON.stringify(entity) + "'><font color='blue'>" + entity._id + "</font></a> (";
 			result += htmlInstanceSummary(entity) + ")<br>";
 		}
 
