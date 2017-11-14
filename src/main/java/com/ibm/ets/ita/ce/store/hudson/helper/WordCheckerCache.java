@@ -28,7 +28,7 @@ public class WordCheckerCache {
 	public static final String copyrightNotice = "(C) Copyright IBM Corporation  2011, 2017";
 
 	private HashMap<String, CeConcept> matchingConcepts = new HashMap<String, CeConcept>();
-	private HashMap<String, TreeMap<String, CeProperty>> matchingRelations = new HashMap<String, TreeMap<String, CeProperty>>();
+	private HashMap<String, TreeMap<String, ArrayList<CeProperty>>> matchingRelations = new HashMap<String, TreeMap<String, ArrayList<CeProperty>>>();
 	private HashMap<String, ArrayList<CeInstance>> matchingInstances = new HashMap<String, ArrayList<CeInstance>>();
 
 	private ArrayList<String> commonWords = null;
@@ -85,10 +85,10 @@ public class WordCheckerCache {
 	}
 
 	public synchronized void checkForMatchingRelationUsing(ActionContext pAc, ProcessedWord pWord, String pText) {
-		TreeMap<String, CeProperty> tgtProps = null;
+		TreeMap<String, ArrayList<CeProperty>> tgtProps = null;
 
 		if (!this.matchingRelations.containsKey(pText)) {
-			tgtProps = new TreeMap<String, CeProperty>();
+			tgtProps = new TreeMap<String, ArrayList<CeProperty>>();
 
 			for (CeInstance thisInst : pAc.getModelBuilder().getAllInstancesForConceptNamed(pAc, CON_PROPCON)) {
 				String propFullName = thisInst.getInstanceName();
@@ -96,7 +96,15 @@ public class WordCheckerCache {
 				for (String expVal : thisInst.getValueListFromPropertyNamed(PROP_PROPNAME)) {
 					if (expVal.equals(pText)) {
 						CeProperty tgtProp = pAc.getModelBuilder().getPropertyFullyNamed(propFullName);
-						tgtProps.put(expVal, tgtProp);
+
+						ArrayList<CeProperty> propArray = tgtProps.get(expVal);
+
+						if (propArray == null) {
+							propArray = new ArrayList<CeProperty>();
+							tgtProps.put(expVal, propArray);
+						}
+
+						propArray.add(tgtProp);
 					}
 				}
 			}

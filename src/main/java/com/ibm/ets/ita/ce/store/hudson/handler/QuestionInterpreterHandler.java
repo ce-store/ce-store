@@ -14,7 +14,7 @@ import static com.ibm.ets.ita.ce.store.names.CeNames.CON_NUMWORD;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_CONF;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_CONS;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_ENDPOS;
-import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_ENTS;
+import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_ENTITIES;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_EXP;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_INSTS;
 import static com.ibm.ets.ita.ce.store.names.JsonNames.JSON_INTS;
@@ -181,7 +181,7 @@ public class QuestionInterpreterHandler extends QuestionHandler {
 		jObj.put(JSON_PHRASE, pMi.getPhraseText());
 		jObj.put(JSON_STARTPOS, pMi.getStartPos());
 		jObj.put(JSON_ENDPOS, pMi.getEndPos());
-		jObj.put(JSON_ENTS, pArr);
+		jObj.put(JSON_ENTITIES, pArr);
 
 		return jObj;
 	}
@@ -838,7 +838,7 @@ public class QuestionInterpreterHandler extends QuestionHandler {
 					jProp.put(JSON_PHRASE, firstItem.getPhraseText());
 					jProp.put(JSON_STARTPOS, firstItem.getStartPos());
 					jProp.put(JSON_ENDPOS, firstItem.getEndPos());
-					jProp.put(JSON_ENTS, eArr);
+					jProp.put(JSON_ENTITIES, eArr);
 
 					for (MatchedItem thisMi : propList) {
 						eArr.add(jsonFor(this.ac, thisMi.getProperty()));
@@ -869,7 +869,7 @@ public class QuestionInterpreterHandler extends QuestionHandler {
 					jInst.put(JSON_PHRASE, firstItem.getPhraseText());
 					jInst.put(JSON_STARTPOS, firstItem.getStartPos());
 					jInst.put(JSON_ENDPOS, firstItem.getEndPos());
-					jInst.put(JSON_ENTS, eArr);
+					jInst.put(JSON_ENTITIES, eArr);
 
 					for (MatchedItem thisMi : instList) {
 						if (!isAlreadyMatchedToConceptOrProperty(thisWord, thisMi)) {

@@ -246,7 +246,6 @@ public class JsonNames {
 	public static final String JSON_INSTS = "instances";
 	public static final String JSON_SPECS = "specials";
 
-	public static final String JSON_ENTS = "entities";
 	public static final String JSON_PHRASE = "phrase";
 	public static final String JSON_STARTPOS = "start position";
 	public static final String JSON_ENDPOS = "end position";

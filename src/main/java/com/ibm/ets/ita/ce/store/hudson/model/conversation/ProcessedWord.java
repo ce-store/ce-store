@@ -493,10 +493,13 @@ public class ProcessedWord extends GeneralItem {
 		return result;
 	}
 
-	public void setMatchingRelations(TreeMap<String, CeProperty> pProps) {
+	public void setMatchingRelations(TreeMap<String, ArrayList<CeProperty>> pProps) {
 		for (String thisKey : pProps.keySet()) {
-			CeProperty thisProp = pProps.get(thisKey);
-			saveMatchedItem(MatchedItem.createForMatchedProperty(this, thisProp));
+			ArrayList<CeProperty> thisPropList = pProps.get(thisKey);
+
+			for (CeProperty thisProp : thisPropList) {
+				saveMatchedItem(MatchedItem.createForMatchedProperty(this, thisProp));
+			}
 		}
 	}
 
