@@ -216,7 +216,9 @@ public class IndexedEntityAccessor {
 		CeInstance actualInst = this.mb.getInstanceNamed(pAc, pName);
 
 		if (actualInst != null) {
-			result.add(actualInst);
+			if (!result.contains(actualInst)) {
+				result.add(actualInst);
+			}
 		}
 
 		return result;
