@@ -926,7 +926,6 @@ public class QueryExecutionManagerMem extends QueryExecutionManager {
 		}
 
 		int matches = 0;
-		
 		for (String cVal : pCandidateVals) {
 			if (clauseTestOnDirectMatch(this.ac, pDatPi)) {
 				for (String thisTval : targetVals) {
@@ -1081,7 +1080,8 @@ public class QueryExecutionManagerMem extends QueryExecutionManager {
 					if (this.ac.getCeConfig().isCaseSensitive()) {
 						result = cVal.equals(thisTval);
 					} else {
-						result = cVal.toLowerCase().equals(thisTval.toLowerCase());
+						result = cVal.equalsIgnoreCase(thisTval);
+//						result = cVal.toLowerCase().equals(thisTval.toLowerCase());
 					}
 					
 					if (!result) {
