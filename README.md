@@ -38,13 +38,13 @@ For more detailed examples you can go to the [Tutorials](https://github.com/ce-s
 * [Contributing](https://github.com/ce-store/ce-store#contributing)
 * [License](https://github.com/ce-store/ce-store#license)
 
-## Installation and Setup - Use CE in the Cloud
+## Installation and Setup - Use CE in IBM Cloud
 
-[![Deploy to IBM Bluemix](https://bluemix.net/deploy/button.png)](https://bluemix.net/deploy?repository=https://github.com/ce-store/ce-store)
+[![Deploy to IBM Cloud](https://bluemix.net/deploy/button.png)](https://bluemix.net/deploy?repository=https://github.com/ce-store/ce-store)
 
-An easy way to get started with Controlled English is through IBM Bluemix. You can [sign up to Bluemix for free](https://console.bluemix.net/), and once you've got an account, clicking the button above will automatically deploy a Cloud-hosted instance of your very own CE Store.
+An easy way to get started with Controlled English is through IBM Cloud. You can [sign up to IBM Cloud for free](https://console.bluemix.net/), and once you've got an account, clicking the button above will automatically deploy a Cloud-hosted instance of your very own CE Store.
 
-**Important Note:** After deployment to bluemix you will find your ce-store running in http://(your bluemix url)/ce-store/ rather than in the root of the bluemix url.  Therefore, to access the ce-store via the engineering panel you would navigate to http://(your bluemix url)/ce-store/ui/
+**Important Note:** After deployment to IBM Cloud you will find your ce-store running in http://(your IBM Cloud url)/ce-store/ rather than in the root of the IBM Cloud url.  Therefore, to access the ce-store via the engineering panel you would navigate to http://(your IBM Cloud url)/ce-store/ui/
 
 ## Installation and Setup - Run CE on your own machine
 
