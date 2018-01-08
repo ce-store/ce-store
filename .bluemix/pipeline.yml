@@ -25,10 +25,10 @@ stages:
   - name: Deploy
     type: deployer
     target:
-      region_id: ${CF_REGION_ID}
-      organization: ${CF_ORGANIZATION}
-      space: ${CF_SPACE}
-      application: ${CF_APP}
+      region_id: ${PROD_REGION_ID}
+      organization: ${PROD_ORG_NAME}
+      space: ${PROD_SPACE_NAME}
+      application: ${CF_APP_NAME}
     script: |
       #!/bin/bash
-      cf push "${CF_APP}" -p ce-store-1.0-SNAPSHOT.war -m 256M
+      cf push "${CF_APP_NAME}" -p ce-store-1.0-SNAPSHOT.war -m 256M
