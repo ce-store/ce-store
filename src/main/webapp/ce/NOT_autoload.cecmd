@@ -3,4 +3,4 @@
 -- All Rights Reserved
 -- --------------------------------------------------------------------------
 
-perform load sentences from url '/ad-iot/ce/cmd/ad-iot_load.cecmd'.
+perform load sentences from url '/ce-store/ce/medicine/cmd/med_load_hudson.cecmd'.
