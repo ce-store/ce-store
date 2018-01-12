@@ -12,10 +12,10 @@ public class MiscNames {
 	public static final String VERSION = "1.3.0002";
 	public static final String CESTORENAME_DEFAULT = "DEFAULT";
 	public static final String CM_GLOBAL = "global";
-	
+
 	//URL related
 	public static final String URL_DEFAULTLOAD = "./ce/autoload.cecmd";
-	public static final String URL_MODELDIR = "http://ce-models.eu-gb.mybluemix.net";
+	public static final String URL_MODELDIR = "http://ita-ce.com:3000";
 	public static final String URL_HUDSON = "./hudson/ce/cmd/load_hudson.cecmd";
 	public static final String URL_CONV_INITIALISE = "/ce-store/ce/conversation/cmd/load_conv.cecmd";
 
@@ -32,7 +32,7 @@ public class MiscNames {
 	public static final long DEFAULT_UIDSTART = 0;
 	public static final long DEFAULT_UIDEND = 999999;
 	public static final boolean UID_USEPADDING = false;
-	
+
 	//Default values
 	public static final long NO_TS = -1;
 	public static final String DEFAULT_MAXITS = "10";
@@ -94,7 +94,7 @@ public class MiscNames {
 	public static final String UNKNOWN_USER = "(unknown)";
 	public static final String PROPTYPE_OBJECT = "O";
 	public static final String PROPTYPE_DATATYPE = "D";
-	
+
 	public static final String FOLDER_JSON = "json/";
 	public static final String FOLDER_MODELS = "models/";
 	public static final String JSONFILE_QUESTIONS = "questions_core.json";
