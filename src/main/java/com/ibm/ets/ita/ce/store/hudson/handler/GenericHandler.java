@@ -84,9 +84,11 @@ public abstract class GenericHandler {
 			CeProperty relProp = thisPi.getRelatedProperty();
 			CeInstance mmInst = relProp.getMetaModelInstance(pAc);
 
-			if (mmInst.isConceptNamed(pAc, CON_IDPROPCON)) {
-				for (String thisVal : thisPi.getValueList()) {
-					result.add(thisVal);
+			if (mmInst != null) {
+				if (mmInst.isConceptNamed(pAc, CON_IDPROPCON)) {
+					for (String thisVal : thisPi.getValueList()) {
+						result.add(thisVal);
+					}
 				}
 			}
 		}

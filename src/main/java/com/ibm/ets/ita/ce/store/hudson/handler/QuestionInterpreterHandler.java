@@ -810,7 +810,11 @@ public class QuestionInterpreterHandler extends QuestionHandler {
 				MatchedItem firstItem = conList.get(0);
 
 				for (MatchedItem mi : conList) {
-					eArr.add(jsonFor(this.ac, mi.getConcept()));
+					CeStoreJsonObject jObj = jsonFor(this.ac, mi.getConcept());
+
+					if (jObj != null) {
+						eArr.add(jObj);
+					}
 				}
 
 				jCon = jsonForMatchedItem(firstItem, eArr);
