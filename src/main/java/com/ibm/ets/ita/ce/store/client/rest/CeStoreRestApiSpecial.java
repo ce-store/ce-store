@@ -340,16 +340,20 @@ public class CeStoreRestApiSpecial extends CeStoreRestApi {
 		boolean retInsts = getBooleanParameterNamed(PARM_RETINSTS);
 		boolean caseSen = getBooleanParameterNamed(PARM_CASESEN, this.wc.getCeConfig().isCaseSensitive());
 
-		ArrayList<String> searchTerms = extractKeywordListFrom(rawSearchTerms);
+		if (rawSearchTerms != null) {
+			ArrayList<String> searchTerms = extractKeywordListFrom(rawSearchTerms);
 
-		if (!searchTerms.isEmpty()) {
-			if (isJsonRequest()) {
-				jsonKeywordSearch(searchTerms, conNames, propNames, retInsts, caseSen, onlyProps, numSteps, relInsts,
-						refInsts, limRels, suppPropTypes);
-			} else if (isTextRequest()) {
-				textKeywordSearch(searchTerms, conNames, propNames, retInsts, caseSen);
+			if (!searchTerms.isEmpty()) {
+				if (isJsonRequest()) {
+					jsonKeywordSearch(searchTerms, conNames, propNames, retInsts, caseSen, onlyProps, numSteps, relInsts,
+							refInsts, limRels, suppPropTypes);
+				} else if (isTextRequest()) {
+					textKeywordSearch(searchTerms, conNames, propNames, retInsts, caseSen);
+				} else {
+					reportUnsupportedFormatError();
+				}
 			} else {
-				reportUnsupportedFormatError();
+				reportMissingUrlParameterError(PARM_SEARCHTERMS);
 			}
 		} else {
 			reportMissingUrlParameterError(PARM_SEARCHTERMS);
