@@ -15,7 +15,7 @@ public class MiscNames {
 
 	//URL related
 	public static final String URL_DEFAULTLOAD = "./ce/autoload.cecmd";
-	public static final String URL_MODELDIR = "http://ita-ce.com:3000";
+	public static final String URL_MODELDIR = "http://ita-ce.com:3001";
 	public static final String URL_HUDSON = "./hudson/ce/cmd/load_hudson.cecmd";
 	public static final String URL_CONV_INITIALISE = "/ce-store/ce/conversation/cmd/load_conv.cecmd";
 
