@@ -107,10 +107,12 @@ public abstract class GenericHandler {
 		for (CeConcept dirCon : pInst.getDirectConcepts()) {
 			ArrayList<CeInstance> mmList = dirCon.retrieveMetaModelInstances(pAc, null);
 
-			for (CeInstance mmInst : mmList) {
-				if (mmInst.isConceptNamed(pAc, CON_SEPIDCON)) {
-					result = true;
-					break;
+			if (mmList != null) {
+				for (CeInstance mmInst : mmList) {
+					if (mmInst.isConceptNamed(pAc, CON_SEPIDCON)) {
+						result = true;
+						break;
+					}
 				}
 			}
 		}
