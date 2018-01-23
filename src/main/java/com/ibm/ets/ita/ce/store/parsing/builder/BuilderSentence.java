@@ -440,10 +440,10 @@ public abstract class BuilderSentence {
 	}
 
 	public CeSentence convertToSentence(ActionContext pAc) {
-		CeSource lastSrc = pAc.getLastSource();
+		CeSource tgtSrc = pAc.getCurrentSource();
 
-		if (lastSrc == null) {
-			lastSrc = CeSource.createNewInternalSource(pAc, "Error", null);
+		if (tgtSrc == null) {
+			tgtSrc = CeSource.createNewInternalSource(pAc, "Error", null);
 		}
 
 		if (this.convertedSentence == null) {
@@ -453,8 +453,7 @@ public abstract class BuilderSentence {
 					addFinalToken(TOKEN_BLANK, TOKEN_BLANK, TOKEN_DOT);	//Terminate the sentence with a full stop
 				}
 			}
-			//this.convertedSentence = CeSentence.createNewSentence(pAc, this.type, this.validity, getSentenceText(), getStructuredCeTokens(), lastSrc);
-			this.convertedSentence = CeSentence.createNewSentence(pAc, this.type, this.validity, getSentenceText(), getStructuredCeTokens(), lastSrc, this.targetConceptNormal);
+			this.convertedSentence = CeSentence.createNewSentence(pAc, this.type, this.validity, getSentenceText(), getStructuredCeTokens(), tgtSrc, this.targetConceptNormal);
 		}
 
 		propogateRationaleValues();
