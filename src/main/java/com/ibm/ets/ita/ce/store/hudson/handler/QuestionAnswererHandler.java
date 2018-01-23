@@ -1257,8 +1257,8 @@ public class QuestionAnswererHandler extends GenericHandler {
 					if (thisInst.isConceptNamed(this.ac, CONLIST_HUDSON)) {
 						if (!this.otherInstances.contains(thisInst)) {
 							this.otherInstances.add(thisInst);
-							alreadyProcessed = true;
 						}
+						alreadyProcessed = true;
 					}
 
 					if (!alreadyProcessed) {
