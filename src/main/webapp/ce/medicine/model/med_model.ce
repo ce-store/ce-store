@@ -25,7 +25,8 @@ conceptualise a ~ person ~ P that
   ~ is closely related to ~ the person P7 and
   has the value NB as ~ number of brothers ~ and
   has the value NF as ~ number of friends ~ and
-  has the person P8 as ~ friend ~.
+  has the person P8 as ~ friend ~ and
+  ~ belongs to ~ the person age band PAB.
 
 conceptualise a ~ man ~ M that is a person.
 conceptualise a ~ woman ~ F that is a person.
@@ -88,3 +89,7 @@ conceptualise an ~ equipment ~ E that
 
 conceptualise a ~ bed ~ B that is an equipment.
 conceptualise a ~ scanner ~ S that is an equipment.
+
+conceptualise a ~ person age band ~ B that
+  has the value L as ~ lower bound ~ and
+  has the value U as ~ upper bound ~.

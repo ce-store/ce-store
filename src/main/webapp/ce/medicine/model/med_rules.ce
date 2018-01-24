@@ -110,3 +110,13 @@ if
 then
   ( the person P has the value @MR as total medical reading )
 .
+
+[ age bands ]
+if
+  ( the person P has the integer A as age ) and
+  ( the person age band B has the value U as upper bound ) and
+  ( the person age band B has the value L as lower bound ) and
+  ( the value A >= the value L ) and
+  ( the value A <= the value U )
+then
+  ( the person P belongs to the person age band B ).

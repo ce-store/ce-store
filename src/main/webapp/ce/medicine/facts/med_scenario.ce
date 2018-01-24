@@ -115,3 +115,11 @@ the medical report 'report 4'
 
 the person David has the person James as friend.
 the person James has the person David as friend.
+
+there is a person age band named 'younger' that
+  has '0' as lower bound and
+  has '18' as upper bound.
+
+there is a person age band named 'older' that
+  has '19' as lower bound and
+  has '150' as upper bound.
