@@ -791,6 +791,7 @@ public class QueryResultProcessorMem {
 							thisVal = new Long(txtVal).longValue();
 						} catch(NumberFormatException e) {
 							reportWarning("Unable to convert '" + txtVal + "' to number for summing", this.ac);
+							thisVal = 0;
 						}
 
 						if (existingRow == null) {

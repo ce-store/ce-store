@@ -226,6 +226,7 @@ public class CeGeneratorConclusion {
 						sumVal = new Long(sumText).longValue();
 					} catch (NumberFormatException e) {
 						reportWarning("Unable to sum '" + sumText + "' during rule processing", this.ac);
+						sumVal = 0;
 					}
 				} else if (thisHdr.startsWith(TOKEN_COUNT)) {
 					//This is the variable to be counted
