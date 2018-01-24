@@ -8,19 +8,27 @@
 
 there is a man named John that
   has the integer 'unknown' as age and
-  has 'abc123' as social security number.
+  has 'abc123' as social security number and
+  has '14' as medical reading and
+  has '52' as medical reading.
 
 there is a man named James that
   has the integer '49' as age and
-  has 'def456' as social security number.
+  has 'def456' as social security number and
+  has '21' as medical reading and
+  has '29' as medical reading.
 
 there is a woman named Jean that
   has the integer '21' as age and
-  has 'ghi789' as social security number.
+  has 'ghi789' as social security number and
+  has '?' as medical reading and
+  has '?' as medical reading.
 
 there is a man named David that
   has the integer '17' as age and
-  has 'jkl012' as social security number.
+  has 'jkl012' as social security number and
+  has '14' as medical reading and
+  has '15' as medical reading.
 
 the person John
   is the sibling of the person James and

@@ -12,6 +12,8 @@ Author:  Dave Braines
 
 conceptualise a ~ person ~ P that
   has the integer I as ~ age ~ and
+  has the value MR as ~ medical reading ~ and
+  has the value TMR as ~ total medical reading ~ and
   has the value S as ~ social security number ~ and
   has the sequence MH as ~ medical procedures ~ and
   ~ is the sibling of ~ the person P1 and
