@@ -205,6 +205,20 @@ public class CeRule extends CeQuery implements Serializable {
 		return result;
 	}
 
+	public ArrayList<String> listConclusionClauseHeadersForCountOrSum() {
+		ArrayList<String> result = new ArrayList<String>();
+
+		for (CeClause thisClause : listAllChildConclusionClauses()) {
+			if (thisClause.hasCountOrSumSubjectVariable()) {
+				//TODO: Implement this if it will ever be supported/possible
+			} else if (thisClause.hasCountOrSumObjectVariable()) {
+				result.add(thisClause.getTargetVariable());
+			}
+		}
+
+		return result;
+	}
+
 	@Override
 	public void testIntegrity(ActionContext pAc) {
 		super.testIntegrity(pAc);

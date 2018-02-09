@@ -9,11 +9,13 @@ import static com.ibm.ets.ita.ce.store.names.CeNames.RANGE_VALUE;
 import static com.ibm.ets.ita.ce.store.names.MiscNames.ES;
 import static com.ibm.ets.ita.ce.store.names.MiscNames.NL;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_AND;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_COUNT;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_DOT;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_NEW;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_NO;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_SPACE;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_SQ;
+import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_SUM;
 import static com.ibm.ets.ita.ce.store.names.ParseNames.TOKEN_THE;
 
 import java.io.Serializable;
@@ -461,6 +463,28 @@ public class CeClause implements Serializable  {
 		}
 
 		return result;
+	}
+
+	public boolean hasCountOrSumSubjectVariable() {
+		if (targetVariable != null) {
+			if (targetVariable.startsWith(TOKEN_COUNT) || targetVariable.startsWith(TOKEN_SUM)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	public boolean hasCountOrSumObjectVariable() {
+		for (CePropertyInstance thisPi : datatypeProperties) {
+			for (CePropertyValue thisPv : thisPi.getPropertyValues()) {
+				if (thisPv.getValue().startsWith(TOKEN_COUNT) || thisPv.getValue().startsWith(TOKEN_SUM)) {
+					return true;
+				}
+			}
+		}
+
+		return false;
 	}
 
 	public String calculateRawText() {
