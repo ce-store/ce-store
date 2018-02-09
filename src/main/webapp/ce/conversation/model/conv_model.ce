@@ -9,8 +9,12 @@ Version: 1.0
 Date:    21st December 2015
 Author:  Dave Braines
 
-conceptualise a ~ configuration concept ~ CC.
-conceptualise an ~ uninteresting property ~ UP.
+conceptualise a ~ configuration concept ~ CC that
+  is an entity concept.
+
+conceptualise an ~ uninteresting property ~ UP that
+  is a concept.
+
 conceptualise an ~ interesting thing ~ I.
 
 conceptualise a ~ thing ~ T that

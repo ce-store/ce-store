@@ -61,3 +61,6 @@ there is a qualifier named 'least' that maps to the absolute 'a:min'.
 
 there is a qualifier named 'record' that maps to the absolute 'a:max'.
 there is a qualifier named 'best' that maps to the absolute 'a:max'.
+
+there is a qualifier named 'ascending' that maps to the absolute 'a:ascending'.
+there is a qualifier named 'descending' that maps to the absolute 'a:descending'.

@@ -80,7 +80,8 @@ public class CeStoreRestApiSpecial extends CeStoreRestApi {
 	 *   /special/shadow-concepts
 	 *   /special/shadow-instances
 	 *   /special/diverse-concept-instances
-	 *   /special/data
+	 *   /special/diverse-concept-instances
+	 *   /special/instances-for-multiple-concepts
 	 *   /special/hudson
 	 *   /special/import
 	 */
