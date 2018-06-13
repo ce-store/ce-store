@@ -494,7 +494,7 @@ public class BuilderSentenceCommand extends BuilderSentence {
 
 	private void setUserSpecifiedValue(ActionContext pAc) {
 		String varName = stripDelimitingQuotesFrom(this.rawTokens.get(2)).toLowerCase().trim();
-		String varVal = stripDelimitingQuotesFrom(this.rawTokens.get(4)).toLowerCase().trim();
+		String varVal = stripDelimitingQuotesFrom(this.rawTokens.get(4)).trim();
 
 		if (varName.equals(VARNAME_ARR)) {
 			if (varVal.equals(TOKEN_TRUE)) {
