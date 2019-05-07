@@ -138,7 +138,16 @@ public class CeClause implements Serializable  {
 
 	public boolean isUnboundedCreationClause() {
 		// A conclusion clause that contains the token {{NEW}}
-		return isCreationClause() && getTargetVariable().contains(TOKEN_NEW);
+		String tgtVar = getTargetVariable();
+		boolean result;
+
+		if (tgtVar == null) {
+			result = false;
+		} else {
+			result = isCreationClause() && getTargetVariable().contains(TOKEN_NEW);
+		}
+
+		return result;
 	}
 
 	public boolean isPremiseClause() {

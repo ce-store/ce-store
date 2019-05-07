@@ -546,13 +546,16 @@ public class CeGeneratorConclusion {
 	
 	private void calculateUniqueTargetVariables() {
 		this.uniqueTgtVars = new TreeMap<String, String>();
-		
+
 		for (CeClause cClause : getAllChildConclusionClauses()) {
 			String tgtVar = cClause.getTargetVariable();
-			String trimmedTgtVar = getVariableStubFrom(tgtVar);
-			
-			insertUvKey(trimmedTgtVar, tgtVar, false);
-			insertUvKey(tgtVar, tgtVar, true);
+
+			if (tgtVar != null) {
+				String trimmedTgtVar = getVariableStubFrom(tgtVar);
+
+				insertUvKey(trimmedTgtVar, tgtVar, false);
+				insertUvKey(tgtVar, tgtVar, true);
+			}
 		}		
 	}
 	
