@@ -447,11 +447,12 @@ public class CeClause implements Serializable  {
 
 	private String formattedTargetVariable() {
 		String result = null;
+		String tv = getTargetVariable();
 
-		if (getTargetVariable().isEmpty()) {
+		if ((tv == null) || (tv.isEmpty())) {
 			result = "(null targetVariable)";
 		} else {
-			result = getTargetVariable();
+			result = tv;
 		}
 
 		if (targetVariableWasQuoted()) {

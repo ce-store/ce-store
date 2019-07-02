@@ -141,7 +141,13 @@ public class CeQuery extends CeModelEntity implements Serializable {
 	}
 	
 	public String getTypeForHeader(String pVarId) {
-		return this.allVariableTypes.get(pVarId);
+		String result = null;
+
+		if (pVarId != null) {
+			result = this.allVariableTypes.get(pVarId);
+		}
+
+		return result;
 	}
 
 	public ArrayList<String> getResponseVariableIds() {

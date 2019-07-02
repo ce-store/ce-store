@@ -266,7 +266,11 @@ public abstract class QueryExecutionManager {
 		if (pQuery.isRule()) {
 			for (String thisHdr : this.hdrList) {
 				if (!pQuery.hasNegatedHeader(this.ac, thisHdr)) {
-					result.addHeader(thisHdr, pQuery.getTypeForHeader(thisHdr));
+					String hdrType = pQuery.getTypeForHeader(thisHdr);
+
+					if (hdrType != null) {
+						result.addHeader(thisHdr, hdrType);
+					}
 				}
 			}
 		} else {
